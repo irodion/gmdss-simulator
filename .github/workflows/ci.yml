@@ -35,7 +35,7 @@ jobs:
         run: pip install semgrep && semgrep scan --config auto --error
 
       - name: Test with coverage
-        run: vp run -r test
+        run: vp run -r test:coverage
 
       - name: E2E tests
         run: ./node_modules/.bin/playwright test

@@ -7,7 +7,8 @@
     "dev": "vp dev",
     "build": "vp build",
     "preview": "vp preview",
-    "test": "vp test"
+    "test": "vp test",
+    "test:coverage": "vp test --coverage"
   },
   "dependencies": {
     "@vitejs/plugin-react": "catalog:",
@@ -19,6 +20,7 @@
     "@testing-library/react": "^16.3.0",
     "@types/react": "^19.1.0",
     "@types/react-dom": "^19.1.0",
+    "@vitest/coverage-v8": "catalog:",
     "happy-dom": "catalog:",
     "typescript": "catalog:",
     "vite": "catalog:",
