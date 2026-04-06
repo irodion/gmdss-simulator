@@ -1,0 +1,21 @@
+#!/bin/sh
+
+vp check || exit 1
+
+if command -v semgrep >/dev/null 2>&1; then
+  semgrep scan --config auto --error --quiet || exit 1
+else
+  echo "WARNING: semgrep not found — skipping security scan (install: brew install semgrep)" >&2
+fi
+
+vp run -r test && vp run -r build || exit 1
+
+# Scan dependencies for vulnerabilities when lockfile or manifests change
+remote_ref=$(git rev-parse --abbrev-ref "@{push}" 2>/dev/null || echo "HEAD@{1}")
+if git diff --name-only "$remote_ref" HEAD 2>/dev/null | grep -qE '(pnpm-lock\.yaml|package\.json|pnpm-workspace\.yaml)'; then
+  if command -v vet >/dev/null 2>&1; then
+    vet scan --no-banner
+  else
+    echo "WARNING: vet not found — skipping dependency scan (install: brew install safedep/tap/vet)" >&2
+  fi
+fi

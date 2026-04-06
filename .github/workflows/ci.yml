@@ -1,0 +1,88 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  quality-gate:
+    name: Quality Gate
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: voidzero-dev/setup-vp@v1
+        with:
+          cache: true
+
+      - name: Install Playwright browsers
+        run: vp dlx playwright install --with-deps chromium
+
+      - name: Check (lint + format + type-check)
+        run: vp check
+
+      - name: Semgrep security scan
+        run: pip install semgrep && semgrep scan --config auto --error
+
+      - name: Test with coverage
+        run: vp run -r test:coverage
+
+      - name: E2E tests
+        run: ./node_modules/.bin/playwright test
+
+      - name: Build
+        run: vp run -r build
+
+      - name: Upload coverage report
+        if: success() || failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: coverage-report
+          path: apps/frontend/coverage/
+          retention-days: 7
+
+      - name: Upload Playwright report
+        if: success() || failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 7
+
+  vet:
+    name: Dependency Scan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - name: Check if deps changed
+        id: deps
+        uses: dorny/paths-filter@v4
+        with:
+          filters: |
+            deps:
+              - 'package.json'
+              - 'pnpm-lock.yaml'
+              - 'pnpm-workspace.yaml'
+              - 'apps/*/package.json'
+              - 'packages/*/package.json'
+      - name: Run vet
+        if: steps.deps.outputs.deps == 'true'
+        uses: safedep/vet-action@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          policy: .github/vet-policy.yml
+          paranoid: true
+      - name: Skip vet
+        if: steps.deps.outputs.deps != 'true'
+        run: echo "No dependency changes — skipping vet scan"
