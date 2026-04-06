@@ -1,0 +1,67 @@
+<svg width="1440" height="960" viewBox="0 0 1440 960" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1440" height="960" fill="#F4F5F7"/>
+  <rect x="24" y="24" width="1392" height="912" rx="20" fill="white" stroke="#A0A7B4" stroke-width="2"/>
+
+  <rect x="24" y="24" width="1392" height="72" rx="20" fill="#ECEFF3" stroke="#A0A7B4" stroke-width="2"/>
+  <text x="52" y="68" fill="#222222" font-size="28" font-family="Arial, Helvetica, sans-serif" font-weight="700">GMDSS Simulator</text>
+  <rect x="1120" y="44" width="104" height="32" rx="16" fill="white" stroke="#7C8798" stroke-width="2"/>
+  <text x="1148" y="65" fill="#222222" font-size="16" font-family="Arial, Helvetica, sans-serif">Online</text>
+  <rect x="1240" y="44" width="136" height="32" rx="16" fill="white" stroke="#7C8798" stroke-width="2"/>
+  <text x="1274" y="65" fill="#222222" font-size="16" font-family="Arial, Helvetica, sans-serif">Profile</text>
+
+  <rect x="48" y="124" width="116" height="780" rx="16" fill="#F8F9FB" stroke="#A0A7B4" stroke-width="2"/>
+  <rect x="64" y="148" width="84" height="84" rx="12" fill="white" stroke="#7C8798" stroke-width="2"/>
+  <text x="86" y="196" fill="#222222" font-size="20" font-family="Arial, Helvetica, sans-serif" font-weight="700">Logo</text>
+
+  <rect x="64" y="264" width="84" height="74" rx="12" fill="white" stroke="#7C8798" stroke-width="2"/>
+  <text x="82" y="307" fill="#222222" font-size="18" font-family="Arial, Helvetica, sans-serif">Learn</text>
+  <rect x="64" y="356" width="84" height="74" rx="12" fill="white" stroke="#7C8798" stroke-width="2"/>
+  <text x="85" y="399" fill="#222222" font-size="18" font-family="Arial, Helvetica, sans-serif">Drill</text>
+  <rect x="64" y="448" width="84" height="88" rx="12" fill="#E9EDF2" stroke="#222222" stroke-width="3"/>
+  <text x="94" y="497" fill="#222222" font-size="18" font-family="Arial, Helvetica, sans-serif" font-weight="700">Sim</text>
+  <rect x="64" y="554" width="84" height="74" rx="12" fill="white" stroke="#7C8798" stroke-width="2"/>
+  <text x="93" y="597" fill="#222222" font-size="18" font-family="Arial, Helvetica, sans-serif">Ref</text>
+
+  <rect x="192" y="124" width="778" height="240" rx="16" fill="#F8F9FB" stroke="#A0A7B4" stroke-width="2"/>
+  <text x="220" y="162" fill="#222222" font-size="22" font-family="Arial, Helvetica, sans-serif" font-weight="700">Today</text>
+  <rect x="220" y="184" width="340" height="156" rx="14" fill="white" stroke="#7C8798" stroke-width="2"/>
+  <text x="246" y="222" fill="#222222" font-size="20" font-family="Arial, Helvetica, sans-serif" font-weight="700">Continue Scenario</text>
+  <text x="246" y="258" fill="#444444" font-size="18" font-family="Arial, Helvetica, sans-serif">Distress workflow</text>
+  <rect x="246" y="282" width="132" height="34" rx="17" fill="#ECEFF3" stroke="#7C8798" stroke-width="2"/>
+  <text x="280" y="305" fill="#222222" font-size="16" font-family="Arial, Helvetica, sans-serif">Resume</text>
+
+  <rect x="586" y="184" width="356" height="70" rx="14" fill="white" stroke="#7C8798" stroke-width="2"/>
+  <text x="612" y="225" fill="#222222" font-size="20" font-family="Arial, Helvetica, sans-serif">Progress by module</text>
+  <rect x="586" y="270" width="356" height="70" rx="14" fill="white" stroke="#7C8798" stroke-width="2"/>
+  <text x="612" y="311" fill="#222222" font-size="20" font-family="Arial, Helvetica, sans-serif">Weak areas and recommendations</text>
+
+  <rect x="192" y="388" width="778" height="516" rx="16" fill="#F8F9FB" stroke="#A0A7B4" stroke-width="2"/>
+  <text x="220" y="426" fill="#222222" font-size="22" font-family="Arial, Helvetica, sans-serif" font-weight="700">Curriculum</text>
+
+  <rect x="220" y="450" width="722" height="74" rx="12" fill="white" stroke="#7C8798" stroke-width="2"/>
+  <text x="246" y="494" fill="#222222" font-size="20" font-family="Arial, Helvetica, sans-serif">Module 1  VHF fundamentals</text>
+  <rect x="220" y="540" width="722" height="74" rx="12" fill="white" stroke="#7C8798" stroke-width="2"/>
+  <text x="246" y="584" fill="#222222" font-size="20" font-family="Arial, Helvetica, sans-serif">Module 2  MMSI and DSC</text>
+  <rect x="220" y="630" width="722" height="74" rx="12" fill="white" stroke="#7C8798" stroke-width="2"/>
+  <text x="246" y="674" fill="#222222" font-size="20" font-family="Arial, Helvetica, sans-serif">Module 3  Distress, urgency, safety</text>
+  <rect x="220" y="720" width="722" height="74" rx="12" fill="white" stroke="#222222" stroke-width="3"/>
+  <text x="246" y="764" fill="#222222" font-size="20" font-family="Arial, Helvetica, sans-serif" font-weight="700">Module 5  Simulator tiers and exams</text>
+
+  <rect x="994" y="124" width="394" height="390" rx="16" fill="#F8F9FB" stroke="#A0A7B4" stroke-width="2"/>
+  <text x="1022" y="162" fill="#222222" font-size="22" font-family="Arial, Helvetica, sans-serif" font-weight="700">Next Actions</text>
+  <rect x="1022" y="186" width="338" height="82" rx="12" fill="white" stroke="#7C8798" stroke-width="2"/>
+  <text x="1048" y="235" fill="#222222" font-size="18" font-family="Arial, Helvetica, sans-serif">Retry Channel Selection Drill</text>
+  <rect x="1022" y="284" width="338" height="82" rx="12" fill="white" stroke="#7C8798" stroke-width="2"/>
+  <text x="1048" y="333" fill="#222222" font-size="18" font-family="Arial, Helvetica, sans-serif">Practice MAYDAY Builder</text>
+  <rect x="1022" y="382" width="338" height="82" rx="12" fill="white" stroke="#7C8798" stroke-width="2"/>
+  <text x="1048" y="431" fill="#222222" font-size="18" font-family="Arial, Helvetica, sans-serif">Start Tier 2 Scenario</text>
+
+  <rect x="994" y="538" width="394" height="366" rx="16" fill="#F8F9FB" stroke="#A0A7B4" stroke-width="2"/>
+  <text x="1022" y="576" fill="#222222" font-size="22" font-family="Arial, Helvetica, sans-serif" font-weight="700">Reference</text>
+  <rect x="1022" y="602" width="338" height="64" rx="12" fill="white" stroke="#7C8798" stroke-width="2"/>
+  <text x="1048" y="641" fill="#222222" font-size="18" font-family="Arial, Helvetica, sans-serif">Channel lookup</text>
+  <rect x="1022" y="682" width="338" height="64" rx="12" fill="white" stroke="#7C8798" stroke-width="2"/>
+  <text x="1048" y="721" fill="#222222" font-size="18" font-family="Arial, Helvetica, sans-serif">MAYDAY template</text>
+  <rect x="1022" y="762" width="338" height="64" rx="12" fill="white" stroke="#7C8798" stroke-width="2"/>
+  <text x="1048" y="801" fill="#222222" font-size="18" font-family="Arial, Helvetica, sans-serif">DSC quick guide</text>
+</svg>

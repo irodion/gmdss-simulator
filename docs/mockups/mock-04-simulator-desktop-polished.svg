@@ -1,0 +1,180 @@
+<svg width="1600" height="1000" viewBox="0 0 1600 1000" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="120" y1="40" x2="1460" y2="960" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#07131F"/>
+      <stop offset="1" stop-color="#12314B"/>
+    </linearGradient>
+    <linearGradient id="shell" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#0D1B2B"/>
+      <stop offset="1" stop-color="#13273D"/>
+    </linearGradient>
+    <linearGradient id="card" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#122236"/>
+      <stop offset="1" stop-color="#182E47"/>
+    </linearGradient>
+    <linearGradient id="radio" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#2E343C"/>
+      <stop offset="1" stop-color="#20252D"/>
+    </linearGradient>
+    <linearGradient id="lcd" x1="0" y1="0" x2="0" y2="1">
+      <stop stop-color="#D5FADC"/>
+      <stop offset="1" stop-color="#7ED39E"/>
+    </linearGradient>
+    <linearGradient id="orange" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#FF9152"/>
+      <stop offset="1" stop-color="#FF612F"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="22" stdDeviation="26" flood-color="#02101A" flood-opacity="0.42"/>
+    </filter>
+    <filter id="soft" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="10" stdDeviation="16" flood-color="#02101A" flood-opacity="0.28"/>
+    </filter>
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M40 0H0V40" stroke="#244460" stroke-opacity="0.18"/>
+    </pattern>
+  </defs>
+
+  <rect width="1600" height="1000" fill="url(#bg)"/>
+  <rect width="1600" height="1000" fill="url(#grid)"/>
+  <circle cx="1260" cy="170" r="210" fill="#24507A" fill-opacity="0.16"/>
+  <circle cx="1510" cy="760" r="280" fill="#143B61" fill-opacity="0.15"/>
+  <circle cx="160" cy="880" r="240" fill="#1A4268" fill-opacity="0.10"/>
+
+  <rect x="28" y="28" width="1544" height="944" rx="30" fill="#0A1624" stroke="#26425B" stroke-width="1.5"/>
+
+  <rect x="28" y="28" width="1544" height="84" rx="30" fill="#09131F"/>
+  <line x1="28" y1="112" x2="1572" y2="112" stroke="#233D56"/>
+  <text x="64" y="76" fill="#F4F8FB" font-size="30" font-family="Arial, Helvetica, sans-serif" font-weight="700">GMDSS Simulator</text>
+  <text x="312" y="76" fill="#8CA6BD" font-size="16" font-family="Arial, Helvetica, sans-serif">Live training mode / ROC practice</text>
+
+  <rect x="1172" y="48" width="114" height="40" rx="20" fill="#14314A" stroke="#315A7B"/>
+  <circle cx="1200" cy="68" r="6" fill="#6DE18D"/>
+  <text x="1215" y="74" fill="#E5F2FB" font-size="15" font-family="Arial, Helvetica, sans-serif">Online</text>
+
+  <rect x="1302" y="48" width="112" height="40" rx="20" fill="#102132" stroke="#324A62"/>
+  <text x="1332" y="74" fill="#D3E0EA" font-size="15" font-family="Arial, Helvetica, sans-serif">Ch 16</text>
+
+  <rect x="1428" y="48" width="112" height="40" rx="20" fill="#102132" stroke="#324A62"/>
+  <text x="1465" y="74" fill="#D3E0EA" font-size="15" font-family="Arial, Helvetica, sans-serif">Hebrew UI</text>
+
+  <rect x="48" y="132" width="108" height="820" rx="24" fill="#0D1B2B" stroke="#223D58"/>
+  <rect x="66" y="154" width="72" height="72" rx="18" fill="url(#orange)"/>
+  <text x="90" y="200" fill="white" font-size="28" font-family="Arial, Helvetica, sans-serif" font-weight="700">G</text>
+
+  <rect x="62" y="258" width="80" height="78" rx="18" fill="#12253A" stroke="#294562"/>
+  <text x="84" y="301" fill="#EFF6FB" font-size="16" font-family="Arial, Helvetica, sans-serif" font-weight="700">Learn</text>
+  <text x="85" y="321" fill="#8EA9BF" font-size="11" font-family="Arial, Helvetica, sans-serif">12/18</text>
+
+  <rect x="62" y="350" width="80" height="78" rx="18" fill="#12253A" stroke="#294562"/>
+  <text x="89" y="393" fill="#EFF6FB" font-size="16" font-family="Arial, Helvetica, sans-serif" font-weight="700">Drill</text>
+  <text x="86" y="413" fill="#8EA9BF" font-size="11" font-family="Arial, Helvetica, sans-serif">08/10</text>
+
+  <rect x="62" y="442" width="80" height="92" rx="18" fill="url(#orange)" filter="url(#soft)"/>
+  <text x="92" y="489" fill="#FFFFFF" font-size="17" font-family="Arial, Helvetica, sans-serif" font-weight="700">Sim</text>
+  <text x="82" y="511" fill="#FFE8DC" font-size="11" font-family="Arial, Helvetica, sans-serif">live mode</text>
+
+  <rect x="62" y="548" width="80" height="78" rx="18" fill="#12253A" stroke="#294562"/>
+  <text x="94" y="591" fill="#EFF6FB" font-size="16" font-family="Arial, Helvetica, sans-serif" font-weight="700">Ref</text>
+  <text x="81" y="611" fill="#8EA9BF" font-size="11" font-family="Arial, Helvetica, sans-serif">SMCP</text>
+
+  <rect x="62" y="860" width="80" height="74" rx="18" fill="#12253A" stroke="#294562"/>
+  <text x="90" y="904" fill="#EFF6FB" font-size="16" font-family="Arial, Helvetica, sans-serif" font-weight="700">Me</text>
+
+  <rect x="182" y="132" width="896" height="820" rx="30" fill="url(#shell)" stroke="#26425D" filter="url(#shadow)"/>
+  <text x="224" y="180" fill="#F2F7FB" font-size="18" font-family="Arial, Helvetica, sans-serif" font-weight="700">Simulator Console</text>
+  <text x="876" y="180" fill="#8EA8BF" font-size="14" font-family="Arial, Helvetica, sans-serif">Tier 2 / Distress workflow / Target under 90 seconds</text>
+
+  <rect x="224" y="206" width="812" height="526" rx="32" fill="url(#radio)" stroke="#555E68" stroke-width="2"/>
+  <rect x="256" y="238" width="748" height="162" rx="24" fill="#1B222A" stroke="#5C6772"/>
+
+  <rect x="442" y="264" width="376" height="110" rx="18" fill="url(#lcd)" stroke="#D7F2DE"/>
+  <text x="482" y="305" fill="#114823" font-size="37" font-family="Courier New, monospace" font-weight="700">CH 16    156.800</text>
+  <text x="482" y="335" fill="#1A6134" font-size="18" font-family="Courier New, monospace">DUAL WATCH: OFF</text>
+  <text x="482" y="357" fill="#1A6134" font-size="18" font-family="Courier New, monospace">PWR 25W   SQL 04   GPS LOCK</text>
+
+  <circle cx="338" cy="320" r="48" fill="#171D24" stroke="#7D8790"/>
+  <circle cx="338" cy="320" r="30" fill="#10161C" stroke="#B0BBC4"/>
+  <line x1="338" y1="320" x2="320" y2="292" stroke="#EAF0F4" stroke-width="4" stroke-linecap="round"/>
+  <text x="311" y="388" fill="#CDD9E3" font-size="13" font-family="Arial, Helvetica, sans-serif" letter-spacing="1.8">VOL</text>
+
+  <circle cx="922" cy="320" r="48" fill="#171D24" stroke="#7D8790"/>
+  <circle cx="922" cy="320" r="30" fill="#10161C" stroke="#B0BBC4"/>
+  <line x1="922" y1="320" x2="944" y2="290" stroke="#EAF0F4" stroke-width="4" stroke-linecap="round"/>
+  <text x="895" y="388" fill="#CDD9E3" font-size="13" font-family="Arial, Helvetica, sans-serif" letter-spacing="1.8">SQL</text>
+
+  <rect x="286" y="446" width="144" height="62" rx="20" fill="#142434" stroke="#465D76"/>
+  <text x="330" y="485" fill="#EEF5FA" font-size="21" font-family="Arial, Helvetica, sans-serif" font-weight="700">16 / 9</text>
+
+  <rect x="448" y="446" width="144" height="62" rx="20" fill="#142434" stroke="#465D76"/>
+  <text x="490" y="485" fill="#EEF5FA" font-size="21" font-family="Arial, Helvetica, sans-serif" font-weight="700">DUAL</text>
+
+  <rect x="610" y="446" width="144" height="62" rx="20" fill="#142434" stroke="#465D76"/>
+  <text x="666" y="485" fill="#EEF5FA" font-size="21" font-family="Arial, Helvetica, sans-serif" font-weight="700">H/L</text>
+
+  <rect x="772" y="446" width="116" height="62" rx="20" fill="#142434" stroke="#465D76"/>
+  <text x="808" y="485" fill="#EEF5FA" font-size="21" font-family="Arial, Helvetica, sans-serif" font-weight="700">CH +</text>
+
+  <rect x="900" y="446" width="104" height="62" rx="20" fill="#142434" stroke="#465D76"/>
+  <text x="933" y="485" fill="#EEF5FA" font-size="21" font-family="Arial, Helvetica, sans-serif" font-weight="700">CH -</text>
+
+  <rect x="286" y="538" width="432" height="142" rx="24" fill="#111D2B" stroke="#334B66"/>
+  <text x="318" y="576" fill="#D7E5F1" font-size="15" font-family="Arial, Helvetica, sans-serif" font-weight="700" letter-spacing="1.1">DSC CONTROLS</text>
+  <rect x="318" y="594" width="178" height="46" rx="23" fill="#7C1920" stroke="#FFA5AB"/>
+  <text x="346" y="623" fill="#FFFFFF" font-size="18" font-family="Arial, Helvetica, sans-serif" font-weight="700">DISTRESS HOLD 3s</text>
+  <rect x="514" y="594" width="86" height="46" rx="14" fill="#182A3D" stroke="#47607A"/>
+  <rect x="614" y="594" width="86" height="46" rx="14" fill="#182A3D" stroke="#47607A"/>
+  <text x="540" y="623" fill="#E7F0F7" font-size="16" font-family="Arial, Helvetica, sans-serif">CALL</text>
+  <text x="640" y="623" fill="#E7F0F7" font-size="16" font-family="Arial, Helvetica, sans-serif">MENU</text>
+  <text x="318" y="658" fill="#8FAABF" font-size="13" font-family="Courier New, monospace">MMSI 211239680     UTC 14:35     AUTO-SWITCH READY</text>
+
+  <circle cx="860" cy="610" r="90" fill="url(#orange)" filter="url(#shadow)"/>
+  <circle cx="860" cy="610" r="64" fill="#FF6F39"/>
+  <circle cx="860" cy="610" r="14" fill="#FFFFFF" fill-opacity="0.3"/>
+  <text x="832" y="602" fill="#FFFFFF" font-size="22" font-family="Arial, Helvetica, sans-serif" font-weight="700">PTT</text>
+  <text x="805" y="628" fill="#FFE8DD" font-size="15" font-family="Arial, Helvetica, sans-serif">PRESS AND HOLD</text>
+
+  <rect x="224" y="760" width="812" height="154" rx="24" fill="#0F1B29" stroke="#264560"/>
+  <text x="258" y="804" fill="#F2F7FB" font-size="18" font-family="Arial, Helvetica, sans-serif" font-weight="700">Live Feedback</text>
+  <rect x="258" y="826" width="142" height="36" rx="18" fill="#17324A" stroke="#355A79"/>
+  <text x="282" y="849" fill="#D9E9F5" font-size="14" font-family="Arial, Helvetica, sans-serif">Required fields</text>
+  <rect x="412" y="826" width="118" height="36" rx="18" fill="#17324A" stroke="#355A79"/>
+  <text x="447" y="849" fill="#D9E9F5" font-size="14" font-family="Arial, Helvetica, sans-serif">Sequence</text>
+  <rect x="542" y="826" width="104" height="36" rx="18" fill="#17324A" stroke="#355A79"/>
+  <text x="571" y="849" fill="#D9E9F5" font-size="14" font-family="Arial, Helvetica, sans-serif">Channel</text>
+  <rect x="658" y="826" width="104" height="36" rx="18" fill="#17324A" stroke="#355A79"/>
+  <text x="691" y="849" fill="#D9E9F5" font-size="14" font-family="Arial, Helvetica, sans-serif">Clarity</text>
+  <text x="258" y="892" fill="#B8CADA" font-size="20" font-family="Arial, Helvetica, sans-serif">Prompting tip: after the MAYDAY call, be ready to restate position and persons on board immediately.</text>
+
+  <rect x="1102" y="132" width="450" height="392" rx="28" fill="url(#card)" stroke="#27435F" filter="url(#shadow)"/>
+  <text x="1140" y="182" fill="#F3F8FB" font-size="18" font-family="Arial, Helvetica, sans-serif" font-weight="700">Scenario Briefing</text>
+  <rect x="1140" y="204" width="122" height="32" rx="16" fill="#17324A" stroke="#355A79"/>
+  <text x="1175" y="225" fill="#DDECF8" font-size="13" font-family="Arial, Helvetica, sans-serif">DISTRESS</text>
+  <text x="1140" y="276" fill="#F9FBFD" font-size="34" font-family="Arial, Helvetica, sans-serif" font-weight="700">Fire on Board</text>
+  <text x="1140" y="316" fill="#AFC5D7" font-size="18" font-family="Arial, Helvetica, sans-serif">M/V BLUE DUCK / Callsign 5BCD2</text>
+  <text x="1140" y="348" fill="#E5EEF5" font-size="17" font-family="Arial, Helvetica, sans-serif">Position  36 08 N / 005 21 W</text>
+  <text x="1140" y="378" fill="#E5EEF5" font-size="17" font-family="Arial, Helvetica, sans-serif">Persons on board  12</text>
+  <text x="1140" y="424" fill="#9EB6C9" font-size="15" font-family="Arial, Helvetica, sans-serif">Task</text>
+  <text x="1140" y="456" fill="#F1F7FB" font-size="20" font-family="Arial, Helvetica, sans-serif">Send a DSC distress alert, then deliver a complete voice MAYDAY on Channel 16.</text>
+  <rect x="1140" y="476" width="176" height="42" rx="21" fill="#17324A" stroke="#355A79"/>
+  <text x="1182" y="503" fill="#E7F1F8" font-size="15" font-family="Arial, Helvetica, sans-serif">SCRIPT REFERENCE</text>
+
+  <rect x="1102" y="546" width="450" height="406" rx="28" fill="url(#card)" stroke="#27435F" filter="url(#shadow)"/>
+  <text x="1140" y="596" fill="#F3F8FB" font-size="18" font-family="Arial, Helvetica, sans-serif" font-weight="700">Transcript and Scoring</text>
+
+  <rect x="1140" y="620" width="372" height="80" rx="18" fill="#14293F" stroke="#335674"/>
+  <text x="1164" y="648" fill="#8EFFB0" font-size="13" font-family="Courier New, monospace">YOU</text>
+  <text x="1164" y="674" fill="#ECF5FB" font-size="16" font-family="Arial, Helvetica, sans-serif">MAYDAY MAYDAY MAYDAY, THIS IS BLUE DUCK...</text>
+
+  <rect x="1166" y="716" width="346" height="80" rx="18" fill="#2A211A" stroke="#7E5837"/>
+  <text x="1190" y="744" fill="#FFC28D" font-size="13" font-family="Courier New, monospace">MRCC</text>
+  <text x="1190" y="770" fill="#FFF3E8" font-size="16" font-family="Arial, Helvetica, sans-serif">RECEIVED MAYDAY. CONFIRM PERSONS ON BOARD. OVER.</text>
+
+  <rect x="1140" y="824" width="162" height="94" rx="20" fill="#142B40" stroke="#315776"/>
+  <text x="1170" y="860" fill="#97E3AE" font-size="14" font-family="Arial, Helvetica, sans-serif">OVERALL SCORE</text>
+  <text x="1186" y="900" fill="#FFFFFF" font-size="40" font-family="Arial, Helvetica, sans-serif" font-weight="700">82%</text>
+
+  <rect x="1320" y="824" width="192" height="94" rx="20" fill="#142B40" stroke="#315776"/>
+  <text x="1352" y="860" fill="#E6F0F8" font-size="15" font-family="Arial, Helvetica, sans-serif">Missing field</text>
+  <text x="1350" y="900" fill="#FFFFFF" font-size="28" font-family="Arial, Helvetica, sans-serif" font-weight="700">POB count</text>
+</svg>

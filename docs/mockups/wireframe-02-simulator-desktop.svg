@@ -1,0 +1,89 @@
+<svg width="1440" height="960" viewBox="0 0 1440 960" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1440" height="960" fill="#F4F5F7"/>
+  <rect x="24" y="24" width="1392" height="912" rx="20" fill="white" stroke="#A0A7B4" stroke-width="2"/>
+
+  <rect x="24" y="24" width="1392" height="72" rx="20" fill="#ECEFF3" stroke="#A0A7B4" stroke-width="2"/>
+  <text x="52" y="68" fill="#222222" font-size="28" font-family="Arial, Helvetica, sans-serif" font-weight="700">Simulator</text>
+  <rect x="1118" y="44" width="120" height="32" rx="16" fill="white" stroke="#7C8798" stroke-width="2"/>
+  <text x="1152" y="65" fill="#222222" font-size="16" font-family="Arial, Helvetica, sans-serif">Channel 16</text>
+  <rect x="1254" y="44" width="122" height="32" rx="16" fill="white" stroke="#7C8798" stroke-width="2"/>
+  <text x="1297" y="65" fill="#222222" font-size="16" font-family="Arial, Helvetica, sans-serif">Online</text>
+
+  <rect x="48" y="124" width="112" height="780" rx="16" fill="#F8F9FB" stroke="#A0A7B4" stroke-width="2"/>
+  <rect x="62" y="148" width="84" height="74" rx="12" fill="white" stroke="#7C8798" stroke-width="2"/>
+  <text x="80" y="191" fill="#222222" font-size="18" font-family="Arial, Helvetica, sans-serif">Brief</text>
+  <rect x="62" y="238" width="84" height="74" rx="12" fill="white" stroke="#7C8798" stroke-width="2"/>
+  <text x="85" y="281" fill="#222222" font-size="18" font-family="Arial, Helvetica, sans-serif">Panel</text>
+  <rect x="62" y="328" width="84" height="74" rx="12" fill="white" stroke="#7C8798" stroke-width="2"/>
+  <text x="75" y="371" fill="#222222" font-size="18" font-family="Arial, Helvetica, sans-serif">Script</text>
+  <rect x="62" y="418" width="84" height="74" rx="12" fill="white" stroke="#222222" stroke-width="3"/>
+  <text x="67" y="461" fill="#222222" font-size="18" font-family="Arial, Helvetica, sans-serif" font-weight="700">Review</text>
+
+  <rect x="186" y="124" width="796" height="780" rx="16" fill="#F8F9FB" stroke="#A0A7B4" stroke-width="2"/>
+  <text x="220" y="164" fill="#222222" font-size="24" font-family="Arial, Helvetica, sans-serif" font-weight="700">Radio Console</text>
+
+  <rect x="220" y="194" width="728" height="488" rx="24" fill="white" stroke="#7C8798" stroke-width="2"/>
+  <rect x="254" y="226" width="660" height="140" rx="16" fill="#F8F9FB" stroke="#7C8798" stroke-width="2"/>
+  <rect x="438" y="248" width="292" height="96" rx="12" fill="#ECEFF3" stroke="#7C8798" stroke-width="2"/>
+  <text x="488" y="295" fill="#222222" font-size="30" font-family="Courier New, monospace">CH 16</text>
+  <text x="470" y="325" fill="#222222" font-size="18" font-family="Courier New, monospace">156.800  SQL 04</text>
+
+  <circle cx="326" cy="296" r="42" fill="#F8F9FB" stroke="#7C8798" stroke-width="2"/>
+  <text x="305" y="302" fill="#222222" font-size="18" font-family="Arial, Helvetica, sans-serif">VOL</text>
+  <circle cx="844" cy="296" r="42" fill="#F8F9FB" stroke="#7C8798" stroke-width="2"/>
+  <text x="822" y="302" fill="#222222" font-size="18" font-family="Arial, Helvetica, sans-serif">SQL</text>
+
+  <rect x="274" y="408" width="124" height="58" rx="12" fill="#F8F9FB" stroke="#7C8798" stroke-width="2"/>
+  <text x="304" y="444" fill="#222222" font-size="20" font-family="Arial, Helvetica, sans-serif">16 / 9</text>
+  <rect x="416" y="408" width="124" height="58" rx="12" fill="#F8F9FB" stroke="#7C8798" stroke-width="2"/>
+  <text x="450" y="444" fill="#222222" font-size="20" font-family="Arial, Helvetica, sans-serif">DUAL</text>
+  <rect x="558" y="408" width="124" height="58" rx="12" fill="#F8F9FB" stroke="#7C8798" stroke-width="2"/>
+  <text x="608" y="444" fill="#222222" font-size="20" font-family="Arial, Helvetica, sans-serif">H/L</text>
+  <rect x="700" y="408" width="104" height="58" rx="12" fill="#F8F9FB" stroke="#7C8798" stroke-width="2"/>
+  <text x="732" y="444" fill="#222222" font-size="20" font-family="Arial, Helvetica, sans-serif">CH+</text>
+  <rect x="820" y="408" width="94" height="58" rx="12" fill="#F8F9FB" stroke="#7C8798" stroke-width="2"/>
+  <text x="849" y="444" fill="#222222" font-size="20" font-family="Arial, Helvetica, sans-serif">CH-</text>
+
+  <rect x="274" y="494" width="404" height="126" rx="16" fill="#F8F9FB" stroke="#7C8798" stroke-width="2"/>
+  <text x="304" y="530" fill="#222222" font-size="18" font-family="Arial, Helvetica, sans-serif" font-weight="700">DSC Controls</text>
+  <rect x="304" y="548" width="164" height="40" rx="10" fill="white" stroke="#222222" stroke-width="3"/>
+  <text x="336" y="573" fill="#222222" font-size="18" font-family="Arial, Helvetica, sans-serif" font-weight="700">DISTRESS</text>
+  <rect x="486" y="548" width="82" height="40" rx="10" fill="white" stroke="#7C8798" stroke-width="2"/>
+  <text x="510" y="573" fill="#222222" font-size="16" font-family="Arial, Helvetica, sans-serif">CALL</text>
+  <rect x="584" y="548" width="64" height="40" rx="10" fill="white" stroke="#7C8798" stroke-width="2"/>
+  <text x="602" y="573" fill="#222222" font-size="16" font-family="Arial, Helvetica, sans-serif">ENT</text>
+
+  <circle cx="808" cy="556" r="74" fill="#ECEFF3" stroke="#222222" stroke-width="3"/>
+  <text x="786" y="548" fill="#222222" font-size="24" font-family="Arial, Helvetica, sans-serif" font-weight="700">PTT</text>
+  <text x="752" y="576" fill="#444444" font-size="16" font-family="Arial, Helvetica, sans-serif">Hold to talk</text>
+
+  <rect x="220" y="714" width="728" height="152" rx="16" fill="white" stroke="#7C8798" stroke-width="2"/>
+  <text x="250" y="754" fill="#222222" font-size="22" font-family="Arial, Helvetica, sans-serif" font-weight="700">Quick Feedback</text>
+  <rect x="250" y="778" width="130" height="32" rx="16" fill="#ECEFF3" stroke="#7C8798" stroke-width="2"/>
+  <text x="277" y="799" fill="#222222" font-size="15" font-family="Arial, Helvetica, sans-serif">Required fields</text>
+  <rect x="392" y="778" width="110" height="32" rx="16" fill="#ECEFF3" stroke="#7C8798" stroke-width="2"/>
+  <text x="423" y="799" fill="#222222" font-size="15" font-family="Arial, Helvetica, sans-serif">Sequence</text>
+  <rect x="514" y="778" width="96" height="32" rx="16" fill="#ECEFF3" stroke="#7C8798" stroke-width="2"/>
+  <text x="540" y="799" fill="#222222" font-size="15" font-family="Arial, Helvetica, sans-serif">Channel</text>
+  <text x="250" y="842" fill="#222222" font-size="18" font-family="Arial, Helvetica, sans-serif">Missed: persons on board. Retry the full MAYDAY structure.</text>
+
+  <rect x="1008" y="124" width="380" height="328" rx="16" fill="#F8F9FB" stroke="#A0A7B4" stroke-width="2"/>
+  <text x="1038" y="164" fill="#222222" font-size="22" font-family="Arial, Helvetica, sans-serif" font-weight="700">Scenario Brief</text>
+  <rect x="1038" y="188" width="112" height="30" rx="15" fill="white" stroke="#7C8798" stroke-width="2"/>
+  <text x="1065" y="208" fill="#222222" font-size="14" font-family="Arial, Helvetica, sans-serif">Distress</text>
+  <text x="1038" y="252" fill="#222222" font-size="28" font-family="Arial, Helvetica, sans-serif" font-weight="700">Fire on Board</text>
+  <text x="1038" y="292" fill="#222222" font-size="18" font-family="Arial, Helvetica, sans-serif">BLUE DUCK  ·  12 POB</text>
+  <text x="1038" y="326" fill="#222222" font-size="18" font-family="Arial, Helvetica, sans-serif">36°08'N 005°21'W</text>
+  <rect x="1038" y="354" width="320" height="70" rx="12" fill="white" stroke="#7C8798" stroke-width="2"/>
+  <text x="1062" y="396" fill="#222222" font-size="18" font-family="Arial, Helvetica, sans-serif">Send DSC distress, then voice MAYDAY</text>
+
+  <rect x="1008" y="476" width="380" height="428" rx="16" fill="#F8F9FB" stroke="#A0A7B4" stroke-width="2"/>
+  <text x="1038" y="516" fill="#222222" font-size="22" font-family="Arial, Helvetica, sans-serif" font-weight="700">Transcript</text>
+  <rect x="1038" y="540" width="320" height="76" rx="12" fill="white" stroke="#7C8798" stroke-width="2"/>
+  <text x="1064" y="584" fill="#222222" font-size="18" font-family="Arial, Helvetica, sans-serif">YOU: MAYDAY MAYDAY MAYDAY...</text>
+  <rect x="1062" y="632" width="296" height="76" rx="12" fill="white" stroke="#7C8798" stroke-width="2"/>
+  <text x="1088" y="676" fill="#222222" font-size="18" font-family="Arial, Helvetica, sans-serif">MRCC: RECEIVED MAYDAY...</text>
+  <rect x="1038" y="732" width="150" height="90" rx="12" fill="white" stroke="#222222" stroke-width="3"/>
+  <text x="1063" y="772" fill="#222222" font-size="16" font-family="Arial, Helvetica, sans-serif">Score</text>
+  <text x="1074" y="810" fill="#222222" font-size="34" font-family="Arial, Helvetica, sans-serif" font-weight="700">82%</text>
+</svg>
