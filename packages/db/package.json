@@ -22,6 +22,7 @@
   },
   "devDependencies": {
     "@types/node": "catalog:",
+    "@vitest/coverage-v8": "catalog:",
     "drizzle-kit": "^0.31.0",
     "typescript": "catalog:",
     "vite-plus": "catalog:"

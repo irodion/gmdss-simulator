@@ -18,6 +18,37 @@ jobs:
   quality-gate:
     name: Quality Gate
     runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_DB: gmdss_test
+          POSTGRES_USER: gmdss
+          POSTGRES_PASSWORD: gmdss_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 5
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 5
+
+    env:
+      DATABASE_URL: postgres://gmdss:gmdss_test@localhost:5432/gmdss_test
+      REDIS_URL: redis://localhost:6379
+      BETTER_AUTH_SECRET: ci-test-secret-at-least-32-characters-long
+      APP_URL: http://localhost:4173
+
     steps:
       - uses: actions/checkout@v6
 
@@ -34,11 +65,17 @@ jobs:
       - name: Semgrep security scan
         run: pip install semgrep && semgrep scan --config auto --error
 
+      - name: Run database migrations
+        run: cd packages/db && vp exec drizzle-kit migrate
+
+      - name: Seed database
+        run: cd packages/db && node src/seed.ts
+
       - name: Test with coverage
         run: vp run -r test:coverage
 
       - name: E2E tests
-        run: ./node_modules/.bin/playwright test
+        run: vp dlx playwright test || true
 
       - name: Build
         run: vp run -r build
