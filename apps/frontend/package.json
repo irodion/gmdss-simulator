@@ -11,8 +11,14 @@
     "test:coverage": "vp test --coverage"
   },
   "dependencies": {
+    "better-auth": "catalog:",
+    "i18next": "catalog:",
+    "idb": "catalog:",
     "react": "^19.1.0",
-    "react-dom": "^19.1.0"
+    "react-dom": "^19.1.0",
+    "react-i18next": "catalog:",
+    "react-router": "catalog:",
+    "vite-plugin-pwa": "catalog:"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^6.6.3",
@@ -21,6 +27,7 @@
     "@types/react-dom": "^19.1.0",
     "@vitejs/plugin-react": "catalog:",
     "@vitest/coverage-v8": "catalog:",
+    "fake-indexeddb": "catalog:",
     "happy-dom": "catalog:",
     "typescript": "catalog:",
     "vite": "catalog:",

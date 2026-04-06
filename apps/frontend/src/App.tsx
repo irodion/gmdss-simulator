@@ -1,8 +1,11 @@
+import { useEffect } from "react";
+
+import "./i18n/index.ts";
+import { startSyncListener } from "./lib/sync.ts";
+import { AppRouter } from "./router.tsx";
+
 export function App() {
-  return (
-    <main>
-      <h1>GMDSS Simulator</h1>
-      <p>Maritime radio training application</p>
-    </main>
-  );
+  useEffect(() => startSyncListener(), []);
+
+  return <AppRouter />;
 }
