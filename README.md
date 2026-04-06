@@ -2,12 +2,15 @@
 
 Open-source Progressive Web App for maritime radio training (ROC preparation).
 
+## Prerequisites
+
+- [Vite+](https://viteplus.dev) — `curl -fsSL https://vite.plus | bash`
+- [Semgrep](https://semgrep.dev) — `brew install semgrep` or `pip install semgrep`
+- [vet](https://github.com/safedep/vet) — `brew install safedep/tap/vet`
+
 ## Development
 
 ```bash
-# Install Vite+
-curl -fsSL https://vite.plus | bash
-
 # Install dependencies
 vp install
 
