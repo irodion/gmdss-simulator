@@ -1,0 +1,15 @@
+{
+  "modules": "Modules",
+  "lessons": "Lessons",
+  "quiz": "Quiz",
+  "locked": "Locked",
+  "completed": "Completed",
+  "in_progress": "In progress",
+  "startQuiz": "Start quiz",
+  "submitQuiz": "Submit",
+  "passThreshold": "Pass threshold: {{threshold}}%",
+  "score": "Score: {{score}}%",
+  "passed": "Passed!",
+  "failed": "Not passed. Try again.",
+  "lessonsCompleted": "{{completed}}/{{total}} lessons"
+}

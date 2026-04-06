@@ -1,0 +1,15 @@
+{
+  "appName": "GMDSS Simulator",
+  "nav": {
+    "learn": "Learn",
+    "drill": "Drill",
+    "simulator": "Simulator",
+    "reference": "Ref",
+    "profile": "Me"
+  },
+  "offlineBanner": "You are offline. Some features are unavailable.",
+  "loading": "Loading...",
+  "error": "Something went wrong.",
+  "retry": "Retry",
+  "signOut": "Sign out"
+}
