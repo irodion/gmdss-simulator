@@ -66,13 +66,26 @@ jobs:
         run: pip install semgrep && semgrep scan --config auto --error
 
       - name: Run database migrations
-        run: cd packages/db && DATABASE_URL=$DATABASE_URL vp exec drizzle-kit migrate
+        run: cd packages/db && vp exec drizzle-kit migrate
 
       - name: Seed database
-        run: cd packages/db && DATABASE_URL=$DATABASE_URL node src/seed.ts
+        run: cd packages/db && node src/seed.ts
 
       - name: Test with coverage
-        run: DATABASE_URL=$DATABASE_URL REDIS_URL=$REDIS_URL BETTER_AUTH_SECRET=$BETTER_AUTH_SECRET vp run -r test:coverage
+        run: vp test
+        working-directory: packages/db
+
+      - name: Test with coverage (utils)
+        run: vp test
+        working-directory: packages/utils
+
+      - name: Test with coverage (frontend)
+        run: vp test
+        working-directory: apps/frontend
+
+      - name: Test with coverage (api)
+        run: vp test
+        working-directory: apps/api
 
       - name: E2E tests
         run: vp dlx playwright test || true
