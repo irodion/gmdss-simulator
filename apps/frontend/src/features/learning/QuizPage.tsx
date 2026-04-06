@@ -33,6 +33,8 @@ export function QuizPage() {
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [result, setResult] = useState<QuizResult | null>(null);
   const [loading, setLoading] = useState(true);
+  const [submitError, setSubmitError] = useState("");
+  const [queued, setQueued] = useState(false);
 
   useEffect(() => {
     async function load() {
@@ -51,6 +53,8 @@ export function QuizPage() {
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
     if (!quiz) return;
+    setSubmitError("");
+    setQueued(false);
 
     const payload = {
       answers: Object.entries(answers).map(([questionId, selected]) => ({
@@ -67,16 +71,13 @@ export function QuizPage() {
       });
       setResult(data);
     } catch (err) {
-      if (err instanceof ApiError) throw err;
+      if (err instanceof ApiError) {
+        setSubmitError(err.message);
+        return;
+      }
       // Network failure — queue for offline replay
       await addPendingAction("POST", path, payload);
-      setResult({
-        score: 0,
-        passed: false,
-        threshold: quiz.passThreshold,
-        results: [],
-        unlocked: [],
-      });
+      setQueued(true);
     }
   }
 
@@ -102,6 +103,16 @@ export function QuizPage() {
       <Link to={`/learn/${moduleId}`}>&larr; Back</Link>
       <h2>{quiz.title}</h2>
       <p>{t("passThreshold", { threshold: quiz.passThreshold })}</p>
+      {submitError && (
+        <p role="alert" style={{ color: "#e54" }}>
+          {submitError}
+        </p>
+      )}
+      {queued && (
+        <p role="status" style={{ color: "#f0c040" }}>
+          Your submission has been queued and will be sent when you are back online.
+        </p>
+      )}
       <form onSubmit={(e) => void handleSubmit(e)}>
         {quiz.questions.map((q, i) => (
           <fieldset

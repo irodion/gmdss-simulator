@@ -162,7 +162,7 @@ export default async function progressRoutes(fastify: FastifyInstance) {
     });
 
     const correctCount = results.filter((r) => r.correct).length;
-    const score = Math.round((correctCount / questions.length) * 100);
+    const score = questions.length > 0 ? Math.round((correctCount / questions.length) * 100) : 0;
     const passed = score >= quiz.passThreshold;
 
     await fastify.db.insert(quizAttempts).values({

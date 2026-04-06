@@ -4,7 +4,8 @@ const envSchema = z.object({
   DATABASE_URL: z.string().url(),
   REDIS_URL: z.string().url(),
   BETTER_AUTH_SECRET: z.string().min(16),
-  APP_URL: z.string().url().default("http://localhost:5173"),
+  APP_URL: z.string().url(),
+  API_URL: z.string().url().default("http://localhost:3001"),
   PORT: z.coerce.number().default(3001),
   NODE_ENV: z.enum(["development", "test", "production"]).default("development"),
 });

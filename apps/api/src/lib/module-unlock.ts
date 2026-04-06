@@ -20,7 +20,7 @@ export async function isModuleUnlocked(
     .where(eq(quizzes.moduleId, prerequisiteModuleId))
     .limit(1);
 
-  if (prereqQuiz.length === 0) return true;
+  if (prereqQuiz.length === 0) return false;
 
   const passed = await db
     .select({ id: quizAttempts.id })
@@ -63,7 +63,7 @@ export async function getUnlockedModuleIds(
       continue;
     }
     const prereqQuizId = quizByModule.get(mod.prerequisiteModuleId);
-    if (!prereqQuizId || passedSet.has(prereqQuizId)) {
+    if (prereqQuizId && passedSet.has(prereqQuizId)) {
       unlocked.add(mod.id);
     }
   }

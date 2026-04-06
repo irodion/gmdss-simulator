@@ -16,6 +16,7 @@ export function LessonListPage() {
   const { t } = useTranslation("learning");
   const [lessons, setLessons] = useState<Lesson[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     async function load() {
@@ -23,7 +24,7 @@ export function LessonListPage() {
         const data = await apiFetch<Lesson[]>(`/api/content/modules/${moduleId}/lessons`);
         setLessons(data);
       } catch {
-        // TODO: load from cache
+        setError("Failed to load lessons");
       } finally {
         setLoading(false);
       }
@@ -32,6 +33,17 @@ export function LessonListPage() {
   }, [moduleId]);
 
   if (loading) return <div>{t("common:loading")}</div>;
+
+  if (error) {
+    return (
+      <div style={{ padding: 16 }}>
+        <p role="alert" style={{ color: "#e54" }}>
+          {error}
+        </p>
+        <Link to="/learn">&larr; {t("modules")}</Link>
+      </div>
+    );
+  }
 
   return (
     <div style={{ padding: 16 }}>

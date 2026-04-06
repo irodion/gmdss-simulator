@@ -24,7 +24,8 @@ CREATE TABLE "quizzes" (
 	"title" varchar(255) NOT NULL,
 	"pass_threshold" integer DEFAULT 70 NOT NULL,
 	"questions" jsonb NOT NULL,
-	"created_at" timestamp with time zone DEFAULT now() NOT NULL
+	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
+	CONSTRAINT "quizzes_module_id_unique" UNIQUE("module_id")
 );
 --> statement-breakpoint
 CREATE TABLE "account" (

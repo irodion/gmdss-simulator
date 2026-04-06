@@ -16,11 +16,15 @@ export function RegisterPage() {
     e.preventDefault();
     setError("");
 
-    const result = await authClient.signUp.email({ name, email, password });
-    if (result.error) {
-      setError(result.error.message ?? t("emailTaken"));
-    } else {
-      void navigate("/learn");
+    try {
+      const result = await authClient.signUp.email({ name, email, password });
+      if (result.error) {
+        setError(result.error.message ?? t("emailTaken"));
+      } else {
+        void navigate("/learn");
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "An error occurred");
     }
   }
 

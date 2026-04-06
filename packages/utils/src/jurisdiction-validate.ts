@@ -13,6 +13,7 @@ export function validateJurisdiction(profile: JurisdictionProfile): string[] {
 
   if (!profile.channel_plan || Object.keys(profile.channel_plan).length === 0) {
     errors.push("channel_plan must have at least one channel");
+    return errors;
   }
 
   if (profile.calling_channel == null) {

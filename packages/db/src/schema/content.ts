@@ -30,6 +30,7 @@ export const quizzes = pgTable("quizzes", {
   id: varchar({ length: 50 }).primaryKey(),
   moduleId: varchar("module_id", { length: 50 })
     .notNull()
+    .unique()
     .references(() => modules.id),
   title: varchar({ length: 255 }).notNull(),
   passThreshold: integer("pass_threshold").notNull().default(70),

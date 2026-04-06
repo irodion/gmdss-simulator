@@ -18,7 +18,7 @@ export default defineConfig({
         "DATABASE_URL=postgres://gmdss:gmdss_dev@localhost:5432/gmdss_dev REDIS_URL=redis://localhost:6379 BETTER_AUTH_SECRET=e2e-test-secret-at-least-32-characters APP_URL=http://localhost:4173 node apps/api/src/index.ts",
       url: "http://localhost:3001/api/health",
       reuseExistingServer: !process.env["CI"],
-      timeout: 10000,
+      timeout: 30000,
     },
     {
       command: "VITE_API_URL=http://localhost:3001 vp run frontend#dev -- --port 4173",

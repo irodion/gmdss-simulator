@@ -1,5 +1,5 @@
 {
-  "id": "6bffbd1c-e339-4f68-9d3e-6d55dabc7cc9",
+  "id": "2c4e4eb7-5889-480e-b095-765dc3446443",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -192,7 +192,13 @@
         }
       },
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
+      "uniqueConstraints": {
+        "quizzes_module_id_unique": {
+          "name": "quizzes_module_id_unique",
+          "nullsNotDistinct": false,
+          "columns": ["module_id"]
+        }
+      },
       "policies": {},
       "checkConstraints": {},
       "isRLSEnabled": false

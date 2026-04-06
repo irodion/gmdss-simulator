@@ -18,12 +18,33 @@ interface ProgressData {
 export function ProgressPage() {
   const { t } = useTranslation("progress");
   const [progress, setProgress] = useState<ProgressData | null>(null);
+  const [error, setError] = useState("");
 
-  useEffect(() => {
+  function loadProgress() {
+    setError("");
     void apiFetch<ProgressData>("/api/progress")
       .then(setProgress)
-      .catch(() => {});
+      .catch(() => {
+        setError("Failed to load progress");
+      });
+  }
+
+  useEffect(() => {
+    loadProgress();
   }, []);
+
+  if (error) {
+    return (
+      <div style={{ padding: 16 }}>
+        <p role="alert" style={{ color: "#e54" }}>
+          {error}
+        </p>
+        <button type="button" onClick={loadProgress}>
+          Retry
+        </button>
+      </div>
+    );
+  }
 
   if (!progress) return <div>{t("common:loading")}</div>;
 
