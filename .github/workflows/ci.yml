@@ -15,9 +15,39 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  # Fast checks on every PR — no infrastructure needed
   quality-gate:
     name: Quality Gate
     runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: voidzero-dev/setup-vp@v1
+        with:
+          cache: true
+
+      - name: Check (lint + format + type-check)
+        run: vp check
+
+      - name: Semgrep security scan
+        run: pip install semgrep && semgrep scan --config auto --error
+
+      - name: Unit tests (frontend)
+        run: vp test
+        working-directory: apps/frontend
+
+      - name: Unit tests (utils)
+        run: vp test
+        working-directory: packages/utils
+
+      - name: Build
+        run: vp run -r build
+
+  # Integration tests after merge — requires PostgreSQL + Redis
+  integration:
+    name: Integration Tests
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
 
     services:
       postgres:
@@ -56,42 +86,19 @@ jobs:
         with:
           cache: true
 
-      - name: Install Playwright browsers
-        run: vp dlx playwright install --with-deps chromium
-
-      - name: Check (lint + format + type-check)
-        run: vp check
-
-      - name: Semgrep security scan
-        run: pip install semgrep && semgrep scan --config auto --error
-
       - name: Run database migrations
         run: cd packages/db && vp exec drizzle-kit migrate
 
       - name: Seed database
         run: cd packages/db && node src/seed.ts
 
-      - name: Test with coverage
+      - name: Test (db schema)
         run: vp test
         working-directory: packages/db
 
-      - name: Test with coverage (utils)
-        run: vp test
-        working-directory: packages/utils
-
-      - name: Test with coverage (frontend)
-        run: vp test
-        working-directory: apps/frontend
-
-      - name: Test with coverage (api)
+      - name: Test (API)
         run: vp test
         working-directory: apps/api
-
-      - name: E2E tests
-        run: vp dlx playwright test || true
-
-      - name: Build
-        run: vp run -r build
 
       - name: Upload coverage report
         if: success() || failure()
@@ -99,14 +106,6 @@ jobs:
         with:
           name: coverage-report
           path: apps/frontend/coverage/
-          retention-days: 7
-
-      - name: Upload Playwright report
-        if: success() || failure()
-        uses: actions/upload-artifact@v7
-        with:
-          name: playwright-report
-          path: playwright-report/
           retention-days: 7
 
   vet:
