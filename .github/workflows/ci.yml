@@ -78,3 +78,7 @@ jobs:
       - name: Scan dependencies
         if: steps.deps-changed.outputs.changed == 'true'
         uses: safedep/vet-action@v1
+        with:
+          upload-sarif: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
