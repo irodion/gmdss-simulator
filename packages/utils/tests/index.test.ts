@@ -1,6 +1,6 @@
 import { expect, test } from "vite-plus/test";
-import { fn } from "../src/index.ts";
+import { greet } from "../src/index.ts";
 
-test("fn", () => {
-  expect(fn()).toBe("Hello, tsdown!");
+test("greet returns utils package greeting", () => {
+  expect(greet()).toBe("Hello from @gmdss-simulator/utils!");
 });

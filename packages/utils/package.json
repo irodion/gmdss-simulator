@@ -1,16 +1,16 @@
 {
-  "name": "utils",
+  "name": "@gmdss-simulator/utils",
   "version": "0.0.0",
-  "description": "A starter for creating a TypeScript package.",
-  "homepage": "https://github.com/author/library#readme",
+  "description": "Shared utilities for the GMDSS Simulator monorepo.",
+  "homepage": "https://github.com/irodion/gmdss-simulator#readme",
   "bugs": {
-    "url": "https://github.com/author/library/issues"
+    "url": "https://github.com/irodion/gmdss-simulator/issues"
   },
-  "license": "MIT",
-  "author": "Author Name <author.name@mail.com>",
+  "license": "AGPL-3.0-only",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/author/library.git"
+    "url": "git+https://github.com/irodion/gmdss-simulator.git",
+    "directory": "packages/utils"
   },
   "files": [
     "dist"
@@ -31,10 +31,10 @@
     "prepublishOnly": "vp run build"
   },
   "devDependencies": {
-    "@types/node": "^25.5.0",
+    "@types/node": "catalog:",
     "@typescript/native-preview": "7.0.0-dev.20260328.1",
     "bumpp": "^11.0.1",
-    "typescript": "^6.0.2",
-    "vite-plus": "^0.1.14"
+    "typescript": "catalog:",
+    "vite-plus": "catalog:"
   }
 }

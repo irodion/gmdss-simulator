@@ -1,3 +1,3 @@
-export function fn() {
-  return "Hello, tsdown!";
+export function greet() {
+  return "Hello from @gmdss-simulator/utils!";
 }

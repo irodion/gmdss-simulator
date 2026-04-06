@@ -1,23 +1,11 @@
-# vite-plus-starter
+# @gmdss-simulator/utils
 
-A starter for creating a Vite Plus project.
+Shared utilities for the GMDSS Simulator monorepo. Consumed by `apps/frontend` and `apps/api`.
 
 ## Development
 
-- Install dependencies:
-
 ```bash
-vp install
-```
-
-- Run the unit tests:
-
-```bash
-vp test
-```
-
-- Build the library:
-
-```bash
-vp pack
+vp test        # run tests
+vp pack        # build the library
+vp pack --watch  # build in watch mode
 ```

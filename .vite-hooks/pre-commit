@@ -1,3 +1,5 @@
+#!/bin/sh
+
 # Protect main branch — all work happens on feature branches
 branch=$(git rev-parse --abbrev-ref HEAD)
 if [ "$branch" = "main" ]; then

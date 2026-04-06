@@ -11,7 +11,6 @@
     "test:coverage": "vp test --coverage"
   },
   "dependencies": {
-    "@vitejs/plugin-react": "catalog:",
     "react": "^19.1.0",
     "react-dom": "^19.1.0"
   },
@@ -20,6 +19,7 @@
     "@testing-library/react": "^16.3.0",
     "@types/react": "^19.1.0",
     "@types/react-dom": "^19.1.0",
+    "@vitejs/plugin-react": "catalog:",
     "@vitest/coverage-v8": "catalog:",
     "happy-dom": "catalog:",
     "typescript": "catalog:",
