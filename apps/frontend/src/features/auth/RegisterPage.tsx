@@ -24,7 +24,8 @@ export function RegisterPage() {
         void navigate("/learn");
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : "An error occurred");
+      console.error("Registration failed:", err);
+      setError(t("common:error"));
     }
   }
 

@@ -43,6 +43,14 @@ jobs:
       - name: Build
         run: vp run -r build
 
+      - name: Upload coverage report
+        if: success() || failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: coverage-report
+          path: apps/frontend/coverage/
+          retention-days: 7
+
   # Integration tests after merge — requires PostgreSQL + Redis
   integration:
     name: Integration Tests
@@ -99,14 +107,6 @@ jobs:
       - name: Test (API)
         run: vp test
         working-directory: apps/api
-
-      - name: Upload coverage report
-        if: success() || failure()
-        uses: actions/upload-artifact@v7
-        with:
-          name: coverage-report
-          path: apps/frontend/coverage/
-          retention-days: 7
 
   vet:
     name: Dependency Scan

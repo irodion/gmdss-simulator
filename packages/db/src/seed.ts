@@ -641,5 +641,5 @@ async function seed() {
 
 seed().catch((err) => {
   console.error("Seed failed:", err);
-  process.exit(1);
+  process.exitCode = 1;
 });

@@ -19,6 +19,10 @@ export function LessonListPage() {
   const [error, setError] = useState("");
 
   useEffect(() => {
+    setLoading(true);
+    setLessons([]);
+    setError("");
+
     async function load() {
       try {
         const data = await apiFetch<Lesson[]>(`/api/content/modules/${moduleId}/lessons`);
