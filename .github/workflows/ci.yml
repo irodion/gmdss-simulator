@@ -75,10 +75,6 @@ jobs:
             echo "changed=false" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Install vet
-        if: steps.deps-changed.outputs.changed == 'true'
-        run: curl -sSfL https://raw.githubusercontent.com/safedep/vet/main/install.sh | sh -s -- -b /usr/local/bin
-
       - name: Scan dependencies
         if: steps.deps-changed.outputs.changed == 'true'
-        run: vet scan --no-banner
+        uses: safedep/vet-action@v1
