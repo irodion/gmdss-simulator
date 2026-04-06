@@ -25,13 +25,13 @@ Empower maritime radio students to develop confident, correct VHF communication 
 
 ### Core Principles
 
-| # | Principle | Meaning |
-|---|---|---|
-| 1 | **Radio-first** | The simulator is the star feature. Theory exists to prepare students for the simulator, not the other way around. |
-| 2 | **Internationally portable** | Not tied to one country's exam or channel plan. Jurisdiction profiles make the app adaptable to any maritime administration. |
-| 3 | **School-integrated** | Designed as an institutional service with user accounts, progress tracking, and instructor visibility — not a consumer app. |
-| 4 | **Offline-capable, online-enhanced** | Theory, drills, and quizzes work offline. The AI radio simulator requires connectivity. Honest about what needs the network. |
-| 5 | **Open source** | AGPLv3 code. Schools can inspect, modify, and self-host. AI providers are swappable. No vendor lock-in. |
+| #   | Principle                            | Meaning                                                                                                                      |
+| --- | ------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------- |
+| 1   | **Radio-first**                      | The simulator is the star feature. Theory exists to prepare students for the simulator, not the other way around.            |
+| 2   | **Internationally portable**         | Not tied to one country's exam or channel plan. Jurisdiction profiles make the app adaptable to any maritime administration. |
+| 3   | **School-integrated**                | Designed as an institutional service with user accounts, progress tracking, and instructor visibility — not a consumer app.  |
+| 4   | **Offline-capable, online-enhanced** | Theory, drills, and quizzes work offline. The AI radio simulator requires connectivity. Honest about what needs the network. |
+| 5   | **Open source**                      | AGPLv3 code. Schools can inspect, modify, and self-host. AI providers are swappable. No vendor lock-in.                      |
 
 ---
 
@@ -39,23 +39,23 @@ Empower maritime radio students to develop confident, correct VHF communication 
 
 ### Primary: ROC Student
 
-| Attribute | Detail |
-|---|---|
-| **Who** | Student enrolled in a maritime training institution's ROC (Restricted Operator Certificate) course |
-| **Goal** | Pass both the written theory exam and the practical radio assessment |
-| **Background** | Career mariners, recreational boaters, yacht crew — varies widely |
-| **Technical comfort** | Comfortable with smartphones and web apps; not expected to be technical |
-| **Language** | English proficiency varies; maritime English is the working standard, but many students are non-native speakers |
-| **Devices** | Smartphone, tablet, or laptop — often with limited connectivity at sea or in training facilities |
-| **Pain points** | Limited access to hardware radio simulators; memorizes procedures but struggles under real-time pressure; cannot practice at home; anxiety about speaking on the radio for the first time during exams |
+| Attribute             | Detail                                                                                                                                                                                                 |
+| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Who**               | Student enrolled in a maritime training institution's ROC (Restricted Operator Certificate) course                                                                                                     |
+| **Goal**              | Pass both the written theory exam and the practical radio assessment                                                                                                                                   |
+| **Background**        | Career mariners, recreational boaters, yacht crew — varies widely                                                                                                                                      |
+| **Technical comfort** | Comfortable with smartphones and web apps; not expected to be technical                                                                                                                                |
+| **Language**          | English proficiency varies; maritime English is the working standard, but many students are non-native speakers                                                                                        |
+| **Devices**           | Smartphone, tablet, or laptop — often with limited connectivity at sea or in training facilities                                                                                                       |
+| **Pain points**       | Limited access to hardware radio simulators; memorizes procedures but struggles under real-time pressure; cannot practice at home; anxiety about speaking on the radio for the first time during exams |
 
 ### Secondary: Instructor
 
-| Attribute | Detail |
-|---|---|
-| **Who** | Maritime radio training instructor at a school or academy |
-| **Goal** | Monitor student progress, identify weak areas, ensure students are exam-ready |
-| **Needs** | Dashboard showing per-student and class-wide progress; ability to assign specific scenarios; exportable progress reports |
+| Attribute       | Detail                                                                                                                                    |
+| --------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| **Who**         | Maritime radio training instructor at a school or academy                                                                                 |
+| **Goal**        | Monitor student progress, identify weak areas, ensure students are exam-ready                                                             |
+| **Needs**       | Dashboard showing per-student and class-wide progress; ability to assign specific scenarios; exportable progress reports                  |
 | **Pain points** | Cannot easily track student practice outside scheduled lab sessions; difficult to identify which students need extra help before exam day |
 
 ### Usage Contexts
@@ -72,6 +72,7 @@ Empower maritime radio students to develop confident, correct VHF communication 
 ### In Scope (Phase 1)
 
 **Core Learning:**
+
 - ✅ Module 1: VHF Radio Fundamentals (6 lessons + checkpoint quiz)
 - ✅ Module 2: MMSI and Digital Selective Calling (6 lessons + checkpoint quiz)
 - ✅ Module 3: Distress, Urgency, Safety, and Medical Procedures (7 lessons + checkpoint quiz)
@@ -79,12 +80,14 @@ Empower maritime radio students to develop confident, correct VHF communication 
 - ✅ Guided Voice Drills (phonetic alphabet, script reading, channel selection — unlocked after Module 1)
 
 **Interactive Tools:**
+
 - ✅ Channel Explorer with jurisdiction profile filter
 - ✅ MMSI Decoder interactive tool
 - ✅ DSC Builder (distress/urgency/safety/routine)
 - ✅ Script Builder (MAYDAY, PAN PAN, SECURITE, MEDICO)
 
 **Simulator:**
+
 - ✅ VHF radio panel UI (SVG/CSS hybrid faceplate with DOM controls)
 - ✅ Half-duplex AI voice loop (STT → Evaluate → LLM → TTS)
 - ✅ 5 station personas (MRCC, Port Control, Vessel, Coast Station, Fishing Vessel)
@@ -95,6 +98,7 @@ Empower maritime radio students to develop confident, correct VHF communication 
 - ✅ Simplified accessibility mode (standard form controls alternative to skeuomorphic panel)
 
 **Technical:**
+
 - ✅ PWA with offline support for theory/drills/quizzes (Workbox service worker)
 - ✅ 5-layer frontend architecture (radio-domain, session-engine, audio-engine, transport/adapters, ui-shell)
 - ✅ Web Audio API radio effects chain (bandpass, compression, noise, squelch)
@@ -103,6 +107,7 @@ Empower maritime radio students to develop confident, correct VHF communication 
 - ✅ Jurisdiction profiles (international default + customizable)
 
 **Accounts & Infrastructure:**
+
 - ✅ User accounts with email/password + optional TOTP 2FA
 - ✅ Student progress tracking (module completion, quiz scores, simulator attempts)
 - ✅ PostgreSQL database, Redis session management
@@ -129,46 +134,54 @@ Empower maritime radio students to develop confident, correct VHF communication 
 ### Student Stories
 
 **US-1: Learn VHF channel system**
+
 > As a ROC student, I want to explore VHF channels filtered by purpose and jurisdiction, so that I know which channel to use for each type of communication.
 >
-> *Example: Student selects "International" jurisdiction, filters for "Distress/Safety" channels, and sees Ch.16 and Ch.70 with explanations of their specific purposes and restrictions.*
+> _Example: Student selects "International" jurisdiction, filters for "Distress/Safety" channels, and sees Ch.16 and Ch.70 with explanations of their specific purposes and restrictions._
 
 **US-2: Practice phonetic alphabet early**
+
 > As a ROC student, I want to practice spelling callsigns and positions using the phonetic alphabet on the simulated radio, so that I build mic confidence before full scenarios.
 >
-> *Example: After completing Module 1, student opens Guided Voice Drills, sees "Spell: PHQR", presses PTT, says "Papa Hotel Quebec Romeo", and gets immediate feedback on accuracy.*
+> _Example: After completing Module 1, student opens Guided Voice Drills, sees "Spell: PHQR", presses PTT, says "Papa Hotel Quebec Romeo", and gets immediate feedback on accuracy._
 
 **US-3: Build a MAYDAY script**
+
 > As a ROC student, I want to fill in vessel details and generate a complete MAYDAY script, so that I can study and practice the correct message structure before speaking it live.
 >
-> *Example: Student enters vessel name "BLUE DUCK", position "36°08'N 005°21'W", nature "fire", persons "12" — the Script Builder generates the full MAYDAY text with correct prowords and field order.*
+> _Example: Student enters vessel name "BLUE DUCK", position "36°08'N 005°21'W", nature "fire", persons "12" — the Script Builder generates the full MAYDAY text with correct prowords and field order._
 
 **US-4: Practice distress scenario with AI**
+
 > As a ROC student, I want to send a DSC distress alert and follow up with a voice MAYDAY call where a simulated coast guard station responds to me, so that I experience realistic radio pressure before my practical exam.
 >
-> *Example: Student loads "MAYDAY — Fire on Board" scenario, holds DSC Distress for 5 seconds, radio auto-switches to Ch.16, student presses PTT and delivers MAYDAY, AI coast guard acknowledges and asks follow-up questions.*
+> _Example: Student loads "MAYDAY — Fire on Board" scenario, holds DSC Distress for 5 seconds, radio auto-switches to Ch.16, student presses PTT and delivers MAYDAY, AI coast guard acknowledges and asks follow-up questions._
 
 **US-5: Review my performance**
+
 > As a ROC student, I want to see a detailed transcript of my radio exchange with per-field scoring and specific feedback on what I missed, so that I know exactly what to improve.
 >
-> *Example: After-action review shows: overall 82%, "Required fields: 90% — missing: persons on board", "Sequence: 80% — position stated before vessel ID", with a "Retry" button.*
+> _Example: After-action review shows: overall 82%, "Required fields: 90% — missing: persons on board", "Sequence: 80% — position stated before vessel ID", with a "Retry" button._
 
 **US-6: Study offline on board**
+
 > As a ROC student on a vessel with limited connectivity, I want to review theory modules, take quizzes, and study my previous simulator transcripts offline, so that I can make progress during downtime at sea.
 >
-> *Example: Student opens the PWA offline, sees a chip saying "Offline — simulator unavailable", and continues working through Module 3 quizzes and reviewing their best MAYDAY attempt transcript.*
+> _Example: Student opens the PWA offline, sees a chip saying "Offline — simulator unavailable", and continues working through Module 3 quizzes and reviewing their best MAYDAY attempt transcript._
 
 **US-7: Progress through increasing difficulty**
+
 > As a ROC student, I want the simulator to start with simple radio checks and gradually introduce complex multi-party distress scenarios, so that I build skills progressively without being overwhelmed.
 >
-> *Example: Student completes 4 of 5 Tier 1 scenarios (≥80%), which unlocks Tier 2 (distress/urgency/safety scenarios with DSC→voice flows and branching).*
+> _Example: Student completes 4 of 5 Tier 1 scenarios (≥80%), which unlocks Tier 2 (distress/urgency/safety scenarios with DSC→voice flows and branching)._
 
 ### Technical Stories
 
 **US-8: Self-host for data privacy**
+
 > As a maritime school administrator, I want to deploy the entire application on our own server with local AI models, so that student voice data never leaves our network.
 >
-> *Example: Admin runs `docker compose up` with `AI_PROVIDER=local`, configuring faster-whisper for STT, Llama for LLM, and Piper for TTS — all on school hardware, no GPU required.*
+> _Example: Admin runs `docker compose up` with `AI_PROVIDER=local`, configuring faster-whisper for STT, Llama for LLM, and Piper for TTS — all on school hardware, no GPU required._
 
 ---
 
@@ -212,13 +225,13 @@ Empower maritime radio students to develop confident, correct VHF communication 
 
 The simulator's most critical architectural decision: **separate the deterministic radio/scenario logic from the AI layer.** The radio panel must work reliably even when AI is slow or fails. Scoring must be deterministic and auditable.
 
-| Layer | Name | Responsibility | Dependencies |
-|---|---|---|---|
-| 1 | **Radio Domain** | Pure TypeScript state model: channel, power, squelch, dual-watch, TX/RX, DSC form. No React, no audio, no sockets. | None |
-| 2 | **Session Engine** | Scenario state machine, branching rules, deterministic rubric scoring, jurisdiction-aware rules. Source of truth for pass/fail. | Layer 1 |
-| 3 | **Audio Engine** | AudioContext, mic capture, radio DSP chain (bandpass, compression, noise, squelch), playback. | None (receives events from Layer 1) |
-| 4 | **Transport / AI Adapters** | WebSocket session, swappable STT/LLM/TTS adapters. Converts audio to API calls, returns structured results. | External AI services |
-| 5 | **UI Shell** | React components. Subscribes to state, dispatches commands. Purely presentational. | Layers 1–4 |
+| Layer | Name                        | Responsibility                                                                                                                  | Dependencies                        |
+| ----- | --------------------------- | ------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------- |
+| 1     | **Radio Domain**            | Pure TypeScript state model: channel, power, squelch, dual-watch, TX/RX, DSC form. No React, no audio, no sockets.              | None                                |
+| 2     | **Session Engine**          | Scenario state machine, branching rules, deterministic rubric scoring, jurisdiction-aware rules. Source of truth for pass/fail. | Layer 1                             |
+| 3     | **Audio Engine**            | AudioContext, mic capture, radio DSP chain (bandpass, compression, noise, squelch), playback.                                   | None (receives events from Layer 1) |
+| 4     | **Transport / AI Adapters** | WebSocket session, swappable STT/LLM/TTS adapters. Converts audio to API calls, returns structured results.                     | External AI services                |
+| 5     | **UI Shell**                | React components. Subscribes to state, dispatches commands. Purely presentational.                                              | Layers 1–4                          |
 
 **Key constraint:** Layer 2 (session engine) never calls an AI model for scoring decisions. The LLM generates natural-language responses and qualitative feedback. All pass/fail scoring uses versioned deterministic rubrics.
 
@@ -293,42 +306,42 @@ src/
 
 Four sequential modules with gated progression (≥70% checkpoint quiz to advance).
 
-| Module | Lessons | Key Interactive Elements |
-|---|---|---|
-| **1. VHF Radio Fundamentals** | 6 lessons: radio basics, panel controls, channel system, call procedure, radio discipline, watchkeeping | Interactive radio panel tutorial, Channel Explorer, phonetic alphabet quiz, sequencing drills |
-| **2. MMSI and DSC** | 6 lessons: MMSI structure, DSC overview, distress alerts, urgency/safety/routine, false alerts, DSC→voice workflow | MMSI Decoder tool, DSC Builder, scenario classification drills |
-| **3. Distress/Urgency/Safety/Medical** | 7 lessons: priority, MAYDAY, MAYDAY RELAY, PAN PAN, SECURITE, MEDICO, responding to distress | Script Builder (MAYDAY/PAN PAN/SECURITE/MEDICO), response construction drills |
-| **4. SAR Equipment** | 7 lessons: EPIRB, SART, radar reflectors, GPS, PLBs, SAR coordination, pyrotechnics | Diagram labeling, radar display recognition, position format drills |
+| Module                                 | Lessons                                                                                                            | Key Interactive Elements                                                                      |
+| -------------------------------------- | ------------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------- |
+| **1. VHF Radio Fundamentals**          | 6 lessons: radio basics, panel controls, channel system, call procedure, radio discipline, watchkeeping            | Interactive radio panel tutorial, Channel Explorer, phonetic alphabet quiz, sequencing drills |
+| **2. MMSI and DSC**                    | 6 lessons: MMSI structure, DSC overview, distress alerts, urgency/safety/routine, false alerts, DSC→voice workflow | MMSI Decoder tool, DSC Builder, scenario classification drills                                |
+| **3. Distress/Urgency/Safety/Medical** | 7 lessons: priority, MAYDAY, MAYDAY RELAY, PAN PAN, SECURITE, MEDICO, responding to distress                       | Script Builder (MAYDAY/PAN PAN/SECURITE/MEDICO), response construction drills                 |
+| **4. SAR Equipment**                   | 7 lessons: EPIRB, SART, radar reflectors, GPS, PLBs, SAR coordination, pyrotechnics                                | Diagram labeling, radar display recognition, position format drills                           |
 
 ### 7.2 Guided Voice Drills (Unlocked after Module 1)
 
 Early radio exposure to reduce mic anxiety. Uses STT with deterministic rubrics — no LLM needed.
 
-| Drill | Description |
-|---|---|
-| Phonetic Alphabet Readback | Display word/callsign → student spells phonetically → STT checks |
-| Script Reading | Display complete radio script → student reads aloud with PTT → system checks pacing/completeness |
-| Channel Selection + Short Call | "Call port control on channel 12" → student selects channel, speaks opening line |
-| Number Pronunciation | Display lat/long position → student reads using maritime number pronunciation |
+| Drill                          | Description                                                                                      |
+| ------------------------------ | ------------------------------------------------------------------------------------------------ |
+| Phonetic Alphabet Readback     | Display word/callsign → student spells phonetically → STT checks                                 |
+| Script Reading                 | Display complete radio script → student reads aloud with PTT → system checks pacing/completeness |
+| Channel Selection + Short Call | "Call port control on channel 12" → student selects channel, speaks opening line                 |
+| Number Pronunciation           | Display lat/long position → student reads using maritime number pronunciation                    |
 
 ### 7.3 VHF Radio Simulator
 
 **Radio Panel Controls:**
 
-| Control | Behavior |
-|---|---|
-| Channel selector (knob or ▲/▼) | Channels 1–88, display shows number + frequency |
-| Volume knob | Controls incoming audio and noise volume |
-| Squelch knob | Noise gate threshold (affects ambient static level) |
-| PTT button | Hold to transmit (pointer capture on touch, spacebar on desktop) |
-| 16/9 quick button | Jump to Ch.16 or Ch.9 |
-| Dual Watch toggle | Monitor Ch.16 while on working channel |
-| H/L power toggle | 25W / 1W (visual in simulator) |
-| DSC DISTRESS (hold 5s) | Protected by flip cover (tap to lift). Hold 5s to send alert. If nature pre-selected via menu, included; otherwise "undesignated." Auto-sends on Ch.70, auto-switches to Ch.16. Auto-repeats every 3.5–4.5 min until acknowledged/cancelled. |
-| Ch.70 voice guard | PTT blocked on Ch.70 — display shows "DSC ONLY." Scored as channel error. |
-| DSC CALL/MENU/ENT | Navigate DSC menus for non-distress calls |
-| Signal strength meter | Visual indicator (controlled by scenario) |
-| TX/RX LED indicators | Light during transmit/receive |
+| Control                        | Behavior                                                                                                                                                                                                                                     |
+| ------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Channel selector (knob or ▲/▼) | Channels 1–88, display shows number + frequency                                                                                                                                                                                              |
+| Volume knob                    | Controls incoming audio and noise volume                                                                                                                                                                                                     |
+| Squelch knob                   | Noise gate threshold (affects ambient static level)                                                                                                                                                                                          |
+| PTT button                     | Hold to transmit (pointer capture on touch, spacebar on desktop)                                                                                                                                                                             |
+| 16/9 quick button              | Jump to Ch.16 or Ch.9                                                                                                                                                                                                                        |
+| Dual Watch toggle              | Monitor Ch.16 while on working channel                                                                                                                                                                                                       |
+| H/L power toggle               | 25W / 1W (visual in simulator)                                                                                                                                                                                                               |
+| DSC DISTRESS (hold 5s)         | Protected by flip cover (tap to lift). Hold 5s to send alert. If nature pre-selected via menu, included; otherwise "undesignated." Auto-sends on Ch.70, auto-switches to Ch.16. Auto-repeats every 3.5–4.5 min until acknowledged/cancelled. |
+| Ch.70 voice guard              | PTT blocked on Ch.70 — display shows "DSC ONLY." Scored as channel error.                                                                                                                                                                    |
+| DSC CALL/MENU/ENT              | Navigate DSC menus for non-distress calls                                                                                                                                                                                                    |
+| Signal strength meter          | Visual indicator (controlled by scenario)                                                                                                                                                                                                    |
+| TX/RX LED indicators           | Light during transmit/receive                                                                                                                                                                                                                |
 
 **Half-Duplex Voice Loop:**
 
@@ -344,46 +357,48 @@ Student hears AI response through "radio"
 ```
 
 **Audio Processing Chain:**
+
 - Outgoing: clean capture for STT + bandpass/compression monitor for student
 - Incoming: TTS → bandpass (300–3400 Hz) → distortion → compression (12:1) → noise mix → speakers
 - Ambient: filtered static noise loop, level inverse to squelch setting
 
 ### 7.4 Scenario Tiers
 
-| Tier | Unlock | Count | Type | Hints |
-|---|---|---|---|---|
-| **1. Foundation** | After Module 2 | 5 | Single-exchange routine (radio check, channel change, port entry, position report, SECURITE reception) | Full hints + script reference |
-| **2. Priority Comms** | After Module 3 + 80% Tier 1 | 8 | Distress/urgency/safety origination and response (MAYDAY, PAN PAN, SECURITE, MAYDAY RELAY, acknowledgment) | Hints with 10% penalty; script reference Tiers 1–2 only |
-| **3. Complex** | After Module 3 + 80% Tier 2 | 8 | Multi-step with branching (full SAR, false alert cancellation, priority escalation, multi-vessel coordination) | Hints with 10% penalty; no script reference |
-| **4. Exam Simulation** | After Module 4 + 80% Tier 3 | 4 | Timed, unguided, random scenarios mirroring practical exam conditions | No hints, no reference |
+| Tier                   | Unlock                      | Count | Type                                                                                                           | Hints                                                   |
+| ---------------------- | --------------------------- | ----- | -------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------- |
+| **1. Foundation**      | After Module 2              | 5     | Single-exchange routine (radio check, channel change, port entry, position report, SECURITE reception)         | Full hints + script reference                           |
+| **2. Priority Comms**  | After Module 3 + 80% Tier 1 | 8     | Distress/urgency/safety origination and response (MAYDAY, PAN PAN, SECURITE, MAYDAY RELAY, acknowledgment)     | Hints with 10% penalty; script reference Tiers 1–2 only |
+| **3. Complex**         | After Module 3 + 80% Tier 2 | 8     | Multi-step with branching (full SAR, false alert cancellation, priority escalation, multi-vessel coordination) | Hints with 10% penalty; no script reference             |
+| **4. Exam Simulation** | After Module 4 + 80% Tier 3 | 4     | Timed, unguided, random scenarios mirroring practical exam conditions                                          | No hints, no reference                                  |
 
 ### 7.5 Station Personas
 
-| Persona | Role | Voice Character |
-|---|---|---|
-| Coast Guard / MRCC | Distress response, SAR coordination | Authoritative, calm, measured |
-| Port Control / VTS | Vessel traffic, port entry | Professional, brisk |
-| Another Vessel | Ship-to-ship, assistance, relay | Varies (accent, pace) |
-| Coast Station | Routine calls, weather | Neutral, procedural |
-| Fishing Vessel | Safety messages, informal-but-correct | Casual tone |
+| Persona            | Role                                  | Voice Character               |
+| ------------------ | ------------------------------------- | ----------------------------- |
+| Coast Guard / MRCC | Distress response, SAR coordination   | Authoritative, calm, measured |
+| Port Control / VTS | Vessel traffic, port entry            | Professional, brisk           |
+| Another Vessel     | Ship-to-ship, assistance, relay       | Varies (accent, pace)         |
+| Coast Station      | Routine calls, weather                | Neutral, procedural           |
+| Fishing Vessel     | Safety messages, informal-but-correct | Casual tone                   |
 
 ### 7.6 Scoring System
 
 **Five dimensions, deterministic rubric:**
 
-| Dimension | Weight | What's Checked |
-|---|---|---|
-| Required fields | 30% | All mandatory fields present (vessel name, callsign/MMSI, position, nature, assistance, persons) |
-| Correct prowords | 20% | Correct signal word (MAYDAY/PAN PAN/SECURITE), THIS IS, OVER, OUT |
-| Sequence | 20% | Fields in correct order per message structure |
-| Channel correctness | 15% | On the right channel for this communication type. Includes: no voice on Ch.70 (DSC only), no routine radio checks on Ch.16, correct working channel for scenario. |
-| Clarity *(advisory only)* | 0% | **Not scored.** LLM provides qualitative feedback on pacing, hesitation, completeness. Appears in after-action review as coaching text. Zero numeric weight — does not affect pass/fail. |
+| Dimension                 | Weight | What's Checked                                                                                                                                                                           |
+| ------------------------- | ------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Required fields           | 30%    | All mandatory fields present (vessel name, callsign/MMSI, position, nature, assistance, persons)                                                                                         |
+| Correct prowords          | 20%    | Correct signal word (MAYDAY/PAN PAN/SECURITE), THIS IS, OVER, OUT                                                                                                                        |
+| Sequence                  | 20%    | Fields in correct order per message structure                                                                                                                                            |
+| Channel correctness       | 15%    | On the right channel for this communication type. Includes: no voice on Ch.70 (DSC only), no routine radio checks on Ch.16, correct working channel for scenario.                        |
+| Clarity _(advisory only)_ | 0%     | **Not scored.** LLM provides qualitative feedback on pacing, hesitation, completeness. Appears in after-action review as coaching text. Zero numeric weight — does not affect pass/fail. |
 
 **Scoring is fully deterministic.** All graded dimensions (required fields, prowords, sequence, channel) use regex/pattern matching on the transcript. Same transcript + same rubric = same score. The LLM is never in the scoring loop — it only generates station responses and advisory feedback text.
 
 **Graded weight redistribution** (4 scored dimensions, totaling 100%): Required fields 35%, Prowords 25%, Sequence 25%, Channel 15%.
 
 **Additional procedural rules enforced by session engine:**
+
 - **DSC acknowledgment rule:** Ships must NOT send DSC distress acknowledgments — only coast stations. In response scenarios (Tier 2: 2.7), attempting a DSC ack instead of voice response on Ch.16 is flagged as a procedural error.
 - **Ch.70 voice guard:** PTT is blocked on Ch.70. Attempting voice transmission is scored as a channel error.
 - **Distress auto-repeat:** After DSC distress alert, the radio auto-repeats every 3.5–4.5 minutes. Student should begin voice MAYDAY immediately, not wait for DSC acknowledgment.
@@ -417,15 +432,16 @@ Derived from all mockups consistently:
 
 **Implementation specs (from `gemini-ui-component.html`):**
 
-| Element | CSS Grid | Sizing |
-|---|---|---|
-| App shell | `grid-template-columns: 88px minmax(0, 1fr) 312px` | `grid-template-rows: 65px 1fr` |
-| Top bar | `grid-column: 1 / -1` | Height: 65px, border-bottom: 2px solid |
-| Sidebar | 88px width, rounded (18px), vertical flex column | Full height minus top bar |
-| Main panel | Flexible center column | Houses console shell + feedback card |
-| Side column | 312px fixed width | Briefing card + transcript card, stacked |
+| Element     | CSS Grid                                           | Sizing                                   |
+| ----------- | -------------------------------------------------- | ---------------------------------------- |
+| App shell   | `grid-template-columns: 88px minmax(0, 1fr) 312px` | `grid-template-rows: 65px 1fr`           |
+| Top bar     | `grid-column: 1 / -1`                              | Height: 65px, border-bottom: 2px solid   |
+| Sidebar     | 88px width, rounded (18px), vertical flex column   | Full height minus top bar                |
+| Main panel  | Flexible center column                             | Houses console shell + feedback card     |
+| Side column | 312px fixed width                                  | Briefing card + transcript card, stacked |
 
 **Responsive breakpoint** (`max-width: 1180px`):
+
 - Grid collapses to `78px 1fr`
 - Side column moves below main panel: `grid-column: 1 / -1`, horizontal flex
 - Briefing and transcript cards sit side-by-side
@@ -434,19 +450,20 @@ Derived from all mockups consistently:
 
 Consistent across all mockups — vertical icon-block navigation:
 
-| Block | Label | Sub-label | State |
-|---|---|---|---|
-| Logo | "G" | — | Orange gradient background, always visible |
-| Learn | "Learn" | "12/18" (progress) | Default: dark card |
-| Drill | "Drill" | "08/10" (progress) | Default: dark card |
-| **Sim** | "Sim" | "live mode" | **Active state**: orange glow border, orange bg |
-| Ref | "Ref" | "SMCP" | Default: dark card |
-| *(spacer)* | — | — | flex: 1 |
-| Me | Profile icon | "Me" | Bottom of sidebar |
+| Block      | Label        | Sub-label          | State                                           |
+| ---------- | ------------ | ------------------ | ----------------------------------------------- |
+| Logo       | "G"          | —                  | Orange gradient background, always visible      |
+| Learn      | "Learn"      | "12/18" (progress) | Default: dark card                              |
+| Drill      | "Drill"      | "08/10" (progress) | Default: dark card                              |
+| **Sim**    | "Sim"        | "live mode"        | **Active state**: orange glow border, orange bg |
+| Ref        | "Ref"        | "SMCP"             | Default: dark card                              |
+| _(spacer)_ | —            | —                  | flex: 1                                         |
+| Me         | Profile icon | "Me"               | Bottom of sidebar                               |
 
 **Active state** (from detailed mockup): orange `box-shadow: 0 0 18px rgba(255, 142, 85, 0.35)` ring around the block.
 
 **Implementation steps:**
+
 - ✅ Create `NavSidebar` component with vertical flex layout
 - ✅ Each nav block: 62px wide, 14px border-radius, inner shadow + gradient
 - ✅ Active block gets orange ring via `::before` pseudo-element
@@ -455,18 +472,20 @@ Consistent across all mockups — vertical icon-block navigation:
 
 ### 8.3 Top Bar
 
-| Element | Position | Details |
-|---|---|---|
-| Brand title | Left | "GMDSS Simulator" — 28–31px, bold, white |
-| Subtitle | After title | "Live training mode / ROC practice" — 14px, muted |
-| Status pills | Right | Inline flex, pill-shaped (border-radius: 999px) |
+| Element      | Position    | Details                                           |
+| ------------ | ----------- | ------------------------------------------------- |
+| Brand title  | Left        | "GMDSS Simulator" — 28–31px, bold, white          |
+| Subtitle     | After title | "Live training mode / ROC practice" — 14px, muted |
+| Status pills | Right       | Inline flex, pill-shaped (border-radius: 999px)   |
 
 **Status pills** (from mockup):
+
 - "Online" pill with green dot (`#57F04F`, `box-shadow: 0 0 12px rgba(87, 240, 79, 0.8)`)
 - "Ch 16" pill showing current channel (updates with radio state)
 - Optional "Hebrew UI" pill (locale indicator for multilingual readiness)
 
 **Implementation steps:**
+
 - ✅ Create `TopBar` component with flex `space-between`
 - ✅ `StatusPill` sub-component: gradient bg, border, optional blinking indicator dot
 - ✅ Channel pill subscribes to Layer 1 radio domain state
@@ -476,6 +495,7 @@ Consistent across all mockups — vertical icon-block navigation:
 The centerpiece. From `gemini-ui-component.html` — a **metal-framed console shell** containing the radio body.
 
 **Console shell** (outer frame):
+
 - Metallic gradient: `linear-gradient(135deg, #7d8188, #585c63 52%, #383c43)`
 - Border: `1.2px solid #6a7078`
 - Inner highlight: `::before` with `border: 1px solid rgba(255, 255, 255, 0.18)`
@@ -483,11 +503,13 @@ The centerpiece. From `gemini-ui-component.html` — a **metal-framed console sh
 - Physical details: **mic jack** protruding from right side (decorative `aria-hidden`)
 
 **Radio body** (inner panel):
+
 - Metallic gradient: `linear-gradient(135deg, #8b8e94, #666a70 12%, #50555b 48%, #2e333a)`
 - Corner **screws** (4x): 16px circles with center dot — purely decorative
 - Contains: screen-row, button-row, lower-zone (DSC + PTT)
 
 **Implementation steps:**
+
 - ✅ `ConsoleShell` component: outer metallic frame with CSS gradients
 - ✅ `RadioBody` component: inner panel with screws, houses all controls
 - ✅ Decorative mic jack element (right side, `aria-hidden="true"`)
@@ -498,6 +520,7 @@ The centerpiece. From `gemini-ui-component.html` — a **metal-framed console sh
 Three-column grid: VOL knob — LCD — SQL knob.
 
 **LCD Display:**
+
 - Green gradient: `linear-gradient(180deg, #B6E0AA, #A7D798 55%, #95CA89)`
 - Dot-matrix texture overlay via `radial-gradient` pattern (6px grid, 0.32 opacity)
 - Rounded: 14px border-radius
@@ -507,6 +530,7 @@ Three-column grid: VOL knob — LCD — SQL knob.
   - Footer: `PWR 25W  SQL 04  GPS LOCK` — 14px monospace with GPS icon
 
 **Rotary knobs (VOL/SQL):**
+
 - 86px diameter, layered radial gradients for 3D metallic appearance
 - Tick marks around circumference via `mask: repeating-conic-gradient`
 - White indicator line showing current position
@@ -514,6 +538,7 @@ Three-column grid: VOL knob — LCD — SQL knob.
 - Scale marks: "0" and "100" at extremes
 
 **Implementation steps:**
+
 - ✅ `RadioDisplay` (LCD): CSS-only with gradient bg + dot-matrix overlay + monospace text
 - ✅ LCD subscribes to Layer 1 radio state (channel, dual watch, power, squelch, GPS lock)
 - ✅ `VolumeKnob` and `SquelchKnob`: custom `RotaryKnob` component (CSS radial-gradient + pointer events + atan2 rotation) with:
@@ -527,21 +552,23 @@ Three-column grid: VOL knob — LCD — SQL knob.
 
 Five equally-spaced control buttons in a grid:
 
-| Button | Label | Function |
-|---|---|---|
-| 1 | `16 / 9` | Quick-jump to Ch.16 or Ch.9 |
-| 2 | `DUAL` | Toggle dual watch |
-| 3 | `H/L` | Toggle high/low power |
-| 4 | `CH +` | Channel up |
-| 5 | `CH -` | Channel down |
+| Button | Label    | Function                    |
+| ------ | -------- | --------------------------- |
+| 1      | `16 / 9` | Quick-jump to Ch.16 or Ch.9 |
+| 2      | `DUAL`   | Toggle dual watch           |
+| 3      | `H/L`    | Toggle high/low power       |
+| 4      | `CH +`   | Channel up                  |
+| 5      | `CH -`   | Channel down                |
 
 **Button style** (from detailed mockup):
+
 - Height: 49px, border-radius: 14px
 - Gradient: `linear-gradient(180deg, #48505d, #2d333c 45%, #1a1f26)`
 - Inset border: `1px solid rgba(83, 103, 125, 0.65)` via `::before`
 - Subtle orange glow at bottom edge: `::after` pseudo-element
 
 **Implementation steps:**
+
 - ✅ `RadioButton` component: reusable for all 5 buttons
 - ✅ CSS gradient + shadow + orange bottom glow via pseudo-elements
 - ✅ Each button dispatches a Layer 1 radio command (e.g., `{ type: 'SET_CHANNEL', channel: 16 }`)
@@ -552,6 +579,7 @@ Five equally-spaced control buttons in a grid:
 Two-column layout: DSC box (left) + PTT button (right).
 
 **DSC Box:**
+
 - Dark recessed panel: `linear-gradient(135deg, #171b20, #0f1217)`, border-radius: 17px
 - Title: "DSC CONTROLS" — 14px
 - **DISTRESS button**: 165px wide, raised metallic frame with inset red panel
@@ -564,6 +592,7 @@ Two-column layout: DSC box (left) + PTT button (right).
 - **Status line**: `MMSI 211239680  UTC 14:35  AUTO-SWITCH READY` — 11px monospace
 
 **PTT Button:**
+
 - 110px diameter circle
 - Orange radial gradient: `radial-gradient(circle at 38% 28%, #f7b164, #d77a34 52%, #843a17)`
 - Outer glow: `box-shadow: 0 0 30px rgba(255, 122, 53, 0.35)`
@@ -572,6 +601,7 @@ Two-column layout: DSC box (left) + PTT button (right).
 - Sub-label: "PRESS AND HOLD" (hidden in compact layout)
 
 **Implementation steps:**
+
 - ✅ `DscControls` component: dark recessed panel containing distress + call/menu buttons
 - ✅ `DistressFlipCover` component: simulated spring-loaded cover. Tap/click to lift (animation). Must be open before distress button is pressable.
 - ✅ `DistressButton` component: 5-second hold detection via `use-long-press` hook (MIT), metallic frame + red inner panel
@@ -600,6 +630,7 @@ Inline feedback during/after scenario, below the radio body within the console s
 - **Feedback text**: "Prompting tip: after the MAYDAY call, be ready to restate position..." — 16px
 
 **Implementation steps:**
+
 - ✅ `FeedbackCard` component: displays after each student transmission
 - ✅ Dimension chips highlight which areas were scored (color-code: green=pass, orange=partial, red=miss)
 - ✅ Feedback text from Layer 2 session engine (deterministic) + Layer 4 LLM (qualitative)
@@ -613,6 +644,7 @@ Right panel, top card. From mockup: a framed card with inner inset panel.
 **Briefing inner**: dark bg with corner highlight (`clip-path: polygon` for top-right fold)
 
 Content layout:
+
 1. Title: "Scenario Briefing" — 17px bold
 2. Category pill: "DISTRESS" — small rounded pill (28px height)
 3. Scenario name: "Fire on Board" — 31px bold
@@ -623,6 +655,7 @@ Content layout:
 8. "SCRIPT REFERENCE" button — pill-shaped, 13px
 
 **Implementation steps:**
+
 - ✅ `ScenarioBriefing` component: receives scenario definition from Layer 2
 - ✅ Category pill color varies by type (red=distress, orange=urgency, blue=safety, gray=routine)
 - ✅ Script reference button opens collapsible overlay showing message template
@@ -633,6 +666,7 @@ Content layout:
 Right panel, bottom card. Live conversation log + scores.
 
 **Chat bubbles:**
+
 - **"YOU" bubble** (student): blue-tinted, border `#365b85`, left-aligned with bottom-left tail
   - Tag: "YOU" — green monospace (`#7ed38e`)
   - Text: transcript of student's transmission — 13px
@@ -641,12 +675,14 @@ Right panel, bottom card. Live conversation log + scores.
   - Text: AI response — 13px
 
 **Score display** (bottom of transcript card):
+
 - Two-column grid: score gauge (left) + missing field indicator (right)
 - **Score gauge**: semicircular arc, conic-gradient fill proportional to score
   - Score value: "82%" — 24px bold
 - **Missing card**: "Missing field: POB count" — label 13px, value 24px
 
 **Implementation steps:**
+
 - ✅ `TranscriptView` component: scrollable list of `ChatBubble` components
 - ✅ `ChatBubble`: variant prop for "student" (blue) vs persona name (amber), with CSS tail
 - ✅ Bubbles append in real-time as turns complete
@@ -681,6 +717,7 @@ Portrait layout, single column, 430px viewport:
 ```
 
 **Key mobile differences from desktop:**
+
 - No sidebar rail — replaced by bottom tab bar
 - Scenario briefing collapses to compact header (title + task only)
 - Knobs may use tap-to-increment instead of drag rotation
@@ -689,6 +726,7 @@ Portrait layout, single column, 430px viewport:
 - DSC controls may scroll horizontally if space is tight
 
 **Implementation steps:**
+
 - ✅ CSS `@media (max-width: 1180px)` breakpoint for tablet
 - ✅ CSS `@media (max-width: 480px)` breakpoint for mobile
 - ✅ Mobile: replace sidebar with `BottomTabBar` component
@@ -720,6 +758,7 @@ Landing page after login — not the simulator, but the entry point.
 ```
 
 **Implementation steps:**
+
 - ✅ `DashboardPage` component with three zones: today, curriculum, stats
 - ✅ "Continue Scenario" card: shows last in-progress or recommended next scenario
 - ✅ Progress-by-module: horizontal progress bars or fraction indicators
@@ -731,27 +770,28 @@ Landing page after login — not the simulator, but the entry point.
 
 Extracted from `gemini-ui-component.html` CSS custom properties:
 
-| Token | Value | Usage |
-|---|---|---|
-| `--bg-0` | `#0d1926` | Page background (dark) |
-| `--bg-1` | `#13202f` | Background gradient end |
-| `--bg-2` | `#1c2a3a` | Background gradient end |
-| `--frame` | `#10151b` | App shell frame |
-| `--frame-line` | `#2a435a` | Shell border |
-| `--surface-dark` | `#161b22` | Recessed panel bg |
-| `--surface-panel` | `#1b1f27` | Panel bg |
-| `--surface-card` | `#1b2027` | Card bg |
-| `--steel-0` through `--steel-3` | `#8e9197` → `#2f343b` | Metallic gradients |
-| `--text` | `#eef2f5` | Primary text |
-| `--text-soft` | `#aab5c0` | Secondary text |
-| `--text-dim` | `#7f8b97` | Muted text |
-| `--lcd-0` / `--lcd-1` / `--lcd-2` | `#b6e0aa` / `#a7d798` / `#95ca89` | LCD green gradient |
-| `--lcd-text` | `#1b2c1b` | LCD text (dark green) |
-| `--orange-0` | `#d67a39` | PTT/accent primary |
-| `--orange-1` | `#b45d25` | PTT/accent dark |
-| `--success` | `#57f04f` | Online indicator, pass states |
+| Token                             | Value                             | Usage                         |
+| --------------------------------- | --------------------------------- | ----------------------------- |
+| `--bg-0`                          | `#0d1926`                         | Page background (dark)        |
+| `--bg-1`                          | `#13202f`                         | Background gradient end       |
+| `--bg-2`                          | `#1c2a3a`                         | Background gradient end       |
+| `--frame`                         | `#10151b`                         | App shell frame               |
+| `--frame-line`                    | `#2a435a`                         | Shell border                  |
+| `--surface-dark`                  | `#161b22`                         | Recessed panel bg             |
+| `--surface-panel`                 | `#1b1f27`                         | Panel bg                      |
+| `--surface-card`                  | `#1b2027`                         | Card bg                       |
+| `--steel-0` through `--steel-3`   | `#8e9197` → `#2f343b`             | Metallic gradients            |
+| `--text`                          | `#eef2f5`                         | Primary text                  |
+| `--text-soft`                     | `#aab5c0`                         | Secondary text                |
+| `--text-dim`                      | `#7f8b97`                         | Muted text                    |
+| `--lcd-0` / `--lcd-1` / `--lcd-2` | `#b6e0aa` / `#a7d798` / `#95ca89` | LCD green gradient            |
+| `--lcd-text`                      | `#1b2c1b`                         | LCD text (dark green)         |
+| `--orange-0`                      | `#d67a39`                         | PTT/accent primary            |
+| `--orange-1`                      | `#b45d25`                         | PTT/accent dark               |
+| `--success`                       | `#57f04f`                         | Online indicator, pass states |
 
 **Implementation step:**
+
 - ✅ Define all tokens as CSS custom properties in `:root` — single source of truth
 - ✅ Simplified/accessibility mode overrides these with higher-contrast values
 
@@ -760,6 +800,7 @@ Extracted from `gemini-ui-component.html` CSS custom properties:
 Complete list of UI components to build, derived from all mockups:
 
 **Shell Components:**
+
 - ✅ `AppShell` — CSS Grid container (3-col desktop, 1-col mobile)
 - ✅ `TopBar` — brand, subtitle, status pills
 - ✅ `NavSidebar` — vertical nav blocks (desktop)
@@ -767,6 +808,7 @@ Complete list of UI components to build, derived from all mockups:
 - ✅ `StatusPill` — reusable pill with optional indicator dot
 
 **Radio Panel Components (Layer 5):**
+
 - ✅ `ConsoleShell` — outer metallic frame with mic jack decoration
 - ✅ `RadioBody` — inner panel with screws, houses all controls
 - ✅ `RadioDisplay` — LCD with dot-matrix texture, monospace readout
@@ -780,6 +822,7 @@ Complete list of UI components to build, derived from all mockups:
 - ✅ `SignalIndicators` — TX/RX LED dots + signal strength meter
 
 **Scenario & Feedback Components:**
+
 - ✅ `ScenarioBriefing` — category pill, title, vessel info, task, script reference button
 - ✅ `TranscriptView` — scrollable chat log
 - ✅ `ChatBubble` — student (blue) / persona (amber) variants with CSS tails
@@ -789,6 +832,7 @@ Complete list of UI components to build, derived from all mockups:
 - ✅ `DebriefPanel` — full after-action review (combines transcript + scores + retry button)
 
 **Dashboard Components:**
+
 - ✅ `DashboardPage` — today + curriculum + stats layout
 - ✅ `ContinueCard` — resume last scenario
 - ✅ `ModuleCard` — module progress with lock/unlock state
@@ -801,33 +845,34 @@ Complete list of UI components to build, derived from all mockups:
 
 ### Frontend
 
-| Technology | Version/Note | Purpose |
-|---|---|---|
-| **Vite+** (`vp` CLI) | Alpha (MIT) | **Unified toolchain** — replaces separate Vite, Vitest, ESLint, Prettier, and tsc configs with a single CLI. See [viteplus.dev](https://viteplus.dev). |
-| TypeScript | 5.x (strict mode) | Type safety — checked via `vp check` (tsgo under the hood) |
-| React | 18+ | Component framework |
-| Workbox | 7+ | Service worker, caching strategies (via `vite-plugin-pwa`) |
-| XState (or custom reducer) | 5+ | State machines for radio domain + session engine |
-| IndexedDB (via `idb`) | — | Offline data storage (progress, cached lessons, simulator attempt transcripts for offline review) |
-| Web Audio API | Native | Radio DSP chain |
-| i18next | — | i18n scaffolding |
-| Radix UI Primitives | — | Accessible base components (MIT) |
-| Tabler Icons | — | Icon system (MIT) |
-| use-long-press | — | Long-press hook for distress button (MIT) |
+| Technology                 | Version/Note      | Purpose                                                                                                                                                |
+| -------------------------- | ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Vite+** (`vp` CLI)       | Alpha (MIT)       | **Unified toolchain** — replaces separate Vite, Vitest, ESLint, Prettier, and tsc configs with a single CLI. See [viteplus.dev](https://viteplus.dev). |
+| TypeScript                 | 5.x (strict mode) | Type safety — checked via `vp check` (tsgo under the hood)                                                                                             |
+| React                      | 18+               | Component framework                                                                                                                                    |
+| Workbox                    | 7+                | Service worker, caching strategies (via `vite-plugin-pwa`)                                                                                             |
+| XState (or custom reducer) | 5+                | State machines for radio domain + session engine                                                                                                       |
+| IndexedDB (via `idb`)      | —                 | Offline data storage (progress, cached lessons, simulator attempt transcripts for offline review)                                                      |
+| Web Audio API              | Native            | Radio DSP chain                                                                                                                                        |
+| i18next                    | —                 | i18n scaffolding                                                                                                                                       |
+| Radix UI Primitives        | —                 | Accessible base components (MIT)                                                                                                                       |
+| Tabler Icons               | —                 | Icon system (MIT)                                                                                                                                      |
+| use-long-press             | —                 | Long-press hook for distress button (MIT)                                                                                                              |
 
 ### Vite+ Unified Toolchain
 
 Vite+ (`vp`) consolidates the entire dev toolchain into a single CLI, replacing 5–6 separate tool configurations:
 
-| `vp` command | What it replaces | Engine | Speed gain |
-|---|---|---|---|
-| `vp dev` | `vite dev` | Vite | Same |
-| `vp build` | `vite build` | Rolldown | ~40x faster than webpack |
-| `vp check` | ESLint + Prettier + tsc | **Oxlint + Oxfmt + tsgo** | Lint: 50–100x faster. Format: 30x faster. |
-| `vp test` | Vitest | Vitest | Same (Jest-compatible API) |
-| `vp install` | npm/pnpm install | Detects package manager | Same |
+| `vp` command | What it replaces        | Engine                    | Speed gain                                |
+| ------------ | ----------------------- | ------------------------- | ----------------------------------------- |
+| `vp dev`     | `vite dev`              | Vite                      | Same                                      |
+| `vp build`   | `vite build`            | Rolldown                  | ~40x faster than webpack                  |
+| `vp check`   | ESLint + Prettier + tsc | **Oxlint + Oxfmt + tsgo** | Lint: 50–100x faster. Format: 30x faster. |
+| `vp test`    | Vitest                  | Vitest                    | Same (Jest-compatible API)                |
+| `vp install` | npm/pnpm install        | Detects package manager   | Same                                      |
 
 **What this means for our project:**
+
 - No `eslint.config.js`, `.prettierrc`, or Husky/lint-staged configs to maintain
 - `vp check` runs format + lint + type-check in one command, enforced in CI
 - `vp test --coverage` handles unit/integration tests with coverage thresholds
@@ -836,13 +881,14 @@ Vite+ (`vp`) consolidates the entire dev toolchain into a single CLI, replacing 
 
 ### Testing
 
-| Technology | Purpose |
-|---|---|
-| **Vitest (via `vp test`)** | Unit and integration test runner (built into Vite+) |
-| **React Testing Library** | Component testing — test behavior, not implementation |
-| **Playwright** | End-to-end tests (browser automation, cross-browser) |
+| Technology                 | Purpose                                               |
+| -------------------------- | ----------------------------------------------------- |
+| **Vitest (via `vp test`)** | Unit and integration test runner (built into Vite+)   |
+| **React Testing Library**  | Component testing — test behavior, not implementation |
+| **Playwright**             | End-to-end tests (browser automation, cross-browser)  |
 
 **Coverage requirements:**
+
 - **Minimum threshold: 85%** across lines, branches, functions, and statements
 - CI pipeline fails if coverage drops below 85%
 - **Layer 1 (radio-domain) and Layer 2 (session-engine): 95%+** target — these are pure logic with zero excuses for low coverage
@@ -853,14 +899,15 @@ Vite+ (`vp`) consolidates the entire dev toolchain into a single CLI, replacing 
 
 All handled by Vite+ — no separate tool configs needed:
 
-| Concern | Tool | Enforcement |
-|---|---|---|
-| **Linting** | Oxlint (via `vp check`) | 600+ rules, zero errors required. 50–100x faster than ESLint. |
-| **Formatting** | Oxfmt (via `vp check`) | Deterministic formatting, 30x faster than Prettier. |
-| **Type checking** | tsgo (via `vp check`) | TypeScript strict mode, `noUncheckedIndexedAccess: true` |
-| **Pre-commit** | `vp check` in CI + optional git hook | Single command checks everything |
+| Concern           | Tool                                 | Enforcement                                                   |
+| ----------------- | ------------------------------------ | ------------------------------------------------------------- |
+| **Linting**       | Oxlint (via `vp check`)              | 600+ rules, zero errors required. 50–100x faster than ESLint. |
+| **Formatting**    | Oxfmt (via `vp check`)               | Deterministic formatting, 30x faster than Prettier.           |
+| **Type checking** | tsgo (via `vp check`)                | TypeScript strict mode, `noUncheckedIndexedAccess: true`      |
+| **Pre-commit**    | `vp check` in CI + optional git hook | Single command checks everything                              |
 
 **CI pipeline (single unified check):**
+
 - ✅ `vp check` passes (lint + format + type-check — one command, all Rust-speed)
 - ✅ `vp test --coverage` passes with ≥85% coverage
 - ✅ `playwright test` passes (E2E suite)
@@ -869,33 +916,33 @@ All handled by Vite+ — no separate tool configs needed:
 
 ### Backend
 
-| Technology | Version/Note | Purpose |
-|---|---|---|
-| Node.js | 20+ LTS | Runtime |
-| Fastify | 4+ | API server |
-| PostgreSQL | 16 | Users, progress, attempts |
-| Redis | 7+ | Sessions, rate limiting |
-| WebSocket (ws or Socket.IO) | — | Real-time audio streaming |
+| Technology                  | Version/Note | Purpose                   |
+| --------------------------- | ------------ | ------------------------- |
+| Node.js                     | 20+ LTS      | Runtime                   |
+| Fastify                     | 4+           | API server                |
+| PostgreSQL                  | 16           | Users, progress, attempts |
+| Redis                       | 7+           | Sessions, rate limiting   |
+| WebSocket (ws or Socket.IO) | —            | Real-time audio streaming |
 
 ### AI Services (Swappable via Adapter Pattern)
 
-| Service | Cloud Options | Self-Hosted Options |
-|---|---|---|
-| **STT** | Groq Whisper API (~free), OpenAI `gpt-4o-mini-transcribe` ($0.003/min) | **faster-whisper `base.en`** (142MB, CPU-only, sub-1s, free) — **recommended default** |
-| **LLM** | Claude API (Anthropic), OpenAI GPT-4o | Llama 3 (local) |
-| **TTS** | OpenAI tts-1 (6 voices, $15/1M chars) | **Piper TTS** (15–65MB/voice, CPU-only, 30–80ms, 20+ EN voices, free) — **recommended default** |
+| Service | Cloud Options                                                          | Self-Hosted Options                                                                             |
+| ------- | ---------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
+| **STT** | Groq Whisper API (~free), OpenAI `gpt-4o-mini-transcribe` ($0.003/min) | **faster-whisper `base.en`** (142MB, CPU-only, sub-1s, free) — **recommended default**          |
+| **LLM** | Claude API (Anthropic), OpenAI GPT-4o                                  | Llama 3 (local)                                                                                 |
+| **TTS** | OpenAI tts-1 (6 voices, $15/1M chars)                                  | **Piper TTS** (15–65MB/voice, CPU-only, 30–80ms, 20+ EN voices, free) — **recommended default** |
 
 ### Key Dependencies (CC0/MIT/Apache/BSD)
 
-| Dependency | License | Use |
-|---|---|---|
-| Freesound CC0 audio (static, squelch, beeps) | CC0 | Radio SFX |
-| FCC VHF channel chart | US Public Domain | Channel data |
-| USCG NAVCEN procedures | US Public Domain | Procedure reference |
-| Radix UI Primitives | MIT | Accessible controls |
-| Tabler Icons | MIT | UI icons |
-| use-long-press | MIT | Distress button 5s hold detection |
-| wavesurfer.js | BSD-3 | Audio playback review |
+| Dependency                                   | License          | Use                               |
+| -------------------------------------------- | ---------------- | --------------------------------- |
+| Freesound CC0 audio (static, squelch, beeps) | CC0              | Radio SFX                         |
+| FCC VHF channel chart                        | US Public Domain | Channel data                      |
+| USCG NAVCEN procedures                       | US Public Domain | Procedure reference               |
+| Radix UI Primitives                          | MIT              | Accessible controls               |
+| Tabler Icons                                 | MIT              | UI icons                          |
+| use-long-press                               | MIT              | Distress button 5s hold detection |
+| wavesurfer.js                                | BSD-3            | Audio playback review             |
 
 ---
 
@@ -903,13 +950,13 @@ All handled by Vite+ — no separate tool configs needed:
 
 ### Authentication
 
-| Feature | Implementation |
-|---|---|
-| Registration | School admin creates accounts or provides registration codes |
-| Login | Email/password |
-| 2FA | TOTP-based (Google Authenticator, etc.) — configurable per school |
-| Sessions | JWT with refresh tokens; persist across devices |
-| Password reset | Email-based secure reset flow |
+| Feature        | Implementation                                                    |
+| -------------- | ----------------------------------------------------------------- |
+| Registration   | School admin creates accounts or provides registration codes      |
+| Login          | Email/password                                                    |
+| 2FA            | TOTP-based (Google Authenticator, etc.) — configurable per school |
+| Sessions       | JWT with refresh tokens; persist across devices                   |
+| Password reset | Email-based secure reset flow                                     |
 
 ### Configuration (Environment Variables)
 
@@ -949,6 +996,7 @@ REQUIRE_2FA=false
 ### Security Scope
 
 **In scope:**
+
 - ✅ HTTPS-only (required for mic access and PWA)
 - ✅ JWT with rotation and refresh tokens
 - ✅ TOTP 2FA
@@ -961,6 +1009,7 @@ REQUIRE_2FA=false
 - ✅ API keys never exposed to client (all AI calls proxied through backend)
 
 **Out of scope (Phase 1):**
+
 - ❌ Role-based access control beyond student/admin
 - ❌ Multi-tenant (one deployment per school in Phase 1)
 - ❌ SSO/SAML integration
@@ -968,13 +1017,13 @@ REQUIRE_2FA=false
 
 ### Privacy Policy
 
-| Data Type | Policy |
-|---|---|
-| Voice recordings | Ephemeral: transcribed and discarded immediately. Never stored. |
-| Transcripts | **Always retained** for graded simulator attempts. Required for score auditability, instructor review, and offline review. Transcripts contain radio procedure text, not PII. Students consent to retention via disclaimer on first simulator use. GDPR deletion removes all attempt data including transcripts. |
-| Personal data | Name, email, progress — stored in school's database only. |
-| AI API calls | Subject to provider's data policy. Self-hosted option eliminates third-party exposure. |
-| School is data controller | App provider is data processor under GDPR. |
+| Data Type                 | Policy                                                                                                                                                                                                                                                                                                           |
+| ------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Voice recordings          | Ephemeral: transcribed and discarded immediately. Never stored.                                                                                                                                                                                                                                                  |
+| Transcripts               | **Always retained** for graded simulator attempts. Required for score auditability, instructor review, and offline review. Transcripts contain radio procedure text, not PII. Students consent to retention via disclaimer on first simulator use. GDPR deletion removes all attempt data including transcripts. |
+| Personal data             | Name, email, progress — stored in school's database only.                                                                                                                                                                                                                                                        |
+| AI API calls              | Subject to provider's data policy. Self-hosted option eliminates third-party exposure.                                                                                                                                                                                                                           |
+| School is data controller | App provider is data processor under GDPR.                                                                                                                                                                                                                                                                       |
 
 ### Deployment Environments
 
@@ -994,13 +1043,13 @@ Includes: Caddy (localhost HTTPS), API with hot-reload, PostgreSQL, Redis, faste
 
 **Railway** is used for development and QA because of its built-in PR preview environments:
 
-| Feature | Why it matters for dev/QA |
-|---|---|
-| **PR preview environments** | Every pull request gets its own isolated deployment with its own database, automatically. QA clicks the preview link, tests the feature, environment is torn down on merge. |
-| **Dev/staging/prod separation** | Built-in environment management — no manual config |
-| **Built-in PostgreSQL + Redis** | Each preview gets its own DB instance — no shared state between PRs |
-| **GitHub integration** | Push to branch → auto-deploy in seconds |
-| **Cost** | ~$5/mo for Hobby plan — shared across the dev team |
+| Feature                         | Why it matters for dev/QA                                                                                                                                                   |
+| ------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **PR preview environments**     | Every pull request gets its own isolated deployment with its own database, automatically. QA clicks the preview link, tests the feature, environment is torn down on merge. |
+| **Dev/staging/prod separation** | Built-in environment management — no manual config                                                                                                                          |
+| **Built-in PostgreSQL + Redis** | Each preview gets its own DB instance — no shared state between PRs                                                                                                         |
+| **GitHub integration**          | Push to branch → auto-deploy in seconds                                                                                                                                     |
+| **Cost**                        | ~$5/mo for Hobby plan — shared across the dev team                                                                                                                          |
 
 This means: a developer opens a PR → Railway auto-deploys a preview → QA tests on real infrastructure → PR merges → preview torn down. Zero DevOps.
 
@@ -1008,25 +1057,28 @@ This means: a developer opens a PR → Railway auto-deploys a preview → QA tes
 
 No hybrid — schools either self-host everything or use cloud everything. The adapter pattern lets them switch AI providers at any time without code changes.
 
-| Option | Description | Cost | Best For |
-|---|---|---|---|
-| **A: Self-hosted (default)** | Single `docker compose up`: Caddy (auto-HTTPS) + API + PostgreSQL + Redis + faster-whisper + Piper TTS + Llama. No GPU required. 4-core/8GB server. | **$0** (own hardware) or **$4–6/mo** (VPS, e.g. Hetzner) | Most schools. Zero AI costs, full data sovereignty, all data on-premises. |
-| **B: Cloud — Railway** | Frontend on **Cloudflare Pages** (free, unlimited BW). Backend + DB + Redis on **Railway** (~$5/mo). AI via cloud APIs. | **~$5/mo base** + **$5–15/mo AI API** for 50 students | Schools without server infrastructure. Same platform as dev/QA — promotes to production via Railway environments. |
-| **B alt: Cloud — Fly.io** | Frontend on **Cloudflare Pages**. Backend on **Fly.io** (free: 3 VMs, 256MB). DB on **Neon** (free: 500MB). Redis on **Upstash** (free). AI via cloud APIs. | **$0 base** + AI API usage | Budget-conscious schools willing to manage 4 platforms. |
+| Option                       | Description                                                                                                                                                 | Cost                                                     | Best For                                                                                                          |
+| ---------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
+| **A: Self-hosted (default)** | Single `docker compose up`: Caddy (auto-HTTPS) + API + PostgreSQL + Redis + faster-whisper + Piper TTS + Llama. No GPU required. 4-core/8GB server.         | **$0** (own hardware) or **$4–6/mo** (VPS, e.g. Hetzner) | Most schools. Zero AI costs, full data sovereignty, all data on-premises.                                         |
+| **B: Cloud — Railway**       | Frontend on **Cloudflare Pages** (free, unlimited BW). Backend + DB + Redis on **Railway** (~$5/mo). AI via cloud APIs.                                     | **~$5/mo base** + **$5–15/mo AI API** for 50 students    | Schools without server infrastructure. Same platform as dev/QA — promotes to production via Railway environments. |
+| **B alt: Cloud — Fly.io**    | Frontend on **Cloudflare Pages**. Backend on **Fly.io** (free: 3 VMs, 256MB). DB on **Neon** (free: 500MB). Redis on **Upstash** (free). AI via cloud APIs. | **$0 base** + AI API usage                               | Budget-conscious schools willing to manage 4 platforms.                                                           |
 
 **Self-hosted includes:**
+
 - Caddy reverse proxy with automatic Let's Encrypt HTTPS (required for browser mic access)
 - All AI models run locally — zero external API calls, zero ongoing costs
 - PostgreSQL with volume persistence and backup-ready mount
 - Single `docker compose up` to start everything
 
 **Cloud (Railway) includes:**
+
 - Cloudflare Pages: free global CDN, auto-HTTPS, connect GitHub → auto-deploy
 - Railway: persistent WebSocket support, built-in PostgreSQL + Redis, one-platform simplicity
 - Same platform used for dev/QA/staging — deploy to production via Railway environment promotion
 - Cloud AI: Groq (STT, free tier), Anthropic/OpenAI (LLM), OpenAI tts-1 (TTS)
 
 **Cloud (Fly.io) includes:**
+
 - Cloudflare Pages for frontend (same as Railway option)
 - Fly.io free tier: 3 shared-cpu VMs (256MB each) — sufficient for 50 students
 - Neon free tier: 500MB PostgreSQL with auto-suspend (sub-second cold start)
@@ -1035,13 +1087,13 @@ No hybrid — schools either self-host everything or use cloud everything. The a
 
 #### Summary
 
-| Context | Platform | Why |
-|---|---|---|
-| **Local dev** | Docker Compose | Full stack parity with self-hosted production |
-| **Dev / QA / Staging** | Railway | PR preview environments, built-in DB per preview, zero DevOps |
-| **Production (self-hosted)** | Docker Compose + Caddy | Default. $0 cost, full sovereignty. |
-| **Production (cloud, simple)** | Cloudflare Pages + Railway | ~$5/mo. Same platform as dev/QA. One dashboard. |
-| **Production (cloud, free)** | Cloudflare Pages + Fly.io + Neon + Upstash | $0 but 4 platforms to manage. |
+| Context                        | Platform                                   | Why                                                           |
+| ------------------------------ | ------------------------------------------ | ------------------------------------------------------------- |
+| **Local dev**                  | Docker Compose                             | Full stack parity with self-hosted production                 |
+| **Dev / QA / Staging**         | Railway                                    | PR preview environments, built-in DB per preview, zero DevOps |
+| **Production (self-hosted)**   | Docker Compose + Caddy                     | Default. $0 cost, full sovereignty.                           |
+| **Production (cloud, simple)** | Cloudflare Pages + Railway                 | ~$5/mo. Same platform as dev/QA. One dashboard.               |
+| **Production (cloud, free)**   | Cloudflare Pages + Fly.io + Neon + Upstash | $0 but 4 platforms to manage.                                 |
 
 ---
 
@@ -1154,13 +1206,24 @@ WS /api/simulator/session
     "clarity": { "score": 60, "notes": "Hesitation before nature of distress" }
   },
   "field_check_results": {
-    "mayday_x3": true, "this_is": true, "vessel_name_x3": true,
-    "callsign_or_mmsi": true, "position": true, "nature": true,
-    "assistance": true, "persons_on_board": false, "over": true
+    "mayday_x3": true,
+    "this_is": true,
+    "vessel_name_x3": true,
+    "callsign_or_mmsi": true,
+    "position": true,
+    "nature": true,
+    "assistance": true,
+    "persons_on_board": false,
+    "over": true
   },
   "transcript_log": [
     { "turn": 1, "actor": "student", "text": "MAYDAY MAYDAY MAYDAY...", "timestamp": "14:31:05" },
-    { "turn": 2, "actor": "mrcc", "text": "MAYDAY Motor Vessel BLUE DUCK...", "timestamp": "14:31:12" }
+    {
+      "turn": 2,
+      "actor": "mrcc",
+      "text": "MAYDAY Motor Vessel BLUE DUCK...",
+      "timestamp": "14:31:12"
+    }
   ],
   "stt_provider": "openai/gpt-4o-mini-transcribe",
   "stt_confidence": [0.94, 0.87],
@@ -1304,17 +1367,17 @@ The MVP is successful when a maritime training school can deploy the application
 
 ### Post-MVP / v2+ Enhancements
 
-| Feature | Value | Complexity |
-|---|---|---|
-| **Instructor dashboard** | Class analytics, scenario assignment, progress export | Medium |
-| **Custom scenario editor** | In-app scenario authoring for instructors | Medium-High |
-| **Multiplayer mode** | Student-to-student radio practice (one as vessel, one as coast station) | High |
-| **Multilingual UI** | Translated interface; radio comms stay in English | Medium |
-| **Offline simulator** | Pre-scripted scenario packs + local rubric engine + browser STT fallback | Medium |
-| **Exam practice mode** | Timed, exam-condition simulations with official question pool integration | Medium |
-| **Hardware lab integration** | Sync progress between app and physical GMDSS simulators | High |
-| **Completion certificates** | School-branded completion attestations (not official ROC certificates) | Low |
-| **Analytics and reporting** | Curriculum QA: which scenarios produce lowest scores, rubric effectiveness analysis | Medium |
+| Feature                      | Value                                                                               | Complexity  |
+| ---------------------------- | ----------------------------------------------------------------------------------- | ----------- |
+| **Instructor dashboard**     | Class analytics, scenario assignment, progress export                               | Medium      |
+| **Custom scenario editor**   | In-app scenario authoring for instructors                                           | Medium-High |
+| **Multiplayer mode**         | Student-to-student radio practice (one as vessel, one as coast station)             | High        |
+| **Multilingual UI**          | Translated interface; radio comms stay in English                                   | Medium      |
+| **Offline simulator**        | Pre-scripted scenario packs + local rubric engine + browser STT fallback            | Medium      |
+| **Exam practice mode**       | Timed, exam-condition simulations with official question pool integration           | Medium      |
+| **Hardware lab integration** | Sync progress between app and physical GMDSS simulators                             | High        |
+| **Completion certificates**  | School-branded completion attestations (not official ROC certificates)              | Low         |
+| **Analytics and reporting**  | Curriculum QA: which scenarios produce lowest scores, rubric effectiveness analysis | Medium      |
 
 ### Integration Opportunities
 
@@ -1326,13 +1389,13 @@ The MVP is successful when a maritime training school can deploy the application
 
 ## 15. Risks & Mitigations
 
-| # | Risk | Impact | Likelihood | Mitigation |
-|---|---|---|---|---|
-| 1 | **AI latency exceeds acceptable threshold on school networks** | Simulator feels broken; students lose confidence in the tool | Medium | Explicit degraded UX for slow/failed turns; pre-scripted fallback responses in every scenario step; accept 2–3s pause as natural "radio delay"; local AI option eliminates network dependency |
-| 2 | **STT inaccuracy with accented English unfairly penalizes non-native speakers** | Scoring perceived as unfair; instructor trust erodes | Medium-High | Use accent-robust STT models; build tolerance into rubric field matching (fuzzy match, synonyms); store STT confidence per turn for dispute resolution; typed input fallback for individual turns |
-| 3 | **Copyright restrictions prevent embedding authoritative IMO/ITU content** | Cannot use official diagrams or procedure text verbatim | High (certain) | Paraphrase all content; cite as references only; implement rules in code rather than copying specification text; use US Public Domain sources (FCC, USCG) where applicable |
-| 4 | **API costs scale faster than expected with student usage** | Unsustainable for school-as-a-service model without direct payment | Medium | **Self-hosted is the default** (faster-whisper + Llama + Piper, no GPU, free). Cloud APIs are optional fallbacks. Cost is zero for self-hosted; guided voice drills use STT only (no LLM+TTS). |
-| 5 | **Web Audio API inconsistencies across mobile browsers (especially iOS Safari)** | Audio capture or playback fails on common student devices | Medium | `AudioContext.resume()` on user gesture; extensive device testing matrix; fallback to MediaRecorder-only capture if AudioWorklet unavailable; simplified mode reduces audio processing complexity |
+| #   | Risk                                                                             | Impact                                                             | Likelihood     | Mitigation                                                                                                                                                                                        |
+| --- | -------------------------------------------------------------------------------- | ------------------------------------------------------------------ | -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1   | **AI latency exceeds acceptable threshold on school networks**                   | Simulator feels broken; students lose confidence in the tool       | Medium         | Explicit degraded UX for slow/failed turns; pre-scripted fallback responses in every scenario step; accept 2–3s pause as natural "radio delay"; local AI option eliminates network dependency     |
+| 2   | **STT inaccuracy with accented English unfairly penalizes non-native speakers**  | Scoring perceived as unfair; instructor trust erodes               | Medium-High    | Use accent-robust STT models; build tolerance into rubric field matching (fuzzy match, synonyms); store STT confidence per turn for dispute resolution; typed input fallback for individual turns |
+| 3   | **Copyright restrictions prevent embedding authoritative IMO/ITU content**       | Cannot use official diagrams or procedure text verbatim            | High (certain) | Paraphrase all content; cite as references only; implement rules in code rather than copying specification text; use US Public Domain sources (FCC, USCG) where applicable                        |
+| 4   | **API costs scale faster than expected with student usage**                      | Unsustainable for school-as-a-service model without direct payment | Medium         | **Self-hosted is the default** (faster-whisper + Llama + Piper, no GPU, free). Cloud APIs are optional fallbacks. Cost is zero for self-hosted; guided voice drills use STT only (no LLM+TTS).    |
+| 5   | **Web Audio API inconsistencies across mobile browsers (especially iOS Safari)** | Audio capture or playback fails on common student devices          | Medium         | `AudioContext.resume()` on user gesture; extensive device testing matrix; fallback to MediaRecorder-only capture if AudioWorklet unavailable; simplified mode reduces audio processing complexity |
 
 ---
 
@@ -1340,56 +1403,56 @@ The MVP is successful when a maritime training school can deploy the application
 
 ### Related Documents
 
-| Document | Location | Contents |
-|---|---|---|
-| Design Document (v0.2) | `docs/design-document.md` | Full architectural detail, scenario scripts, wireframes, audio processing chains |
-| UI Concept Sketch | `docs/mockups/ui-concept-radio-training-dashboard.svg` | First visual concept — dark theme, 3-column layout, radio panel with LCD |
-| Detailed Component Mockup | `docs/mockups/gemini-ui-component.html` | **Primary reference** — full HTML/CSS component mock with exact colors, gradients, shadows, knobs, LCD, PTT, bubbles, scoring |
-| Dashboard Wireframe | `docs/mockups/wireframe-01-dashboard-desktop.svg` | Landing page: today card, curriculum list, stats sidebar |
-| Simulator Desktop Wireframe | `docs/mockups/wireframe-02-simulator-desktop.svg` | Desktop simulator layout with brief/panel/script/review sub-nav |
-| Simulator Mobile Wireframe | `docs/mockups/wireframe-03-simulator-mobile.svg` | Mobile portrait layout with bottom tab bar |
-| Polished Desktop Mock | `docs/mockups/mock-04-simulator-desktop-polished.svg` | High-fidelity dark theme desktop with radio panel |
-| SVG Recreations | `docs/mockups/gemini-ui-recreated*.svg` | SVG-only renditions of the component mockup |
-| Asset Catalog (Free/Reusable) | `docs/deep-research-report.md` | Prioritized catalog of CC0/MIT/PD assets for simulator |
-| PWA & Content Research | `docs/deep-research-report (1).md` | Regulatory sources, PWA patterns, exam frameworks, data model, wireframes |
+| Document                      | Location                                               | Contents                                                                                                                      |
+| ----------------------------- | ------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------- |
+| Design Document (v0.2)        | `docs/design-document.md`                              | Full architectural detail, scenario scripts, wireframes, audio processing chains                                              |
+| UI Concept Sketch             | `docs/mockups/ui-concept-radio-training-dashboard.svg` | First visual concept — dark theme, 3-column layout, radio panel with LCD                                                      |
+| Detailed Component Mockup     | `docs/mockups/gemini-ui-component.html`                | **Primary reference** — full HTML/CSS component mock with exact colors, gradients, shadows, knobs, LCD, PTT, bubbles, scoring |
+| Dashboard Wireframe           | `docs/mockups/wireframe-01-dashboard-desktop.svg`      | Landing page: today card, curriculum list, stats sidebar                                                                      |
+| Simulator Desktop Wireframe   | `docs/mockups/wireframe-02-simulator-desktop.svg`      | Desktop simulator layout with brief/panel/script/review sub-nav                                                               |
+| Simulator Mobile Wireframe    | `docs/mockups/wireframe-03-simulator-mobile.svg`       | Mobile portrait layout with bottom tab bar                                                                                    |
+| Polished Desktop Mock         | `docs/mockups/mock-04-simulator-desktop-polished.svg`  | High-fidelity dark theme desktop with radio panel                                                                             |
+| SVG Recreations               | `docs/mockups/gemini-ui-recreated*.svg`                | SVG-only renditions of the component mockup                                                                                   |
+| Asset Catalog (Free/Reusable) | `docs/deep-research-report.md`                         | Prioritized catalog of CC0/MIT/PD assets for simulator                                                                        |
+| PWA & Content Research        | `docs/deep-research-report (1).md`                     | Regulatory sources, PWA patterns, exam frameworks, data model, wireframes                                                     |
 
 ### Scenario Catalog Reference
 
-| Tier | # | Scenario | Type |
-|---|---|---|---|
-| 1 | 1.1 | Radio Check (jurisdiction-appropriate channel) | Routine |
-| 1 | 1.2 | Channel Change | Routine |
-| 1 | 1.3 | Port Entry Call | Routine |
-| 1 | 1.4 | Position Report | Routine |
-| 1 | 1.5 | Navigational Warning Reception | Safety |
-| 2 | 2.1 | MAYDAY — Fire on Board | Distress |
-| 2 | 2.2 | MAYDAY — Flooding/Sinking | Distress |
-| 2 | 2.3 | MAYDAY — Collision | Distress |
-| 2 | 2.4 | PAN PAN — Engine Failure | Urgency |
-| 2 | 2.5 | PAN PAN — Medical Emergency | Urgency |
-| 2 | 2.6 | SECURITE — Hazard to Navigation | Safety |
-| 2 | 2.7 | MAYDAY Acknowledgment | Distress (response) |
-| 2 | 2.8 | MAYDAY RELAY | Distress (relay) |
-| 3 | 3.1 | Full SAR Scenario | Distress + SAR |
-| 3 | 3.2 | False Alert Cancellation | DSC procedure |
-| 3 | 3.3 | Distress During Routine Call | Priority shift |
-| 3 | 3.4 | Multiple Vessel Coordination | SAR |
-| 3 | 3.5 | Deteriorating Situation | Escalation |
-| 3 | 3.6 | Port Approach with Traffic | Routine + Safety |
-| 3 | 3.7 | Night/Poor Visibility Encounter | Safety |
-| 3 | 3.8 | MEDICO with Evacuation | Urgency → Distress |
-| 4 | 4.1 | Exam: Random Distress | Timed exam |
-| 4 | 4.2 | Exam: Random Urgency/Safety | Timed exam |
-| 4 | 4.3 | Exam: Mixed Traffic | Timed exam |
-| 4 | 4.4 | Exam: Full Voyage | Timed exam |
+| Tier | #   | Scenario                                       | Type                |
+| ---- | --- | ---------------------------------------------- | ------------------- |
+| 1    | 1.1 | Radio Check (jurisdiction-appropriate channel) | Routine             |
+| 1    | 1.2 | Channel Change                                 | Routine             |
+| 1    | 1.3 | Port Entry Call                                | Routine             |
+| 1    | 1.4 | Position Report                                | Routine             |
+| 1    | 1.5 | Navigational Warning Reception                 | Safety              |
+| 2    | 2.1 | MAYDAY — Fire on Board                         | Distress            |
+| 2    | 2.2 | MAYDAY — Flooding/Sinking                      | Distress            |
+| 2    | 2.3 | MAYDAY — Collision                             | Distress            |
+| 2    | 2.4 | PAN PAN — Engine Failure                       | Urgency             |
+| 2    | 2.5 | PAN PAN — Medical Emergency                    | Urgency             |
+| 2    | 2.6 | SECURITE — Hazard to Navigation                | Safety              |
+| 2    | 2.7 | MAYDAY Acknowledgment                          | Distress (response) |
+| 2    | 2.8 | MAYDAY RELAY                                   | Distress (relay)    |
+| 3    | 3.1 | Full SAR Scenario                              | Distress + SAR      |
+| 3    | 3.2 | False Alert Cancellation                       | DSC procedure       |
+| 3    | 3.3 | Distress During Routine Call                   | Priority shift      |
+| 3    | 3.4 | Multiple Vessel Coordination                   | SAR                 |
+| 3    | 3.5 | Deteriorating Situation                        | Escalation          |
+| 3    | 3.6 | Port Approach with Traffic                     | Routine + Safety    |
+| 3    | 3.7 | Night/Poor Visibility Encounter                | Safety              |
+| 3    | 3.8 | MEDICO with Evacuation                         | Urgency → Distress  |
+| 4    | 4.1 | Exam: Random Distress                          | Timed exam          |
+| 4    | 4.2 | Exam: Random Urgency/Safety                    | Timed exam          |
+| 4    | 4.3 | Exam: Mixed Traffic                            | Timed exam          |
+| 4    | 4.4 | Exam: Full Voyage                              | Timed exam          |
 
 ### Content Licensing Summary
 
-| Source | License | Usage Constraint |
-|---|---|---|
-| Application code | AGPLv3 | Modified versions must share source |
-| Original content (lessons, scenarios) | CC BY-SA 4.0 (proposed) | Attribution + share-alike |
-| FCC / USCG materials | US Public Domain | Free to use; cite as best practice |
-| ITU-R / IMO documents | All rights reserved | Reference only; paraphrase, don't copy |
-| Audio SFX (Freesound) | CC0 | No restrictions |
-| UI libraries (Radix, Tabler, etc.) | MIT/ISC/Apache/BSD | Preserve license notices |
+| Source                                | License                 | Usage Constraint                       |
+| ------------------------------------- | ----------------------- | -------------------------------------- |
+| Application code                      | AGPLv3                  | Modified versions must share source    |
+| Original content (lessons, scenarios) | CC BY-SA 4.0 (proposed) | Attribution + share-alike              |
+| FCC / USCG materials                  | US Public Domain        | Free to use; cite as best practice     |
+| ITU-R / IMO documents                 | All rights reserved     | Reference only; paraphrase, don't copy |
+| Audio SFX (Freesound)                 | CC0                     | No restrictions                        |
+| UI libraries (Radix, Tabler, etc.)    | MIT/ISC/Apache/BSD      | Preserve license notices               |

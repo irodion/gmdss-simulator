@@ -1,0 +1,6 @@
+vp check && semgrep scan --config auto --error --quiet && vp run -r test && vp run -r build
+
+# Scan dependencies for vulnerabilities when lockfile or manifests change
+if git diff --name-only HEAD@{1} HEAD 2>/dev/null | grep -qE '(pnpm-lock\.yaml|package\.json|pnpm-workspace\.yaml)'; then
+  vet scan --no-banner
+fi
