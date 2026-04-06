@@ -13,8 +13,8 @@ import {
   user,
 } from "../src/schema/index.ts";
 
-const TEST_DB_URL =
-  process.env["DATABASE_URL"] ?? "postgres://gmdss:gmdss_dev@localhost:5432/gmdss_dev";
+// Forwarded from vite.config.ts test.env
+const TEST_DB_URL = process.env["DATABASE_URL"]!;
 
 let db: Database;
 let closeFn: () => Promise<void>;

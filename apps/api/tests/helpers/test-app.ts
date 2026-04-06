@@ -2,10 +2,10 @@ import type { FastifyInstance } from "fastify";
 
 import { buildApp } from "../../src/app.ts";
 
-const TEST_DB_URL =
-  process.env["DATABASE_URL"] ?? "postgres://gmdss:gmdss_dev@localhost:5432/gmdss_dev";
-const TEST_REDIS_URL = process.env["REDIS_URL"] ?? "redis://localhost:6379";
-const TEST_SECRET = "test-better-auth-secret-at-least-32-chars";
+// These env vars are forwarded from vite.config.ts test.env
+const TEST_DB_URL = process.env["DATABASE_URL"]!;
+const TEST_REDIS_URL = process.env["REDIS_URL"]!;
+const TEST_SECRET = process.env["BETTER_AUTH_SECRET"]!;
 
 export async function createTestApp(): Promise<FastifyInstance> {
   const app = await buildApp({
