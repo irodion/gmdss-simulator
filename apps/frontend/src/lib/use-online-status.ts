@@ -1,22 +1,78 @@
 import { useSyncExternalStore } from "react";
 
+import { API_BASE } from "./api-client.ts";
+
+const HEALTH_URL = `${API_BASE}/api/health`;
+const POLL_INTERVAL = 30_000;
+
+let currentStatus = false;
+let listenerCount = 0;
+let timer: ReturnType<typeof setInterval> | undefined;
+const listeners = new Set<() => void>();
+
+function notify() {
+  for (const fn of listeners) fn();
+}
+
+let polling = false;
+
+async function poll() {
+  if (polling) return;
+  polling = true;
+  try {
+    const next = await checkApi();
+    if (next !== currentStatus) {
+      currentStatus = next;
+      notify();
+    }
+  } finally {
+    polling = false;
+  }
+}
+
+function onNetworkChange() {
+  void poll();
+}
+
+function startPolling() {
+  void poll();
+  timer = setInterval(() => void poll(), POLL_INTERVAL);
+  window.addEventListener("online", onNetworkChange);
+  window.addEventListener("offline", onNetworkChange);
+}
+
+function stopPolling() {
+  clearInterval(timer);
+  timer = undefined;
+  window.removeEventListener("online", onNetworkChange);
+  window.removeEventListener("offline", onNetworkChange);
+}
+
 function subscribe(callback: () => void) {
-  window.addEventListener("online", callback);
-  window.addEventListener("offline", callback);
+  listeners.add(callback);
+  if (++listenerCount === 1) startPolling();
   return () => {
-    window.removeEventListener("online", callback);
-    window.removeEventListener("offline", callback);
+    listeners.delete(callback);
+    if (--listenerCount === 0) stopPolling();
   };
 }
 
 function getSnapshot() {
-  return navigator.onLine;
+  return currentStatus;
 }
 
-function getServerSnapshot() {
-  return true;
+async function checkApi(): Promise<boolean> {
+  if (!navigator.onLine) return false;
+  try {
+    const res = await fetch(HEALTH_URL, { method: "GET", cache: "no-store" });
+    if (!res.ok) return false;
+    const body = (await res.json()) as Record<string, unknown>;
+    return body["status"] === "ok";
+  } catch {
+    return false;
+  }
 }
 
 export function useOnlineStatus(): boolean {
-  return useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
+  return useSyncExternalStore(subscribe, getSnapshot, getSnapshot);
 }

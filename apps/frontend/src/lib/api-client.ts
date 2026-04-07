@@ -1,4 +1,4 @@
-const API_BASE = import.meta.env["VITE_API_URL"] ?? "";
+export const API_BASE = import.meta.env["VITE_API_URL"] ?? "";
 
 export async function apiFetch<T>(path: string, opts?: RequestInit): Promise<T> {
   const baseHeaders: Record<string, string> = { "Content-Type": "application/json" };
