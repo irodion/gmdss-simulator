@@ -1,0 +1,41 @@
+{
+  "version": 1,
+  "title": "The VHF Radio Panel",
+  "sections": [
+    {
+      "type": "text",
+      "content": "A modern marine VHF radio has several essential controls. Understanding each control's function is critical before operating the radio at sea. The main panel includes a channel selector, volume control, squelch adjustment, push-to-talk (PTT) button, and power output switch."
+    },
+    {
+      "type": "table",
+      "headers": ["Control", "Function"],
+      "rows": [
+        ["Channel Selector", "Selects the operating VHF channel (1–88 international)"],
+        ["Volume", "Adjusts the audio output level of received signals"],
+        ["Squelch", "Filters out background noise when no signal is present"],
+        ["PTT (Push-to-Talk)", "Hold to transmit, release to receive"],
+        ["Power (H/L)", "Switches between high power (25W) and low power (1W)"],
+        ["Dual Watch", "Monitors Channel 16 while listening on another channel"],
+        ["DSC", "Accesses Digital Selective Calling functions on Channel 70"]
+      ]
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "title": "Pre-Departure Check",
+      "content": "Always test your radio before departing by making a radio check call on a working channel. Verify that you can transmit and receive clearly."
+    },
+    {
+      "type": "exercise",
+      "prompt": "What does the squelch control do?",
+      "options": [
+        { "key": "a", "text": "Changes the transmission frequency" },
+        { "key": "b", "text": "Adjusts the transmission power" },
+        { "key": "c", "text": "Filters out background noise when no signal is present" },
+        { "key": "d", "text": "Switches between simplex and duplex mode" }
+      ],
+      "answer": "c",
+      "explanation": "The squelch control sets a threshold that silences the receiver when no signal is present, filtering out background static and noise."
+    }
+  ]
+}

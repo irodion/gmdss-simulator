@@ -1,6 +1,7 @@
 import { useTranslation } from "react-i18next";
 
 import { useOnlineStatus } from "../lib/use-online-status.ts";
+import "../styles/tokens.css";
 
 export function OfflineBanner() {
   const isOnline = useOnlineStatus();
@@ -11,7 +12,12 @@ export function OfflineBanner() {
   return (
     <div
       role="alert"
-      style={{ background: "#d67a39", color: "#fff", padding: "8px 16px", textAlign: "center" }}
+      style={{
+        background: "var(--orange-0)",
+        color: "var(--text)",
+        padding: "8px 16px",
+        textAlign: "center",
+      }}
     >
       {t("offlineBanner")}
     </div>

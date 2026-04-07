@@ -1,0 +1,63 @@
+:root {
+  /* Backgrounds */
+  --bg-0: #0d1926;
+  --bg-1: #13202f;
+  --bg-2: #1c2a3a;
+
+  /* Frame */
+  --frame: #10151b;
+  --frame-line: #2a435a;
+
+  /* Surfaces */
+  --surface-dark: #161b22;
+  --surface-panel: #1b1f27;
+  --surface-card: #1b2027;
+  --surface-card-2: #111418;
+
+  /* Steel (metallic gradients) */
+  --steel-0: #8e9197;
+  --steel-1: #666a71;
+  --steel-2: #50555c;
+  --steel-3: #2f343b;
+
+  /* Text */
+  --text: #eef2f5;
+  --text-soft: #aab5c0;
+  --text-dim: #7f8b97;
+
+  /* Lines */
+  --line-soft: rgba(130, 150, 168, 0.24);
+  --button-line: rgba(101, 121, 143, 0.78);
+
+  /* LCD */
+  --lcd-0: #b6e0aa;
+  --lcd-1: #a7d798;
+  --lcd-2: #95ca89;
+  --lcd-text: #1b2c1b;
+
+  /* Buttons */
+  --blue-btn-0: #2d3c50;
+  --blue-btn-1: #182536;
+
+  /* Accent */
+  --orange-0: #d67a39;
+  --orange-1: #b45d25;
+  --orange-2: #6a3116;
+  --success: #57f04f;
+  --error: #e54;
+  --warning: #f0c040;
+
+  /* Spacing */
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 22px;
+  --radius-shell: 25px;
+  --radius-card: 22px;
+  --radius-pill: 999px;
+
+  /* Shadows */
+  --shadow-sm: 0 4px 8px rgba(0, 0, 0, 0.2);
+  --shadow-md: 0 8px 12px rgba(0, 0, 0, 0.22), inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  --shadow-lg: 0 14px 24px rgba(0, 0, 0, 0.32), 0 6px 12px rgba(0, 0, 0, 0.22);
+  --shadow-xl: 0 20px 40px rgba(0, 0, 0, 0.42), 0 10px 18px rgba(0, 0, 0, 0.28);
+}

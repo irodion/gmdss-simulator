@@ -1,0 +1,31 @@
+{
+  "version": 1,
+  "title": "SECURITE Procedure",
+  "sections": [
+    {
+      "type": "text",
+      "content": "SECURITE (pronounced \"say-cure-ee-tay\") is the safety signal used to broadcast navigational or meteorological warnings. It is addressed to all stations and does not require acknowledgment. Safety messages include reports of floating hazards, unlit buoys, severe weather, or other dangers to navigation."
+    },
+    {
+      "type": "tool-embed",
+      "tool": "script-builder",
+      "config": { "scriptType": "securite" }
+    },
+    {
+      "type": "text",
+      "content": "The format is: SECURITE SECURITE SECURITE — ALL STATIONS (x3) — THIS IS — [station name x3] — [safety information including position of hazard] — OUT. Note that SECURITE messages end with OUT, not OVER, because no reply is expected."
+    },
+    {
+      "type": "exercise",
+      "prompt": "SECURITE messages end with which proword?",
+      "options": [
+        { "key": "a", "text": "OVER" },
+        { "key": "b", "text": "ROGER" },
+        { "key": "c", "text": "OUT" },
+        { "key": "d", "text": "WILCO" }
+      ],
+      "answer": "c",
+      "explanation": "SECURITE messages end with OUT because they are broadcasts that do not require a reply. OVER would indicate you expect a response."
+    }
+  ]
+}

@@ -5,7 +5,7 @@ export default defineConfig({
     dts: {
       tsgo: true,
     },
-    exports: true,
+    exports: false,
   },
   lint: {
     options: {
@@ -14,4 +14,15 @@ export default defineConfig({
     },
   },
   fmt: {},
+  test: {
+    coverage: {
+      provider: "v8",
+      thresholds: {
+        lines: 85,
+        branches: 85,
+        functions: 85,
+        statements: 85,
+      },
+    },
+  },
 });

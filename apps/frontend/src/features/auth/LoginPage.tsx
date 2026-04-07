@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router";
 import { useTranslation } from "react-i18next";
 
 import { authClient } from "../../lib/auth-client.ts";
+import "../../styles/pages.css";
 
 export function LoginPage() {
   const { t } = useTranslation("auth");
@@ -24,16 +25,18 @@ export function LoginPage() {
   }
 
   return (
-    <div style={{ maxWidth: 400, margin: "80px auto", padding: "0 16px" }}>
-      <h2>{t("signIn")}</h2>
+    <div style={{ maxWidth: 400, margin: "80px auto" }}>
+      <h2 className="page-title">{t("signIn")}</h2>
       {error && (
-        <p role="alert" style={{ color: "#e54" }}>
+        <div className="alert alert--error" role="alert">
           {error}
-        </p>
+        </div>
       )}
       <form onSubmit={(e) => void handleSubmit(e)}>
-        <div style={{ marginBottom: 12 }}>
-          <label htmlFor="email">{t("email")}</label>
+        <div className="form-group">
+          <label htmlFor="email" className="form-label">
+            {t("email")}
+          </label>
           <input
             id="email"
             name="email"
@@ -41,11 +44,13 @@ export function LoginPage() {
             required
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            style={{ display: "block", width: "100%" }}
+            className="form-input"
           />
         </div>
-        <div style={{ marginBottom: 12 }}>
-          <label htmlFor="password">{t("password")}</label>
+        <div className="form-group">
+          <label htmlFor="password" className="form-label">
+            {t("password")}
+          </label>
           <input
             id="password"
             name="password"
@@ -53,10 +58,12 @@ export function LoginPage() {
             required
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            style={{ display: "block", width: "100%" }}
+            className="form-input"
           />
         </div>
-        <button type="submit">{t("signIn")}</button>
+        <button type="submit" className="btn btn--primary">
+          {t("signIn")}
+        </button>
       </form>
       <p>
         {t("noAccount")} <Link to="/register">{t("signUp")}</Link>

@@ -1,0 +1,33 @@
+{
+  "version": 1,
+  "title": "Distress Alerts via DSC",
+  "sections": [
+    {
+      "type": "text",
+      "content": "To send a DSC distress alert, lift the protective cover over the distress button and press and hold it for approximately 5 seconds. The radio will transmit a distress alert on Channel 70 containing your MMSI, position (if GPS-connected), time, and nature of distress. After transmission, the radio automatically switches to Channel 16 for voice follow-up."
+    },
+    {
+      "type": "tool-embed",
+      "tool": "dsc-builder",
+      "config": { "category": "distress" }
+    },
+    {
+      "type": "callout",
+      "variant": "warning",
+      "title": "Auto-Repeat",
+      "content": "Hold the distress button for 5 seconds. The radio will automatically repeat the distress alert every 3.5–4.5 minutes until it is acknowledged by a coast station."
+    },
+    {
+      "type": "exercise",
+      "prompt": "What should you do immediately after sending a DSC distress alert?",
+      "options": [
+        { "key": "a", "text": "Turn off the radio to conserve battery" },
+        { "key": "b", "text": "Begin a voice MAYDAY call on Channel 16" },
+        { "key": "c", "text": "Send another DSC alert on a different channel" },
+        { "key": "d", "text": "Switch to Channel 13 and wait" }
+      ],
+      "answer": "b",
+      "explanation": "After sending a DSC distress alert, the radio switches to Channel 16 where you should immediately begin a voice MAYDAY call with full details of your distress situation."
+    }
+  ]
+}

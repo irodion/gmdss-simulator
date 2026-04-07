@@ -1,0 +1,33 @@
+{
+  "version": 1,
+  "title": "VHF Channel System",
+  "sections": [
+    {
+      "type": "text",
+      "content": "The international VHF maritime channel plan assigns specific frequencies to numbered channels. Channels can be simplex (transmit and receive on the same frequency) or duplex (different frequencies for ship and shore). Channel numbering follows the ITU Radio Regulations, with some regional variations."
+    },
+    {
+      "type": "tool-embed",
+      "tool": "channel-explorer",
+      "config": { "jurisdiction": "international" }
+    },
+    {
+      "type": "callout",
+      "variant": "warning",
+      "title": "Channel 70 — DSC Only",
+      "content": "Never transmit voice on Channel 70 — it is reserved exclusively for Digital Selective Calling (DSC). Voice transmissions on this channel will interfere with automated distress alerting."
+    },
+    {
+      "type": "exercise",
+      "prompt": "Which channel is the international distress and calling channel?",
+      "options": [
+        { "key": "a", "text": "Channel 9" },
+        { "key": "b", "text": "Channel 13" },
+        { "key": "c", "text": "Channel 16" },
+        { "key": "d", "text": "Channel 70" }
+      ],
+      "answer": "c",
+      "explanation": "Channel 16 (156.800 MHz) is the international distress, safety, and calling frequency. Channel 70 is reserved for DSC digital alerts, not voice."
+    }
+  ]
+}

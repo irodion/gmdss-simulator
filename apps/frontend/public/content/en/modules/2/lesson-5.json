@@ -1,0 +1,32 @@
+{
+  "version": 1,
+  "title": "False Alerts and Cancellation",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Accidental DSC distress alerts happen more often than expected. If you accidentally trigger a distress alert, you must cancel it immediately to prevent unnecessary deployment of SAR resources. Failure to cancel a false alert is a serious violation of maritime radio regulations."
+    },
+    {
+      "type": "callout",
+      "variant": "warning",
+      "title": "Immediate Cancellation Required",
+      "content": "If you accidentally send a DSC distress alert, cancel it immediately by broadcasting on Channel 16. A sample template: \"ALL STATIONS, ALL STATIONS, ALL STATIONS — THIS IS [vessel name] [MMSI] — CANCEL MY DISTRESS ALERT OF [date/time UTC] — MASTER [master name].\" Adapt this template to your vessel's details and always follow your local maritime authority's procedures for false alert cancellation."
+    },
+    {
+      "type": "text",
+      "content": "After making the voice cancellation on Channel 16, also cancel the DSC alert using your radio's DSC menu if it supports this function. Coast stations may contact you to confirm the cancellation. Always cooperate fully with authorities."
+    },
+    {
+      "type": "exercise",
+      "prompt": "What should you do after accidentally sending a false DSC distress alert?",
+      "options": [
+        { "key": "a", "text": "Turn off the radio and hope no one noticed" },
+        { "key": "b", "text": "Wait for a coast station to call you first" },
+        { "key": "c", "text": "Cancel it immediately on Channel 16 with a voice broadcast" },
+        { "key": "d", "text": "Send another distress alert to override the first" }
+      ],
+      "answer": "c",
+      "explanation": "You must immediately broadcast a cancellation on Channel 16, identifying your vessel and the time of the false alert. This prevents unnecessary SAR operations."
+    }
+  ]
+}

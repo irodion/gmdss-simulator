@@ -1,5 +1,8 @@
 #!/bin/sh
 
+# Build utils first — frontend type-check needs its .d.mts declarations
+(cd packages/utils && vp run build) || exit 1
+
 vp check || exit 1
 
 if command -v semgrep >/dev/null 2>&1; then
@@ -8,7 +11,13 @@ else
   echo "WARNING: semgrep not found — skipping security scan (install: brew install semgrep)" >&2
 fi
 
-vp run -r test && vp run -r build || exit 1
+# Run tests — coverage for packages with thresholds, plain for the rest
+(cd packages/db && vp test) || exit 1
+(cd packages/utils && vp test --coverage) || exit 1
+(cd apps/api && vp test) || exit 1
+(cd apps/frontend && vp test --coverage) || exit 1
+
+vp run -r build || exit 1
 
 # Scan dependencies for vulnerabilities when lockfile or manifests change
 remote_ref=$(git rev-parse --abbrev-ref "@{push}" 2>/dev/null || echo "HEAD@{1}")

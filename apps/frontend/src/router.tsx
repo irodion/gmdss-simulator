@@ -4,10 +4,16 @@ import { Layout } from "./components/Layout.tsx";
 import { ProtectedRoute } from "./components/ProtectedRoute.tsx";
 import { LoginPage } from "./features/auth/LoginPage.tsx";
 import { RegisterPage } from "./features/auth/RegisterPage.tsx";
+import { DashboardPage } from "./features/dashboard/DashboardPage.tsx";
 import { ModuleListPage } from "./features/learning/ModuleListPage.tsx";
 import { LessonListPage } from "./features/learning/LessonListPage.tsx";
 import { LessonPage } from "./features/learning/LessonPage.tsx";
 import { QuizPage } from "./features/learning/QuizPage.tsx";
+import { ToolIndexPage } from "./features/learning/tools/ToolIndexPage.tsx";
+import { ChannelExplorerPage } from "./features/learning/tools/ChannelExplorerPage.tsx";
+import { MmsiDecoderPage } from "./features/learning/tools/MmsiDecoderPage.tsx";
+import { DscBuilderPage } from "./features/learning/tools/DscBuilderPage.tsx";
+import { ScriptBuilderPage } from "./features/learning/tools/ScriptBuilderPage.tsx";
 import { ProgressPage } from "./features/progress/ProgressPage.tsx";
 
 export function AppRouter() {
@@ -17,6 +23,14 @@ export function AppRouter() {
         <Route element={<Layout />}>
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
+          <Route
+            path="/dashboard"
+            element={
+              <ProtectedRoute>
+                <DashboardPage />
+              </ProtectedRoute>
+            }
+          />
           <Route
             path="/learn"
             element={
@@ -50,6 +64,46 @@ export function AppRouter() {
             }
           />
           <Route
+            path="/tools"
+            element={
+              <ProtectedRoute>
+                <ToolIndexPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/tools/channel-explorer"
+            element={
+              <ProtectedRoute>
+                <ChannelExplorerPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/tools/mmsi-decoder"
+            element={
+              <ProtectedRoute>
+                <MmsiDecoderPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/tools/dsc-builder"
+            element={
+              <ProtectedRoute>
+                <DscBuilderPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/tools/script-builder"
+            element={
+              <ProtectedRoute>
+                <ScriptBuilderPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
             path="/progress"
             element={
               <ProtectedRoute>
@@ -57,7 +111,7 @@ export function AppRouter() {
               </ProtectedRoute>
             }
           />
-          <Route path="/" element={<Navigate to="/learn" replace />} />
+          <Route path="/" element={<Navigate to="/dashboard" replace />} />
         </Route>
       </Routes>
     </BrowserRouter>

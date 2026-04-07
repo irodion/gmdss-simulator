@@ -2,18 +2,9 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import { apiFetch } from "../../lib/api-client.ts";
-
-interface ModuleProgress {
-  lessonsCompleted: number;
-  lessonsTotal: number;
-  quizBestScore: number | null;
-  quizPassed: boolean;
-  status: "locked" | "in_progress" | "completed";
-}
-
-interface ProgressData {
-  modules: Record<string, ModuleProgress>;
-}
+import { statusBadgeClass, progressPercent } from "../../lib/api-types.ts";
+import type { ProgressData } from "../../lib/api-types.ts";
+import "../../styles/pages.css";
 
 export function ProgressPage() {
   const { t } = useTranslation("progress");
@@ -35,11 +26,11 @@ export function ProgressPage() {
 
   if (error) {
     return (
-      <div style={{ padding: 16 }}>
-        <p role="alert" style={{ color: "#e54" }}>
+      <div>
+        <div className="alert alert--error" role="alert">
           {error}
-        </p>
-        <button type="button" onClick={loadProgress}>
+        </div>
+        <button type="button" className="btn" onClick={loadProgress}>
           Retry
         </button>
       </div>
@@ -49,26 +40,33 @@ export function ProgressPage() {
   if (!progress) return <div>{t("common:loading")}</div>;
 
   return (
-    <div style={{ padding: 16 }}>
-      <h2>{t("title")}</h2>
-      {Object.entries(progress.modules).map(([id, mod]) => (
-        <div
-          key={id}
-          style={{ marginBottom: 12, padding: 12, border: "1px solid #2a435a", borderRadius: 8 }}
-        >
-          <strong>{id}</strong>
-          <span style={{ marginLeft: 8 }}>{t(`learning:${mod.status}`)}</span>
-          <div>
-            {t("learning:lessonsCompleted", {
-              completed: mod.lessonsCompleted,
-              total: mod.lessonsTotal,
-            })}
+    <div>
+      <h2 className="page-title">{t("title")}</h2>
+      <div className="card-grid">
+        {Object.entries(progress.modules).map(([id, mod]) => (
+          <div key={id} className="card">
+            <div className="card__title">{id}</div>
+            <span className={statusBadgeClass(mod.status)}>{t(`learning:${mod.status}`)}</span>
+            <div className="card__meta">
+              {t("learning:lessonsCompleted", {
+                completed: mod.lessonsCompleted,
+                total: mod.lessonsTotal,
+              })}
+            </div>
+            {mod.quizBestScore !== null && (
+              <div className="card__meta">{t("learning:score", { score: mod.quizBestScore })}</div>
+            )}
+            <div className="progress-bar">
+              <div
+                className="progress-bar__fill"
+                style={{
+                  width: progressPercent(mod.lessonsCompleted, mod.lessonsTotal),
+                }}
+              />
+            </div>
           </div>
-          {mod.quizBestScore !== null && (
-            <div>{t("learning:score", { score: mod.quizBestScore })}</div>
-          )}
-        </div>
-      ))}
+        ))}
+      </div>
     </div>
   );
 }

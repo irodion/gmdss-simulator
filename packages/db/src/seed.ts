@@ -566,70 +566,255 @@ async function seed() {
         ])
         .onConflictDoNothing();
 
-      // International jurisdiction
+      // Jurisdictions
       await tx
         .insert(jurisdictions)
-        .values({
-          id: "international",
-          label: "International (ITU default)",
-          channelPlan: {
-            "06": {
-              purpose: "Ship-to-ship safety",
-              type: "voice",
-              tx_allowed: true,
+        .values([
+          {
+            id: "international",
+            label: "International (ITU default)",
+            channelPlan: {
+              "06": {
+                purpose: "Ship-to-ship safety",
+                type: "voice",
+                tx_allowed: true,
+              },
+              "08": {
+                purpose: "Ship-to-ship",
+                type: "voice",
+                tx_allowed: true,
+              },
+              "09": {
+                purpose: "Calling, boating activities",
+                type: "voice",
+                tx_allowed: true,
+              },
+              "10": {
+                purpose: "Ship-to-ship",
+                type: "voice",
+                tx_allowed: true,
+              },
+              "13": {
+                purpose: "Bridge-to-bridge navigation safety",
+                type: "voice",
+                tx_allowed: true,
+                max_power: "low",
+              },
+              "16": {
+                purpose: "Distress, safety, and calling",
+                type: "voice",
+                tx_allowed: true,
+              },
+              "67": {
+                purpose: "Small craft safety",
+                type: "voice",
+                tx_allowed: true,
+              },
+              "70": {
+                purpose: "Digital Selective Calling",
+                type: "dsc_only",
+                tx_allowed: false,
+              },
+              "72": {
+                purpose: "Ship-to-ship",
+                type: "voice",
+                tx_allowed: true,
+              },
+              "77": {
+                purpose: "Ship-to-ship",
+                type: "voice",
+                tx_allowed: true,
+              },
             },
-            "08": {
-              purpose: "Ship-to-ship",
-              type: "voice",
-              tx_allowed: true,
-            },
-            "09": {
-              purpose: "Calling, boating activities",
-              type: "voice",
-              tx_allowed: true,
-            },
-            "10": {
-              purpose: "Ship-to-ship",
-              type: "voice",
-              tx_allowed: true,
-            },
-            "13": {
-              purpose: "Bridge-to-bridge navigation safety",
-              type: "voice",
-              tx_allowed: true,
-              max_power: "low",
-            },
-            "16": {
-              purpose: "Distress, safety, and calling",
-              type: "voice",
-              tx_allowed: true,
-            },
-            "67": {
-              purpose: "Small craft safety",
-              type: "voice",
-              tx_allowed: true,
-            },
-            "70": {
-              purpose: "Digital Selective Calling",
-              type: "dsc_only",
-              tx_allowed: false,
-            },
-            "72": {
-              purpose: "Ship-to-ship",
-              type: "voice",
-              tx_allowed: true,
-            },
-            "77": {
-              purpose: "Ship-to-ship",
-              type: "voice",
-              tx_allowed: true,
-            },
+            callingChannel: 16,
+            dscChannel: 70,
+            notes:
+              "Standard ITU Radio Regulations Appendix 18 channel plan. Regional supplements may assign additional channels for port operations.",
           },
-          callingChannel: 16,
-          dscChannel: 70,
-          notes:
-            "Standard ITU Radio Regulations Appendix 18 channel plan. Regional supplements may assign additional channels for port operations.",
-        })
+          {
+            id: "us",
+            label: "United States (FCC)",
+            channelPlan: {
+              "09": {
+                purpose: "Boating calling (secondary)",
+                type: "voice",
+                tx_allowed: true,
+              },
+              "13": {
+                purpose: "Bridge-to-bridge navigation safety",
+                type: "voice",
+                tx_allowed: true,
+                max_power: "low",
+              },
+              "16": {
+                purpose: "Distress, safety, and calling",
+                type: "voice",
+                tx_allowed: true,
+              },
+              "22": {
+                purpose: "Coast Guard liaison / MSI broadcasts",
+                type: "voice",
+                tx_allowed: true,
+              },
+              "68": {
+                purpose: "Non-commercial working",
+                type: "voice",
+                tx_allowed: true,
+              },
+              "69": {
+                purpose: "Non-commercial working",
+                type: "voice",
+                tx_allowed: true,
+              },
+              "70": {
+                purpose: "Digital Selective Calling",
+                type: "dsc_only",
+                tx_allowed: false,
+              },
+              "71": {
+                purpose: "Non-commercial working",
+                type: "voice",
+                tx_allowed: true,
+              },
+              "72": {
+                purpose: "Non-commercial working (ship-to-ship)",
+                type: "voice",
+                tx_allowed: true,
+              },
+              "78": {
+                purpose: "Non-commercial working",
+                type: "voice",
+                tx_allowed: true,
+              },
+            },
+            callingChannel: 16,
+            dscChannel: 70,
+            notes:
+              "FCC Part 80 VHF channel plan. Channel 9 is the secondary calling channel. Channel 22A is used for Coast Guard communications.",
+          },
+          {
+            id: "uk",
+            label: "United Kingdom (Ofcom/MCA)",
+            channelPlan: {
+              "06": {
+                purpose: "Ship-to-ship safety",
+                type: "voice",
+                tx_allowed: true,
+              },
+              "08": {
+                purpose: "Ship-to-ship",
+                type: "voice",
+                tx_allowed: true,
+              },
+              "10": {
+                purpose: "Ship-to-ship",
+                type: "voice",
+                tx_allowed: true,
+              },
+              "13": {
+                purpose: "Bridge-to-bridge navigation safety",
+                type: "voice",
+                tx_allowed: true,
+                max_power: "low",
+              },
+              "16": {
+                purpose: "Distress, safety, and calling",
+                type: "voice",
+                tx_allowed: true,
+              },
+              "67": {
+                purpose: "Small craft safety / coastguard",
+                type: "voice",
+                tx_allowed: true,
+              },
+              "70": {
+                purpose: "Digital Selective Calling",
+                type: "dsc_only",
+                tx_allowed: false,
+              },
+              "73": {
+                purpose: "Ship-to-ship",
+                type: "voice",
+                tx_allowed: true,
+              },
+              "77": {
+                purpose: "Ship-to-ship",
+                type: "voice",
+                tx_allowed: true,
+              },
+              "80": {
+                purpose: "Marina operations",
+                type: "voice",
+                tx_allowed: true,
+              },
+            },
+            callingChannel: 16,
+            dscChannel: 70,
+            notes:
+              "UK VHF channel plan administered by Ofcom and MCA. Channel M1 (37A/157.850 MHz) is used by marinas. Channel 67 is primary small craft safety.",
+          },
+          {
+            id: "ca",
+            label: "Canada (ISED/CCG)",
+            channelPlan: {
+              "06": {
+                purpose: "Ship-to-ship safety",
+                type: "voice",
+                tx_allowed: true,
+              },
+              "09": {
+                purpose: "Calling (commercial and non-commercial)",
+                type: "voice",
+                tx_allowed: true,
+              },
+              "13": {
+                purpose: "Bridge-to-bridge navigation safety",
+                type: "voice",
+                tx_allowed: true,
+                max_power: "low",
+              },
+              "14": {
+                purpose: "Vessel Traffic Services",
+                type: "voice",
+                tx_allowed: true,
+              },
+              "16": {
+                purpose: "Distress, safety, and calling",
+                type: "voice",
+                tx_allowed: true,
+              },
+              "68": {
+                purpose: "Non-commercial working",
+                type: "voice",
+                tx_allowed: true,
+              },
+              "70": {
+                purpose: "Digital Selective Calling",
+                type: "dsc_only",
+                tx_allowed: false,
+              },
+              "71": {
+                purpose: "Non-commercial working",
+                type: "voice",
+                tx_allowed: true,
+              },
+              "72": {
+                purpose: "Non-commercial working (ship-to-ship)",
+                type: "voice",
+                tx_allowed: true,
+              },
+              "83": {
+                purpose: "Canadian Coast Guard auxiliary",
+                type: "voice",
+                tx_allowed: true,
+              },
+            },
+            callingChannel: 16,
+            dscChannel: 70,
+            notes:
+              "Canadian VHF channel plan administered by ISED. Channel 16 is monitored by Canadian Coast Guard MCTS centres.",
+          },
+        ])
         .onConflictDoNothing();
     });
 

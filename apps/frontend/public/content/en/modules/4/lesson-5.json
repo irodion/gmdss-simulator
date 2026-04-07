@@ -1,0 +1,35 @@
+{
+  "version": 1,
+  "title": "Personal Locator Beacons",
+  "sections": [
+    {
+      "type": "text",
+      "content": "A Personal Locator Beacon (PLB) is a portable 406 MHz distress beacon designed to be carried by an individual. Unlike an EPIRB, which is registered to a vessel and typically float-free mounted, a PLB is registered to a person and manually activated. PLBs transmit to the same Cospas-Sarsat satellite system as EPIRBs."
+    },
+    {
+      "type": "text",
+      "content": "PLBs are smaller and lighter than EPIRBs, making them suitable for personal carry on deck, in a liferaft, or even during shore-based activities. Most modern PLBs include an internal GPS for precise position reporting. Battery life is typically 24 hours minimum, compared to 48 hours for an EPIRB."
+    },
+    {
+      "type": "callout",
+      "variant": "info",
+      "title": "Registration",
+      "content": "Like EPIRBs, PLBs must be registered with the national authority. Registration information includes the owner's name, emergency contacts, and a description of typical activities. Unregistered beacons may result in delayed SAR response."
+    },
+    {
+      "type": "exercise",
+      "prompt": "What is the main difference between a PLB and an EPIRB?",
+      "options": [
+        { "key": "a", "text": "PLBs use a different satellite system" },
+        {
+          "key": "b",
+          "text": "A PLB is registered to a person; an EPIRB is registered to a vessel"
+        },
+        { "key": "c", "text": "PLBs only work on land" },
+        { "key": "d", "text": "EPIRBs are manually activated; PLBs are automatic" }
+      ],
+      "answer": "b",
+      "explanation": "The key distinction is registration: a PLB is registered to a person and carried individually, while an EPIRB is registered to a vessel and typically mounted in a float-free bracket on the ship."
+    }
+  ]
+}

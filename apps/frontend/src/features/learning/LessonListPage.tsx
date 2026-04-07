@@ -3,6 +3,7 @@ import { useParams, Link } from "react-router";
 import { useTranslation } from "react-i18next";
 
 import { apiFetch } from "../../lib/api-client.ts";
+import "../../styles/pages.css";
 
 interface Lesson {
   id: string;
@@ -40,36 +41,43 @@ export function LessonListPage() {
 
   if (error) {
     return (
-      <div style={{ padding: 16 }}>
-        <p role="alert" style={{ color: "#e54" }}>
+      <div>
+        <div className="alert alert--error" role="alert">
           {error}
-        </p>
-        <Link to="/learn">&larr; {t("modules")}</Link>
+        </div>
+        <Link to="/learn" className="back-link">
+          &larr; {t("modules")}
+        </Link>
       </div>
     );
   }
 
   return (
-    <div style={{ padding: 16 }}>
-      <Link to="/learn">&larr; {t("modules")}</Link>
-      <h2>{t("lessons")}</h2>
-      <ul style={{ listStyle: "none", padding: 0 }}>
+    <div>
+      <Link to="/learn" className="back-link">
+        &larr; {t("modules")}
+      </Link>
+      <h2 className="page-title">{t("lessons")}</h2>
+      <div className="card-grid">
         {lessons.map((lesson) => (
-          <li
-            key={lesson.id}
-            style={{ marginBottom: 8, padding: 12, border: "1px solid #2a435a", borderRadius: 8 }}
-          >
+          <div key={lesson.id} className="card card--interactive">
             <Link
               to={`/learn/${moduleId}/${lesson.id}`}
               style={{ textDecoration: "none", color: "inherit" }}
             >
-              {lesson.title}
-              {lesson.completed && <span style={{ marginLeft: 8, color: "#57f04f" }}>✓</span>}
+              <span className="card__title">
+                {lesson.title}
+                {lesson.completed && (
+                  <span style={{ marginLeft: 8, color: "var(--success)" }}>✓</span>
+                )}
+              </span>
             </Link>
-          </li>
+          </div>
         ))}
-      </ul>
-      <Link to={`/learn/${moduleId}/quiz`}>{t("startQuiz")}</Link>
+      </div>
+      <Link to={`/learn/${moduleId}/quiz`} className="btn btn--primary">
+        {t("startQuiz")}
+      </Link>
     </div>
   );
 }

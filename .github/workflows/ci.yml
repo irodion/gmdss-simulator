@@ -26,18 +26,22 @@ jobs:
         with:
           cache: true
 
+      - name: Build utils package (types needed by frontend check)
+        run: vp run build
+        working-directory: packages/utils
+
       - name: Check (lint + format + type-check)
         run: vp check
 
       - name: Semgrep security scan
         run: pip install semgrep && semgrep scan --config auto --error
 
-      - name: Unit tests (frontend)
-        run: vp test
+      - name: Unit tests (frontend) with coverage
+        run: vp test --coverage
         working-directory: apps/frontend
 
-      - name: Unit tests (utils)
-        run: vp test
+      - name: Unit tests (utils) with coverage
+        run: vp test --coverage
         working-directory: packages/utils
 
       - name: Build
@@ -48,7 +52,9 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: coverage-report
-          path: apps/frontend/coverage/
+          path: |
+            apps/frontend/coverage/
+            packages/utils/coverage/
           retention-days: 7
 
   # Integration tests after merge — requires PostgreSQL + Redis

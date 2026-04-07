@@ -1,0 +1,32 @@
+{
+  "version": 1,
+  "title": "Responding to Distress",
+  "sections": [
+    {
+      "type": "text",
+      "content": "When you hear a MAYDAY call, you have a legal obligation to render assistance if you are in a position to do so. Listen carefully, record the details, and acknowledge on Channel 16 if no coast station has responded. Do not transmit unless you can contribute to the rescue effort."
+    },
+    {
+      "type": "callout",
+      "variant": "warning",
+      "title": "DSC Acknowledgment — Coast Stations Only",
+      "content": "Ships must NOT send DSC distress acknowledgments — only coast stations do this. If a ship acknowledges a DSC distress alert, it will stop the automatic repeat, potentially preventing the coast station from receiving the alert."
+    },
+    {
+      "type": "text",
+      "content": "To acknowledge a MAYDAY by voice on Channel 16: MAYDAY — [vessel in distress name x3] — THIS IS — [your vessel name x3] — RECEIVED MAYDAY — [provide your position, speed, and estimated time of arrival if proceeding to assist] — OVER."
+    },
+    {
+      "type": "exercise",
+      "prompt": "Who should send a DSC distress acknowledgment?",
+      "options": [
+        { "key": "a", "text": "Any vessel that receives the alert" },
+        { "key": "b", "text": "Only the nearest vessel" },
+        { "key": "c", "text": "Only coast stations" },
+        { "key": "d", "text": "The vessel in distress, to confirm their own alert" }
+      ],
+      "answer": "c",
+      "explanation": "Only coast stations should send DSC distress acknowledgments. A ship's DSC acknowledgment would stop the automatic repeat of the distress alert, possibly preventing other stations from receiving it."
+    }
+  ]
+}
