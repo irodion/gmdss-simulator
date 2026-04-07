@@ -754,6 +754,97 @@ async function seed() {
               "UK VHF channel plan administered by Ofcom and MCA. Channel M1 (37A/157.850 MHz) is used by marinas. Channel 67 is primary small craft safety.",
           },
           {
+            id: "eu",
+            label: "Europe / Mediterranean (CEPT)",
+            channelPlan: {
+              "06": {
+                purpose: "Ship-to-ship safety",
+                type: "voice",
+                tx_allowed: true,
+              },
+              "08": {
+                purpose: "Ship-to-ship",
+                type: "voice",
+                tx_allowed: true,
+              },
+              "09": {
+                purpose: "Marina calling / recreational",
+                type: "voice",
+                tx_allowed: true,
+              },
+              "10": {
+                purpose: "Ship-to-ship / SAR coordination",
+                type: "voice",
+                tx_allowed: true,
+              },
+              "12": {
+                purpose: "Port operations / VTS",
+                type: "voice",
+                tx_allowed: true,
+              },
+              "13": {
+                purpose: "Bridge-to-bridge navigation safety",
+                type: "voice",
+                tx_allowed: true,
+                max_power: "low",
+              },
+              "14": {
+                purpose: "Port operations / VTS",
+                type: "voice",
+                tx_allowed: true,
+              },
+              "16": {
+                purpose: "Distress, safety, and calling",
+                type: "voice",
+                tx_allowed: true,
+              },
+              "67": {
+                purpose: "Small craft safety / SAR coordination",
+                type: "voice",
+                tx_allowed: true,
+              },
+              "70": {
+                purpose: "Digital Selective Calling",
+                type: "dsc_only",
+                tx_allowed: false,
+              },
+              "72": {
+                purpose: "Ship-to-ship",
+                type: "voice",
+                tx_allowed: true,
+              },
+              "73": {
+                purpose: "SAR coordination / ship-to-ship",
+                type: "voice",
+                tx_allowed: true,
+              },
+              "77": {
+                purpose: "Ship-to-ship",
+                type: "voice",
+                tx_allowed: true,
+              },
+              "80": {
+                purpose: "Marina operations",
+                type: "voice",
+                tx_allowed: true,
+              },
+              "87B": {
+                purpose: "AIS 1",
+                type: "dsc_only",
+                tx_allowed: false,
+              },
+              "88B": {
+                purpose: "AIS 2",
+                type: "dsc_only",
+                tx_allowed: false,
+              },
+            },
+            callingChannel: 16,
+            dscChannel: 70,
+            notes:
+              "CEPT/ECC harmonised channel plan based on ITU Appendix 18. Covers all European and Mediterranean waters including Israel. Channel 9 is widely used for marina calling. Channels 12 and 14 are common port operations/VTS frequencies. AIS transponders use channels 87B and 88B.",
+          },
+          {
             id: "ca",
             label: "Canada (ISED/CCG)",
             channelPlan: {
