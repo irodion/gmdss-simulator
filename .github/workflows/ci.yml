@@ -26,6 +26,10 @@ jobs:
         with:
           cache: true
 
+      - name: Build utils package (types needed by frontend check)
+        run: vp run build
+        working-directory: packages/utils
+
       - name: Check (lint + format + type-check)
         run: vp check
 
