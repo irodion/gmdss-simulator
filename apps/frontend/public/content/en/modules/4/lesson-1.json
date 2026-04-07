@@ -1,0 +1,32 @@
+{
+  "version": 1,
+  "title": "EPIRB",
+  "sections": [
+    {
+      "type": "text",
+      "content": "An Emergency Position Indicating Radio Beacon (EPIRB) is a distress beacon that transmits on 406 MHz to the Cospas-Sarsat satellite system. When activated, it sends a coded signal containing the vessel's identity and, if GPS-equipped, its precise position. A secondary signal on 121.5 MHz serves as a homing frequency for SAR aircraft."
+    },
+    {
+      "type": "callout",
+      "variant": "info",
+      "title": "Satellite Detection",
+      "content": "A 406 MHz EPIRB transmits your vessel's identity and position to Cospas-Sarsat satellites. Detection time is typically under an hour with MEOSAR, and position accuracy is within 5 km (or 100 m with internal GPS)."
+    },
+    {
+      "type": "text",
+      "content": "EPIRBs must be registered with the national authority and the registration details kept current. Float-free EPIRBs activate automatically when the hydrostatic release mechanism detects submersion. Battery life is a minimum of 48 hours once activated."
+    },
+    {
+      "type": "exercise",
+      "prompt": "On which frequencies does a 406 MHz EPIRB transmit?",
+      "options": [
+        { "key": "a", "text": "156.8 MHz and 161.975 MHz" },
+        { "key": "b", "text": "406 MHz and 121.5 MHz" },
+        { "key": "c", "text": "9 GHz only" },
+        { "key": "d", "text": "2182 kHz and 406 MHz" }
+      ],
+      "answer": "b",
+      "explanation": "A 406 MHz EPIRB transmits a digital identity signal on 406 MHz (detected by Cospas-Sarsat satellites) and a homing signal on 121.5 MHz for SAR aircraft to locate the beacon."
+    }
+  ]
+}

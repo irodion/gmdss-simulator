@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 
 import { apiFetch, ApiError } from "../../lib/api-client.ts";
 import { addPendingAction } from "../../lib/offline-db.ts";
+import "../../styles/pages.css";
 
 interface Question {
   id: string;
@@ -86,57 +87,65 @@ export function QuizPage() {
 
   if (result) {
     return (
-      <div style={{ padding: 16 }}>
-        <h2>{quiz.title}</h2>
+      <div>
+        <h2 className="page-title">{quiz.title}</h2>
         <p>{t("score", { score: result.score })}</p>
-        <p style={{ color: result.passed ? "#57f04f" : "#e54" }}>
+        <div className={`alert ${result.passed ? "alert--success" : "alert--error"}`}>
           {result.passed ? t("passed") : t("failed")}
-        </p>
+        </div>
         {result.unlocked.length > 0 && <p>Unlocked: {result.unlocked.join(", ")}</p>}
-        <Link to={`/learn/${moduleId}`}>&larr; Back to lessons</Link>
+        <Link to={`/learn/${moduleId}`} className="back-link">
+          &larr; Back to lessons
+        </Link>
       </div>
     );
   }
 
   return (
-    <div style={{ padding: 16 }}>
-      <Link to={`/learn/${moduleId}`}>&larr; Back</Link>
-      <h2>{quiz.title}</h2>
-      <p>{t("passThreshold", { threshold: quiz.passThreshold })}</p>
+    <div>
+      <Link to={`/learn/${moduleId}`} className="back-link">
+        &larr; Back
+      </Link>
+      <h2 className="page-title">{quiz.title}</h2>
+      <p className="page-subtitle">{t("passThreshold", { threshold: quiz.passThreshold })}</p>
       {submitError && (
-        <p role="alert" style={{ color: "#e54" }}>
+        <div className="alert alert--error" role="alert">
           {submitError}
-        </p>
+        </div>
       )}
       {queued && (
-        <p role="status" style={{ color: "#f0c040" }}>
+        <div className="alert alert--info" role="status">
           Your submission has been queued and will be sent when you are back online.
-        </p>
+        </div>
       )}
       <form onSubmit={(e) => void handleSubmit(e)}>
         {quiz.questions.map((q, i) => (
-          <fieldset
-            key={q.id}
-            style={{ marginBottom: 16, border: "1px solid #2a435a", padding: 12, borderRadius: 8 }}
-          >
-            <legend>
+          <div key={q.id} className="exercise">
+            <div className="exercise__prompt">
               {i + 1}. {q.text}
-            </legend>
-            {q.options.map((opt) => (
-              <label key={opt.key} style={{ display: "block", margin: "4px 0" }}>
-                <input
-                  type="radio"
-                  name={q.id}
-                  value={opt.key}
-                  checked={answers[q.id] === opt.key}
-                  onChange={() => setAnswers((prev) => ({ ...prev, [q.id]: opt.key }))}
-                />{" "}
-                {opt.text}
-              </label>
-            ))}
-          </fieldset>
+            </div>
+            <div className="exercise__options">
+              {q.options.map((opt) => (
+                <label
+                  key={opt.key}
+                  className={`exercise__option${answers[q.id] === opt.key ? " exercise__option--selected" : ""}`}
+                >
+                  <input
+                    type="radio"
+                    name={q.id}
+                    value={opt.key}
+                    checked={answers[q.id] === opt.key}
+                    onChange={() => setAnswers((prev) => ({ ...prev, [q.id]: opt.key }))}
+                  />{" "}
+                  {opt.text}
+                </label>
+              ))}
+            </div>
+          </div>
         ))}
-        <button type="submit">{t("submitQuiz")}</button>
+        <button type="submit" className="btn btn--primary">
+          {t("submitQuiz")}
+        </button>
       </form>
     </div>
   );

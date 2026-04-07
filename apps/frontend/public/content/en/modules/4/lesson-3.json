@@ -1,0 +1,32 @@
+{
+  "version": 1,
+  "title": "Radar Reflectors",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Radar reflectors are passive devices that enhance a vessel's visibility on other ships' radar screens. Small vessels made of fiberglass or wood produce very weak radar echoes, making them nearly invisible to approaching ships. A properly mounted radar reflector significantly increases the radar cross-section."
+    },
+    {
+      "type": "text",
+      "content": "The most common types are the octahedral (corner) reflector and the lens-type reflector. Octahedral reflectors consist of metal plates arranged to reflect radar signals back to their source. They should be mounted as high as possible, at least 4 metres above the waterline, in the \"rain-catching\" position for maximum effectiveness."
+    },
+    {
+      "type": "callout",
+      "variant": "info",
+      "title": "SOLAS Requirement",
+      "content": "SOLAS requires all vessels under 150 GT to carry a radar reflector or equivalent means to make them detectable by radar. Lifeboats and liferafts should also be equipped with radar reflectors."
+    },
+    {
+      "type": "exercise",
+      "prompt": "What is the purpose of a radar reflector?",
+      "options": [
+        { "key": "a", "text": "To jam nearby radar signals" },
+        { "key": "b", "text": "To enhance radar visibility of small vessels" },
+        { "key": "c", "text": "To detect other vessels' radar emissions" },
+        { "key": "d", "text": "To send distress signals via radar" }
+      ],
+      "answer": "b",
+      "explanation": "Radar reflectors are passive devices that enhance a vessel's radar cross-section, making it more visible on other ships' radar screens. This is critical for small vessels that would otherwise be difficult to detect."
+    }
+  ]
+}

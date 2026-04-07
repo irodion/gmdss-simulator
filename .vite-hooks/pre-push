@@ -8,7 +8,14 @@ else
   echo "WARNING: semgrep not found — skipping security scan (install: brew install semgrep)" >&2
 fi
 
-vp run -r test && vp run -r build || exit 1
+# Run all tests
+vp run -r test || exit 1
+
+# Enforce coverage thresholds (fails if below 85%)
+(cd apps/frontend && vp test --coverage) || exit 1
+(cd packages/utils && vp test --coverage) || exit 1
+
+vp run -r build || exit 1
 
 # Scan dependencies for vulnerabilities when lockfile or manifests change
 remote_ref=$(git rev-parse --abbrev-ref "@{push}" 2>/dev/null || echo "HEAD@{1}")

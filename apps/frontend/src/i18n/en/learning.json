@@ -11,5 +11,13 @@
   "score": "Score: {{score}}%",
   "passed": "Passed!",
   "failed": "Not passed. Try again.",
-  "lessonsCompleted": "{{completed}}/{{total}} lessons"
+  "lessonsCompleted": "{{completed}}/{{total}} lessons",
+  "dashboard": "Dashboard",
+  "continueLearning": "Continue learning",
+  "curriculum": "Curriculum",
+  "referenceTools": "Reference Tools",
+  "markComplete": "Mark as complete",
+  "checkAnswer": "Check answer",
+  "correct": "Correct!",
+  "incorrect": "Incorrect."
 }

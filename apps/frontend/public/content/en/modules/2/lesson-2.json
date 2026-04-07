@@ -1,0 +1,38 @@
+{
+  "version": 1,
+  "title": "DSC Overview",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Digital Selective Calling (DSC) is an automated digital system that allows radio operators to send pre-formatted digital messages on VHF Channel 70. DSC can alert specific stations or all stations in range, and is a core component of the Global Maritime Distress and Safety System (GMDSS)."
+    },
+    {
+      "type": "callout",
+      "variant": "info",
+      "title": "One-Button Distress",
+      "content": "DSC enables you to send a distress alert at the press of a single button. The alert includes your MMSI, position, and nature of distress — transmitted automatically on Channel 70."
+    },
+    {
+      "type": "table",
+      "headers": ["DSC Category", "Purpose", "Addressed To"],
+      "rows": [
+        ["Distress", "Vessel in grave and imminent danger", "All stations"],
+        ["Urgency", "Urgent safety information", "All stations or specific station"],
+        ["Safety", "Navigational or meteorological warnings", "All stations or specific station"],
+        ["Routine", "Operational communications", "Specific station only"]
+      ]
+    },
+    {
+      "type": "exercise",
+      "prompt": "On which VHF channel are DSC calls transmitted?",
+      "options": [
+        { "key": "a", "text": "Channel 6" },
+        { "key": "b", "text": "Channel 16" },
+        { "key": "c", "text": "Channel 70" },
+        { "key": "d", "text": "Channel 13" }
+      ],
+      "answer": "c",
+      "explanation": "All VHF DSC calls are transmitted on Channel 70 (156.525 MHz), which is reserved exclusively for DSC digital transmissions."
+    }
+  ]
+}

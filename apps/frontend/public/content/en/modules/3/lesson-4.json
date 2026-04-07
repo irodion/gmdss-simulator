@@ -1,0 +1,31 @@
+{
+  "version": 1,
+  "title": "PAN PAN Procedure",
+  "sections": [
+    {
+      "type": "text",
+      "content": "PAN PAN (from French \"panne\" — breakdown) is the urgency signal used when a vessel or person faces a situation that is serious but not involving grave and imminent danger. Common urgency situations include person overboard, loss of steering, engine failure in a shipping lane, or a medical emergency requiring advice."
+    },
+    {
+      "type": "tool-embed",
+      "tool": "script-builder",
+      "config": { "scriptType": "pan-pan" }
+    },
+    {
+      "type": "text",
+      "content": "The PAN PAN format is: PAN PAN PAN PAN PAN PAN — ALL STATIONS (x3) or specific station — THIS IS — [vessel name x3] — [nature of urgency] — [position] — [assistance required] — [number of persons on board] — [any other useful information] — OVER."
+    },
+    {
+      "type": "exercise",
+      "prompt": "What signal word indicates an urgency situation?",
+      "options": [
+        { "key": "a", "text": "MAYDAY" },
+        { "key": "b", "text": "PAN PAN" },
+        { "key": "c", "text": "SECURITE" },
+        { "key": "d", "text": "SOS" }
+      ],
+      "answer": "b",
+      "explanation": "PAN PAN is the urgency signal, indicating a serious situation that does not involve immediate danger to the vessel or person. MAYDAY is for distress (grave and imminent danger)."
+    }
+  ]
+}

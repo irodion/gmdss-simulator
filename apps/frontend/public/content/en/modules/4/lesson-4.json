@@ -1,0 +1,44 @@
+{
+  "version": 1,
+  "title": "GPS and Position Reporting",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Modern VHF DSC radios can be connected to a GPS receiver to automatically include position and time in every DSC alert. This is especially critical for distress alerts, where an accurate position can save valuable time in the SAR response. If GPS is not connected, position must be entered manually."
+    },
+    {
+      "type": "table",
+      "headers": ["Format Element", "Example", "Notes"],
+      "rows": [
+        ["Latitude", "48° 27.3' N", "Degrees and decimal minutes, N or S"],
+        ["Longitude", "004° 52.1' W", "Degrees and decimal minutes, E or W"],
+        [
+          "Spoken form",
+          "FOUR EIGHT DEGREES TWO SEVEN DECIMAL THREE MINUTES NORTH",
+          "Each digit spoken individually"
+        ],
+        [
+          "Alternative",
+          "Bearing 045° from Cape Finisterre, distance 15 NM",
+          "Use when exact lat/lon is unavailable"
+        ]
+      ]
+    },
+    {
+      "type": "text",
+      "content": "Always verify that your GPS is feeding current position data to the DSC radio. A stale or missing GPS fix will be indicated on the radio display. In distress, an inaccurate position could direct rescuers to the wrong location."
+    },
+    {
+      "type": "exercise",
+      "prompt": "How is position typically expressed in maritime communications?",
+      "options": [
+        { "key": "a", "text": "UTM grid coordinates" },
+        { "key": "b", "text": "Degrees and minutes with N/S and E/W" },
+        { "key": "c", "text": "Decimal degrees only" },
+        { "key": "d", "text": "Maidenhead grid locator" }
+      ],
+      "answer": "b",
+      "explanation": "Maritime position is expressed in degrees, minutes, and decimal minutes with N/S for latitude and E/W for longitude (e.g., 48° 27.3' N, 004° 52.1' W)."
+    }
+  ]
+}

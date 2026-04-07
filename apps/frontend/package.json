@@ -11,6 +11,7 @@
     "test:coverage": "vp test --coverage"
   },
   "dependencies": {
+    "@gmdss-simulator/utils": "workspace:*",
     "better-auth": "catalog:",
     "i18next": "catalog:",
     "idb": "catalog:",

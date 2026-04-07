@@ -1,0 +1,35 @@
+{
+  "version": 1,
+  "title": "MAYDAY RELAY",
+  "sections": [
+    {
+      "type": "text",
+      "content": "A MAYDAY RELAY is transmitted when a vessel aware of a distress situation determines that the vessel in distress is unable to send its own distress call, or when no coast station has acknowledged a distress call. Any vessel or coast station may transmit a MAYDAY RELAY on behalf of the distressed vessel."
+    },
+    {
+      "type": "callout",
+      "variant": "info",
+      "title": "When to Relay",
+      "content": "Use MAYDAY RELAY when you hear a distress call that no coast station has acknowledged, or when the vessel in distress cannot communicate on its own behalf."
+    },
+    {
+      "type": "text",
+      "content": "The MAYDAY RELAY format is: MAYDAY RELAY (x3) — THIS IS — [your vessel name x3] — The following MAYDAY was received from [vessel in distress] at [time] — then repeat the original MAYDAY message — OVER."
+    },
+    {
+      "type": "exercise",
+      "prompt": "When should you send a MAYDAY RELAY?",
+      "options": [
+        { "key": "a", "text": "Whenever you hear any MAYDAY call" },
+        {
+          "key": "b",
+          "text": "When a vessel in distress cannot communicate or no coast station has acknowledged"
+        },
+        { "key": "c", "text": "Only when instructed by a coast station" },
+        { "key": "d", "text": "When you want to practice distress procedures" }
+      ],
+      "answer": "b",
+      "explanation": "A MAYDAY RELAY is sent when the vessel in distress cannot send its own call, or when you hear a distress call that has not been acknowledged by any coast station."
+    }
+  ]
+}

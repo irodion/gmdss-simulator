@@ -1,0 +1,31 @@
+{
+  "version": 1,
+  "title": "MEDICO Calls",
+  "sections": [
+    {
+      "type": "text",
+      "content": "When a medical emergency occurs at sea and the vessel has no doctor on board, the master can request medical advice via the Radio Medical service. MEDICO calls use the urgency prefix PAN PAN and are directed to a coast station that can connect you with a doctor ashore."
+    },
+    {
+      "type": "tool-embed",
+      "tool": "script-builder",
+      "config": { "scriptType": "medico" }
+    },
+    {
+      "type": "text",
+      "content": "The procedure begins with a PAN PAN call to a coast station requesting \"MEDICAL ADVICE\" or \"MEDICO.\" The coast station will arrange a link to a Radio Medical Centre. Have the patient's symptoms, vital signs, medical history, and any medications available before calling."
+    },
+    {
+      "type": "exercise",
+      "prompt": "Which signal word prefix does a MEDICO call use?",
+      "options": [
+        { "key": "a", "text": "MAYDAY" },
+        { "key": "b", "text": "PAN PAN" },
+        { "key": "c", "text": "SECURITE" },
+        { "key": "d", "text": "MEDICO has its own unique signal word" }
+      ],
+      "answer": "b",
+      "explanation": "MEDICO calls are classified as urgency traffic and use the PAN PAN prefix. The medical situation is serious but typically does not constitute grave and imminent danger to the vessel."
+    }
+  ]
+}

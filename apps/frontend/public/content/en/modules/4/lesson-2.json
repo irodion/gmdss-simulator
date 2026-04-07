@@ -1,0 +1,37 @@
+{
+  "version": 1,
+  "title": "SART",
+  "sections": [
+    {
+      "type": "text",
+      "content": "A Search and Rescue Transponder (SART) operates in the 9 GHz radar band. When interrogated by a nearby ship's or aircraft's X-band radar, the SART responds with a signal that appears as a distinctive pattern on the radar screen, guiding rescuers directly to the survivor's position."
+    },
+    {
+      "type": "table",
+      "headers": ["Characteristic", "Detail"],
+      "rows": [
+        ["Operating frequency", "9 GHz (X-band radar)"],
+        ["Radar display", "12 equally spaced dots extending outward from the SART position"],
+        ["Detection range", "Approximately 8 NM by ship radar, 30 NM by aircraft"],
+        ["Battery life", "Minimum 96 hours standby + 8 hours continuous operation"],
+        ["Mounting", "At least 1 metre above sea level for best radar detection"]
+      ]
+    },
+    {
+      "type": "text",
+      "content": "As the rescuing vessel approaches, the 12 dots merge into 12 concentric arcs, and finally into complete circles when very close. This changing pattern confirms you are closing on the SART position."
+    },
+    {
+      "type": "exercise",
+      "prompt": "How does a SART appear on a ship's radar?",
+      "options": [
+        { "key": "a", "text": "A single bright dot" },
+        { "key": "b", "text": "12 equally spaced dots in a line from the SART position" },
+        { "key": "c", "text": "A flashing ring around the radar center" },
+        { "key": "d", "text": "A continuous line pointing toward the SART" }
+      ],
+      "answer": "b",
+      "explanation": "A SART produces 12 equally spaced dots on the radar display, extending outward from the SART's position. As you get closer, these dots become arcs and then full circles."
+    }
+  ]
+}

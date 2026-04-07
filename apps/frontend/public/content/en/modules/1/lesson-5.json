@@ -1,0 +1,35 @@
+{
+  "version": 1,
+  "title": "Radio Discipline",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Maritime radio is a shared resource governed by strict rules. Transmissions must be brief, clear, and related to safety or navigation. Unnecessary, profane, or false transmissions are prohibited under international and national regulations. Personal or private conversations are not permitted on maritime VHF frequencies."
+    },
+    {
+      "type": "callout",
+      "variant": "warning",
+      "title": "False Distress Penalties",
+      "content": "False distress calls carry severe legal penalties including heavy fines and imprisonment. They divert SAR resources and endanger lives. Always treat the distress button with extreme care."
+    },
+    {
+      "type": "text",
+      "content": "Key principles of radio discipline include: listen before transmitting, keep messages concise, use standard prowords, identify your station in every transmission, and never interfere with distress traffic."
+    },
+    {
+      "type": "exercise",
+      "prompt": "Which of the following is prohibited on VHF maritime radio?",
+      "options": [
+        { "key": "a", "text": "Safety-related messages to nearby vessels" },
+        {
+          "key": "b",
+          "text": "Personal or private conversations unrelated to maritime operations"
+        },
+        { "key": "c", "text": "Position reports to a coast station" },
+        { "key": "d", "text": "Weather information broadcasts" }
+      ],
+      "answer": "b",
+      "explanation": "Maritime VHF frequencies are reserved for safety, navigation, and operational communications. Personal or private conversations are prohibited."
+    }
+  ]
+}

@@ -1,0 +1,31 @@
+{
+  "version": 1,
+  "title": "Urgency, Safety, and Routine DSC",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Non-distress DSC calls are used for urgency, safety, and routine communications. Urgency and safety calls can be addressed to all stations or a specific station. Routine calls are always addressed to a specific station using their MMSI. Each category triggers a different alert on the receiving radio."
+    },
+    {
+      "type": "tool-embed",
+      "tool": "dsc-builder",
+      "config": { "category": "urgency" }
+    },
+    {
+      "type": "text",
+      "content": "An urgency DSC alert is used when you need to transmit an urgent message concerning safety (e.g., person overboard, loss of steering). A safety DSC alert precedes navigational or meteorological warnings. Routine DSC is used to establish contact with another station before switching to a working channel."
+    },
+    {
+      "type": "exercise",
+      "prompt": "Which DSC category is used for navigational warnings?",
+      "options": [
+        { "key": "a", "text": "Distress" },
+        { "key": "b", "text": "Urgency" },
+        { "key": "c", "text": "Safety" },
+        { "key": "d", "text": "Routine" }
+      ],
+      "answer": "c",
+      "explanation": "The Safety category is used for navigational and meteorological warnings. Urgency is for situations involving danger to a vessel or person, but not grave and imminent danger."
+    }
+  ]
+}

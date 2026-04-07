@@ -1,0 +1,33 @@
+{
+  "version": 1,
+  "title": "MAYDAY Procedure",
+  "sections": [
+    {
+      "type": "text",
+      "content": "A MAYDAY call is made when a vessel or person is in grave and imminent danger and requires immediate assistance. The call follows a precise format to ensure all critical information is communicated quickly. It is broadcast on Channel 16 and should be preceded by a DSC distress alert on Channel 70 if possible."
+    },
+    {
+      "type": "tool-embed",
+      "tool": "script-builder",
+      "config": { "scriptType": "mayday" }
+    },
+    {
+      "type": "callout",
+      "variant": "info",
+      "title": "MAYDAY Format",
+      "content": "MAYDAY MAYDAY MAYDAY — THIS IS — [vessel name x3] — MAYDAY — [vessel name] — MY POSITION IS [lat/lon or bearing and distance] — [nature of distress] — [assistance required] — [number of persons on board] — [any other useful information] — OVER"
+    },
+    {
+      "type": "exercise",
+      "prompt": "How many times is the word MAYDAY spoken at the beginning of a distress call?",
+      "options": [
+        { "key": "a", "text": "Once" },
+        { "key": "b", "text": "Twice" },
+        { "key": "c", "text": "Three times" },
+        { "key": "d", "text": "Five times" }
+      ],
+      "answer": "c",
+      "explanation": "MAYDAY is spoken three times at the start of the distress call to ensure it is clearly recognized, even in poor reception conditions."
+    }
+  ]
+}

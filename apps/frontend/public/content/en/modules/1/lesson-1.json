@@ -1,0 +1,47 @@
+{
+  "version": 1,
+  "title": "What is VHF Maritime Radio?",
+  "sections": [
+    {
+      "type": "text",
+      "content": "VHF (Very High Frequency) maritime radio operates in the 156–174 MHz band and is the primary means of short-range communication at sea. It uses line-of-sight propagation, meaning the signal travels in a straight line from antenna to antenna. Typical range is 20–60 nautical miles depending on antenna height and atmospheric conditions."
+    },
+    {
+      "type": "callout",
+      "variant": "info",
+      "title": "Key Fact",
+      "content": "VHF Channel 16 (156.800 MHz) is the international distress and calling frequency, monitored continuously by all ships and coast stations."
+    },
+    {
+      "type": "table",
+      "headers": ["System", "Frequency", "Typical Range", "Primary Use"],
+      "rows": [
+        ["VHF", "156–174 MHz", "20–60 NM", "Short-range ship-to-ship and ship-to-shore"],
+        [
+          "HF/MF",
+          "1.6–27.5 MHz",
+          "Hundreds to thousands of NM",
+          "Medium/long-range ocean communications"
+        ],
+        [
+          "Satellite",
+          "1.5–1.6 GHz (L-band)",
+          "Global",
+          "Global distress alerting and communications"
+        ]
+      ]
+    },
+    {
+      "type": "exercise",
+      "prompt": "What is the typical range of a VHF maritime radio?",
+      "options": [
+        { "key": "a", "text": "5–10 nautical miles" },
+        { "key": "b", "text": "20–60 nautical miles depending on antenna height" },
+        { "key": "c", "text": "200–500 nautical miles" },
+        { "key": "d", "text": "Unlimited (global coverage)" }
+      ],
+      "answer": "b",
+      "explanation": "VHF radio uses line-of-sight propagation. Range depends primarily on antenna height at both ends, typically achieving 20–60 NM."
+    }
+  ]
+}

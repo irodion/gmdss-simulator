@@ -12,7 +12,7 @@ describe("i18n", () => {
 
   test("translates navigation items", () => {
     expect(i18n.t("nav.learn")).toBe("Learn");
-    expect(i18n.t("nav.simulator")).toBe("Simulator");
+    expect(i18n.t("nav.simulator")).toBe("Sim");
   });
 
   test("loads auth namespace", () => {

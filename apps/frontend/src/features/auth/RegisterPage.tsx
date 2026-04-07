@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router";
 import { useTranslation } from "react-i18next";
 
 import { authClient } from "../../lib/auth-client.ts";
+import "../../styles/pages.css";
 
 export function RegisterPage() {
   const { t } = useTranslation("auth");
@@ -30,16 +31,18 @@ export function RegisterPage() {
   }
 
   return (
-    <div style={{ maxWidth: 400, margin: "80px auto", padding: "0 16px" }}>
-      <h2>{t("signUp")}</h2>
+    <div style={{ maxWidth: 400, margin: "80px auto" }}>
+      <h2 className="page-title">{t("signUp")}</h2>
       {error && (
-        <p role="alert" style={{ color: "#e54" }}>
+        <div className="alert alert--error" role="alert">
           {error}
-        </p>
+        </div>
       )}
       <form onSubmit={(e) => void handleSubmit(e)}>
-        <div style={{ marginBottom: 12 }}>
-          <label htmlFor="name">{t("name")}</label>
+        <div className="form-group">
+          <label htmlFor="name" className="form-label">
+            {t("name")}
+          </label>
           <input
             id="name"
             name="name"
@@ -47,11 +50,13 @@ export function RegisterPage() {
             required
             value={name}
             onChange={(e) => setName(e.target.value)}
-            style={{ display: "block", width: "100%" }}
+            className="form-input"
           />
         </div>
-        <div style={{ marginBottom: 12 }}>
-          <label htmlFor="email">{t("email")}</label>
+        <div className="form-group">
+          <label htmlFor="email" className="form-label">
+            {t("email")}
+          </label>
           <input
             id="email"
             name="email"
@@ -59,11 +64,13 @@ export function RegisterPage() {
             required
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            style={{ display: "block", width: "100%" }}
+            className="form-input"
           />
         </div>
-        <div style={{ marginBottom: 12 }}>
-          <label htmlFor="password">{t("password")}</label>
+        <div className="form-group">
+          <label htmlFor="password" className="form-label">
+            {t("password")}
+          </label>
           <input
             id="password"
             name="password"
@@ -72,10 +79,12 @@ export function RegisterPage() {
             minLength={8}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            style={{ display: "block", width: "100%" }}
+            className="form-input"
           />
         </div>
-        <button type="submit">{t("signUp")}</button>
+        <button type="submit" className="btn btn--primary">
+          {t("signUp")}
+        </button>
       </form>
       <p>
         {t("hasAccount")} <Link to="/login">{t("signIn")}</Link>

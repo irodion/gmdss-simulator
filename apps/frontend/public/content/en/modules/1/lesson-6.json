@@ -1,0 +1,36 @@
+{
+  "version": 1,
+  "title": "Watchkeeping Obligations",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Under SOLAS regulations, ships fitted with VHF radio must maintain a continuous listening watch on Channel 16 (156.800 MHz) and DSC Channel 70. The dual-watch feature allows monitoring Channel 16 while working on another channel. All radio activity should be logged in the ship's radio log."
+    },
+    {
+      "type": "table",
+      "headers": ["Requirement", "Channel", "When"],
+      "rows": [
+        ["Distress watch (voice)", "Channel 16", "Continuous while at sea"],
+        ["DSC watch", "Channel 70", "Continuous while at sea (automatic on DSC-equipped radios)"],
+        [
+          "Port operations",
+          "Designated port channel",
+          "When entering/leaving port or navigating in port waters"
+        ],
+        ["Bridge-to-bridge safety", "Channel 13", "In busy waterways and during maneuvering"]
+      ]
+    },
+    {
+      "type": "exercise",
+      "prompt": "What is the primary watchkeeping channel for distress and safety voice communications?",
+      "options": [
+        { "key": "a", "text": "Channel 6" },
+        { "key": "b", "text": "Channel 13" },
+        { "key": "c", "text": "Channel 16" },
+        { "key": "d", "text": "Channel 70" }
+      ],
+      "answer": "c",
+      "explanation": "Channel 16 is the international distress and safety frequency. All SOLAS vessels must maintain a continuous watch on Channel 16 while at sea."
+    }
+  ]
+}

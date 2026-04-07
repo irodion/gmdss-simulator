@@ -1,0 +1,36 @@
+{
+  "version": 1,
+  "title": "Communication Priority",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Maritime radio communications follow a strict priority hierarchy. Higher-priority traffic always takes precedence, and all other stations must maintain silence when distress traffic is in progress. Understanding this hierarchy is fundamental to safe radio operation."
+    },
+    {
+      "type": "table",
+      "headers": ["Priority", "Signal Word", "Situation Example"],
+      "rows": [
+        ["1 — Distress", "MAYDAY", "Vessel sinking, fire on board, crew in immediate danger"],
+        ["2 — Urgency", "PAN PAN", "Person overboard, engine failure, medical emergency"],
+        ["3 — Safety", "SECURITE", "Navigation hazard, severe weather warning"],
+        ["4 — Routine", "(none)", "Port operations, berth requests, supply orders"]
+      ]
+    },
+    {
+      "type": "text",
+      "content": "When you hear a distress signal, you must immediately cease all non-essential transmissions. Urgency traffic takes priority over safety and routine, and safety traffic takes priority over routine communications."
+    },
+    {
+      "type": "exercise",
+      "prompt": "Which category of communication has the highest priority?",
+      "options": [
+        { "key": "a", "text": "Safety" },
+        { "key": "b", "text": "Urgency" },
+        { "key": "c", "text": "Distress" },
+        { "key": "d", "text": "Routine" }
+      ],
+      "answer": "c",
+      "explanation": "Distress has the highest priority. It indicates grave and imminent danger to a vessel or person. All other traffic must yield to distress communications."
+    }
+  ]
+}

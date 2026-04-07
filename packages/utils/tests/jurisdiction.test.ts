@@ -86,4 +86,40 @@ describe("validateJurisdiction", () => {
     const errors = validateJurisdiction(bad);
     expect(errors.some((e) => e.includes("id"))).toBe(true);
   });
+
+  test("rejects profile with missing label", () => {
+    const bad: JurisdictionProfile = { ...international, label: "" };
+    const errors = validateJurisdiction(bad);
+    expect(errors.some((e) => e.includes("label"))).toBe(true);
+  });
+
+  test("rejects dsc_channel not in channel_plan", () => {
+    const bad: JurisdictionProfile = { ...international, dsc_channel: 99 };
+    const errors = validateJurisdiction(bad);
+    expect(errors.some((e) => e.includes("dsc_channel"))).toBe(true);
+  });
+
+  test("rejects channel with missing purpose", () => {
+    const bad: JurisdictionProfile = {
+      ...international,
+      channel_plan: {
+        ...international.channel_plan,
+        "99": { purpose: "", type: "voice", tx_allowed: true },
+      },
+    };
+    const errors = validateJurisdiction(bad);
+    expect(errors.some((e) => e.includes("purpose"))).toBe(true);
+  });
+
+  test("rejects channel with invalid type", () => {
+    const bad: JurisdictionProfile = {
+      ...international,
+      channel_plan: {
+        ...international.channel_plan,
+        "99": { purpose: "Test", type: "invalid" as any, tx_allowed: true },
+      },
+    };
+    const errors = validateJurisdiction(bad);
+    expect(errors.some((e) => e.includes("type"))).toBe(true);
+  });
 });

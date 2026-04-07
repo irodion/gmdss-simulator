@@ -3,13 +3,18 @@
   "nav": {
     "learn": "Learn",
     "drill": "Drill",
-    "simulator": "Simulator",
+    "simulator": "Sim",
     "reference": "Ref",
-    "profile": "Me"
+    "profile": "Me",
+    "tools": "Tools",
+    "dashboard": "Home"
   },
   "offlineBanner": "You are offline. Some features are unavailable.",
   "loading": "Loading...",
   "error": "Something went wrong.",
   "retry": "Retry",
-  "signOut": "Sign out"
+  "signOut": "Sign out",
+  "online": "Online",
+  "offline": "Offline",
+  "subtitle": "ROC training"
 }

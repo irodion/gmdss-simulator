@@ -1,0 +1,40 @@
+{
+  "version": 1,
+  "title": "Basic Call Procedure",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Before transmitting, always listen on the channel to ensure it is clear. A standard VHF call follows a structured format: the name of the station called (spoken up to three times), the words THIS IS, your vessel name (spoken up to three times), followed by your message, and ending with the appropriate proword."
+    },
+    {
+      "type": "table",
+      "headers": ["Proword", "Meaning"],
+      "rows": [
+        ["OVER", "I have finished speaking and expect a reply from you"],
+        ["OUT", "This conversation is finished; no reply is expected"],
+        ["ROGER", "I have received and understood your last transmission"],
+        ["WILCO", "I have received your message, understand it, and will comply"],
+        ["SAY AGAIN", "Please repeat your last transmission"],
+        ["CORRECTION", "I made an error; the correct version follows"]
+      ]
+    },
+    {
+      "type": "callout",
+      "variant": "info",
+      "title": "Common Mistake",
+      "content": "OVER means you expect a reply. OUT means the conversation is finished. Never say \"OVER AND OUT\" — the two prowords are contradictory."
+    },
+    {
+      "type": "exercise",
+      "prompt": "When should you use the proword OVER?",
+      "options": [
+        { "key": "a", "text": "When the conversation is finished" },
+        { "key": "b", "text": "When you expect a reply from the other station" },
+        { "key": "c", "text": "When you need to correct an error" },
+        { "key": "d", "text": "When you want to change channels" }
+      ],
+      "answer": "b",
+      "explanation": "OVER indicates you have finished your transmission and are awaiting a reply. Use OUT when the conversation is complete and no reply is expected."
+    }
+  ]
+}
