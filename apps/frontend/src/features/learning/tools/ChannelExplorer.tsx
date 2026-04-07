@@ -71,8 +71,11 @@ export function ChannelExplorer({ config }: ChannelExplorerProps) {
     <div>
       <div style={{ display: "flex", gap: 16, marginBottom: 20, flexWrap: "wrap" }}>
         <div className="form-group" style={{ marginBottom: 0 }}>
-          <label className="form-label">{t("channelExplorer.jurisdiction")}</label>
+          <label htmlFor="ce-jurisdiction" className="form-label">
+            {t("channelExplorer.jurisdiction")}
+          </label>
           <select
+            id="ce-jurisdiction"
             className="form-select"
             value={selectedId}
             onChange={(e) => setSelectedId(e.target.value)}
@@ -85,8 +88,11 @@ export function ChannelExplorer({ config }: ChannelExplorerProps) {
           </select>
         </div>
         <div className="form-group" style={{ marginBottom: 0 }}>
-          <label className="form-label">{t("channelExplorer.type")}</label>
+          <label htmlFor="ce-type-filter" className="form-label">
+            {t("channelExplorer.type")}
+          </label>
           <select
+            id="ce-type-filter"
             className="form-select"
             value={typeFilter}
             onChange={(e) => setTypeFilter(e.target.value as "all" | "voice" | "dsc_only")}
@@ -106,11 +112,11 @@ export function ChannelExplorer({ config }: ChannelExplorerProps) {
         <table className="data-table">
           <thead>
             <tr>
-              <th>{t("channelExplorer.channel")}</th>
-              <th>{t("channelExplorer.purpose")}</th>
-              <th>{t("channelExplorer.type")}</th>
-              <th>{t("channelExplorer.txAllowed")}</th>
-              <th>{t("channelExplorer.maxPower")}</th>
+              <th scope="col">{t("channelExplorer.channel")}</th>
+              <th scope="col">{t("channelExplorer.purpose")}</th>
+              <th scope="col">{t("channelExplorer.type")}</th>
+              <th scope="col">{t("channelExplorer.txAllowed")}</th>
+              <th scope="col">{t("channelExplorer.maxPower")}</th>
             </tr>
           </thead>
           <tbody>
