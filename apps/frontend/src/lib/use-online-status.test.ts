@@ -72,4 +72,31 @@ describe("useOnlineStatus", () => {
 
     expect(result.current).toBe(true);
   });
+
+  test("skips concurrent polls when one is already in flight", async () => {
+    let resolveFirst!: (v: Response) => void;
+    const fetchMock = vi.fn().mockImplementation(
+      () =>
+        new Promise<Response>((r) => {
+          resolveFirst = r;
+        }),
+    );
+    vi.stubGlobal("fetch", fetchMock);
+
+    const useOnlineStatus = await loadHook();
+    renderHook(() => useOnlineStatus());
+
+    // First poll starts (from startPolling)
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+
+    // Trigger network event while first poll is still in flight
+    window.dispatchEvent(new Event("online"));
+
+    // Should not have started a second fetch
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+
+    // Resolve the first poll
+    resolveFirst({ ok: true, json: () => Promise.resolve({ status: "ok" }) } as Response);
+    await vi.runOnlyPendingTimersAsync();
+  });
 });

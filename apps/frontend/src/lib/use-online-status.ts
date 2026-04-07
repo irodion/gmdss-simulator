@@ -14,11 +14,19 @@ function notify() {
   for (const fn of listeners) fn();
 }
 
+let polling = false;
+
 async function poll() {
-  const next = await checkApi();
-  if (next !== currentStatus) {
-    currentStatus = next;
-    notify();
+  if (polling) return;
+  polling = true;
+  try {
+    const next = await checkApi();
+    if (next !== currentStatus) {
+      currentStatus = next;
+      notify();
+    }
+  } finally {
+    polling = false;
   }
 }
 
