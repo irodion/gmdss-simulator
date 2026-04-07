@@ -21,7 +21,7 @@ interface JurisdictionDetail {
   channelPlan: Record<string, ChannelDef>;
   callingChannel: number;
   dscChannel: number;
-  notes: string;
+  notes: string | null;
 }
 
 interface ChannelExplorerProps {
@@ -64,7 +64,7 @@ export function ChannelExplorer({ config }: ChannelExplorerProps) {
   const channels = detail
     ? Object.entries(detail.channelPlan)
         .filter(([, ch]) => typeFilter === "all" || ch.type === typeFilter)
-        .sort(([a], [b]) => Number(a) - Number(b))
+        .sort(([a], [b]) => a.localeCompare(b, undefined, { numeric: true }))
     : [];
 
   return (
