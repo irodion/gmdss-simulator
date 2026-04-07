@@ -1,6 +1,5 @@
+import { API_BASE } from "./api-client.ts";
 import { clearPendingAction, getPendingActions } from "./offline-db.ts";
-
-const API_BASE = import.meta.env["VITE_API_URL"] ?? "";
 
 let syncInProgress = false;
 
