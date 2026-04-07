@@ -10,7 +10,9 @@ export function TableSectionView({ headers, rows }: Props) {
         <thead>
           <tr>
             {headers.map((h, i) => (
-              <th key={i}>{h}</th>
+              <th key={i} scope="col">
+                {h}
+              </th>
             ))}
           </tr>
         </thead>

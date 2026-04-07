@@ -11,8 +11,8 @@
       "headers": ["MMSI Prefix", "Type", "Example"],
       "rows": [
         ["2xx–7xx (MID)", "Ship station", "211234567 (Germany)"],
-        ["00x", "Coast station", "002241022"],
-        ["0x", "Group call", "021234567"],
+        ["00MIDxxxx", "Coast station", "002241022"],
+        ["0MIDxxxxx", "Group call", "021234567"],
         ["111 + MID", "SAR aircraft", "111211234"],
         ["970", "SART (AIS)", "970012345"],
         ["972", "MOB device", "972012345"],

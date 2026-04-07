@@ -18,7 +18,7 @@ export interface ProgressData {
   modules: Record<string, ModuleProgress>;
 }
 
-export function statusBadgeClass(status: string): string {
+export function statusBadgeClass(status: ModuleProgress["status"]): string {
   const variant =
     status === "locked"
       ? "badge--locked"

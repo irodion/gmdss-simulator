@@ -18,7 +18,7 @@ function renderSidebar(route = "/") {
 describe("NavSidebar", () => {
   test("renders the logo block linking to dashboard", () => {
     const { nav } = renderSidebar();
-    const logo = nav.getByLabelText("Dashboard");
+    const logo = nav.getByLabelText("Home");
     expect(logo).toBeDefined();
     expect(logo.textContent).toBe("G");
   });

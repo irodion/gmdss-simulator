@@ -53,7 +53,7 @@ export function MmsiDecoder({ config }: MmsiDecoderProps) {
               )}
               {result.description && (
                 <div className="output-field">
-                  <span className="output-field__label">Description</span>
+                  <span className="output-field__label">{t("mmsiDecoder.details")}</span>
                   <span className="output-field__value">{result.description}</span>
                 </div>
               )}

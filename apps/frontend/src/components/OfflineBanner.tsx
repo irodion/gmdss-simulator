@@ -14,7 +14,7 @@ export function OfflineBanner() {
       role="alert"
       style={{
         background: "var(--orange-0)",
-        color: "#fff",
+        color: "var(--text)",
         padding: "8px 16px",
         textAlign: "center",
       }}

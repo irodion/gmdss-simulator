@@ -8,8 +8,12 @@ export function NavSidebar() {
   const { t } = useTranslation();
 
   return (
-    <nav className="nav-sidebar app-shell__sidebar" aria-label="Main navigation">
-      <NavLink to="/dashboard" className="nav-block nav-block--logo" aria-label="Dashboard">
+    <nav className="nav-sidebar app-shell__sidebar" aria-label={t("nav.mainNavigation")}>
+      <NavLink
+        to="/dashboard"
+        className="nav-block nav-block--logo"
+        aria-label={t("nav.dashboard")}
+      >
         G
       </NavLink>
 

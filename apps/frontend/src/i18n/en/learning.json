@@ -19,5 +19,6 @@
   "markComplete": "Mark as complete",
   "checkAnswer": "Check answer",
   "correct": "Correct!",
-  "incorrect": "Incorrect."
+  "incorrect": "Incorrect.",
+  "unlocked": "Unlocked:"
 }

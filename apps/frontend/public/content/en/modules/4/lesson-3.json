@@ -14,7 +14,7 @@
       "type": "callout",
       "variant": "info",
       "title": "SOLAS Requirement",
-      "content": "SOLAS requires all vessels under 150 GT to carry a radar reflector or equivalent means to make them detectable by radar. Lifeboats and liferafts should also be equipped with radar reflectors."
+      "content": "SOLAS V Reg 19.2.1.7 requires all vessels under 150 GT to carry a radar reflector, if practicable, or other means to enable detection by radar. Lifeboats and liferafts should also be equipped with radar reflectors."
     },
     {
       "type": "exercise",

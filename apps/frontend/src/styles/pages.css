@@ -93,6 +93,7 @@
 
 .form-input:focus {
   border-color: var(--orange-0);
+  box-shadow: 0 0 0 2px rgba(214, 122, 57, 0.4);
 }
 
 .form-input::placeholder {

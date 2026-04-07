@@ -10,6 +10,8 @@
 
 html {
   color-scheme: dark;
+  scrollbar-width: thin;
+  scrollbar-color: var(--steel-2) var(--bg-0);
 }
 
 body {

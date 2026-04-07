@@ -11,12 +11,11 @@ else
   echo "WARNING: semgrep not found — skipping security scan (install: brew install semgrep)" >&2
 fi
 
-# Run all tests
-vp run -r test || exit 1
-
-# Enforce coverage thresholds (fails if below 85%)
-(cd apps/frontend && vp test --coverage) || exit 1
+# Run tests — coverage for packages with thresholds, plain for the rest
+(cd packages/db && vp test) || exit 1
 (cd packages/utils && vp test --coverage) || exit 1
+(cd apps/api && vp test) || exit 1
+(cd apps/frontend && vp test --coverage) || exit 1
 
 vp run -r build || exit 1
 

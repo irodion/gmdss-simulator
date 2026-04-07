@@ -10,7 +10,7 @@
       "type": "callout",
       "variant": "info",
       "title": "Key Fact",
-      "content": "VHF Channel 16 (156.800 MHz) is the international distress and calling frequency, monitored continuously by all ships and coast stations."
+      "content": "VHF Channel 16 (156.800 MHz) is the international distress and calling frequency, monitored by vessels and coast stations required to maintain a continuous VHF watch."
     },
     {
       "type": "table",

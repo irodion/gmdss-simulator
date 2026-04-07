@@ -33,7 +33,7 @@ export function LessonPage() {
     setContent(null);
 
     async function loadContent() {
-      const cacheKey = `lesson:${lessonId}`;
+      const cacheKey = `lesson:${moduleId}:${lessonId}`;
 
       // Try to get lesson metadata (contentPath) from API
       let lesson: LessonMeta | undefined;

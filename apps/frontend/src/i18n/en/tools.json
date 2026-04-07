@@ -23,7 +23,8 @@
     "stationType": "Station type",
     "mid": "MID (Maritime Identification Digit)",
     "country": "Country",
-    "invalid": "Invalid MMSI"
+    "invalid": "Invalid MMSI",
+    "details": "Details"
   },
   "dscBuilder": {
     "title": "DSC Builder",

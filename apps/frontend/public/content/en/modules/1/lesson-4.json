@@ -20,7 +20,7 @@
     },
     {
       "type": "callout",
-      "variant": "info",
+      "variant": "warning",
       "title": "Common Mistake",
       "content": "OVER means you expect a reply. OUT means the conversation is finished. Never say \"OVER AND OUT\" — the two prowords are contradictory."
     },

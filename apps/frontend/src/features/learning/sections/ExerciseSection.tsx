@@ -55,10 +55,7 @@ export function ExerciseSectionView({ prompt, options, answer, explanation }: Pr
       )}
 
       {submitted && (
-        <div
-          className={`exercise__feedback ${isCorrect ? "alert--success" : "alert--error"}`}
-          style={{ padding: 12, borderRadius: 8 }}
-        >
+        <div className={`alert ${isCorrect ? "alert--success" : "alert--error"}`}>
           <strong>{isCorrect ? t("correct") : t("incorrect")}</strong> {explanation}
         </div>
       )}

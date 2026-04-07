@@ -10,7 +10,7 @@
       "type": "callout",
       "variant": "info",
       "title": "One-Button Distress",
-      "content": "DSC enables you to send a distress alert at the press of a single button. The alert includes your MMSI, position, and nature of distress — transmitted automatically on Channel 70."
+      "content": "DSC enables you to send a distress alert at the press of a single button. The alert includes your MMSI and, if available from a connected GPS, your position and nature of distress — transmitted automatically on Channel 70."
     },
     {
       "type": "table",

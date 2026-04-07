@@ -43,7 +43,7 @@ export function QuizPage() {
         const data = await apiFetch<QuizData>(`/api/content/modules/${moduleId}/quiz`);
         setQuiz(data);
       } catch {
-        // handle error
+        setSubmitError(t("common:error"));
       } finally {
         setLoading(false);
       }
@@ -93,7 +93,11 @@ export function QuizPage() {
         <div className={`alert ${result.passed ? "alert--success" : "alert--error"}`}>
           {result.passed ? t("passed") : t("failed")}
         </div>
-        {result.unlocked.length > 0 && <p>Unlocked: {result.unlocked.join(", ")}</p>}
+        {result.unlocked.length > 0 && (
+          <p>
+            {t("unlocked")} {result.unlocked.join(", ")}
+          </p>
+        )}
         <Link to={`/learn/${moduleId}`} className="back-link">
           &larr; Back to lessons
         </Link>

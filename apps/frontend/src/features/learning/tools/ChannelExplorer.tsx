@@ -45,10 +45,20 @@ export function ChannelExplorer({ config }: ChannelExplorerProps) {
   }, []);
 
   useEffect(() => {
+    let cancelled = false;
+    setDetail(null);
     setLoading(true);
     void apiFetch<JurisdictionDetail>(`/api/content/jurisdictions/${selectedId}`)
-      .then(setDetail)
-      .finally(() => setLoading(false));
+      .then((data) => {
+        if (!cancelled) setDetail(data);
+      })
+      .catch(() => {})
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
   }, [selectedId]);
 
   const channels = detail

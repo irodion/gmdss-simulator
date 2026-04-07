@@ -62,45 +62,47 @@ export function DashboardPage() {
             {modules.map((mod) => {
               const p = progress?.modules[mod.id];
               const status = p?.status ?? "locked";
-              return (
-                <Link
-                  key={mod.id}
-                  to={mod.locked ? "#" : `/learn/${mod.id}`}
-                  style={{ textDecoration: "none" }}
-                >
-                  <div className={`card${mod.locked ? " card--locked" : " card--interactive"}`}>
-                    <div
-                      style={{
-                        display: "flex",
-                        justifyContent: "space-between",
-                        alignItems: "center",
-                      }}
-                    >
-                      <div className="card__title">{mod.title}</div>
-                      <span className={statusBadgeClass(status)}>{t(`learning:${status}`)}</span>
-                    </div>
-                    <div className="card__description">{mod.description}</div>
-                    {p && (
-                      <>
-                        <div className="card__meta">
-                          {t("learning:lessonsCompleted", {
-                            completed: p.lessonsCompleted,
-                            total: p.lessonsTotal,
-                          })}
-                          {p.quizBestScore !== null &&
-                            ` · ${t("learning:score", { score: p.quizBestScore })}`}
-                        </div>
-                        <div className="progress-bar">
-                          <div
-                            className="progress-bar__fill"
-                            style={{
-                              width: progressPercent(p.lessonsCompleted, p.lessonsTotal),
-                            }}
-                          />
-                        </div>
-                      </>
-                    )}
+              const cardContent = (
+                <div className={`card${mod.locked ? " card--locked" : " card--interactive"}`}>
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                    }}
+                  >
+                    <div className="card__title">{mod.title}</div>
+                    <span className={statusBadgeClass(status)}>{t(`learning:${status}`)}</span>
                   </div>
+                  <div className="card__description">{mod.description}</div>
+                  {p && (
+                    <>
+                      <div className="card__meta">
+                        {t("learning:lessonsCompleted", {
+                          completed: p.lessonsCompleted,
+                          total: p.lessonsTotal,
+                        })}
+                        {p.quizBestScore !== null &&
+                          ` · ${t("learning:score", { score: p.quizBestScore })}`}
+                      </div>
+                      <div className="progress-bar">
+                        <div
+                          className="progress-bar__fill"
+                          style={{
+                            width: progressPercent(p.lessonsCompleted, p.lessonsTotal),
+                          }}
+                        />
+                      </div>
+                    </>
+                  )}
+                </div>
+              );
+
+              return mod.locked ? (
+                <div key={mod.id}>{cardContent}</div>
+              ) : (
+                <Link key={mod.id} to={`/learn/${mod.id}`} style={{ textDecoration: "none" }}>
+                  {cardContent}
                 </Link>
               );
             })}

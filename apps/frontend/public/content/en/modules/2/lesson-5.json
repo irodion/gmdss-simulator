@@ -10,7 +10,7 @@
       "type": "callout",
       "variant": "warning",
       "title": "Immediate Cancellation Required",
-      "content": "If you accidentally send a DSC distress alert, you MUST cancel it immediately by broadcasting on Channel 16: \"ALL STATIONS, ALL STATIONS, ALL STATIONS — THIS IS [vessel name and MMSI] — CANCEL MY DISTRESS ALERT OF [date/time UTC] — MASTER [name].\""
+      "content": "If you accidentally send a DSC distress alert, cancel it immediately by broadcasting on Channel 16. A sample template: \"ALL STATIONS, ALL STATIONS, ALL STATIONS — THIS IS [vessel name] [MMSI] — CANCEL MY DISTRESS ALERT OF [date/time UTC] — MASTER [master name].\" Adapt this template to your vessel's details and always follow your local maritime authority's procedures for false alert cancellation."
     },
     {
       "type": "text",
