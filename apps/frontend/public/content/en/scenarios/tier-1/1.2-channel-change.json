@@ -1,0 +1,41 @@
+{
+  "id": "1.2",
+  "tier": 1,
+  "category": "routine",
+  "title": "Channel Change",
+  "description": "Initiate contact on Channel 16 and agree to move to a working channel.",
+  "stationPersona": "COAST_STATION",
+  "stationName": "ANYTOWN RADIO",
+  "vessel": {
+    "name": "BLUE DUCK",
+    "callsign": "5BCD2",
+    "mmsi": "211239680"
+  },
+  "requiredChannel": 16,
+  "allowedChannels": [16, 72],
+  "task": "Call Anytown Radio on Channel 16 and request to move to Channel 72 for a routine message.",
+  "scriptReference": "{{stationName}}, THIS IS {{vesselName}}, REQUEST CHANNEL SEVEN TWO, OVER",
+  "scriptedResponses": [
+    {
+      "id": "ack-call",
+      "speaker": "COAST_STATION",
+      "text": "BLUE DUCK, THIS IS ANYTOWN RADIO, AGREE CHANNEL SEVEN TWO, OVER.",
+      "triggerAfterTurnIndex": 0,
+      "condition": { "type": "always" }
+    },
+    {
+      "id": "on-working-channel",
+      "speaker": "COAST_STATION",
+      "text": "BLUE DUCK, THIS IS ANYTOWN RADIO ON CHANNEL SEVEN TWO, GO AHEAD, OVER.",
+      "triggerAfterTurnIndex": 1,
+      "condition": { "type": "channel_is", "channel": 72 }
+    }
+  ],
+  "rubricId": "v1/routine",
+  "hints": [
+    "Start on Channel 16 with a standard call",
+    "Request to move to the working channel",
+    "Switch your radio to the agreed channel",
+    "Call again on the working channel to confirm"
+  ]
+}

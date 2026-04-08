@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from "react";
-import { Link, useNavigate } from "react-router";
+import { Link, Navigate, useNavigate } from "react-router";
 import { useTranslation } from "react-i18next";
 
 import { authClient } from "../../lib/auth-client.ts";
@@ -8,10 +8,14 @@ import "../../styles/pages.css";
 export function RegisterPage() {
   const { t } = useTranslation("auth");
   const navigate = useNavigate();
+  const { data: session, isPending } = authClient.useSession();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+
+  if (isPending) return null;
+  if (session) return <Navigate to="/dashboard" replace />;
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();

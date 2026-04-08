@@ -20,5 +20,9 @@
   "checkAnswer": "Check answer",
   "correct": "Correct!",
   "incorrect": "Incorrect.",
-  "unlocked": "Unlocked:"
+  "unlocked": "Unlocked:",
+  "checkpoint": "Checkpoint Quiz",
+  "lessonLabel": "Lesson",
+  "lessonNotFound": "Lesson not found",
+  "lessonUnavailable": "Lesson content unavailable. Try again when online."
 }

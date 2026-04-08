@@ -1,0 +1,66 @@
+{
+  "title": "VHF Radio Simulator",
+  "consoleTitle": "Simulator Console",
+  "scenarioBriefing": "Scenario Briefing",
+  "transcript": "Transcript and Scoring",
+  "feedback": "Live Feedback",
+  "selectScenario": "Select a Scenario",
+  "start": "Start Scenario",
+  "endScenario": "End Scenario",
+  "retry": "Retry Scenario",
+  "backToScenarios": "Back to Scenarios",
+  "tier": "Tier {{tier}}",
+  "ptt": "PTT",
+  "pttHint": "PRESS AND HOLD",
+  "dscControls": "DSC CONTROLS",
+  "distressHold": "DISTRESS HOLD 5s",
+  "liftToAccess": "LIFT TO ACCESS",
+  "vol": "VOL",
+  "sql": "SQL",
+  "dualWatch": "DUAL WATCH",
+  "phase": {
+    "briefing": "Briefing",
+    "active": "Active",
+    "debriefing": "Review"
+  },
+  "category": {
+    "routine": "ROUTINE",
+    "safety": "SAFETY",
+    "urgency": "URGENCY",
+    "distress": "DISTRESS"
+  },
+  "scoring": {
+    "required_fields": "Required fields",
+    "prowords": "Prowords",
+    "sequence": "Sequence",
+    "channel": "Channel",
+    "clarity": "Clarity",
+    "missingField": "Missing field:",
+    "overall": "Overall Score"
+  },
+  "debrief": {
+    "title": "After-Action Review",
+    "score": "Score",
+    "breakdown": "Score Breakdown",
+    "transcript": "Full Transcript",
+    "you": "YOU",
+    "feedback": "Feedback"
+  },
+  "input": {
+    "placeholder": "Type your radio transmission here...",
+    "submit": "Transmit"
+  },
+  "hints": {
+    "title": "Hints",
+    "show": "Show Hints",
+    "hide": "Hide Hints",
+    "penalty": "Using hints incurs a 10% penalty"
+  },
+  "scenario": {
+    "task": "Task",
+    "vessel": "Vessel",
+    "position": "Position",
+    "personsOnBoard": "Persons on board",
+    "scriptReference": "SCRIPT REFERENCE"
+  }
+}

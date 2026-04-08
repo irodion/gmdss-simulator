@@ -15,6 +15,8 @@ import { MmsiDecoderPage } from "./features/learning/tools/MmsiDecoderPage.tsx";
 import { DscBuilderPage } from "./features/learning/tools/DscBuilderPage.tsx";
 import { ScriptBuilderPage } from "./features/learning/tools/ScriptBuilderPage.tsx";
 import { ProgressPage } from "./features/progress/ProgressPage.tsx";
+import { SimulatorPage } from "./features/simulator/SimulatorPage.tsx";
+import { DrillPage } from "./features/simulator/drills/DrillPage.tsx";
 
 export function AppRouter() {
   return (
@@ -100,6 +102,22 @@ export function AppRouter() {
             element={
               <ProtectedRoute>
                 <ScriptBuilderPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/sim"
+            element={
+              <ProtectedRoute>
+                <SimulatorPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/drill"
+            element={
+              <ProtectedRoute>
+                <DrillPage />
               </ProtectedRoute>
             }
           />

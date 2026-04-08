@@ -21,7 +21,8 @@ export function LessonPage() {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const [content, setContent] = useState<LessonContent | null>(null);
-  const [lessonTitle, setLessonTitle] = useState("");
+  const [lesson, setLesson] = useState<LessonMeta | null>(null);
+  const [totalLessons, setTotalLessons] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [completing, setCompleting] = useState(false);
@@ -31,37 +32,38 @@ export function LessonPage() {
     setLoading(true);
     setError("");
     setContent(null);
+    setLesson(null);
 
     async function loadContent() {
       const cacheKey = `lesson:${moduleId}:${lessonId}`;
 
-      // Try to get lesson metadata (contentPath) from API
-      let lesson: LessonMeta | undefined;
+      let lessons: LessonMeta[] = [];
+      let found: LessonMeta | undefined;
       try {
-        const lessons = await apiFetch<LessonMeta[]>(`/api/content/modules/${moduleId}/lessons`);
-        lesson = lessons.find((l) => l.id === lessonId);
+        lessons = await apiFetch<LessonMeta[]>(`/api/content/modules/${moduleId}/lessons`);
+        found = lessons.find((l) => l.id === lessonId);
       } catch {
         // API unavailable — fall through to cache
       }
 
-      if (!lesson) {
-        // No metadata from API — try serving from cache directly
+      if (!found) {
         const cached = (await getCachedContent(cacheKey)) as LessonContent | null;
         if (cached && !controller.signal.aborted) {
           setContent(cached);
-          setLessonTitle(cached.title);
         } else if (!controller.signal.aborted) {
-          setError("Lesson not found");
+          setError(t("learning:lessonNotFound"));
         }
         if (!controller.signal.aborted) setLoading(false);
         return;
       }
 
-      setLessonTitle(lesson.title);
+      if (!controller.signal.aborted) {
+        setLesson(found);
+        setTotalLessons(lessons.length);
+      }
 
-      // Fetch content from static file, fall back to cache
       try {
-        const res = await fetch(`/content/${lesson.contentPath}`, {
+        const res = await fetch(`/content/${found.contentPath}`, {
           signal: controller.signal,
         });
         if (!res.ok) throw new Error("Content not found");
@@ -76,7 +78,7 @@ export function LessonPage() {
         if (cached) {
           setContent(cached);
         } else {
-          setError("Lesson content unavailable. Try again when online.");
+          setError(t("learning:lessonUnavailable"));
         }
       } finally {
         if (!controller.signal.aborted) setLoading(false);
@@ -105,13 +107,52 @@ export function LessonPage() {
     void navigate(`/learn/${moduleId}`);
   }
 
-  return (
-    <div>
-      <Link to={`/learn/${moduleId}`} className="back-link">
-        &larr; {t("learning:lessons")}
-      </Link>
+  const lessonTitle = lesson?.title ?? content?.title ?? "";
+  const lessonNumber = lesson?.orderIndex ?? 0;
 
-      {lessonTitle && <h1 className="page-title">{lessonTitle}</h1>}
+  return (
+    <div className="lesson-page">
+      {/* Header bar */}
+      <div className="lesson-page__header">
+        <Link to={`/learn/${moduleId}`} className="lesson-page__back" aria-label="Back to lessons">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+            <path
+              d="M12.5 15L7.5 10L12.5 5"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+          {t("learning:lessons")}
+        </Link>
+
+        {lesson && totalLessons > 0 && (
+          <div className="lesson-page__progress-indicator">
+            <span className="lesson-page__step">
+              {lessonNumber} / {totalLessons}
+            </span>
+            <div className="lesson-page__progress-track">
+              <div
+                className="lesson-page__progress-fill"
+                style={{ width: `${(lessonNumber / totalLessons) * 100}%` }}
+              />
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Title area */}
+      {lessonTitle && (
+        <div className="lesson-page__title-area">
+          {lessonNumber > 0 && (
+            <span className="lesson-page__lesson-number">
+              {t("learning:lessonLabel")} {lessonNumber}
+            </span>
+          )}
+          <h1 className="lesson-page__title">{lessonTitle}</h1>
+        </div>
+      )}
 
       {error && (
         <div className="alert alert--error" role="alert">
@@ -119,19 +160,44 @@ export function LessonPage() {
         </div>
       )}
 
-      {loading && <p style={{ color: "var(--text-dim)" }}>{t("loading")}</p>}
+      {loading && (
+        <div className="lesson-page__loading">
+          <div className="lesson-page__loading-bar" />
+        </div>
+      )}
 
-      {content && <LessonRenderer content={content} />}
+      {/* Content card */}
+      {content && (
+        <div className="lesson-page__content-card">
+          <LessonRenderer content={content} />
+        </div>
+      )}
 
+      {/* Completion footer */}
       {!loading && content && (
-        <div style={{ marginTop: 32, paddingTop: 20, borderTop: "1px solid var(--frame-line)" }}>
+        <div className="lesson-page__footer">
           <button
             type="button"
-            className="btn btn--primary"
+            className="lesson-page__complete-btn"
             onClick={() => void handleComplete()}
             disabled={completing}
           >
-            {completing ? t("loading") : t("learning:markComplete")}
+            {completing ? (
+              t("loading")
+            ) : (
+              <>
+                {t("learning:markComplete")}
+                <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true">
+                  <path
+                    d="M3.75 9L7.5 12.75L14.25 6"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </>
+            )}
           </button>
         </div>
       )}

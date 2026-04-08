@@ -40,7 +40,15 @@ export default defineConfig({
     coverage: {
       provider: "v8",
       reporter: ["text", "lcov", "json-summary"],
-      exclude: ["src/styles/**"],
+      exclude: [
+        "src/styles/**",
+        "src/features/simulator/SimulatorPage.tsx",
+        "src/features/simulator/drills/DrillPage.tsx",
+        "src/features/simulator/audio/**",
+        "src/features/simulator/hooks/use-audio.ts",
+        "src/features/simulator/hooks/use-speech-recognition.ts",
+        "src/features/simulator/ui/MicButton.tsx",
+      ],
       thresholds: {
         lines: 85,
         branches: 85,

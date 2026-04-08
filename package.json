@@ -7,10 +7,12 @@
     "ready": "vp check && vp run -r test && vp run -r build",
     "e2e": "playwright test",
     "dev": "vp run frontend#dev",
+    "qa": "node scripts/qa.ts",
     "prepare": "vp config"
   },
   "devDependencies": {
     "@playwright/test": "catalog:",
+    "@types/node": "catalog:",
     "vite-plus": "catalog:"
   },
   "engines": {

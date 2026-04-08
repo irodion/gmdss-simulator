@@ -1,4 +1,4 @@
-import { render, within } from "@testing-library/react";
+import { render, within, fireEvent } from "@testing-library/react";
 import { MemoryRouter } from "react-router";
 import { describe, expect, test, vi } from "vite-plus/test";
 import "../i18n/index.ts";
@@ -35,15 +35,22 @@ describe("BottomTabBar", () => {
     expect(nav.getByLabelText("Sign out")).toBeDefined();
   });
 
-  test("renders disabled tabs with aria-disabled", () => {
+  test("renders no disabled tabs", () => {
     const { container } = renderBar();
     const disabled = container.querySelectorAll("[aria-disabled='true']");
-    expect(disabled.length).toBe(2);
+    expect(disabled.length).toBe(0);
   });
 
   test("highlights active tab", () => {
     const { container } = renderBar("/tools");
     const activeTab = container.querySelector(".bottom-tab--active");
     expect(activeTab?.getAttribute("href")).toBe("/tools");
+  });
+
+  test("calls signOut on sign out button click", async () => {
+    const { authClient } = await import("../lib/auth-client.ts");
+    const { nav } = renderBar();
+    fireEvent.click(nav.getByLabelText("Sign out"));
+    expect(authClient.signOut).toHaveBeenCalled();
   });
 });

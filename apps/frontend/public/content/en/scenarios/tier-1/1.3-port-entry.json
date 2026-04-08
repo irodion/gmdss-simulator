@@ -1,0 +1,41 @@
+{
+  "id": "1.3",
+  "tier": 1,
+  "category": "routine",
+  "title": "Port Entry Call",
+  "description": "Request permission to enter port from the port control station.",
+  "stationPersona": "PORT_CONTROL",
+  "stationName": "ANYPORT CONTROL",
+  "vessel": {
+    "name": "BLUE DUCK",
+    "callsign": "5BCD2",
+    "mmsi": "211239680",
+    "position": "51°28'N 003°12'W"
+  },
+  "requiredChannel": 16,
+  "task": "Call Anyport Control on Channel 16 to request entry into the harbour.",
+  "scriptReference": "{{stationName}}, THIS IS {{vesselName}}, REQUEST PERMISSION TO ENTER HARBOUR, OVER",
+  "scriptedResponses": [
+    {
+      "id": "ack-port-entry",
+      "speaker": "PORT_CONTROL",
+      "text": "BLUE DUCK, THIS IS ANYPORT CONTROL, PERMISSION GRANTED. PROCEED TO BERTH SEVEN. REPORT WHEN ALONGSIDE, OVER.",
+      "triggerAfterTurnIndex": 0,
+      "condition": { "type": "always" }
+    },
+    {
+      "id": "confirm-alongside",
+      "speaker": "PORT_CONTROL",
+      "text": "BLUE DUCK, THIS IS ANYPORT CONTROL, ROGER. WELCOME TO ANYPORT, OUT.",
+      "triggerAfterTurnIndex": 1,
+      "condition": { "type": "always" }
+    }
+  ],
+  "rubricId": "v1/routine",
+  "hints": [
+    "Call the port control station by name",
+    "Identify yourself with THIS IS and your vessel name",
+    "State your request clearly",
+    "End with OVER"
+  ]
+}

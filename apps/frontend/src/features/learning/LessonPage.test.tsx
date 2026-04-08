@@ -77,8 +77,8 @@ function renderLesson() {
 describe("LessonPage", () => {
   test("shows loading state initially", () => {
     vi.mocked(apiFetch).mockReturnValue(new Promise(() => {}));
-    renderLesson();
-    expect(screen.getByText("Loading...")).toBeDefined();
+    const { container } = renderLesson();
+    expect(container.querySelector(".lesson-page__loading-bar")).not.toBeNull();
   });
 
   test("renders lesson content after loading", async () => {
