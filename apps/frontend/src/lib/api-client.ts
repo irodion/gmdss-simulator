@@ -1,7 +1,10 @@
 export const API_BASE = import.meta.env["VITE_API_URL"] ?? "";
 
 export async function apiFetch<T>(path: string, opts?: RequestInit): Promise<T> {
-  const baseHeaders: Record<string, string> = { "Content-Type": "application/json" };
+  const baseHeaders: Record<string, string> = {};
+  if (typeof opts?.body === "string") {
+    baseHeaders["Content-Type"] = "application/json";
+  }
   const extraHeaders = opts?.headers;
   const mergedHeaders: HeadersInit = extraHeaders
     ? new Headers({ ...baseHeaders, ...Object.fromEntries(new Headers(extraHeaders)) })

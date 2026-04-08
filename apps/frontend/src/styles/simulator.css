@@ -1,0 +1,1210 @@
+/* ============================================================
+   Simulator — Radio Panel + Side Column
+   Ported from docs/mockups/gemini-ui-component.html
+   All classes prefixed with sim- to avoid collision with pages.css
+   ============================================================ */
+
+/* === Layout === */
+
+.sim-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 312px;
+  gap: 17px;
+  padding: 14px 14px 14px 0;
+  min-height: 0;
+}
+
+/* === Console Shell (outer metallic frame) === */
+
+.sim-console-shell {
+  position: relative;
+  width: 100%;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  border-radius: 24px;
+  border: 1.2px solid #6a7078;
+  background:
+    linear-gradient(135deg, #7d8188, #585c63 52%, #383c43),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.05), transparent 40%);
+  box-shadow: var(--shadow-xl);
+  overflow: visible;
+}
+
+.sim-console-shell::before {
+  content: "";
+  position: absolute;
+  inset: 3px;
+  border-radius: 22px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  pointer-events: none;
+}
+
+/* Console top bar */
+.sim-console-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 24px 10px;
+  color: #f1f4f7;
+  font-size: 17px;
+}
+
+.sim-console-top .sim-meta {
+  color: #7f8791;
+  font-size: 14px;
+}
+
+/* Mic jack (decorative) */
+.sim-jack {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  gap: 0;
+  filter: drop-shadow(0 5px 8px rgba(0, 0, 0, 0.35));
+  right: -55px;
+  top: 359px;
+}
+
+.sim-jack .sim-plug-body {
+  width: 23px;
+  height: 8px;
+  border-radius: 3px;
+  background: linear-gradient(180deg, #80858b, #666b72);
+}
+
+.sim-jack .sim-plug-ring {
+  width: 22px;
+  height: 10px;
+  margin-left: -1px;
+  border-radius: 4px;
+  background: linear-gradient(135deg, #6d7279, #4a4f57);
+}
+
+/* === Radio Body (inner panel) === */
+
+.sim-radio-body {
+  position: relative;
+  margin: 10px 24px 12px;
+  padding: 16px 28px 24px;
+  border-radius: 24px;
+  border: 1.5px solid #20252b;
+  background:
+    linear-gradient(135deg, #8b8e94, #666a70 12%, #50555b 48%, #2e333a),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.05), transparent 35%);
+  box-shadow: var(--shadow-xl);
+}
+
+/* Corner screws */
+.sim-screw {
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 1.2px solid #2a2f35;
+  background: linear-gradient(180deg, #474d55, #3b4047);
+  box-shadow: var(--shadow-sm);
+}
+
+.sim-screw::before {
+  content: "";
+  position: absolute;
+  inset: 4.5px;
+  border-radius: 50%;
+  background: #9ea4ab;
+}
+
+.sim-screw--tl {
+  top: 12px;
+  left: 12px;
+}
+.sim-screw--tr {
+  top: 12px;
+  right: 12px;
+}
+.sim-screw--bl {
+  bottom: 12px;
+  left: 12px;
+}
+.sim-screw--br {
+  bottom: 12px;
+  right: 12px;
+}
+
+/* === Screen Row (LCD + Knobs) === */
+
+.sim-screen-row {
+  position: relative;
+  display: grid;
+  grid-template-columns: 122px 1fr 122px;
+  align-items: center;
+  gap: 16px;
+  padding: 18px 20px 14px;
+  border-radius: 19px;
+  border: 1.5px solid #525962;
+  background: linear-gradient(135deg, #171b20, #0f1217);
+  box-shadow: var(--shadow-md);
+}
+
+/* Rotary Knob */
+.sim-knob-wrap {
+  text-align: center;
+  color: #8c9096;
+  font-size: 11px;
+}
+
+.sim-knob {
+  position: relative;
+  width: 86px;
+  height: 86px;
+  margin: 0 auto 6px;
+  cursor: grab;
+}
+
+.sim-knob:active {
+  cursor: grabbing;
+}
+
+.sim-knob::before {
+  content: "";
+  position: absolute;
+  inset: 10px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 28%, #f3f5f7, #a9b0b8 28%, #585f66 72%, #23272c);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35);
+}
+
+.sim-knob::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: radial-gradient(circle at 34% 28%, #d8dde3, #8f949b 32%, #50545a 72%, #191d22);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.18),
+    0 6px 10px rgba(0, 0, 0, 0.35);
+  z-index: -1;
+}
+
+.sim-knob__ticks {
+  position: absolute;
+  inset: -10px;
+  border-radius: 50%;
+  background: radial-gradient(
+      circle at center,
+      transparent 62%,
+      rgba(161, 167, 174, 0.9) 63%,
+      transparent 64%
+    )
+    center / 100% 100% no-repeat;
+  mask: repeating-conic-gradient(from -110deg, #000 0deg 1deg, transparent 1deg 8deg);
+  opacity: 0.9;
+}
+
+.sim-knob__indicator {
+  position: absolute;
+  top: 14px;
+  left: 50%;
+  width: 3px;
+  height: 25px;
+  margin-left: -1.5px;
+  border-radius: 2px;
+  background: #f6f8fa;
+  transform-origin: bottom center;
+  z-index: 1;
+}
+
+.sim-knob-marks {
+  display: flex;
+  justify-content: space-between;
+  width: 72px;
+  margin: -1px auto 0;
+  font-size: 11px;
+}
+
+.sim-knob-label {
+  margin-top: -2px;
+  font-size: 13px;
+}
+
+/* === LCD Display === */
+
+.sim-lcd {
+  position: relative;
+  height: 86px;
+  border-radius: 14px;
+  padding: 11px 16px;
+  border: 1px solid #6e8d68;
+  background:
+    linear-gradient(180deg, var(--lcd-0), var(--lcd-1) 55%, var(--lcd-2)),
+    radial-gradient(circle at 20% 15%, rgba(255, 255, 255, 0.24), transparent 36%);
+  color: var(--lcd-text);
+  overflow: hidden;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.2),
+    0 0 18px rgba(130, 201, 137, 0.12);
+  font-family: "Courier New", "Consolas", monospace;
+}
+
+/* Dot-matrix overlay */
+.sim-lcd::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(circle, rgba(126, 181, 122, 0.28) 0.8px, transparent 0.9px);
+  background-size: 6px 6px;
+  opacity: 0.32;
+  pointer-events: none;
+}
+
+.sim-lcd-main {
+  position: relative;
+  z-index: 1;
+  font-size: 27px;
+  line-height: 1;
+}
+
+.sim-lcd-line {
+  position: relative;
+  z-index: 1;
+  margin-top: 8px;
+  font-size: 14px;
+  line-height: 1;
+}
+
+.sim-lcd-footer {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-top: 8px;
+  font-size: 14px;
+}
+
+/* === Button Row === */
+
+.sim-button-row {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 12px;
+  margin: 20px 0 16px;
+}
+
+.sim-radio-btn {
+  position: relative;
+  height: 49px;
+  border: 2px solid #12161a;
+  border-radius: var(--radius-md);
+  background:
+    linear-gradient(180deg, #48505d, #2d333c 45%, #1a1f26),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.08), transparent 50%);
+  color: #f0f2f5;
+  font-size: 17px;
+  box-shadow: var(--shadow-md);
+  cursor: pointer;
+  appearance: none;
+}
+
+.sim-radio-btn::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(83, 103, 125, 0.65);
+  pointer-events: none;
+}
+
+.sim-radio-btn::after {
+  content: "";
+  position: absolute;
+  left: 22px;
+  right: 22px;
+  bottom: -2px;
+  height: 2px;
+  border-radius: var(--radius-pill);
+  background: rgba(211, 138, 82, 0.7);
+  box-shadow: 0 0 8px rgba(211, 138, 82, 0.35);
+}
+
+.sim-radio-btn:active {
+  transform: translateY(1px);
+}
+
+/* === Lower Zone (DSC + PTT) === */
+
+.sim-lower-zone {
+  display: grid;
+  grid-template-columns: 333px 1fr;
+  align-items: center;
+  gap: 18px;
+}
+
+/* DSC Box */
+.sim-dsc-box {
+  min-height: 111px;
+  border-radius: 17px;
+  border: 1.2px solid #454c55;
+  background: linear-gradient(135deg, #171b20, #0f1217);
+  padding: 14px 14px 12px;
+}
+
+.sim-dsc-title {
+  font-size: 14px;
+  color: #c2c7cd;
+  margin-bottom: 13px;
+}
+
+.sim-dsc-controls {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+.sim-distress-btn {
+  position: relative;
+  width: 165px;
+  height: 40px;
+  border-radius: 7px;
+  border: 1.2px solid #8a8f95;
+  background: linear-gradient(180deg, #55595f, #474c53);
+  color: #f8e9e6;
+  box-shadow: var(--shadow-sm);
+  cursor: pointer;
+  appearance: none;
+}
+
+.sim-distress-btn::before {
+  content: "";
+  position: absolute;
+  inset: 5px 7px;
+  border-radius: 4px;
+  background: linear-gradient(180deg, #8b5452, #734341);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18);
+}
+
+.sim-distress-btn span {
+  position: relative;
+  z-index: 1;
+  font-size: 14px;
+}
+
+/* Flip cover overlay */
+.sim-flip-cover {
+  position: absolute;
+  inset: 0;
+  border-radius: 7px;
+  background: rgba(139, 54, 52, 0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  color: #f8e9e6;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+  transform-origin: top center;
+  z-index: 2;
+}
+
+.sim-flip-cover--open {
+  transform: perspective(200px) rotateX(-90deg);
+  pointer-events: none;
+}
+
+/* Distress countdown overlay */
+.sim-distress-countdown {
+  position: absolute;
+  inset: 0;
+  border-radius: 7px;
+  background: rgba(180, 50, 50, 0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  font-weight: bold;
+  color: #fff;
+  z-index: 3;
+}
+
+/* Small DSC buttons (CALL / MENU) */
+.sim-dsc-btn {
+  width: 74px;
+  height: 35px;
+  border-radius: 10px;
+  border: 2px solid #12161a;
+  background: linear-gradient(180deg, #48505d, #2d333c 45%, #1a1f26);
+  color: #eef2f6;
+  font-size: 14px;
+  box-shadow: var(--shadow-sm);
+  cursor: pointer;
+  appearance: none;
+}
+
+.sim-dsc-meta {
+  font-size: 11px;
+  color: #8f9398;
+  font-family: "Courier New", "Consolas", monospace;
+}
+
+/* === PTT Button === */
+
+.sim-ptt {
+  position: relative;
+  justify-self: start;
+  width: 110px;
+  height: 110px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  border: 3px solid #2d1810;
+  background: radial-gradient(circle at 38% 28%, #f7b164, #d77a34 52%, #843a17 100%);
+  color: #f9e8db;
+  box-shadow:
+    0 0 30px rgba(255, 122, 53, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2),
+    var(--shadow-lg);
+  cursor: pointer;
+  appearance: none;
+  user-select: none;
+  touch-action: none;
+}
+
+.sim-ptt::before {
+  content: "";
+  position: absolute;
+  inset: -16px;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(255, 179, 95, 0.5),
+    rgba(255, 122, 53, 0.34) 44%,
+    rgba(255, 122, 53, 0) 72%
+  );
+  z-index: -1;
+}
+
+.sim-ptt__label {
+  position: relative;
+  z-index: 1;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.sim-ptt__sub {
+  position: relative;
+  z-index: 1;
+  font-size: 9px;
+  margin-top: 2px;
+  opacity: 0.8;
+}
+
+.sim-ptt--active {
+  transform: scale(1.03);
+  background: radial-gradient(circle at 38% 28%, #ffd080, #f09050 52%, #a05020 100%);
+  box-shadow:
+    0 0 40px rgba(255, 122, 53, 0.6),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3),
+    var(--shadow-lg);
+}
+
+.sim-ptt--disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* === Signal Indicators === */
+
+.sim-signal {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-top: 12px;
+}
+
+.sim-signal__led {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #2a2f35;
+  border: 1px solid #3a4048;
+}
+
+.sim-signal__led--tx {
+  background: var(--error);
+  box-shadow: 0 0 8px rgba(238, 85, 68, 0.6);
+}
+
+.sim-signal__led--rx {
+  background: var(--success);
+  box-shadow: 0 0 8px rgba(87, 240, 79, 0.6);
+}
+
+.sim-signal__label {
+  font-size: 11px;
+  color: #8c9096;
+}
+
+/* === Feedback Card === */
+
+.sim-feedback {
+  margin-top: auto;
+  min-height: 118px;
+  border-radius: var(--radius-card);
+  border: 1.5px solid #32373d;
+  background: linear-gradient(180deg, #171c24, #10151d);
+  box-shadow: var(--shadow-lg);
+  padding: 20px 22px;
+}
+
+.sim-feedback__title {
+  font-size: 16px;
+  margin-bottom: 12px;
+  color: var(--text);
+}
+
+.sim-feedback__tags {
+  display: flex;
+  gap: 9px;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+}
+
+.sim-chip {
+  display: inline-flex;
+  align-items: center;
+  min-height: 31px;
+  padding: 0 18px;
+  border-radius: var(--radius-pill);
+  border: 1.2px solid #416489;
+  background: linear-gradient(180deg, #2e3e53, #1c2c40 55%, #182536);
+  color: #e6edf3;
+  font-size: 13px;
+}
+
+.sim-chip--pass {
+  border-color: #3a7a50;
+}
+.sim-chip--partial {
+  border-color: #8a6a30;
+}
+.sim-chip--miss {
+  border-color: #7a3a3a;
+}
+
+.sim-feedback__text {
+  font-size: 16px;
+  color: #d8dde2;
+  line-height: 1.4;
+}
+
+/* === Side Column === */
+
+.sim-side-column {
+  display: flex;
+  flex-direction: column;
+  gap: 17px;
+  min-width: 0;
+  margin: 14px 14px 14px 0;
+}
+
+/* Briefing Card */
+.sim-briefing-frame {
+  padding: 10px;
+  border: 1.2px solid #6d7279;
+  background: #14171c;
+  border-radius: 23px;
+  box-shadow: var(--shadow-lg);
+}
+
+.sim-briefing-inner {
+  position: relative;
+  min-height: 281px;
+  border-radius: 20px;
+  border: 1.2px solid #030406;
+  background: linear-gradient(180deg, #111317, #0d1014);
+  padding: 28px 22px 22px;
+  overflow: hidden;
+}
+
+.sim-briefing-inner::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 132px;
+  height: 123px;
+  background: linear-gradient(135deg, rgba(244, 246, 249, 0.1), transparent 60%);
+  clip-path: polygon(0 0, 100% 0, 100% 100%);
+}
+
+.sim-side-title {
+  font-size: 17px;
+  color: #e9edf1;
+  margin-bottom: 16px;
+}
+
+.sim-category-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 94px;
+  height: 28px;
+  border-radius: 14px;
+  border: 1px solid #545b63;
+  background: linear-gradient(180deg, #343a42, #2b3036);
+  color: #e7eef5;
+  font-size: 12px;
+  margin-bottom: 30px;
+}
+
+.sim-category-pill--distress {
+  border-color: #7a3a3a;
+  color: #f0a0a0;
+}
+.sim-category-pill--urgency {
+  border-color: #8a6a30;
+  color: #f0c070;
+}
+.sim-category-pill--safety {
+  border-color: #3a6a7a;
+  color: #a0d0f0;
+}
+
+.sim-scenario-title {
+  font-size: 31px;
+  margin: 0 0 14px;
+  color: var(--text);
+}
+
+.sim-scenario-meta {
+  font-size: 15px;
+  color: #b2bac3;
+  margin: 0 0 16px;
+}
+
+.sim-scenario-row {
+  margin: 0 0 11px;
+  color: #dce3ea;
+  font-size: 14px;
+}
+
+.sim-task-label {
+  margin-top: 22px;
+  color: #8b949e;
+  font-size: 13px;
+}
+
+.sim-task-copy {
+  margin-top: 11px;
+  font-size: 17px;
+  color: #f1f4f7;
+  line-height: 1.25;
+}
+
+.sim-script-btn {
+  margin-top: 14px;
+  height: 33px;
+  min-width: 176px;
+  border-radius: 16.5px;
+  border: 1px solid #626971;
+  background: linear-gradient(180deg, #3a4048, #2e343b);
+  color: #f0f4f8;
+  font-size: 13px;
+  cursor: pointer;
+  appearance: none;
+}
+
+/* Transcript Card */
+.sim-transcript-card {
+  flex: 1 1 0;
+  min-height: 0;
+  padding: 22px 18px 18px;
+  border: 1.2px solid #343a42;
+  background: linear-gradient(180deg, #1a1c22, #181a20);
+  border-radius: 23px;
+  box-shadow: var(--shadow-lg);
+  overflow-y: auto;
+}
+
+/* Chat Bubbles */
+.sim-bubble {
+  position: relative;
+  border-radius: 15px;
+  padding: 13px 16px 14px;
+  font-size: 13px;
+  margin-top: 14px;
+}
+
+.sim-bubble:first-child {
+  margin-top: 0;
+}
+
+.sim-bubble--student {
+  margin-right: 10px;
+  border: 1.4px solid #365b85;
+  background: linear-gradient(180deg, #21314a, #1b2b41);
+}
+
+.sim-bubble--student::after {
+  content: "";
+  position: absolute;
+  left: 12px;
+  bottom: -8px;
+  width: 14px;
+  height: 14px;
+  background: inherit;
+  border-left: 1.4px solid #365b85;
+  border-bottom: 1.4px solid #365b85;
+  clip-path: polygon(0 0, 100% 0, 0 100%);
+}
+
+.sim-bubble--station {
+  width: calc(100% - 28px);
+  margin-left: 14px;
+  border: 1.4px solid #a28058;
+  background: linear-gradient(180deg, #654b32, #5a432d);
+}
+
+.sim-bubble--station::after {
+  content: "";
+  position: absolute;
+  right: 12px;
+  bottom: -8px;
+  width: 14px;
+  height: 14px;
+  background: inherit;
+  border-right: 1.4px solid #a28058;
+  border-bottom: 1.4px solid #a28058;
+  clip-path: polygon(100% 0, 100% 100%, 0 0);
+}
+
+.sim-bubble__tag {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 11px;
+  font-family: "Courier New", "Consolas", monospace;
+}
+
+.sim-bubble--student .sim-bubble__tag {
+  color: #7ed38e;
+}
+.sim-bubble--station .sim-bubble__tag {
+  color: #e2c39b;
+}
+
+.sim-bubble__text {
+  color: #eaf1f7;
+  font-size: 13px;
+  overflow-wrap: anywhere;
+}
+
+.sim-bubble--station .sim-bubble__text {
+  color: #fff4e8;
+}
+
+/* Score Row */
+.sim-score-row {
+  display: grid;
+  grid-template-columns: 135px 1fr;
+  gap: 12px;
+  margin-top: 14px;
+}
+
+.sim-score-card,
+.sim-missing-card {
+  min-height: 75px;
+  border-radius: 16px;
+  border: 1.2px solid #383e47;
+  background: linear-gradient(180deg, #21242b, #1b1e24);
+}
+
+.sim-score-card {
+  padding: 12px 14px;
+}
+
+.sim-gauge {
+  width: 96px;
+  height: 50px;
+  margin: 0 auto 2px;
+  border-radius: 96px 96px 0 0;
+  background:
+    radial-gradient(closest-side at 50% 100%, transparent 78%, #21242b 79% 100%),
+    conic-gradient(
+      from 180deg,
+      #68b2e7 0deg var(--gauge-fill, 147deg),
+      transparent var(--gauge-fill, 147deg) 180deg
+    );
+  clip-path: inset(0 0 50% 0);
+}
+
+.sim-score-value {
+  margin-top: -8px;
+  text-align: center;
+  font-size: 24px;
+  color: #f7f8fa;
+  font-weight: bold;
+}
+
+.sim-missing-card {
+  padding: 13px 24px;
+}
+
+.sim-missing-label {
+  font-size: 13px;
+  color: #b8c0c9;
+  margin-bottom: 10px;
+}
+
+.sim-missing-value {
+  font-size: 24px;
+  color: #f7f8fa;
+}
+
+/* === Text Input Fallback (Phase 3) === */
+
+.sim-input-row {
+  display: flex;
+  gap: 12px;
+  padding: 14px 24px;
+}
+
+.sim-input-row input {
+  flex: 1;
+  height: 44px;
+  padding: 0 16px;
+  border-radius: var(--radius-md);
+  border: 1.5px solid var(--frame-line);
+  background: var(--surface-dark);
+  color: var(--text);
+  font-size: 15px;
+  font-family: "Courier New", "Consolas", monospace;
+  text-transform: uppercase;
+}
+
+.sim-input-row input::placeholder {
+  color: var(--text-dim);
+  text-transform: none;
+}
+
+.sim-input-row button {
+  height: 44px;
+  padding: 0 24px;
+  border-radius: var(--radius-md);
+  border: none;
+  background: var(--orange-0);
+  color: #fff;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.sim-input-row button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* PTT / Mic button (speech recognition) */
+.sim-mic-btn {
+  min-width: 52px;
+  height: 44px;
+  padding: 0 10px;
+  gap: 4px;
+  border-radius: var(--radius-md);
+  border: 1.5px solid var(--orange-2);
+  background: linear-gradient(180deg, rgba(214, 122, 57, 0.15), rgba(214, 122, 57, 0.05));
+  color: var(--orange-0);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition:
+    border-color 0.2s,
+    background 0.2s,
+    transform 0.1s;
+}
+
+.sim-mic-btn:hover {
+  border-color: var(--orange-0);
+  background: linear-gradient(180deg, rgba(214, 122, 57, 0.25), rgba(214, 122, 57, 0.1));
+}
+
+.sim-mic-btn:active {
+  transform: scale(0.96);
+}
+
+.sim-mic-btn__label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+}
+
+.sim-mic-btn--active {
+  border-color: var(--error);
+  background: linear-gradient(180deg, rgba(238, 85, 68, 0.2), rgba(238, 85, 68, 0.08));
+  color: var(--error);
+  animation: sim-mic-pulse 1s ease-in-out infinite;
+}
+
+@keyframes sim-mic-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
+  }
+}
+
+/* Over-limit input */
+.sim-input--over-limit {
+  border-color: var(--error) !important;
+  box-shadow: 0 0 0 2px rgba(238, 85, 68, 0.3) !important;
+}
+
+/* Drill result sections */
+.drill-result__section {
+  margin-bottom: 12px;
+}
+
+.drill-result__label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-dim);
+  margin-bottom: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.drill-result__input {
+  font-size: 14px;
+  color: var(--text-soft);
+  padding: 10px 14px;
+  background: var(--surface-dark);
+  border: 1px solid var(--frame-line);
+  border-radius: var(--radius-sm);
+  font-family: "Courier New", "Consolas", monospace;
+  line-height: 1.5;
+  word-break: break-word;
+}
+
+/* === Scenario Selection (Phase 3) === */
+
+.sim-scenario-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 16px;
+  padding: 20px;
+}
+
+.sim-scenario-card {
+  border-radius: var(--radius-card);
+  border: 1.5px solid var(--frame-line);
+  background: var(--surface-card);
+  padding: 20px;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+
+.sim-scenario-card:hover {
+  border-color: var(--orange-0);
+}
+
+.sim-scenario-card__id {
+  font-size: 13px;
+  color: var(--text-dim);
+  margin-bottom: 8px;
+}
+
+.sim-scenario-card__title {
+  font-size: 18px;
+  color: var(--text);
+  margin-bottom: 8px;
+}
+
+.sim-scenario-card__desc {
+  font-size: 14px;
+  color: var(--text-soft);
+  line-height: 1.4;
+}
+
+/* === Debrief Panel === */
+
+.sim-debrief {
+  padding: 24px;
+}
+
+.sim-debrief__title {
+  font-size: 24px;
+  margin-bottom: 20px;
+  color: var(--text);
+}
+
+.sim-debrief__score {
+  font-size: 48px;
+  font-weight: bold;
+  color: var(--text);
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.sim-debrief__dimensions {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.sim-debrief__dim {
+  border-radius: var(--radius-md);
+  border: 1px solid var(--frame-line);
+  background: var(--surface-card);
+  padding: 16px;
+}
+
+.sim-debrief__dim-label {
+  font-size: 13px;
+  color: var(--text-soft);
+  margin-bottom: 8px;
+}
+
+.sim-debrief__dim-score {
+  font-size: 24px;
+  font-weight: bold;
+  color: var(--text);
+}
+
+.sim-debrief__actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+/* === Responsive === */
+
+@media (max-width: 1180px) {
+  .sim-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .sim-side-column {
+    margin: 0 14px 14px;
+    flex-direction: row;
+  }
+
+  .sim-side-column > * {
+    flex: 1;
+  }
+
+  .sim-jack {
+    display: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .sim-layout {
+    padding: 8px;
+  }
+
+  .sim-lower-zone {
+    grid-template-columns: 1fr;
+  }
+
+  .sim-ptt {
+    width: 88px;
+    height: 88px;
+    justify-self: center;
+  }
+
+  .sim-screen-row {
+    grid-template-columns: 80px 1fr 80px;
+    gap: 8px;
+    padding: 12px;
+  }
+
+  .sim-knob {
+    width: 64px;
+    height: 64px;
+  }
+
+  .sim-button-row {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+  }
+
+  .sim-side-column {
+    flex-direction: column;
+  }
+
+  .sim-scenario-title {
+    font-size: 22px;
+  }
+}
+
+/* === Focus indicators (G8) === */
+
+.sim-knob:focus-visible {
+  outline: 2px solid var(--orange-0);
+  outline-offset: 4px;
+  border-radius: 50%;
+}
+
+.sim-radio-btn:focus-visible,
+.sim-dsc-btn:focus-visible,
+.sim-distress-btn:focus-visible,
+.sim-script-btn:focus-visible {
+  outline: 2px solid var(--orange-0);
+  outline-offset: 2px;
+}
+
+.sim-ptt:focus-visible {
+  outline: 3px solid var(--orange-0);
+  outline-offset: 4px;
+}
+
+/* === Accessible Radio Panel (G7) === */
+
+.sim-a11y-toggle {
+  appearance: none;
+  background: var(--surface-dark);
+  border: 1px solid var(--frame-line);
+  color: var(--text-dim);
+  font-size: 12px;
+  padding: 4px 10px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+}
+
+.sim-a11y-toggle:hover {
+  color: var(--text);
+  border-color: var(--text-dim);
+}
+.sim-a11y-toggle--active {
+  color: var(--orange-0);
+  border-color: var(--orange-0);
+}
+
+.sim-a11y-panel {
+  padding: 20px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.sim-a11y-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.sim-a11y-label {
+  font-size: 14px;
+  color: var(--text-soft);
+  min-width: 120px;
+}
+
+.sim-a11y-range {
+  flex: 1;
+  accent-color: var(--orange-0);
+}

@@ -96,6 +96,43 @@ describe("LessonRenderer", () => {
     expect(screen.getByText("Closing paragraph.")).toBeDefined();
   });
 
+  test("renders exercise sections", () => {
+    const content: LessonContent = {
+      version: 1,
+      title: "Test",
+      sections: [
+        {
+          type: "exercise",
+          prompt: "Which channel is used for distress?",
+          options: [
+            { key: "a", text: "Ch.6" },
+            { key: "b", text: "Ch.16" },
+            { key: "c", text: "Ch.70" },
+          ],
+          answer: "b",
+          explanation: "Channel 16 is the international distress frequency.",
+        },
+      ],
+    };
+    render(<LessonRenderer content={content} />);
+    expect(screen.getByText("Which channel is used for distress?")).toBeDefined();
+  });
+
+  test("renders tool-embed sections", () => {
+    const content: LessonContent = {
+      version: 1,
+      title: "Test",
+      sections: [
+        {
+          type: "tool-embed",
+          tool: "channel-explorer" as any,
+          config: {},
+        },
+      ],
+    };
+    expect(() => render(<LessonRenderer content={content} />)).not.toThrow();
+  });
+
   test("ignores unknown section types gracefully", () => {
     const content: LessonContent = {
       version: 1,

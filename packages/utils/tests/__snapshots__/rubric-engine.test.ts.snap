@@ -1,0 +1,247 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`scoreTranscript > snapshot tests > missing all fields 1`] = `
+{
+  "dimensions": [
+    {
+      "id": "required_fields",
+      "label": "Required Fields",
+      "matchedItems": [],
+      "maxScore": 100,
+      "missingItems": [
+        "Station name (called)",
+        "Own vessel name",
+        "THIS IS",
+        "Radio check request",
+      ],
+      "score": 0,
+      "weight": 0.35,
+    },
+    {
+      "id": "prowords",
+      "label": "Prowords",
+      "matchedItems": [],
+      "maxScore": 100,
+      "missingItems": [
+        "THIS IS",
+        "OVER",
+      ],
+      "score": 0,
+      "weight": 0.25,
+    },
+    {
+      "id": "sequence",
+      "label": "Sequence",
+      "matchedItems": [],
+      "maxScore": 100,
+      "missingItems": [
+        "Station name (called)",
+        "THIS IS",
+        "Own vessel name",
+        "Radio check request",
+      ],
+      "score": 0,
+      "weight": 0.25,
+    },
+    {
+      "id": "channel",
+      "label": "Channel",
+      "matchedItems": [
+        "Turn 0: Ch.16",
+      ],
+      "maxScore": 100,
+      "missingItems": [],
+      "score": 100,
+      "weight": 0.15,
+    },
+  ],
+  "overall": 15,
+  "rubricVersion": "1.0.0",
+  "timestamp": 10000,
+}
+`;
+
+exports[`scoreTranscript > snapshot tests > perfect routine radio check 1`] = `
+{
+  "dimensions": [
+    {
+      "id": "required_fields",
+      "label": "Required Fields",
+      "matchedItems": [
+        "Station name (called)",
+        "Own vessel name",
+        "THIS IS",
+        "Radio check request",
+      ],
+      "maxScore": 100,
+      "missingItems": [],
+      "score": 100,
+      "weight": 0.35,
+    },
+    {
+      "id": "prowords",
+      "label": "Prowords",
+      "matchedItems": [
+        "THIS IS",
+        "OVER",
+      ],
+      "maxScore": 100,
+      "missingItems": [],
+      "score": 100,
+      "weight": 0.25,
+    },
+    {
+      "id": "sequence",
+      "label": "Sequence",
+      "matchedItems": [
+        "Station name (called)",
+        "THIS IS",
+        "Own vessel name",
+        "Radio check request",
+      ],
+      "maxScore": 100,
+      "missingItems": [],
+      "score": 100,
+      "weight": 0.25,
+    },
+    {
+      "id": "channel",
+      "label": "Channel",
+      "matchedItems": [
+        "Turn 0: Ch.16",
+      ],
+      "maxScore": 100,
+      "missingItems": [],
+      "score": 100,
+      "weight": 0.15,
+    },
+  ],
+  "overall": 100,
+  "rubricVersion": "1.0.0",
+  "timestamp": 10000,
+}
+`;
+
+exports[`scoreTranscript > snapshot tests > safety with partial SECURITE count 1`] = `
+{
+  "dimensions": [
+    {
+      "id": "required_fields",
+      "label": "Required Fields",
+      "matchedItems": [
+        "SECURITE signal word",
+        "THIS IS",
+        "Own vessel name",
+        "Nature of safety message",
+      ],
+      "maxScore": 100,
+      "missingItems": [],
+      "score": 100,
+      "weight": 0.35,
+    },
+    {
+      "id": "prowords",
+      "label": "Prowords",
+      "matchedItems": [
+        "SECURITE (×3) (2/3)",
+        "THIS IS",
+        "OUT",
+      ],
+      "maxScore": 100,
+      "missingItems": [],
+      "score": 89,
+      "weight": 0.25,
+    },
+    {
+      "id": "sequence",
+      "label": "Sequence",
+      "matchedItems": [
+        "SECURITE signal word",
+        "THIS IS",
+        "Own vessel name",
+        "Nature of safety message",
+      ],
+      "maxScore": 100,
+      "missingItems": [],
+      "score": 100,
+      "weight": 0.25,
+    },
+    {
+      "id": "channel",
+      "label": "Channel",
+      "matchedItems": [
+        "Turn 0: Ch.16",
+      ],
+      "maxScore": 100,
+      "missingItems": [],
+      "score": 100,
+      "weight": 0.15,
+    },
+  ],
+  "overall": 97,
+  "rubricVersion": "1.0.0",
+  "timestamp": 10000,
+}
+`;
+
+exports[`scoreTranscript > snapshot tests > wrong channel and missing prowords 1`] = `
+{
+  "dimensions": [
+    {
+      "id": "required_fields",
+      "label": "Required Fields",
+      "matchedItems": [
+        "Station name (called)",
+        "Own vessel name",
+        "THIS IS",
+        "Radio check request",
+      ],
+      "maxScore": 100,
+      "missingItems": [],
+      "score": 100,
+      "weight": 0.35,
+    },
+    {
+      "id": "prowords",
+      "label": "Prowords",
+      "matchedItems": [
+        "THIS IS",
+      ],
+      "maxScore": 100,
+      "missingItems": [
+        "OVER",
+      ],
+      "score": 50,
+      "weight": 0.25,
+    },
+    {
+      "id": "sequence",
+      "label": "Sequence",
+      "matchedItems": [
+        "Station name (called)",
+        "THIS IS",
+        "Own vessel name",
+        "Radio check request",
+      ],
+      "maxScore": 100,
+      "missingItems": [],
+      "score": 100,
+      "weight": 0.25,
+    },
+    {
+      "id": "channel",
+      "label": "Channel",
+      "matchedItems": [],
+      "maxScore": 100,
+      "missingItems": [
+        "Turn 0: Ch.12 (expected Ch.16)",
+      ],
+      "score": 0,
+      "weight": 0.15,
+    },
+  ],
+  "overall": 73,
+  "rubricVersion": "1.0.0",
+  "timestamp": 10000,
+}
+`;

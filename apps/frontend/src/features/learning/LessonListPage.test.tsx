@@ -46,12 +46,13 @@ describe("LessonListPage", () => {
     expect(screen.getByText("Radio Panel")).toBeDefined();
   });
 
-  test("shows completion checkmark for completed lessons", async () => {
+  test("shows completion indicator for completed lessons", async () => {
     const { container } = renderWithRoute();
     await waitFor(() => {
       expect(screen.getByText("What is VHF?")).toBeDefined();
     });
-    expect(container.textContent).toContain("\u2713");
+    expect(container.querySelector(".lesson-list__item--completed")).not.toBeNull();
+    expect(screen.getByLabelText("Completed")).toBeDefined();
   });
 
   test("shows quiz link", async () => {

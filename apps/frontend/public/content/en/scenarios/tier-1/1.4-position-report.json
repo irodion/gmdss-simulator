@@ -1,0 +1,35 @@
+{
+  "id": "1.4",
+  "tier": 1,
+  "category": "routine",
+  "title": "Position Report",
+  "description": "Provide a position report to a coast station as part of a routine traffic list.",
+  "stationPersona": "COAST_STATION",
+  "stationName": "ANYTOWN RADIO",
+  "vessel": {
+    "name": "BLUE DUCK",
+    "callsign": "5BCD2",
+    "mmsi": "211239680",
+    "position": "48°22'N 004°48'W",
+    "personsOnBoard": 8
+  },
+  "requiredChannel": 16,
+  "task": "Call Anytown Radio on Channel 16 and provide your position report.",
+  "scriptReference": "{{stationName}}, THIS IS {{vesselName}}, MY POSITION {{position}}, COURSE {{course}}, SPEED {{speed}} KNOTS, OVER",
+  "scriptedResponses": [
+    {
+      "id": "ack-position",
+      "speaker": "COAST_STATION",
+      "text": "BLUE DUCK, THIS IS ANYTOWN RADIO, ROGER YOUR POSITION REPORT. NOTHING FURTHER, OUT.",
+      "triggerAfterTurnIndex": 0,
+      "condition": { "type": "always" }
+    }
+  ],
+  "rubricId": "v1/routine",
+  "hints": [
+    "Call the coast station and identify yourself",
+    "State MY POSITION followed by your coordinates",
+    "Include course and speed if known",
+    "End with OVER"
+  ]
+}

@@ -1,0 +1,40 @@
+{
+  "id": "1.1",
+  "tier": 1,
+  "category": "routine",
+  "title": "Radio Check",
+  "description": "Perform a standard radio check with a coast station to verify your radio is working correctly.",
+  "stationPersona": "COAST_STATION",
+  "stationName": "ANYTOWN RADIO",
+  "vessel": {
+    "name": "BLUE DUCK",
+    "callsign": "5BCD2",
+    "mmsi": "211239680"
+  },
+  "requiredChannel": 16,
+  "task": "Perform a radio check on Channel 16 with Anytown Radio.",
+  "scriptReference": "{{stationName}} {{stationName}} {{stationName}}, THIS IS {{vesselName}} {{vesselName}} {{vesselName}}, RADIO CHECK ON CHANNEL ONE SIX, OVER",
+  "scriptedResponses": [
+    {
+      "id": "ack-radio-check",
+      "speaker": "COAST_STATION",
+      "text": "BLUE DUCK BLUE DUCK BLUE DUCK, THIS IS ANYTOWN RADIO, READING YOU LOUD AND CLEAR, OVER.",
+      "triggerAfterTurnIndex": 0,
+      "condition": { "type": "always" }
+    },
+    {
+      "id": "confirm",
+      "speaker": "COAST_STATION",
+      "text": "BLUE DUCK, THIS IS ANYTOWN RADIO, ROGER, OUT.",
+      "triggerAfterTurnIndex": 1,
+      "condition": { "type": "always" }
+    }
+  ],
+  "rubricId": "v1/routine",
+  "hints": [
+    "Call the coast station three times by name",
+    "Say THIS IS followed by your vessel name three times",
+    "State RADIO CHECK and the channel number",
+    "End with OVER to invite a response"
+  ]
+}

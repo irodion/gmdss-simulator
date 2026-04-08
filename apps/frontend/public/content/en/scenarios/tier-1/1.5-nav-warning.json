@@ -1,0 +1,41 @@
+{
+  "id": "1.5",
+  "tier": 1,
+  "category": "safety",
+  "title": "Navigational Warning Reception",
+  "description": "Receive a SECURITE navigational warning broadcast and acknowledge it correctly.",
+  "stationPersona": "COAST_STATION",
+  "stationName": "ANYTOWN RADIO",
+  "vessel": {
+    "name": "BLUE DUCK",
+    "callsign": "5BCD2",
+    "mmsi": "211239680",
+    "position": "50°10'N 001°25'W"
+  },
+  "requiredChannel": 16,
+  "task": "Listen to the SECURITE broadcast from Anytown Radio on Channel 16. Acknowledge that you have received the navigational warning.",
+  "scriptReference": "{{stationName}}, THIS IS {{vesselName}}, RECEIVED YOUR SECURITE, OVER",
+  "scriptedResponses": [
+    {
+      "id": "securite-broadcast",
+      "speaker": "COAST_STATION",
+      "text": "SECURITE SECURITE SECURITE. ALL STATIONS ALL STATIONS ALL STATIONS. THIS IS ANYTOWN RADIO. NAVIGATIONAL WARNING. UNLIT BUOY IN POSITION FIVE ZERO DEGREES ONE ZERO MINUTES NORTH, ZERO ZERO ONE DEGREES TWO FIVE MINUTES WEST. MARINERS ARE ADVISED TO NAVIGATE WITH CAUTION. OUT.",
+      "triggerAfterTurnIndex": -1,
+      "condition": { "type": "always" }
+    },
+    {
+      "id": "ack-reception",
+      "speaker": "COAST_STATION",
+      "text": "BLUE DUCK, THIS IS ANYTOWN RADIO, ROGER, OUT.",
+      "triggerAfterTurnIndex": 0,
+      "condition": { "type": "always" }
+    }
+  ],
+  "rubricId": "v1/safety-ack",
+  "hints": [
+    "Listen carefully to the SECURITE broadcast",
+    "Note the nature and position of the warning",
+    "Acknowledge by calling the station and confirming receipt",
+    "End with OVER"
+  ]
+}

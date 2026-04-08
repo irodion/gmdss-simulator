@@ -6,6 +6,7 @@ import authEn from "./en/auth.json";
 import learningEn from "./en/learning.json";
 import progressEn from "./en/progress.json";
 import toolsEn from "./en/tools.json";
+import simulatorEn from "./en/simulator.json";
 
 void i18n.use(initReactI18next).init({
   resources: {
@@ -15,6 +16,7 @@ void i18n.use(initReactI18next).init({
       learning: learningEn,
       progress: progressEn,
       tools: toolsEn,
+      simulator: simulatorEn,
     },
   },
   lng: "en",

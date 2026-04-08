@@ -16,6 +16,11 @@
   overflow: hidden;
 }
 
+/* When not logged in, drop the sidebar column */
+.app-shell--no-sidebar {
+  grid-template-columns: 1fr;
+}
+
 .app-shell__topbar {
   grid-column: 1 / -1;
 }

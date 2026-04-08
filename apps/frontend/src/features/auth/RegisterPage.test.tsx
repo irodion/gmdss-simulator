@@ -8,9 +8,12 @@ import { RegisterPage } from "./RegisterPage.tsx";
 const mockSignUp = vi.fn();
 const mockNavigate = vi.fn();
 
+const mockUseSession = vi.fn(() => ({ data: null, isPending: false }));
+
 vi.mock("../../lib/auth-client.ts", () => ({
   authClient: {
     signUp: { email: (...args: unknown[]) => mockSignUp(...args) },
+    useSession: () => mockUseSession(),
   },
 }));
 
@@ -22,6 +25,7 @@ vi.mock("react-router", async () => {
 beforeEach(() => {
   vi.clearAllMocks();
   mockSignUp.mockResolvedValue({ error: null });
+  mockUseSession.mockReturnValue({ data: null, isPending: false });
 });
 
 describe("RegisterPage", () => {
@@ -97,5 +101,25 @@ describe("RegisterPage", () => {
     await waitFor(() => {
       expect(screen.getByRole("alert")).toBeDefined();
     });
+  });
+
+  test("renders nothing when session is pending", () => {
+    mockUseSession.mockReturnValue({ data: null, isPending: true });
+    const { container } = render(
+      <MemoryRouter>
+        <RegisterPage />
+      </MemoryRouter>,
+    );
+    expect(container.innerHTML).toBe("");
+  });
+
+  test("redirects to dashboard when already authenticated", () => {
+    mockUseSession.mockReturnValue({ data: { user: { id: "1" } } as any, isPending: false });
+    const { container } = render(
+      <MemoryRouter initialEntries={["/register"]}>
+        <RegisterPage />
+      </MemoryRouter>,
+    );
+    expect(container.querySelector("form")).toBeNull();
   });
 });

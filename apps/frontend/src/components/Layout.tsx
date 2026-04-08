@@ -10,7 +10,7 @@ export function Layout() {
   const { data: session } = authClient.useSession();
 
   return (
-    <div className="app-shell">
+    <div className={`app-shell${session ? "" : " app-shell--no-sidebar"}`}>
       <TopBar />
       {session && <NavSidebar />}
       <main className="app-shell__main">

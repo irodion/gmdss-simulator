@@ -31,13 +31,10 @@ describe("NavSidebar", () => {
     expect(linkTexts.some((t) => t?.includes("Ref"))).toBe(true);
   });
 
-  test("renders disabled Drill and Sim items with aria-disabled", () => {
+  test("renders no disabled nav items", () => {
     const { container } = renderSidebar();
     const disabledItems = container.querySelectorAll("[aria-disabled='true']");
-    expect(disabledItems.length).toBe(2);
-    const texts = [...disabledItems].map((el) => el.textContent);
-    expect(texts.some((t) => t?.includes("Drill"))).toBe(true);
-    expect(texts.some((t) => t?.includes("Sim"))).toBe(true);
+    expect(disabledItems.length).toBe(0);
   });
 
   test("renders profile link and sign out button", () => {
@@ -54,5 +51,11 @@ describe("NavSidebar", () => {
     const activeLinks = container.querySelectorAll(".nav-block--active");
     expect(activeLinks.length).toBeGreaterThan(0);
     expect(activeLinks[0]?.getAttribute("href")).toBe("/learn");
+  });
+
+  test("profile link is active on /progress route", () => {
+    const { container } = renderSidebar("/progress");
+    const activeLinks = container.querySelectorAll(".nav-block--active");
+    expect([...activeLinks].some((l) => l.getAttribute("href") === "/progress")).toBe(true);
   });
 });

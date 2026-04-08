@@ -1,0 +1,45 @@
+{
+  "id": "v1/routine",
+  "version": "1.0.0",
+  "category": "routine",
+  "requiredFields": [
+    {
+      "id": "station_name",
+      "label": "Station name (called)",
+      "patterns": [
+        "(ANYTOWN|ANYPORT|COAST\\s*GUARD?)\\s*(RADIO|STATION|CONTROL)?",
+        "PORT\\s*CONTROL"
+      ],
+      "required": true
+    },
+    {
+      "id": "vessel_name",
+      "label": "Own vessel name",
+      "patterns": ["BLUE\\s*DUCK"],
+      "required": true
+    },
+    {
+      "id": "this_is",
+      "label": "THIS IS",
+      "patterns": ["THIS\\s+IS"],
+      "required": true
+    },
+    {
+      "id": "request",
+      "label": "Request / purpose",
+      "patterns": ["RADIO\\s*CHECK|CHANNEL\\s*\\d+|REQUEST|ENTERING|POSITION|REPORT"],
+      "required": true
+    }
+  ],
+  "prowordRules": [
+    { "id": "this_is", "label": "THIS IS", "pattern": "THIS\\s+IS" },
+    { "id": "over", "label": "OVER", "pattern": "\\bOVER\\b" }
+  ],
+  "sequenceRules": {
+    "fieldOrder": ["station_name", "this_is", "vessel_name", "request", "over"]
+  },
+  "channelRules": {
+    "requiredChannel": 16,
+    "blockChannel70Voice": true
+  }
+}
