@@ -249,7 +249,7 @@ describe("scoreTranscript", () => {
     });
   });
 
-  describe("snapshot tests", () => {
+  describe("full scoring", () => {
     it("perfect routine radio check", () => {
       vi.spyOn(Date, "now").mockReturnValue(10000);
       const turns: Turn[] = [
@@ -258,21 +258,27 @@ describe("scoreTranscript", () => {
         ),
       ];
       const score = scoreTranscript(turns, ROUTINE_RUBRIC, 16);
-      expect(score).toMatchSnapshot();
+      expect(score.overall).toBe(100);
+      expect(score.timestamp).toBe(10000);
+      expect(score.dimensions.every((d) => d.score === 100)).toBe(true);
     });
 
     it("missing all fields", () => {
       vi.spyOn(Date, "now").mockReturnValue(10000);
       const turns: Turn[] = [makeTurn("HELLO WORLD")];
       const score = scoreTranscript(turns, ROUTINE_RUBRIC, 16);
-      expect(score).toMatchSnapshot();
+      expect(score.overall).toBe(15);
+      expect(score.dimensions[0]?.score).toBe(0); // required_fields
+      expect(score.dimensions[3]?.score).toBe(100); // channel correct
     });
 
     it("wrong channel and missing prowords", () => {
       vi.spyOn(Date, "now").mockReturnValue(10000);
       const turns: Turn[] = [makeTurn("ANYTOWN RADIO, THIS IS BLUE DUCK, RADIO CHECK", 12)];
       const score = scoreTranscript(turns, ROUTINE_RUBRIC, 16);
-      expect(score).toMatchSnapshot();
+      expect(score.overall).toBe(73);
+      expect(score.dimensions[1]?.score).toBe(50); // prowords partial
+      expect(score.dimensions[3]?.score).toBe(0); // wrong channel
     });
 
     it("safety with partial SECURITE count", () => {
@@ -281,7 +287,8 @@ describe("scoreTranscript", () => {
         makeTurn("SECURITE SECURITE, THIS IS BLUE DUCK, NAVIGATIONAL WARNING, OUT"),
       ];
       const score = scoreTranscript(turns, SAFETY_RUBRIC, 16);
-      expect(score).toMatchSnapshot();
+      expect(score.overall).toBe(97);
+      expect(score.dimensions[1]?.score).toBe(89); // prowords (2/3 SECURITE)
     });
   });
 });
