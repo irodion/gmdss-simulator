@@ -72,13 +72,74 @@ describe("RotaryKnob", () => {
     expect(onChange).not.toHaveBeenCalled();
   });
 
-  test("handles pointer interaction", () => {
+  test("handles pointer drag to change value", () => {
     const onChange = vi.fn();
     render(<RotaryKnob value={50} label="VOL" onChange={onChange} />);
     const slider = screen.getByRole("slider");
-    // Simulate pointer down to start interaction
+
+    // Mock getBoundingClientRect so pointer math works
+    vi.spyOn(slider, "getBoundingClientRect").mockReturnValue({
+      left: 0,
+      top: 0,
+      right: 86,
+      bottom: 86,
+      width: 86,
+      height: 86,
+      x: 0,
+      y: 0,
+      toJSON: () => ({}),
+    });
+
+    // Stub setPointerCapture/releasePointerCapture (not available in happy-dom)
+    slider.setPointerCapture = vi.fn();
+    slider.releasePointerCapture = vi.fn();
+
     fireEvent.pointerDown(slider, { pointerId: 1 });
-    // Just verify no crash — actual angle calculation requires getBoundingClientRect
+
+    // Move pointer to right of center (positive angle → high value)
+    slider.dispatchEvent(
+      new PointerEvent("pointermove", { clientX: 80, clientY: 43, bubbles: true }),
+    );
+    expect(onChange).toHaveBeenCalled();
+
+    // Release
+    slider.dispatchEvent(new PointerEvent("pointerup", { pointerId: 1, bubbles: true }));
+  });
+
+  test("rejects dead-zone crossing (min↔max jump)", () => {
+    const onChange = vi.fn();
+    render(<RotaryKnob value={0} label="VOL" onChange={onChange} />);
+    const slider = screen.getByRole("slider");
+
+    vi.spyOn(slider, "getBoundingClientRect").mockReturnValue({
+      left: 0,
+      top: 0,
+      right: 86,
+      bottom: 86,
+      width: 86,
+      height: 86,
+      x: 0,
+      y: 0,
+      toJSON: () => ({}),
+    });
+    slider.setPointerCapture = vi.fn();
+    slider.releasePointerCapture = vi.fn();
+
+    fireEvent.pointerDown(slider, { pointerId: 1 });
+
+    // First move: bottom-left (large negative angle, near min)
+    slider.dispatchEvent(
+      new PointerEvent("pointermove", { clientX: 10, clientY: 80, bubbles: true }),
+    );
+    onChange.mockClear();
+
+    // Second move: bottom-right (large positive angle, near max) — should be rejected
+    slider.dispatchEvent(
+      new PointerEvent("pointermove", { clientX: 76, clientY: 80, bubbles: true }),
+    );
+    expect(onChange).not.toHaveBeenCalled();
+
+    slider.dispatchEvent(new PointerEvent("pointerup", { pointerId: 1, bubbles: true }));
   });
 
   test("renders indicator with correct rotation", () => {
