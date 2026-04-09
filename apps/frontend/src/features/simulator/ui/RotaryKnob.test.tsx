@@ -2,6 +2,22 @@ import { render, screen, fireEvent } from "@testing-library/react";
 import { describe, expect, test, vi } from "vite-plus/test";
 import { RotaryKnob } from "./RotaryKnob.tsx";
 
+function mockSliderPointer(slider: HTMLElement) {
+  vi.spyOn(slider, "getBoundingClientRect").mockReturnValue({
+    left: 0,
+    top: 0,
+    right: 86,
+    bottom: 86,
+    width: 86,
+    height: 86,
+    x: 0,
+    y: 0,
+    toJSON: () => ({}),
+  });
+  slider.setPointerCapture = vi.fn();
+  slider.releasePointerCapture = vi.fn();
+}
+
 describe("RotaryKnob", () => {
   test("renders with label and slider role", () => {
     render(<RotaryKnob value={50} label="VOL" onChange={vi.fn()} />);
@@ -76,23 +92,7 @@ describe("RotaryKnob", () => {
     const onChange = vi.fn();
     render(<RotaryKnob value={50} label="VOL" onChange={onChange} />);
     const slider = screen.getByRole("slider");
-
-    // Mock getBoundingClientRect so pointer math works
-    vi.spyOn(slider, "getBoundingClientRect").mockReturnValue({
-      left: 0,
-      top: 0,
-      right: 86,
-      bottom: 86,
-      width: 86,
-      height: 86,
-      x: 0,
-      y: 0,
-      toJSON: () => ({}),
-    });
-
-    // Stub setPointerCapture/releasePointerCapture (not available in happy-dom)
-    slider.setPointerCapture = vi.fn();
-    slider.releasePointerCapture = vi.fn();
+    mockSliderPointer(slider);
 
     fireEvent.pointerDown(slider, { pointerId: 1 });
 
@@ -110,20 +110,7 @@ describe("RotaryKnob", () => {
     const onChange = vi.fn();
     render(<RotaryKnob value={0} label="VOL" onChange={onChange} />);
     const slider = screen.getByRole("slider");
-
-    vi.spyOn(slider, "getBoundingClientRect").mockReturnValue({
-      left: 0,
-      top: 0,
-      right: 86,
-      bottom: 86,
-      width: 86,
-      height: 86,
-      x: 0,
-      y: 0,
-      toJSON: () => ({}),
-    });
-    slider.setPointerCapture = vi.fn();
-    slider.releasePointerCapture = vi.fn();
+    mockSliderPointer(slider);
 
     fireEvent.pointerDown(slider, { pointerId: 1 });
 
@@ -131,6 +118,7 @@ describe("RotaryKnob", () => {
     slider.dispatchEvent(
       new PointerEvent("pointermove", { clientX: 10, clientY: 80, bubbles: true }),
     );
+    expect(onChange).toHaveBeenCalled();
     onChange.mockClear();
 
     // Second move: bottom-right (large positive angle, near max) — should be rejected

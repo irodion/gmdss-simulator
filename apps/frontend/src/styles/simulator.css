@@ -262,7 +262,7 @@
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.2),
     0 0 18px rgba(130, 201, 137, 0.12);
-  font-family: "Courier New", "Consolas", monospace;
+  font-family: "Courier New", Consolas, monospace;
   text-align: center;
 }
 
@@ -280,7 +280,7 @@
 .sim-lcd-main {
   position: relative;
   z-index: 1;
-  font-family: "DSEG7 Classic", "Courier New", "Consolas", monospace;
+  font-family: "DSEG7 Classic", "Courier New", Consolas, monospace;
   font-size: 24px;
   line-height: 1.2;
 }
@@ -481,7 +481,7 @@
   justify-content: center;
   background: rgba(180, 130, 30, 0.85);
   color: #fff;
-  font-family: "Courier New", "Consolas", monospace;
+  font-family: "Courier New", Consolas, monospace;
   font-size: 14px;
   font-weight: bold;
   letter-spacing: 0.05em;
@@ -536,7 +536,7 @@
   width: 44px;
   height: 34px;
   font-size: 15px;
-  font-family: "Courier New", "Consolas", monospace;
+  font-family: "Courier New", Consolas, monospace;
   border-radius: 6px;
   padding: 0;
 }
@@ -567,7 +567,7 @@
 .sim-dsc-meta {
   font-size: 11px;
   color: #8f9398;
-  font-family: "Courier New", "Consolas", monospace;
+  font-family: "Courier New", Consolas, monospace;
 }
 
 /* === PTT Button === */
@@ -910,7 +910,7 @@
   display: block;
   margin-bottom: 8px;
   font-size: 11px;
-  font-family: "Courier New", "Consolas", monospace;
+  font-family: "Courier New", Consolas, monospace;
 }
 
 .sim-bubble--student .sim-bubble__tag {
@@ -1005,7 +1005,7 @@
   background: var(--surface-dark);
   color: var(--text);
   font-size: 15px;
-  font-family: "Courier New", "Consolas", monospace;
+  font-family: "Courier New", Consolas, monospace;
   text-transform: uppercase;
 }
 
@@ -1111,7 +1111,7 @@
   background: var(--surface-dark);
   border: 1px solid var(--frame-line);
   border-radius: var(--radius-sm);
-  font-family: "Courier New", "Consolas", monospace;
+  font-family: "Courier New", Consolas, monospace;
   line-height: 1.5;
   word-break: break-word;
 }
@@ -1229,7 +1229,7 @@
   }
 }
 
-@media (max-width: 480px) {
+@media (max-width: 560px) {
   .sim-layout {
     padding: 8px;
   }
@@ -1237,6 +1237,7 @@
   .sim-lower-zone {
     grid-template-columns: 1fr;
     justify-items: center;
+    gap: 12px;
   }
 
   .sim-ptt {
@@ -1357,5 +1358,5 @@
 }
 
 .sim-a11y-mono {
-  font-family: "Courier New", "Consolas", monospace;
+  font-family: "Courier New", Consolas, monospace;
 }
