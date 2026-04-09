@@ -112,7 +112,7 @@ describe("QuizPage", () => {
         passed: true,
         threshold: 70,
         results: [],
-        unlocked: ["module-2"],
+        unlocked: [{ id: "module-2", title: "VHF Radio Operation" }],
       });
 
     renderQuiz();
@@ -124,7 +124,7 @@ describe("QuizPage", () => {
     fireEvent.click(screen.getByText("Submit"));
 
     await waitFor(() => {
-      expect(screen.getByText(/module-2/)).toBeDefined();
+      expect(screen.getByText(/VHF Radio Operation/)).toBeDefined();
     });
   });
 

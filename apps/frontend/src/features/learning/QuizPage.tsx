@@ -31,7 +31,7 @@ interface QuizResult {
   passed: boolean;
   threshold: number;
   results: QuestionResult[];
-  unlocked: string[];
+  unlocked: { id: string; title: string }[];
 }
 
 export function QuizPage() {
@@ -157,7 +157,7 @@ export function QuizPage() {
             <div className="quiz-result__unlock">
               <span className="quiz-result__unlock-icon">🔓</span>
               <span>
-                {t("unlocked")} {result.unlocked.join(", ")}
+                {t("unlocked")} {result.unlocked.map((m) => m.title).join(", ")}
               </span>
             </div>
           )}

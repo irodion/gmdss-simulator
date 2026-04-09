@@ -382,16 +382,16 @@ async function seed() {
             },
             {
               id: "m1q4",
-              text: "When was GMDSS fully implemented?",
+              text: "Which VHF channels must an ROC operator maintain continuous watch on?",
               options: [
-                { key: "a", text: "1 January 1992" },
-                { key: "b", text: "1 February 1999" },
-                { key: "c", text: "1 July 2002" },
-                { key: "d", text: "1 January 1988" },
+                { key: "a", text: "Channel 16 only" },
+                { key: "b", text: "Channel 16 (voice) and Channel 70 (DSC)" },
+                { key: "c", text: "Channel 70 only" },
+                { key: "d", text: "Channel 13 and Channel 16" },
               ],
               correct_answer: "b",
               explanation:
-                "GMDSS was adopted by IMO in 1988, phased in from 1992, and fully implemented on 1 February 1999.",
+                "SOLAS requires continuous watch on VHF Channel 16 (distress/safety voice) and Channel 70 (DSC alerting). The DSC watch is typically automated by the radio's dedicated receiver.",
             },
             {
               id: "m1q5",

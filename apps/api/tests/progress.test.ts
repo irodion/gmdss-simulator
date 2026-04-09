@@ -129,7 +129,8 @@ describe("POST /api/progress/quiz/:id/submit", () => {
     const body = res.json();
     expect(body.score).toBe(100);
     expect(body.passed).toBe(true);
-    expect(body.unlocked).toContain("module-2");
+    expect(body.unlocked[0].id).toBe("module-2");
+    expect(body.unlocked[0].title).toBeDefined();
   });
 
   test("returns failing score and does not unlock next module", async () => {
