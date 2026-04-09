@@ -1,0 +1,97 @@
+{
+  "version": 1,
+  "title": "SART and AIS-SART",
+  "sections": [
+    {
+      "type": "text",
+      "content": "A Search and Rescue Transponder (SART) is a survival craft locating device that responds to radar interrogation signals. The traditional radar-SART operates on the 9 GHz X-band frequency. When interrogated by a ship's or aircraft's X-band radar, the SART transmits a series of response signals that appear as distinctive marks on the radar display, guiding rescuers directly to the survival craft."
+    },
+    {
+      "type": "text",
+      "content": "The radar-SART display changes with distance. At long range, 12 equally-spaced dots appear on the radar screen, extending outward from the SART's position. As the searching vessel closes range, the dots stretch into arcs. Within approximately 1 nautical mile, the arcs merge into complete concentric circles centred on the SART. This progressive change provides the bridge team with a clear indication of both the SART's bearing and their closing distance."
+    },
+    {
+      "type": "table",
+      "headers": ["Feature", "Radar-SART", "AIS-SART"],
+      "rows": [
+        ["Operating frequency", "9 GHz X-band radar", "AIS channels 87B and 88B (VHF)"],
+        [
+          "Detection display",
+          "Radar screen only",
+          "All AIS-equipped displays (radar overlay, ECDIS, standalone AIS)"
+        ],
+        ["Radar appearance", "12 dots → arcs → circles", "Circle with X symbol on ECDIS"],
+        [
+          "Detection range (ship)",
+          "8 NM (15 m scanner height)",
+          "Depends on VHF propagation; typically similar range"
+        ],
+        ["Detection range (aircraft)", "Up to 30 NM", "Line-of-sight VHF range"],
+        ["Battery (standby)", "96 hours", "96 hours"],
+        ["Battery (active)", "8 hours continuous", "96 hours continuous"],
+        ["MMSI prefix", "N/A", "970"],
+        ["Transmission rate", "Responds to radar sweep", "8 messages/min (4 per channel)"],
+        ["Minimum mounting height", "1 metre above sea level", "As high as practical"]
+      ]
+    },
+    {
+      "type": "callout",
+      "variant": "info",
+      "title": "Radar-SART Detection Ranges",
+      "content": "A radar-SART can be detected at approximately 8 nautical miles by a ship's radar with a scanner mounted at 15 metres, and up to 30 nautical miles by an aircraft radar. The SART should be mounted at least 1 metre above sea level to maximise detection range."
+    },
+    {
+      "type": "text",
+      "content": "The radar-SART battery must provide at least 96 hours in standby mode followed by 8 hours of continuous active operation when interrogated. Testing is performed using the built-in self-test function, which produces a single dot on the radar display (as opposed to the 12 dots of a live activation). Testing should be conducted briefly and only when no SAR operations are in progress to avoid confusion."
+    },
+    {
+      "type": "text",
+      "content": "The AIS-SART is a modern alternative that operates on AIS VHF channels 87B and 88B instead of radar frequencies. Its key advantage is visibility: an AIS-SART appears on every AIS-equipped display on every vessel within range — not just on radar screens. This means that even vessels without someone actively watching the radar will receive an alert. The AIS-SART transmits 8 position reports per minute (4 on each channel) and carries the MMSI prefix 970. On ECDIS, it appears as a distinctive circle with an X symbol."
+    },
+    {
+      "type": "callout",
+      "variant": "warning",
+      "title": "Radar-SART Limitation",
+      "content": "A radar-SART only responds to X-band (9 GHz) radar. It will NOT respond to S-band (3 GHz) radar. Ensure searching vessels use their X-band radar when looking for radar-SARTs."
+    },
+    {
+      "type": "exercise",
+      "prompt": "At long range, a radar-SART appears on the radar display as:",
+      "options": [
+        { "key": "a", "text": "A single bright dot" },
+        { "key": "b", "text": "12 equally-spaced dots" },
+        { "key": "c", "text": "Concentric circles" }
+      ],
+      "answer": "b",
+      "explanation": "At long range, a radar-SART produces 12 equally-spaced dots on the radar screen. As the vessel approaches, the dots become arcs, and within about 1 NM they appear as complete concentric circles. A single dot indicates the self-test mode."
+    },
+    {
+      "type": "fill-blank",
+      "prompt": "The MMSI prefix for an AIS-SART is ___.",
+      "answer": "970",
+      "alternatives": [],
+      "explanation": "AIS-SARTs are identified by the MMSI prefix 970. This unique prefix allows AIS receivers to recognise the transmission as a distress locating signal and display the appropriate SAR symbol (circle with X) on ECDIS."
+    },
+    {
+      "type": "exercise",
+      "prompt": "What is the key advantage of an AIS-SART over a traditional radar-SART?",
+      "options": [
+        { "key": "a", "text": "It operates on S-band radar as well as X-band" },
+        { "key": "b", "text": "It appears on all AIS-equipped displays, not just radar screens" },
+        { "key": "c", "text": "It has a longer detection range than radar-SART" }
+      ],
+      "answer": "b",
+      "explanation": "The main advantage of an AIS-SART is that it appears on every AIS-equipped display (ECDIS, standalone AIS receivers, radar with AIS overlay) on every vessel within range, not just on the radar screen. This greatly increases the chance of detection."
+    },
+    {
+      "type": "takeaway",
+      "points": [
+        "Radar-SART operates on 9 GHz X-band and shows 12 dots (long range), arcs (medium), or circles (close range) on radar.",
+        "Radar-SART detection: ~8 NM by ship (15 m scanner), up to 30 NM by aircraft; mount at least 1 m above sea level.",
+        "Radar-SART battery: 96 hours standby + 8 hours active; self-test shows a single dot.",
+        "AIS-SART operates on AIS channels, appears on ALL AIS displays, MMSI prefix 970, symbol = circle with X.",
+        "AIS-SART transmits 8 messages per minute (4 per channel) with 96 hours of battery life."
+      ]
+    }
+  ]
+}

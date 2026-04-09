@@ -1,0 +1,115 @@
+{
+  "version": 1,
+  "title": "NAVTEX",
+  "sections": [
+    {
+      "type": "text",
+      "content": "NAVTEX (Navigational Telex) is an international automated medium-frequency direct-printing service for delivering navigational and meteorological warnings, weather forecasts, and urgent maritime safety information to ships. Introduced in 1983 and incorporated as a mandatory component of GMDSS since 1999, NAVTEX provides a cost-effective and reliable means of disseminating maritime safety information (MSI) to vessels within approximately 400 nautical miles of shore."
+    },
+    {
+      "type": "table",
+      "headers": ["Service", "Frequency", "Language", "Notes"],
+      "rows": [
+        [
+          "International NAVTEX",
+          "518 kHz",
+          "English",
+          "Primary service; mandatory for all GMDSS vessels in Sea Areas A1/A2"
+        ],
+        [
+          "National NAVTEX",
+          "490 kHz",
+          "Local language",
+          "Supplements 518 kHz with information in the national language"
+        ],
+        [
+          "Tropical NAVTEX",
+          "4209.5 kHz",
+          "English",
+          "Extended range for tropical warning areas; HF frequency"
+        ]
+      ]
+    },
+    {
+      "type": "text",
+      "content": "Each NAVTEX station is assigned a unique single-letter identifier (B1 character, A through Z) and broadcasts on a fixed schedule once every four hours. Each transmission lasts up to 10 minutes. The minimum distance between two transmitters sharing the same B1 identifier is approximately 800 nautical miles, which prevents interference and message duplication. The world is divided into 21 NAVAREAs, each overseen by a NAVAREA coordinator responsible for promulgating navigational warnings."
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "title": "Before Sailing",
+      "content": "Leave the NAVTEX receiver switched on for 4 to 12 hours before departure to build up a complete picture of current warnings, weather forecasts, and navigational hazards in your area. The receiver stores messages and rejects duplicates automatically."
+    },
+    {
+      "type": "text",
+      "content": "Every NAVTEX message begins with a four-character preamble following the header ZCZC. The first character (B1) identifies the transmitting station (A-Z). The second character (B2) identifies the message type. The third and fourth characters (B3B4) form a two-digit serial number from 01 to 99, after which numbering restarts. Serial number 00 is reserved for VITAL priority messages that are always displayed and never rejected."
+    },
+    {
+      "type": "table",
+      "headers": ["B2 Code", "Message Type", "Can Be Rejected?"],
+      "rows": [
+        ["A", "Navigational warnings", "No"],
+        ["B", "Meteorological warnings", "No"],
+        ["C", "Ice reports", "Yes"],
+        ["D", "Search and rescue information", "No"],
+        ["E", "Meteorological forecasts", "Yes (not recommended)"],
+        ["F", "Pilot service messages", "Yes"],
+        ["L", "Additional navigational warnings", "No"],
+        ["Z", "QRU — no messages on hand", "N/A"]
+      ]
+    },
+    {
+      "type": "callout",
+      "variant": "warning",
+      "title": "Non-Rejectable Message Types",
+      "content": "Message types A (navigational warnings), B (meteorological warnings), D (SAR information), and L (additional navigational warnings) cannot be rejected by the receiver. These are critical safety categories that must always be displayed."
+    },
+    {
+      "type": "text",
+      "content": "NAVTEX uses a forward error correction (FEC) system. The Character Error Rate (CER) is monitored: if the CER exceeds 5%, the message is considered corrupted, automatically deleted, and will be retransmitted in the next scheduled broadcast. This ensures that only readable, reliable information is presented to the watch officer."
+    },
+    {
+      "type": "text",
+      "content": "NAVTEX messages carry one of three priority levels. VITAL messages demand immediate broadcast and are assigned serial number 00 — they are always printed regardless of receiver settings. IMPORTANT messages are broadcast at the next scheduled transmission time. ROUTINE messages are included in the normal broadcast cycle."
+    },
+    {
+      "type": "exercise",
+      "prompt": "A NAVTEX message begins with ZCZC JB45. What does the 'B' in the second position indicate?",
+      "options": [
+        { "key": "a", "text": "The transmitting station's identifier" },
+        { "key": "b", "text": "Meteorological warnings" },
+        { "key": "c", "text": "The message serial number" }
+      ],
+      "answer": "b",
+      "explanation": "In the NAVTEX preamble ZCZC + B1B2B3B4, the B2 character identifies the message type. 'B' in the B2 position stands for meteorological warnings. The first character 'J' is the station identifier (B1), and '45' is the serial number (B3B4)."
+    },
+    {
+      "type": "exercise",
+      "prompt": "What is the maximum Character Error Rate (CER) permitted before a NAVTEX message is automatically deleted?",
+      "options": [
+        { "key": "a", "text": "1%" },
+        { "key": "b", "text": "3%" },
+        { "key": "c", "text": "5%" }
+      ],
+      "answer": "c",
+      "explanation": "If the CER exceeds 5%, the NAVTEX receiver automatically deletes the corrupted message. The station will retransmit the message in its next scheduled broadcast."
+    },
+    {
+      "type": "fill-blank",
+      "prompt": "NAVTEX stations broadcast every ___ hours, with each transmission lasting up to 10 minutes.",
+      "answer": "4",
+      "alternatives": ["four"],
+      "explanation": "Each NAVTEX station transmits on a fixed schedule once every 4 hours. With up to 10 minutes per broadcast, this allows multiple stations to share the same frequency without overlap."
+    },
+    {
+      "type": "takeaway",
+      "points": [
+        "NAVTEX operates on three frequencies: 518 kHz (international English), 490 kHz (national language), and 4209.5 kHz (tropical).",
+        "The preamble ZCZC is followed by B1 (station ID), B2 (message type), and B3B4 (serial number 01-99; 00 = VITAL).",
+        "Message types A, B, D, and L cannot be rejected by the receiver — they are mandatory safety categories.",
+        "Leave the NAVTEX receiver on for 4-12 hours before sailing to collect all current warnings and forecasts.",
+        "Messages with a Character Error Rate exceeding 5% are automatically deleted and retransmitted."
+      ]
+    }
+  ]
+}

@@ -1,0 +1,105 @@
+{
+  "version": 1,
+  "title": "MAYDAY Procedure",
+  "sections": [
+    {
+      "type": "text",
+      "content": "The MAYDAY distress call is used when a vessel or person is in grave and imminent danger and requires immediate assistance. \"Grave and imminent danger\" means the vessel is threatened by serious risk of loss, or a person's life is at immediate risk. Examples include sinking, fire out of control, flooding beyond the capacity of pumps, or a crew member suffering a life-threatening medical emergency with no possibility of reaching port in time."
+    },
+    {
+      "type": "callout",
+      "variant": "warning",
+      "title": "MAYDAY Is for Grave and Imminent Danger Only",
+      "content": "Do not use MAYDAY for situations that are serious but not immediately life-threatening. Those situations call for PAN PAN (urgency). Misuse of MAYDAY is a criminal offence and wastes SAR resources."
+    },
+    {
+      "type": "text",
+      "content": "The standard GMDSS distress procedure has two stages. First, transmit a DSC distress alert on VHF Channel 70 (or the appropriate MF/HF DSC frequency). The DSC controller will prompt you to select the nature of distress and will automatically include your MMSI and position. Second, after allowing a brief interval for the DSC alert to be received and acknowledged, switch to VHF Channel 16 (or 2182 kHz on MF) and transmit the voice MAYDAY message."
+    },
+    {
+      "type": "text",
+      "content": "The voice MAYDAY message follows a precise format. Each element must be spoken clearly and at a moderate pace:"
+    },
+    {
+      "type": "table",
+      "headers": ["Element", "Content"],
+      "rows": [
+        ["1", "MAYDAY MAYDAY MAYDAY"],
+        ["2", "THIS IS [vessel name x3, call sign, MMSI]"],
+        ["3", "MAYDAY [vessel name]"],
+        [
+          "4",
+          "MY POSITION IS [latitude and longitude, or bearing and distance from a known point]"
+        ],
+        ["5", "Nature of distress (e.g., sinking, fire, flooding)"],
+        ["6", "Assistance required (e.g., immediate assistance, require tow)"],
+        ["7", "Number of persons on board"],
+        [
+          "8",
+          "Any other useful information (e.g., vessel description, whether abandoning, EPIRB activated)"
+        ],
+        ["9", "OVER"]
+      ]
+    },
+    {
+      "type": "callout",
+      "variant": "info",
+      "title": "Position First",
+      "content": "Position is given immediately after identifying the vessel because it is the single most critical piece of information for SAR coordination. If the transmission is cut short, rescuers at least know where to search."
+    },
+    {
+      "type": "text",
+      "content": "If you must abandon the vessel, activate all distress equipment before leaving. Place the SART (Search and Rescue Transponder) as high as possible on the life raft -- its radar response is strongest when elevated. Deploy the EPIRB in the water but keep it tethered to the raft so it remains upright with its antenna clear; the EPIRB transmits on 406 MHz to Cospas-Sarsat satellites and on 121.5 MHz as a homing signal. Take a portable VHF radio set to Channel 16 on high power, along with a spare battery, into the raft. Continue to transmit MAYDAY calls at intervals."
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "title": "Abandonment Checklist",
+      "content": "SART: placed high on the raft. EPIRB: deployed in water, tethered to raft. Portable VHF: Channel 16, high power, spare battery. These three devices give you satellite alerting, radar detection, and voice communication."
+    },
+    {
+      "type": "tool-embed",
+      "tool": "script-builder",
+      "config": { "scriptType": "mayday" }
+    },
+    {
+      "type": "exercise",
+      "prompt": "What should be done BEFORE transmitting a voice MAYDAY message on Channel 16?",
+      "options": [
+        { "key": "a", "text": "Call the coast station on a working channel to pre-alert them" },
+        { "key": "b", "text": "Transmit a DSC distress alert on Channel 70" },
+        { "key": "c", "text": "Switch to low power to avoid interference" }
+      ],
+      "answer": "b",
+      "explanation": "The standard GMDSS distress procedure is: first transmit a DSC distress alert on Channel 70 (which automatically includes your MMSI and position), then follow up with the voice MAYDAY message on Channel 16."
+    },
+    {
+      "type": "fill-blank",
+      "prompt": "When abandoning ship, the SART should be placed as ___ as possible on the life raft to maximise its radar response.",
+      "answer": "high",
+      "alternatives": ["high up"],
+      "explanation": "A SART's radar transponder signal is more effectively detected by searching vessels and aircraft when the unit is elevated. Placing it high on the raft's canopy or arch gives the best range."
+    },
+    {
+      "type": "exercise",
+      "prompt": "In the voice MAYDAY format, what information comes immediately after 'MAYDAY [vessel name]'?",
+      "options": [
+        { "key": "a", "text": "Nature of distress" },
+        { "key": "b", "text": "Number of persons on board" },
+        { "key": "c", "text": "Position" }
+      ],
+      "answer": "c",
+      "explanation": "Position is given immediately after identifying the vessel in distress because it is the most critical piece of information for search and rescue. If the message is interrupted, rescuers will at least know where to look."
+    },
+    {
+      "type": "takeaway",
+      "points": [
+        "MAYDAY is reserved for grave and imminent danger -- immediate risk of loss of vessel or life.",
+        "Always send a DSC distress alert on Channel 70 before the voice MAYDAY on Channel 16.",
+        "The voice format is: MAYDAY x3, THIS IS (vessel x3, MMSI), MAYDAY (vessel), position, nature of distress, assistance required, persons on board, other info, OVER.",
+        "When abandoning ship: SART high on raft, EPIRB in water tethered to raft, portable VHF on Ch16 high power with spare battery.",
+        "Position is stated early in the message because it is the single most important element for SAR."
+      ]
+    }
+  ]
+}

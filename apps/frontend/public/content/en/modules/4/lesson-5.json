@@ -1,35 +1,128 @@
 {
   "version": 1,
-  "title": "Personal Locator Beacons",
+  "title": "False Alerts and DSC-Voice Workflow",
   "sections": [
     {
       "type": "text",
-      "content": "A Personal Locator Beacon (PLB) is a portable 406 MHz distress beacon designed to be carried by an individual. Unlike an EPIRB, which is registered to a vessel and typically float-free mounted, a PLB is registered to a person and manually activated. PLBs transmit to the same Cospas-Sarsat satellite system as EPIRBs."
+      "content": "False distress alerts are an unavoidable reality in the GMDSS. Equipment malfunction, accidental button presses, and operator error all contribute to false alerts that waste search-and-rescue resources and desensitise operators to genuine emergencies. Knowing how to cancel a false alert quickly and correctly is as important as knowing how to send a real one."
+    },
+    {
+      "type": "callout",
+      "variant": "warning",
+      "title": "No Punitive Measures If Properly Reported",
+      "content": "Maritime authorities do not impose penalties for accidental false alerts provided the operator cancels promptly and follows the correct procedure. Failing to cancel a false alert, however, may result in an unnecessary SAR operation and potential disciplinary action."
     },
     {
       "type": "text",
-      "content": "PLBs are smaller and lighter than EPIRBs, making them suitable for personal carry on deck, in a liferaft, or even during shore-based activities. Most modern PLBs include an internal GPS for precise position reporting. Battery life is typically 24 hours minimum, compared to 48 hours for an EPIRB."
+      "content": "If you accidentally send a DSC distress alert, you must cancel it immediately. Turn off the equipment to stop the automatic repeat transmission, then turn it back on. Next, broadcast a voice cancellation on Channel 16 to inform all stations that the alert was false."
     },
     {
       "type": "callout",
       "variant": "info",
-      "title": "Registration",
-      "content": "Like EPIRBs, PLBs must be registered with the national authority. Registration information includes the owner's name, emergency contacts, and a description of typical activities. Unregistered beacons may result in delayed SAR response."
+      "title": "Voice Cancellation on Channel 16",
+      "content": "After turning the equipment off and back on, switch to Ch 16 and broadcast: \"All Stations, All Stations, All Stations — This is [vessel name] x3, MMSI [number] — please cancel my distress alert of [date and time UTC], position [lat/long]. Master [name], MMSI [number], [date/time UTC] — OUT.\""
+    },
+    {
+      "type": "text",
+      "content": "The voice cancellation message follows a strict format to ensure clarity. Here is the complete template:"
+    },
+    {
+      "type": "table",
+      "headers": ["Element", "Content"],
+      "rows": [
+        ["Address", "All Stations, All Stations, All Stations"],
+        ["Identification", "This is [vessel name x3], MMSI [number]"],
+        ["Cancel request", "Please cancel my distress alert of [date/time UTC]"],
+        ["Position", "[latitude and longitude at time of false alert]"],
+        ["Signature", "Master [name], MMSI [number], [current date/time UTC]"],
+        ["Ending", "OUT"]
+      ]
+    },
+    {
+      "type": "text",
+      "content": "Beyond false alert handling, understanding the complete DSC-to-voice workflow is essential for effective GMDSS communication. DSC is only the alerting mechanism — it establishes initial contact and conveys essential data. The actual exchange of detailed information happens on a voice channel. This 5-step workflow applies to all DSC categories."
+    },
+    {
+      "type": "text",
+      "content": "Step 1: Compose the DSC call. Using the DSC menu, select the category, format specifier, target MMSI (if individual), nature of distress (if applicable), and proposed working channel (if routine). Verify all fields before proceeding."
+    },
+    {
+      "type": "text",
+      "content": "Step 2: Transmit on Channel 70. Press the transmit button. The controller sends the digital call on Ch 70. This takes less than half a second on VHF."
+    },
+    {
+      "type": "text",
+      "content": "Step 3: Wait for acknowledgement or automatic channel switch. For distress alerts, many modern controllers automatically switch to Channel 16 after transmission. For routine calls, you wait for a DSC acknowledgement from the called station, which may confirm or change the proposed working channel."
+    },
+    {
+      "type": "text",
+      "content": "Step 4: Switch to the voice channel. For distress: Channel 16. For urgency and safety: Channel 16 (default). For routine: the agreed working channel. Make the switch promptly — the other station is waiting."
+    },
+    {
+      "type": "text",
+      "content": "Step 5: Begin the voice procedure. On the voice channel, follow standard radiotelephone procedure — Mayday for distress, Pan Pan for urgency, Securite for safety, or a standard calling procedure for routine communications."
+    },
+    {
+      "type": "table",
+      "headers": ["Step", "Action", "Channel"],
+      "rows": [
+        ["1", "Compose DSC call (category, MMSI, details)", "—"],
+        ["2", "Transmit DSC", "Ch 70"],
+        ["3", "Wait for acknowledgement / auto-switch", "Ch 70"],
+        [
+          "4",
+          "Switch to voice channel",
+          "Ch 16 (distress/urgency/safety) or proposed working channel (routine)"
+        ],
+        ["5", "Begin voice procedure", "Voice channel"]
+      ]
     },
     {
       "type": "exercise",
-      "prompt": "What is the main difference between a PLB and an EPIRB?",
+      "prompt": "After accidentally sending a DSC distress alert, what is the first action you must take?",
       "options": [
-        { "key": "a", "text": "PLBs use a different satellite system" },
+        { "key": "a", "text": "Broadcast a voice cancellation on Channel 16" },
+        { "key": "b", "text": "Contact the nearest coast station by telephone" },
+        { "key": "c", "text": "Wait for a coast station to acknowledge on Channel 70" },
+        { "key": "d", "text": "Turn off the equipment to stop the automatic repeat" }
+      ],
+      "answer": "d",
+      "explanation": "The first step is to turn off the equipment to stop the automatic distress repeat transmission. Then turn it back on and broadcast a voice cancellation on Channel 16 to all stations."
+    },
+    {
+      "type": "fill-blank",
+      "prompt": "In the DSC-to-voice workflow, the DSC call is transmitted on Channel 70, and for a distress situation the voice follow-up takes place on Channel ___.",
+      "answer": "16",
+      "alternatives": ["Ch 16", "ch 16", "channel 16", "Channel 16", "sixteen"],
+      "explanation": "After a DSC distress alert is sent on Channel 70, voice communications continue on Channel 16 (156.8 MHz), the international distress and calling frequency."
+    },
+    {
+      "type": "exercise",
+      "prompt": "Which statement about false distress alert procedures is correct?",
+      "options": [
+        { "key": "a", "text": "Penalties are always imposed regardless of cancellation" },
         {
           "key": "b",
-          "text": "A PLB is registered to a person; an EPIRB is registered to a vessel"
+          "text": "Only a DSC cancellation on Ch 70 is required; no voice message is needed"
         },
-        { "key": "c", "text": "PLBs only work on land" },
-        { "key": "d", "text": "EPIRBs are manually activated; PLBs are automatic" }
+        {
+          "key": "c",
+          "text": "Turn off the equipment, turn it on, then broadcast a voice cancellation on Ch 16"
+        },
+        { "key": "d", "text": "False alerts should not be cancelled to avoid drawing attention" }
       ],
-      "answer": "b",
-      "explanation": "The key distinction is registration: a PLB is registered to a person and carried individually, while an EPIRB is registered to a vessel and typically mounted in a float-free bracket on the ship."
+      "answer": "c",
+      "explanation": "The correct procedure is: turn off the equipment to stop repeats, turn it back on, then broadcast a voice cancellation on Channel 16 to all stations."
+    },
+    {
+      "type": "takeaway",
+      "points": [
+        "Cancel a false distress alert: turn off the equipment to stop repeats, turn it back on, then broadcast a voice cancellation on Ch 16.",
+        "No punitive measures apply if the false alert is properly and promptly cancelled.",
+        "The voice cancellation message must include: \"All Stations x3\", vessel name x3, MMSI, date/time of the false alert, position, and master's name.",
+        "The DSC-to-voice workflow has 5 steps: compose, transmit on Ch 70, wait for ack, switch to voice channel, begin voice procedure.",
+        "DSC is the alerting mechanism only — detailed communication always continues on a voice channel (Ch 16 for distress, proposed channel for routine)."
+      ]
     }
   ]
 }

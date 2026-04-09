@@ -1,32 +1,107 @@
 {
   "version": 1,
-  "title": "Radar Reflectors",
+  "title": "DSC Distress Alerts",
   "sections": [
     {
       "type": "text",
-      "content": "Radar reflectors are passive devices that enhance a vessel's visibility on other ships' radar screens. Small vessels made of fiberglass or wood produce very weak radar echoes, making them nearly invisible to approaching ships. A properly mounted radar reflector significantly increases the radar cross-section."
+      "content": "A DSC distress alert is the digital equivalent of a Mayday call. It is transmitted on VHF Channel 70 and is received by every DSC-equipped station in range. The alert automatically includes the vessel's MMSI, position (from the connected GPS), the time the position was valid, and the nature of distress. There are two methods to send a distress alert: the rapid method for extreme emergencies, and the full method when time permits a more detailed message."
+    },
+    {
+      "type": "callout",
+      "variant": "warning",
+      "title": "Distress Alerts Are for Grave and Imminent Danger Only",
+      "content": "A DSC distress alert must only be sent when the vessel or a person is in grave and imminent danger and immediate assistance is required. Sending a false distress alert burdens rescue services and puts lives at risk."
     },
     {
       "type": "text",
-      "content": "The most common types are the octahedral (corner) reflector and the lens-type reflector. Octahedral reflectors consist of metal plates arranged to reflect radar signals back to their source. They should be mounted as high as possible, at least 4 metres above the waterline, in the \"rain-catching\" position for maximum effectiveness."
+      "content": "The rapid alert method is designed for the worst-case scenario when every second counts. On most DSC controllers, you lift the protective cover over the distress button and press and hold it for approximately 5 seconds. The equipment then transmits a distress alert containing your MMSI, the last valid GPS position and its timestamp, and the nature of distress set to \"Undesignated\" (since there was no time to select a specific nature). This method requires no menu navigation at all."
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "title": "Rapid Alert — 5-Second Press",
+      "content": "Lift the cover, press and hold the distress button for 5 seconds. The controller sends a default distress alert with your MMSI, last GPS position, time, and nature of distress set to Undesignated. No menu interaction is needed."
+    },
+    {
+      "type": "text",
+      "content": "The full alert method is used when the situation allows a few extra moments to provide more detail. You access the DSC menu, select the Distress category, choose the specific nature of distress from a list, verify that the displayed GPS position and time are correct, and then press the distress button to transmit. This gives receiving stations a clearer picture of the emergency before voice contact is established."
+    },
+    {
+      "type": "text",
+      "content": "The ITU defines the following nature-of-distress codes that can be selected during a full alert. Each code tells rescue coordinators what type of emergency the vessel faces."
+    },
+    {
+      "type": "table",
+      "headers": ["Nature of Distress", "Description"],
+      "rows": [
+        ["Undesignated", "Default when no specific nature is selected (rapid alert)"],
+        ["Fire / Explosion", "Fire or explosion on board"],
+        ["Flooding", "Vessel is taking on water"],
+        ["Collision", "Vessel has been involved in a collision"],
+        ["Grounding", "Vessel has run aground"],
+        ["Capsizing / Listing", "Vessel is capsizing or listing dangerously"],
+        ["Sinking", "Vessel is sinking"],
+        ["Adrift / Disabled", "Vessel has lost propulsion or steering and is adrift"],
+        ["Piracy / Armed Robbery", "Vessel is under attack by pirates or armed robbers"],
+        ["Abandoning Ship", "Crew is abandoning the vessel"],
+        ["Man Overboard", "A person has fallen overboard"]
+      ]
+    },
+    {
+      "type": "text",
+      "content": "Once transmitted, the DSC controller automatically repeats the distress alert at random intervals between 3.5 and 4.5 minutes. This repetition continues until the alert is acknowledged by a coast station via a DSC distress acknowledgement on Channel 70. Individual ships must NOT send a DSC distress acknowledgement — they should listen on Channel 16 for the voice MAYDAY and acknowledge by voice if appropriate. The randomised repeat interval prevents two vessels in distress from continuously colliding on the same time slot."
     },
     {
       "type": "callout",
       "variant": "info",
-      "title": "SOLAS Requirement",
-      "content": "SOLAS V Reg 19.2.1.7 requires all vessels under 150 GT to carry a radar reflector, if practicable, or other means to enable detection by radar. Lifeboats and liferafts should also be equipped with radar reflectors."
+      "title": "GPS Position Is Automatic",
+      "content": "When a GPS receiver is connected to the DSC controller, the vessel's position and its timestamp are automatically included in every distress alert. If the GPS is not functioning, the controller will transmit the last stored position, and the timestamp will indicate how old that position is."
     },
     {
       "type": "exercise",
-      "prompt": "What is the purpose of a radar reflector?",
+      "prompt": "How long must you press and hold the distress button for a rapid DSC distress alert?",
       "options": [
-        { "key": "a", "text": "To jam nearby radar signals" },
-        { "key": "b", "text": "To enhance radar visibility of small vessels" },
-        { "key": "c", "text": "To detect other vessels' radar emissions" },
-        { "key": "d", "text": "To send distress signals via radar" }
+        { "key": "a", "text": "1 second" },
+        { "key": "b", "text": "3 seconds" },
+        { "key": "c", "text": "5 seconds" },
+        { "key": "d", "text": "10 seconds" }
       ],
-      "answer": "b",
-      "explanation": "Radar reflectors are passive devices that enhance a vessel's radar cross-section, making it more visible on other ships' radar screens. This is critical for small vessels that would otherwise be difficult to detect."
+      "answer": "c",
+      "explanation": "The rapid distress alert is sent by pressing and holding the distress button for approximately 5 seconds. This sends a default alert with the nature of distress set to Undesignated."
+    },
+    {
+      "type": "fill-blank",
+      "prompt": "An unacknowledged DSC distress alert automatically repeats every ___ to 4.5 minutes.",
+      "answer": "3.5",
+      "alternatives": ["3.5 minutes", "3,5"],
+      "explanation": "The DSC controller repeats the distress alert at randomised intervals between 3.5 and 4.5 minutes until a distress acknowledgement is received on Channel 70."
+    },
+    {
+      "type": "exercise",
+      "prompt": "What nature of distress is transmitted when using the rapid (one-button) distress alert method?",
+      "options": [
+        { "key": "a", "text": "Fire / Explosion" },
+        { "key": "b", "text": "Sinking" },
+        { "key": "c", "text": "Undesignated" },
+        { "key": "d", "text": "Man Overboard" }
+      ],
+      "answer": "c",
+      "explanation": "The rapid method does not allow you to select a specific nature, so the controller defaults to Undesignated. To specify the exact nature of distress, use the full alert method via the DSC menu."
+    },
+    {
+      "type": "tool-embed",
+      "tool": "dsc-builder",
+      "config": { "category": "distress" }
+    },
+    {
+      "type": "takeaway",
+      "points": [
+        "Two methods exist for sending a DSC distress alert: rapid (5-second button press, Undesignated nature) and full (menu-based, specific nature selected).",
+        "A distress alert automatically includes your MMSI, GPS position, position timestamp, and nature of distress.",
+        "Eleven nature-of-distress codes are defined, from Undesignated (default) to Man Overboard.",
+        "The alert auto-repeats every 3.5-4.5 minutes until acknowledged on Channel 70.",
+        "GPS position is embedded automatically when a receiver is connected to the DSC controller."
+      ]
     }
   ]
 }

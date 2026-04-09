@@ -39,13 +39,28 @@ export interface ToolEmbedSection {
   config?: Record<string, unknown>;
 }
 
+export interface FillBlankSection {
+  type: "fill-blank";
+  prompt: string;
+  answer: string;
+  alternatives?: string[];
+  explanation: string;
+}
+
+export interface TakeawaySection {
+  type: "takeaway";
+  points: string[];
+}
+
 export type Section =
   | TextSection
   | CalloutSection
   | DiagramSection
   | TableSection
   | ExerciseSection
-  | ToolEmbedSection;
+  | ToolEmbedSection
+  | FillBlankSection
+  | TakeawaySection;
 
 export interface LessonContent {
   version: number;

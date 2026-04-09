@@ -1,32 +1,90 @@
 {
   "version": 1,
-  "title": "False Alerts and Cancellation",
+  "title": "Radio Discipline and Watchkeeping",
   "sections": [
     {
       "type": "text",
-      "content": "Accidental DSC distress alerts happen more often than expected. If you accidentally trigger a distress alert, you must cancel it immediately to prevent unnecessary deployment of SAR resources. Failure to cancel a false alert is a serious violation of maritime radio regulations."
+      "content": "Radio discipline is the practice of using maritime radio frequencies correctly, efficiently, and in accordance with international regulations. Good radio discipline keeps channels clear for safety traffic, reduces interference, and ensures that distress communications are never obstructed. Every licensed operator has a personal responsibility to uphold these standards."
+    },
+    {
+      "type": "text",
+      "content": "Channel 16 is the international distress, safety, and calling frequency. Its use is strictly regulated. When calling another station on Channel 16, the initial call must not exceed 1 minute. If no reply is received, you must wait at least 2 minutes before trying again. Once contact is established, both stations must immediately switch to an appropriate working channel — routine conversations on Channel 16 are prohibited. Contact checks (testing whether your radio is working) are permitted on Channel 16 but must not exceed 10 seconds, using the phrase 'radio check' followed by your vessel name and callsign."
     },
     {
       "type": "callout",
       "variant": "warning",
-      "title": "Immediate Cancellation Required",
-      "content": "If you accidentally send a DSC distress alert, cancel it immediately by broadcasting on Channel 16. A sample template: \"ALL STATIONS, ALL STATIONS, ALL STATIONS — THIS IS [vessel name] [MMSI] — CANCEL MY DISTRESS ALERT OF [date/time UTC] — MASTER [master name].\" Adapt this template to your vessel's details and always follow your local maritime authority's procedures for false alert cancellation."
+      "title": "Channel 16 Rules",
+      "content": "Maximum initial call duration: 1 minute. Wait time before retry: 2 minutes. No routine conversations. Radio checks: maximum 10 seconds. These rules exist to keep Channel 16 available for distress and safety traffic at all times."
     },
     {
       "type": "text",
-      "content": "After making the voice cancellation on Channel 16, also cancel the DSC alert using your radio's DSC menu if it supports this function. Coast stations may contact you to confirm the cancellation. Always cooperate fully with authorities."
+      "content": "SOLAS-class vessels are required to maintain a continuous watch on both VHF Channel 16 (voice distress and calling) and VHF Channel 70 (DSC distress and safety alerting). On modern GMDSS installations, the DSC watch on Channel 70 is maintained automatically by a dedicated DSC receiver that operates independently of the main VHF radio. This means the operator can use the main radio on any working channel while the DSC receiver continuously monitors Channel 70 for incoming digital alerts."
     },
     {
       "type": "exercise",
-      "prompt": "What should you do after accidentally sending a false DSC distress alert?",
+      "prompt": "How long must you wait before retrying an unanswered call on Channel 16?",
       "options": [
-        { "key": "a", "text": "Turn off the radio and hope no one noticed" },
-        { "key": "b", "text": "Wait for a coast station to call you first" },
-        { "key": "c", "text": "Cancel it immediately on Channel 16 with a voice broadcast" },
-        { "key": "d", "text": "Send another distress alert to override the first" }
+        { "key": "a", "text": "30 seconds" },
+        { "key": "b", "text": "1 minute" },
+        { "key": "c", "text": "2 minutes" },
+        { "key": "d", "text": "5 minutes" }
       ],
       "answer": "c",
-      "explanation": "You must immediately broadcast a cancellation on Channel 16, identifying your vessel and the time of the false alert. This prevents unnecessary SAR operations."
+      "explanation": "If your initial call on Channel 16 receives no response, you must wait at least 2 minutes before calling again. This prevents the channel from being blocked by repeated unanswered calls and keeps it clear for distress traffic."
+    },
+    {
+      "type": "text",
+      "content": "Certain types of transmissions are strictly prohibited on maritime radio frequencies. These include: transmitting music or entertainment content; using profane, indecent, or obscene language; making unnecessary or superfluous transmissions (including idle chatter); transmitting false or deceptive distress, urgency, or safety signals; and transmitting without proper identification (vessel name and callsign). Violations can result in penalties including fines, licence suspension, or criminal prosecution."
+    },
+    {
+      "type": "callout",
+      "variant": "warning",
+      "title": "False Distress Alerts",
+      "content": "Transmitting a false distress alert is one of the most serious radio offences. It diverts search and rescue resources from genuine emergencies and can endanger lives. If you accidentally trigger a distress alert, you must immediately cancel it by broadcasting on Channel 16 that the alert was sent in error, stating your vessel name, MMSI, callsign, and position."
+    },
+    {
+      "type": "fill-blank",
+      "prompt": "To test your VHF radio, you should say '___ ___' on Channel 16, keeping the transmission under 10 seconds.",
+      "answer": "radio check",
+      "alternatives": ["Radio check", "RADIO CHECK", "Radio Check"],
+      "explanation": "The correct phrase for testing your radio is 'radio check', followed by your vessel name and callsign. This should be as brief as possible — no longer than 10 seconds — to minimise use of the distress and calling frequency."
+    },
+    {
+      "type": "text",
+      "content": "Operators must always use the minimum transmitter power necessary for reliable communication. For nearby vessels or port operations within a few nautical miles, 1 watt (low power) is usually sufficient. Using high power unnecessarily causes interference to other stations sharing the same channel in adjacent areas. This principle — minimum necessary power — is enshrined in the ITU Radio Regulations and is a fundamental aspect of good radio practice."
+    },
+    {
+      "type": "text",
+      "content": "Operator responsibility extends beyond simply knowing the controls. The licensed radio operator is personally accountable for all transmissions made using their authority. This includes ensuring the radio is properly maintained and tested, that the correct channels are used for each type of traffic, that watch obligations are met, and that the radio log is kept up to date. On vessels where multiple crew members use the radio, the designated operator remains responsible for ensuring all users follow proper procedures."
+    },
+    {
+      "type": "exercise",
+      "prompt": "Which of the following is a prohibited transmission on maritime VHF?",
+      "options": [
+        { "key": "a", "text": "A securité broadcast warning of a navigational hazard" },
+        { "key": "b", "text": "Playing recorded music while waiting for a reply" },
+        { "key": "c", "text": "A routine call to a port authority on Channel 12" },
+        { "key": "d", "text": "A radio check lasting 8 seconds on Channel 16" }
+      ],
+      "answer": "b",
+      "explanation": "Transmitting music of any kind is strictly prohibited on maritime radio frequencies. Securité broadcasts (a), routine port calls on designated channels (c), and brief radio checks under 10 seconds (d) are all permitted uses."
+    },
+    {
+      "type": "fill-blank",
+      "prompt": "SOLAS vessels must maintain a continuous watch on VHF Channel 16 for voice and VHF Channel ___ for DSC.",
+      "answer": "70",
+      "alternatives": ["Ch 70", "ch70", "Ch70", "channel 70"],
+      "explanation": "The continuous watch obligation covers both Channel 16 (156.800 MHz) for voice distress and calling traffic, and Channel 70 (156.525 MHz) for DSC digital distress and safety alerting. Modern GMDSS radios have a dedicated receiver that monitors Channel 70 automatically."
+    },
+    {
+      "type": "takeaway",
+      "points": [
+        "Channel 16 calls: max 1 minute initial call, wait 2 minutes before retry, no routine conversations, radio checks max 10 seconds.",
+        "Maintain continuous watch on both Ch 16 (voice) and Ch 70 (DSC) — the DSC watch is handled automatically by a dedicated receiver.",
+        "Prohibited transmissions include music, profanity, unnecessary chatter, false distress signals, and unidentified transmissions.",
+        "Always use minimum necessary power — 1 W for nearby stations, 25 W only when range requires it.",
+        "The licensed operator is personally responsible for all transmissions, proper watchkeeping, and radio log maintenance."
+      ]
     }
   ]
 }

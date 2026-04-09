@@ -35,10 +35,12 @@ describe("GET /api/progress", () => {
     const body = res.json();
     expect(body.modules["module-1"].status).toBe("in_progress");
     expect(body.modules["module-1"].lessonsCompleted).toBe(0);
-    expect(body.modules["module-1"].lessonsTotal).toBe(6);
+    expect(body.modules["module-1"].lessonsTotal).toBe(4);
     expect(body.modules["module-2"].status).toBe("locked");
     expect(body.modules["module-3"].status).toBe("locked");
     expect(body.modules["module-4"].status).toBe("locked");
+    expect(body.modules["module-5"].status).toBe("locked");
+    expect(body.modules["module-6"].status).toBe("locked");
   });
 });
 
@@ -113,11 +115,12 @@ describe("POST /api/progress/quiz/:id/submit", () => {
       headers: auth(),
       payload: {
         answers: [
-          { questionId: "m1q1", selected: "b" },
-          { questionId: "m1q2", selected: "c" },
-          { questionId: "m1q3", selected: "d" },
+          { questionId: "m1q1", selected: "c" },
+          { questionId: "m1q2", selected: "a" },
+          { questionId: "m1q3", selected: "b" },
           { questionId: "m1q4", selected: "b" },
-          { questionId: "m1q5", selected: "b" },
+          { questionId: "m1q5", selected: "c" },
+          { questionId: "m1q6", selected: "d" },
         ],
       },
     });
@@ -137,10 +140,11 @@ describe("POST /api/progress/quiz/:id/submit", () => {
       payload: {
         answers: [
           { questionId: "m1q1", selected: "a" },
-          { questionId: "m1q2", selected: "a" },
+          { questionId: "m1q2", selected: "b" },
           { questionId: "m1q3", selected: "a" },
           { questionId: "m1q4", selected: "a" },
           { questionId: "m1q5", selected: "a" },
+          { questionId: "m1q6", selected: "a" },
         ],
       },
     });
@@ -160,10 +164,11 @@ describe("POST /api/progress/quiz/:id/submit", () => {
       payload: {
         answers: [
           { questionId: "m1q1", selected: "a" },
-          { questionId: "m1q2", selected: "c" },
-          { questionId: "m1q3", selected: "d" },
+          { questionId: "m1q2", selected: "a" },
+          { questionId: "m1q3", selected: "b" },
           { questionId: "m1q4", selected: "b" },
-          { questionId: "m1q5", selected: "b" },
+          { questionId: "m1q5", selected: "c" },
+          { questionId: "m1q6", selected: "d" },
         ],
       },
     });
@@ -172,7 +177,7 @@ describe("POST /api/progress/quiz/:id/submit", () => {
     const wrongAnswer = body.results.find((r: { questionId: string }) => r.questionId === "m1q1");
     expect(wrongAnswer.correct).toBe(false);
     expect(wrongAnswer.explanation).toBeDefined();
-    expect(wrongAnswer.correctAnswer).toBe("b");
+    expect(wrongAnswer.correctAnswer).toBe("c");
   });
 
   test("passing quiz unlocks next module in progress tree", async () => {
@@ -183,11 +188,12 @@ describe("POST /api/progress/quiz/:id/submit", () => {
       headers: auth(),
       payload: {
         answers: [
-          { questionId: "m1q1", selected: "b" },
-          { questionId: "m1q2", selected: "c" },
-          { questionId: "m1q3", selected: "d" },
+          { questionId: "m1q1", selected: "c" },
+          { questionId: "m1q2", selected: "a" },
+          { questionId: "m1q3", selected: "b" },
           { questionId: "m1q4", selected: "b" },
-          { questionId: "m1q5", selected: "b" },
+          { questionId: "m1q5", selected: "c" },
+          { questionId: "m1q6", selected: "d" },
         ],
       },
     });
@@ -210,11 +216,12 @@ describe("POST /api/progress/quiz/:id/submit", () => {
       headers: auth(),
       payload: {
         answers: [
-          { questionId: "m2q1", selected: "c" },
-          { questionId: "m2q2", selected: "d" },
-          { questionId: "m2q3", selected: "c" },
-          { questionId: "m2q4", selected: "b" },
+          { questionId: "m2q1", selected: "b" },
+          { questionId: "m2q2", selected: "c" },
+          { questionId: "m2q3", selected: "b" },
+          { questionId: "m2q4", selected: "c" },
           { questionId: "m2q5", selected: "b" },
+          { questionId: "m2q6", selected: "b" },
         ],
       },
     });

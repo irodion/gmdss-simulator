@@ -1,0 +1,93 @@
+{
+  "version": 1,
+  "title": "EPIRB",
+  "sections": [
+    {
+      "type": "text",
+      "content": "An Emergency Position Indicating Radio Beacon (EPIRB) is a distress alerting device that transmits a satellite signal to the Cospas-Sarsat system, enabling search and rescue authorities to detect and locate vessels in distress anywhere in the world. EPIRBs transmit on 406 MHz for satellite detection and on 121.5 MHz as a homing frequency for approaching rescue craft. The 406 MHz signal is a 0.5-second burst transmitted every 50 seconds at 5 watts of power."
+    },
+    {
+      "type": "table",
+      "headers": ["Feature", "Category 1 EPIRB", "Category 2 EPIRB"],
+      "rows": [
+        ["Activation", "Automatic (float-free with hydrostatic release)", "Manual only"],
+        [
+          "Hydrostatic release",
+          "Activates at 1-4 m depth (exam context: ~75 cm submersion)",
+          "Not applicable"
+        ],
+        ["Frequencies", "406 MHz + 121.5 MHz", "406 MHz + 121.5 MHz"],
+        ["Battery life", "Minimum 48 hours continuous", "Minimum 48 hours continuous"],
+        ["Battery replacement", "Every 5 years", "Every 5 years"],
+        ["SOLAS requirement", "Required on SOLAS vessels", "Accepted on non-SOLAS vessels"]
+      ]
+    },
+    {
+      "type": "text",
+      "content": "The Category 1 EPIRB is the standard for SOLAS-class vessels. It is housed in a bracket fitted with a hydrostatic release unit (HRU). If the vessel sinks, water pressure activates the HRU, the EPIRB floats free, and it begins transmitting automatically. The Category 2 EPIRB is identical in transmission capability but requires manual activation — the crew must remove it from its bracket and switch it on by hand."
+    },
+    {
+      "type": "callout",
+      "variant": "warning",
+      "title": "EPIRB Does NOT Emit Sound",
+      "content": "Unlike a SART, an EPIRB does not produce any audible signal. It is a radio-only device. Do not confuse EPIRB with personal locator beacons that may have additional features — the standard EPIRB transmits only on 406 MHz and 121.5 MHz."
+    },
+    {
+      "type": "text",
+      "content": "Every EPIRB contains a coded identification linked to the vessel's MMSI. Registration is mandatory and must be completed at 406registration.com or the relevant national authority. Without proper registration, rescue coordination centres cannot identify the vessel in distress, which delays the SAR response. A GPIRB (GPS-EPIRB) is an EPIRB with an integrated GPS receiver, which provides precise position data encoded directly into the 406 MHz signal, dramatically reducing location time."
+    },
+    {
+      "type": "text",
+      "content": "The Cospas-Sarsat system has evolved through multiple satellite constellations. LEOSAR (Low Earth Orbit) uses approximately 4 satellites at about 1,000 km altitude with Doppler-based positioning; detection can take up to 2 hours. The current MEOSAR (Medium Earth Orbit) constellation provides near-instantaneous global detection and significantly improved position accuracy."
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "title": "EPIRB Testing Procedure",
+      "content": "Routine EPIRB checks include: (1) inspect physical integrity — this is the most important step, (2) move the power switch to the middle/test position and confirm the indicator light illuminates, (3) verify the battery expiry date, and (4) inspect the hydrostatic release unit for damage or expiry. Never test an EPIRB by fully activating it."
+    },
+    {
+      "type": "text",
+      "content": "In the event of a false alert, immediately deactivate the EPIRB and contact the nearest coast station on VHF Channel 16 to cancel the alert. Provide the vessel name, MMSI, position, and nature of the false activation. Failure to cancel a false alert wastes SAR resources and may result in penalties."
+    },
+    {
+      "type": "exercise",
+      "prompt": "What is the minimum continuous transmission time required for an EPIRB battery?",
+      "options": [
+        { "key": "a", "text": "24 hours" },
+        { "key": "b", "text": "48 hours" },
+        { "key": "c", "text": "96 hours" }
+      ],
+      "answer": "b",
+      "explanation": "EPIRB batteries must sustain a minimum of 48 hours of continuous transmission. The battery must be replaced every 5 years. Note that SARTs have a different battery requirement of 96 hours standby plus 8 hours active."
+    },
+    {
+      "type": "fill-blank",
+      "prompt": "An EPIRB transmits a 0.5-second burst every ___ seconds on 406 MHz at 5 watts.",
+      "answer": "50",
+      "alternatives": ["fifty"],
+      "explanation": "The 406 MHz satellite signal consists of a 0.5-second burst every 50 seconds. This duty cycle balances detectability with battery conservation over the minimum 48-hour transmission period."
+    },
+    {
+      "type": "exercise",
+      "prompt": "What should you do first if an EPIRB is accidentally activated?",
+      "options": [
+        { "key": "a", "text": "Wait for the coast guard to call you" },
+        { "key": "b", "text": "Throw the EPIRB overboard to stop the signal" },
+        { "key": "c", "text": "Turn it off and contact the nearest coast station on Channel 16" }
+      ],
+      "answer": "c",
+      "explanation": "In the event of a false alert, immediately deactivate the EPIRB and contact the nearest coast station on VHF Channel 16 to cancel the alert. Provide your vessel name, MMSI, position, and explain that it was a false activation."
+    },
+    {
+      "type": "takeaway",
+      "points": [
+        "Category 1 EPIRBs activate automatically via hydrostatic release; Category 2 requires manual activation.",
+        "EPIRBs transmit on 406 MHz (satellite) and 121.5 MHz (homing) — they do NOT emit sound.",
+        "Battery: minimum 48 hours continuous transmission, replaced every 5 years.",
+        "Registration at 406registration.com is mandatory — unregistered EPIRBs delay SAR response.",
+        "MEOSAR provides near-instantaneous detection; LEOSAR takes up to 2 hours with Doppler positioning."
+      ]
+    }
+  ]
+}

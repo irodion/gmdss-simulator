@@ -5,6 +5,8 @@ import { DiagramSectionView } from "./sections/DiagramSection.tsx";
 import { TableSectionView } from "./sections/TableSection.tsx";
 import { ExerciseSectionView } from "./sections/ExerciseSection.tsx";
 import { ToolEmbedSectionView } from "./sections/ToolEmbedSection.tsx";
+import { FillBlankSectionView } from "./sections/FillBlankSection.tsx";
+import { TakeawaySectionView } from "./sections/TakeawaySection.tsx";
 import "../../styles/pages.css";
 
 interface Props {
@@ -47,6 +49,18 @@ function renderSection(section: Section, index: number) {
       );
     case "tool-embed":
       return <ToolEmbedSectionView key={index} tool={section.tool} config={section.config} />;
+    case "fill-blank":
+      return (
+        <FillBlankSectionView
+          key={index}
+          prompt={section.prompt}
+          answer={section.answer}
+          alternatives={section.alternatives}
+          explanation={section.explanation}
+        />
+      );
+    case "takeaway":
+      return <TakeawaySectionView key={index} points={section.points} />;
     default:
       return null;
   }

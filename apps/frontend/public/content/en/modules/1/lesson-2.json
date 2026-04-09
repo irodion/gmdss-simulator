@@ -1,41 +1,134 @@
 {
   "version": 1,
-  "title": "The VHF Radio Panel",
+  "title": "Sea Area A1 and Equipment",
   "sections": [
     {
       "type": "text",
-      "content": "A modern marine VHF radio has several essential controls. Understanding each control's function is critical before operating the radio at sea. The main panel includes a channel selector, volume control, squelch adjustment, push-to-talk (PTT) button, and power output switch."
+      "content": "GMDSS divides the world's oceans into four Sea Areas, labelled A1 through A4. Each area is defined by the type of radio or satellite coverage available, and the equipment a vessel must carry depends on which Sea Areas it operates in. This classification ensures that every vessel has the right communication tools for the coverage zone it sails through."
     },
     {
       "type": "table",
-      "headers": ["Control", "Function"],
+      "headers": ["Sea Area", "Definition", "Approximate Coverage"],
       "rows": [
-        ["Channel Selector", "Selects the operating VHF channel (1–88 international)"],
-        ["Volume", "Adjusts the audio output level of received signals"],
-        ["Squelch", "Filters out background noise when no signal is present"],
-        ["PTT (Push-to-Talk)", "Hold to transmit, release to receive"],
-        ["Power (H/L)", "Switches between high power (25W) and low power (1W)"],
-        ["Dual Watch", "Monitors Channel 16 while listening on another channel"],
-        ["DSC", "Accesses Digital Selective Calling functions on Channel 70"]
+        [
+          "A1",
+          "Within range of at least one VHF coast station providing continuous DSC alerting coverage",
+          "Typically 20–50 nautical miles from shore, depending on antenna height and local geography"
+        ],
+        [
+          "A2",
+          "Within range of at least one MF coast station providing continuous DSC alerting coverage, excluding Sea Area A1",
+          "Up to approximately 150–400 nautical miles from shore, beyond A1 coverage"
+        ],
+        [
+          "A3",
+          "Within the Inmarsat geostationary satellite coverage area, excluding Sea Areas A1 and A2",
+          "Approximately 70°N to 70°S latitude — covers most of the world's oceans"
+        ],
+        [
+          "A4",
+          "All remaining sea areas outside A1, A2, and A3",
+          "Polar regions above approximately 70°N and below approximately 70°S"
+        ]
+      ]
+    },
+    {
+      "type": "text",
+      "content": "The Sea Areas are nested: A1 is closest to shore, A2 extends further out, A3 covers the broad mid-ocean belt under Inmarsat satellites, and A4 captures the polar extremes. A vessel sailing from port out into the open ocean might pass through A1, then A2, then A3 in succession. The further from shore, the more sophisticated (and expensive) the communication equipment required."
+    },
+    {
+      "type": "callout",
+      "variant": "info",
+      "title": "Why Sea Areas Matter for Certification",
+      "content": "The Restricted Operator Certificate (ROC) qualifies you to operate GMDSS equipment in Sea Area A1 only. To operate in Sea Areas A2, A3, or A4, you need the General Operator Certificate (GOC). Most coastal and short-sea vessels operate exclusively within A1."
+    },
+    {
+      "type": "exercise",
+      "prompt": "A vessel is 200 nautical miles from the nearest coast, outside VHF coast station range but within MF coast station DSC coverage. Which Sea Area is it operating in?",
+      "options": [
+        { "key": "a", "text": "Sea Area A1" },
+        { "key": "b", "text": "Sea Area A2" },
+        { "key": "c", "text": "Sea Area A3" }
+      ],
+      "answer": "b",
+      "explanation": "Sea Area A2 is defined as the area within MF coast station DSC range but outside A1 (VHF coast station range). At 200 NM from shore, the vessel is well beyond the typical 20–50 NM VHF range but within MF coverage."
+    },
+    {
+      "type": "text",
+      "content": "Vessels operating exclusively in Sea Area A1 must carry a specific set of GMDSS equipment. This equipment list is designed to meet all nine functional requirements using VHF-range terrestrial communications and satellite-based positioning/alerting."
+    },
+    {
+      "type": "table",
+      "headers": ["Equipment", "Purpose", "Key Details"],
+      "rows": [
+        [
+          "VHF radio with DSC (Ch 70)",
+          "Distress alerting, safety, and general communications",
+          "Must be capable of transmitting and receiving DSC on Channel 70 (156.525 MHz) and voice on Ch 16 and other channels"
+        ],
+        [
+          "NAVTEX receiver",
+          "Receiving Maritime Safety Information",
+          "Automatically receives and prints navigational warnings, weather forecasts, and SAR information on 518 kHz (English) and 490 kHz (local language)"
+        ],
+        [
+          "406 MHz EPIRB",
+          "Satellite distress alerting and position indication",
+          "Float-free, automatically activated Emergency Position Indicating Radio Beacon; detected by Cospas-Sarsat satellites; registered to the vessel with encoded MMSI"
+        ],
+        [
+          "2 x SART or AIS-SART",
+          "Locating signals for search and rescue",
+          "Radar SART (9 GHz) or AIS-SART; carried in survival craft to help SAR units home in on survivors"
+        ],
+        [
+          "Survival craft VHF radio",
+          "On-scene communications from lifeboats/liferafts",
+          "Portable, waterproof VHF transceiver for use after abandoning ship; at least 2 required on cargo ships, 3 on passenger ships"
+        ]
       ]
     },
     {
       "type": "callout",
-      "variant": "tip",
-      "title": "Pre-Departure Check",
-      "content": "Always test your radio before departing by making a radio check call on a working channel. Verify that you can transmit and receive clearly."
+      "variant": "warning",
+      "title": "EPIRB Registration",
+      "content": "A 406 MHz EPIRB must be properly registered with the national authority and encoded with the vessel's MMSI or other unique identifier. An unregistered EPIRB delays rescue because the RCC cannot identify the vessel or confirm whether the alert is genuine."
+    },
+    {
+      "type": "fill-blank",
+      "prompt": "The dedicated DSC distress and safety calling channel on VHF is Channel ___.",
+      "answer": "70",
+      "alternatives": ["Ch 70", "ch70", "ch 70"],
+      "explanation": "VHF Channel 70 (156.525 MHz) is reserved exclusively for Digital Selective Calling. No voice traffic is permitted on this channel. All GMDSS-equipped VHF radios must maintain a continuous watch on Ch 70."
+    },
+    {
+      "type": "text",
+      "content": "In addition to the mandatory equipment, A1 vessels must maintain a continuous watch on both VHF Channel 16 (156.800 MHz) for voice distress and safety traffic and VHF Channel 70 for DSC alerts. Modern VHF radios with built-in DSC capability handle the Ch 70 watch automatically using a dedicated receiver, so the operator can use the main receiver on other working channels while the DSC watch runs in the background."
     },
     {
       "type": "exercise",
-      "prompt": "What does the squelch control do?",
+      "prompt": "Which of the following is NOT part of the mandatory A1 GMDSS equipment fit?",
       "options": [
-        { "key": "a", "text": "Changes the transmission frequency" },
-        { "key": "b", "text": "Adjusts the transmission power" },
-        { "key": "c", "text": "Filters out background noise when no signal is present" },
-        { "key": "d", "text": "Switches between simplex and duplex mode" }
+        { "key": "a", "text": "MF/HF radio with DSC on 2187.5 kHz" },
+        { "key": "b", "text": "406 MHz EPIRB" },
+        { "key": "c", "text": "NAVTEX receiver" }
       ],
-      "answer": "c",
-      "explanation": "The squelch control sets a threshold that silences the receiver when no signal is present, filtering out background static and noise."
+      "answer": "a",
+      "explanation": "MF/HF radio with DSC is required for Sea Areas A2 and beyond. Sea Area A1 vessels need only VHF radio with DSC. The 406 MHz EPIRB and NAVTEX receiver are both mandatory for A1."
+    },
+    {
+      "type": "text",
+      "content": "It is worth noting that vessels may voluntarily carry equipment above the A1 minimum — for example, an Inmarsat terminal for commercial communications — but the GMDSS carriage requirement is based on the Sea Area in which the vessel is certified to operate. Flag state administrations may also impose additional national requirements beyond the SOLAS minimum."
+    },
+    {
+      "type": "takeaway",
+      "points": [
+        "GMDSS defines four Sea Areas (A1–A4) based on available radio and satellite coverage, from coastal VHF range out to the polar regions.",
+        "Sea Area A1 covers the area within range of a VHF coast station with DSC capability, typically 20–50 nautical miles from shore.",
+        "Mandatory A1 equipment includes: VHF radio with DSC (Ch 70), NAVTEX receiver, 406 MHz EPIRB, two SARTs or AIS-SARTs, and survival craft VHF radios.",
+        "The ROC certificate covers Sea Area A1 only; the GOC is required for operations in A2, A3, or A4.",
+        "Continuous watch must be maintained on VHF Channel 16 (voice) and Channel 70 (DSC)."
+      ]
     }
   ]
 }

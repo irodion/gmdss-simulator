@@ -1,33 +1,113 @@
 {
   "version": 1,
-  "title": "MAYDAY Procedure",
+  "title": "Call Procedures and Pro-words",
   "sections": [
     {
       "type": "text",
-      "content": "A MAYDAY call is made when a vessel or person is in grave and imminent danger and requires immediate assistance. The call follows a precise format to ensure all critical information is communicated quickly. It is broadcast on Channel 16 and should be preceded by a DSC distress alert on Channel 70 if possible."
-    },
-    {
-      "type": "tool-embed",
-      "tool": "script-builder",
-      "config": { "scriptType": "mayday" }
+      "content": "Every VHF radiotelephone exchange follows a structured call format. This structure ensures the receiving station knows who is calling, who is being called, and when each party should speak. The International Telecommunication Union (ITU) Radio Regulations prescribe two call formats: the full format used for initial contact, and the abbreviated format used once communication has been established."
     },
     {
       "type": "callout",
       "variant": "info",
-      "title": "MAYDAY Format",
-      "content": "MAYDAY MAYDAY MAYDAY — THIS IS — [vessel name x3] — MAYDAY — [vessel name] — MY POSITION IS [lat/lon or bearing and distance] — [nature of distress] — [assistance required] — [number of persons on board] — [any other useful information] — OVER"
+      "title": "Full Call Format",
+      "content": "When making initial contact with a station, use the full format: the called station's name or call sign spoken THREE times, followed by \"THIS IS\", then your own station name or call sign spoken THREE times. Example: \"Coast Guard, Coast Guard, Coast Guard, THIS IS, Motor Vessel Tami, Motor Vessel Tami, Motor Vessel Tami, OVER.\""
+    },
+    {
+      "type": "text",
+      "content": "Once communication has been established and both stations have identified each other, you switch to the abbreviated call format. In this format, you speak the called station's name ONCE, followed by \"THIS IS\" and your own name or call sign TWICE. This saves air time while still providing clear identification. For example: \"Coast Guard, THIS IS, Motor Vessel Tami, Motor Vessel Tami, OVER.\""
+    },
+    {
+      "type": "text",
+      "content": "Pro-words (procedure words) are standardised words with fixed meanings that control the flow of a radio conversation. They must never be used casually or with different meanings. Every radio operator must know these pro-words and use them correctly."
+    },
+    {
+      "type": "table",
+      "headers": ["Pro-word", "Meaning"],
+      "rows": [
+        ["OVER", "My transmission is finished; I expect a reply from you."],
+        ["OUT", "This communication is finished; no reply is expected or required."],
+        ["ROGER", "I have received and understood your last transmission."],
+        ["WILCO", "I have received your message, understand it, and will comply."],
+        ["SAY AGAIN", "Please repeat your last transmission (or the part indicated)."],
+        ["I SAY AGAIN", "I am about to repeat my transmission for clarity."],
+        ["CORRECTION", "An error was made in my last transmission; the correct version follows."],
+        ["RECEIVED", "Your message has been received and will be passed on."],
+        ["WAIT / STANDBY", "I must pause for a few seconds; remain on this channel."],
+        ["RADIO CHECK", "What is the readability of my transmission?"],
+        ["NOTHING HEARD", "I received no reply to my last transmission."],
+        ["ACKNOWLEDGE", "Confirm that you have received and understood this message."]
+      ]
+    },
+    {
+      "type": "callout",
+      "variant": "warning",
+      "title": "Never Combine OVER and OUT",
+      "content": "\"OVER\" means you expect a reply. \"OUT\" means the conversation is finished. Saying \"OVER and OUT\" is contradictory and marks the speaker as untrained. Use one or the other, never both."
     },
     {
       "type": "exercise",
-      "prompt": "How many times is the word MAYDAY spoken at the beginning of a distress call?",
+      "prompt": "A coast station asks you to confirm receipt of a navigational warning. Which pro-word should you use if you intend to comply with the instructions in the warning?",
       "options": [
-        { "key": "a", "text": "Once" },
-        { "key": "b", "text": "Twice" },
-        { "key": "c", "text": "Three times" },
-        { "key": "d", "text": "Five times" }
+        { "key": "a", "text": "ROGER" },
+        { "key": "b", "text": "WILCO" },
+        { "key": "c", "text": "RECEIVED" },
+        { "key": "d", "text": "ACKNOWLEDGE" }
       ],
-      "answer": "c",
-      "explanation": "MAYDAY is spoken three times at the start of the distress call to ensure it is clearly recognized, even in poor reception conditions."
+      "answer": "b",
+      "explanation": "WILCO means \"I have received your message, understand it, and WILL COMPLY.\" ROGER only confirms receipt and understanding but does not promise action. RECEIVED means the message will be passed on to someone else."
+    },
+    {
+      "type": "text",
+      "content": "When responding to a RADIO CHECK, you report the readability of the signal using a standard five-point scale. This gives the transmitting station objective feedback about their signal quality so they can adjust power, antenna, or position if needed."
+    },
+    {
+      "type": "table",
+      "headers": ["Scale", "Readability"],
+      "rows": [
+        ["1", "Bad — unreadable"],
+        ["2", "Poor — readable now and then"],
+        ["3", "Fair — readable with difficulty"],
+        ["4", "Good — readable with practically no difficulty"],
+        ["5", "Excellent — perfectly readable"]
+      ]
+    },
+    {
+      "type": "text",
+      "content": "A typical radio check exchange sounds like this: \"Coast Guard, Coast Guard, Coast Guard, THIS IS Motor Vessel Tami, Motor Vessel Tami, Motor Vessel Tami, RADIO CHECK on Channel 16, OVER.\" The reply would be: \"Motor Vessel Tami, THIS IS Coast Guard, reading you FIFE, OVER.\" You then respond: \"Coast Guard, THIS IS Motor Vessel Tami, ROGER, reading you FOWER, OUT.\""
+    },
+    {
+      "type": "fill-blank",
+      "prompt": "When you need a station to repeat their last message, you say ___.",
+      "answer": "SAY AGAIN",
+      "alternatives": ["say again"],
+      "explanation": "SAY AGAIN is the correct pro-word to request a repetition. Never use \"repeat\" — in military and some maritime contexts, \"repeat\" has a completely different meaning (artillery fire command)."
+    },
+    {
+      "type": "tool-embed",
+      "tool": "script-builder",
+      "config": {}
+    },
+    {
+      "type": "exercise",
+      "prompt": "Which ending is correct when you have finished a conversation and do NOT expect a reply?",
+      "options": [
+        { "key": "a", "text": "OVER" },
+        { "key": "b", "text": "OUT" },
+        { "key": "c", "text": "OVER AND OUT" },
+        { "key": "d", "text": "ROGER OUT OVER" }
+      ],
+      "answer": "b",
+      "explanation": "OUT signals that the exchange is complete and no further reply is expected. OVER would invite a reply. Combining OVER and OUT is a well-known error."
+    },
+    {
+      "type": "takeaway",
+      "points": [
+        "Initial calls use the full format: called station x3 + THIS IS + own station x3. Once established, switch to the abbreviated format: called station x1 + THIS IS + own station x2.",
+        "Pro-words have fixed meanings: OVER (reply expected), OUT (conversation ended), ROGER (understood), WILCO (will comply), SAY AGAIN (repeat).",
+        "Never combine OVER and OUT — they are mutually exclusive.",
+        "Signal readability is reported on a 1-5 scale: 1 = Bad, 5 = Excellent.",
+        "Use RADIO CHECK to test your signal and report readability using the standard scale."
+      ]
     }
   ]
 }

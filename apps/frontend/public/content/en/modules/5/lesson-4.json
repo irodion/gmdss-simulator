@@ -1,0 +1,115 @@
+{
+  "version": 1,
+  "title": "Radio Silence Commands",
+  "sections": [
+    {
+      "type": "text",
+      "content": "During a distress situation, orderly communication on the distress frequency is vital. Interfering transmissions can prevent the vessel in distress from being heard, delay coordination, and ultimately cost lives. The ITU Radio Regulations provide a set of internationally recognised commands to control radio traffic during distress. These commands have French origins, reflecting the historical role of French in international telecommunications."
+    },
+    {
+      "type": "text",
+      "content": "There are four key radio silence commands that every GMDSS operator must know: SEELONCE MAYDAY, SEELONCE DISTRESS, PRUDONCE, and SEELONCE FEENEE. Each serves a distinct purpose in managing traffic flow during a distress event."
+    },
+    {
+      "type": "table",
+      "headers": ["Command", "Imposed By", "Meaning", "French Origin"],
+      "rows": [
+        [
+          "SEELONCE MAYDAY",
+          "Vessel in distress or the station controlling/supervising distress traffic",
+          "Demands immediate radio silence on the distress frequency from all stations",
+          "Silence (\"see-lonce\") + MAYDAY"
+        ],
+        [
+          "SEELONCE DISTRESS",
+          "Any other station that hears harmful interference during distress traffic",
+          "Demands radio silence; used when a station other than the controlling station needs to stop interference",
+          "Silence + Distress"
+        ],
+        [
+          "PRUDONCE",
+          "Station controlling distress traffic",
+          "Partial relaxation of silence -- limited, cautious use of the distress frequency is permitted for distress-related traffic only",
+          "Prudence (\"proo-donce\")"
+        ],
+        [
+          "SEELONCE FEENEE",
+          "Station supervising distress traffic (usually a coast station)",
+          "Distress traffic is finished; normal working on the frequency may resume",
+          "Silence finie (\"fee-nee\") -- silence ended"
+        ]
+      ]
+    },
+    {
+      "type": "callout",
+      "variant": "info",
+      "title": "French Origins",
+      "content": "These commands derive from French because the early international radio regulations were drafted in French. SEELONCE is the phonetic rendering of \"silence\", PRUDONCE of \"prudence\", and FEENEE of \"finie\" (finished). The phonetic spellings ensure correct pronunciation regardless of the speaker's native language."
+    },
+    {
+      "type": "text",
+      "content": "SEELONCE MAYDAY is the primary silence command. It is transmitted by the vessel in distress itself or by the coast station (or on-scene coordinator) that has assumed control of the distress traffic. The format is: MAYDAY, then ALL STATIONS ALL STATIONS ALL STATIONS, THIS IS [controlling station x3], SEELONCE MAYDAY. Upon hearing this command, all stations must immediately cease transmitting on the distress frequency."
+    },
+    {
+      "type": "text",
+      "content": "SEELONCE DISTRESS is used by any station -- not necessarily the controlling station -- that hears harmful interference with distress traffic. For example, if a vessel inadvertently begins a routine call on Channel 16 during a MAYDAY situation, any station hearing the interference may transmit: SEELONCE DISTRESS, followed by its identity. This alerts the interfering station to stop immediately."
+    },
+    {
+      "type": "text",
+      "content": "PRUDONCE indicates that while the distress situation is still ongoing, the distress frequency may be used cautiously for traffic that is directly related to the distress. It does not mean normal traffic may resume. Only the controlling station may issue PRUDONCE."
+    },
+    {
+      "type": "text",
+      "content": "SEELONCE FEENEE marks the formal end of the distress event. It is broadcast by the supervising station (typically a coast station) to all stations: MAYDAY, ALL STATIONS ALL STATIONS ALL STATIONS, THIS IS [coast station x3], [time in UTC], [MMSI and name of vessel that was in distress], SEELONCE FEENEE. After this broadcast, normal working may resume on the frequency."
+    },
+    {
+      "type": "callout",
+      "variant": "warning",
+      "title": "Only the Controlling Station Ends Distress",
+      "content": "SEELONCE FEENEE may only be issued by the station supervising the distress traffic -- usually a coast station. Individual vessels must not declare the end of distress on their own authority."
+    },
+    {
+      "type": "exercise",
+      "prompt": "Which command is used by any station (not just the controlling station) to silence a vessel causing harmful interference during distress traffic?",
+      "options": [
+        { "key": "a", "text": "SEELONCE MAYDAY" },
+        { "key": "b", "text": "SEELONCE DISTRESS" },
+        { "key": "c", "text": "PRUDONCE" },
+        { "key": "d", "text": "SEELONCE FEENEE" }
+      ],
+      "answer": "b",
+      "explanation": "SEELONCE DISTRESS may be transmitted by any station that hears harmful interference with distress traffic. SEELONCE MAYDAY, by contrast, is imposed by the vessel in distress or the controlling/supervising station."
+    },
+    {
+      "type": "fill-blank",
+      "prompt": "The command ___ allows cautious, limited use of the distress frequency for distress-related traffic while the distress situation is still ongoing.",
+      "answer": "PRUDONCE",
+      "alternatives": ["prudonce", "Prudonce"],
+      "explanation": "PRUDONCE (from French \"prudence\") is issued by the controlling station to partially relax radio silence. It permits distress-related traffic only -- normal routine traffic is still prohibited."
+    },
+    {
+      "type": "exercise",
+      "prompt": "Who has the authority to broadcast SEELONCE FEENEE?",
+      "options": [
+        { "key": "a", "text": "Any vessel that was involved in the rescue" },
+        { "key": "b", "text": "The vessel that was originally in distress" },
+        {
+          "key": "c",
+          "text": "The station supervising the distress traffic, usually a coast station"
+        }
+      ],
+      "answer": "c",
+      "explanation": "SEELONCE FEENEE formally ends the distress event and restores normal working. Only the supervising station -- typically a coast station coordinating the SAR operation -- has the authority to issue it."
+    },
+    {
+      "type": "takeaway",
+      "points": [
+        "SEELONCE MAYDAY: imposed by the vessel in distress or controlling station to demand complete radio silence.",
+        "SEELONCE DISTRESS: imposed by any station hearing harmful interference during distress traffic.",
+        "PRUDONCE: cautious partial resumption -- only distress-related traffic is permitted.",
+        "SEELONCE FEENEE: broadcast by the supervising station (usually a coast station) to end the distress and resume normal working.",
+        "All four commands have French origins reflecting the historical language of international radio regulations."
+      ]
+    }
+  ]
+}

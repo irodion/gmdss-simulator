@@ -1,36 +1,125 @@
 {
   "version": 1,
-  "title": "Communication Priority",
+  "title": "Phonetic Alphabet and Numbers",
   "sections": [
     {
       "type": "text",
-      "content": "Maritime radio communications follow a strict priority hierarchy. Higher-priority traffic always takes precedence, and all other stations must maintain silence when distress traffic is in progress. Understanding this hierarchy is fundamental to safe radio operation."
+      "content": "Clear communication at sea depends on being understood the first time. Background noise, weak signals, and language barriers can easily garble ordinary speech. The International Telecommunication Union (ITU) phonetic alphabet eliminates ambiguity by assigning a unique code word to every letter. When you need to spell a call sign, vessel name, or any critical word, you prefix it with \"I SPELL\" and then speak each letter using its phonetic equivalent."
+    },
+    {
+      "type": "callout",
+      "variant": "info",
+      "title": "The \"I SPELL\" Procedure",
+      "content": "Before spelling any word phonetically, say \"I SPELL\" to alert the receiving station. For example: \"Vessel name Tami, I SPELL, Tango Alfa Mike India.\" If the word is difficult and followed by more speech, you may repeat the plain word after the spelling for clarity."
     },
     {
       "type": "table",
-      "headers": ["Priority", "Signal Word", "Situation Example"],
+      "headers": ["Letter", "Code Word", "Pronunciation"],
       "rows": [
-        ["1 — Distress", "MAYDAY", "Vessel sinking, fire on board, crew in immediate danger"],
-        ["2 — Urgency", "PAN PAN", "Person overboard, engine failure, medical emergency"],
-        ["3 — Safety", "SECURITE", "Navigation hazard, severe weather warning"],
-        ["4 — Routine", "(none)", "Port operations, berth requests, supply orders"]
+        ["A", "Alfa", "ALFAH"],
+        ["B", "Bravo", "BRAHVOH"],
+        ["C", "Charlie", "CHARLEE"],
+        ["D", "Delta", "DELLTAH"],
+        ["E", "Echo", "ECKOH"],
+        ["F", "Foxtrot", "FOKSTROT"],
+        ["G", "Golf", "GOLF"],
+        ["H", "Hotel", "HOHTELL"],
+        ["I", "India", "INDEEAH"],
+        ["J", "Juliet", "JEWLEEETT"],
+        ["K", "Kilo", "KEYLOH"],
+        ["L", "Lima", "LEEMAH"],
+        ["M", "Mike", "MIKE"],
+        ["N", "November", "NOVEMMBER"],
+        ["O", "Oscar", "OSSCAH"],
+        ["P", "Papa", "PAHPAH"],
+        ["Q", "Quebec", "KEHBECK"],
+        ["R", "Romeo", "ROWMEOH"],
+        ["S", "Sierra", "SEEAIRAH"],
+        ["T", "Tango", "TANGGO"],
+        ["U", "Uniform", "YOUNEEFORM"],
+        ["V", "Victor", "VIKTAH"],
+        ["W", "Whiskey", "WISSKEY"],
+        ["X", "X-ray", "ECKSRAY"],
+        ["Y", "Yankee", "YANGKEY"],
+        ["Z", "Zulu", "ZOOLOO"]
       ]
     },
     {
       "type": "text",
-      "content": "When you hear a distress signal, you must immediately cease all non-essential transmissions. Urgency traffic takes priority over safety and routine, and safety traffic takes priority over routine communications."
+      "content": "Notice that some code words differ slightly from everyday English spelling. The ITU standard uses \"Alfa\" (not \"Alpha\") and \"Juliet\" (not \"Juliett\") to avoid pronunciation problems for non-English speakers. The pronunciation column shows where the emphasis should fall — the stressed syllable is shown in capital letters."
     },
     {
       "type": "exercise",
-      "prompt": "Which category of communication has the highest priority?",
+      "prompt": "How would you phonetically spell the call sign \"VHF\" over the radio?",
       "options": [
-        { "key": "a", "text": "Safety" },
-        { "key": "b", "text": "Urgency" },
-        { "key": "c", "text": "Distress" },
-        { "key": "d", "text": "Routine" }
+        { "key": "a", "text": "Victor Hotel Foxtrot" },
+        { "key": "b", "text": "Victory Hotel Fox" },
+        { "key": "c", "text": "Victor Henry Foxtrot" },
+        { "key": "d", "text": "Victoria Hotel Franklin" }
+      ],
+      "answer": "a",
+      "explanation": "Each letter is replaced by its ITU phonetic code word: V = Victor, H = Hotel, F = Foxtrot. Only the standard code words should be used — never improvised alternatives."
+    },
+    {
+      "type": "text",
+      "content": "Numbers are equally important in maritime communication. Positions, frequencies, channel numbers, and times all contain digits that must be transmitted without error. The ITU prescribes specific pronunciations for each digit to maximise clarity, especially for digits that sound alike in normal speech (such as \"five\" and \"nine\", or \"three\" and \"free\")."
+    },
+    {
+      "type": "table",
+      "headers": ["Figure", "Pronunciation"],
+      "rows": [
+        ["0", "ZERO"],
+        ["1", "WUN"],
+        ["2", "TOO"],
+        ["3", "TREE"],
+        ["4", "FOWER"],
+        ["5", "FIFE"],
+        ["6", "SIX"],
+        ["7", "SEVEN"],
+        ["8", "AIT"],
+        ["9", "NINER"],
+        ["1000", "TOUSAND"],
+        [".", "DECIMAL"]
+      ]
+    },
+    {
+      "type": "text",
+      "content": "When transmitting a multi-digit number, speak each digit separately using its ITU pronunciation. For example, Channel 16 is spoken as \"Channel WUN SIX\", and a frequency of 2182 kHz is spoken as \"TOO WUN AIT TOO kilohertz\". The word TOUSAND is used only for exact multiples of one thousand, such as \"TOO TOUSAND\" for 2000."
+    },
+    {
+      "type": "fill-blank",
+      "prompt": "The number 9 is pronounced ___ in ITU radio procedure to avoid confusion with the German word \"nein\" (no).",
+      "answer": "NINER",
+      "alternatives": ["niner"],
+      "explanation": "\"NINER\" adds an extra syllable to clearly distinguish the digit 9 from words like \"no\" or \"nein\" in other languages."
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "title": "Practise Daily",
+      "content": "Read car number plates aloud using the phonetic alphabet during your commute. Spell your own name and vessel call sign until the code words come automatically. Speed and fluency matter during emergencies."
+    },
+    {
+      "type": "exercise",
+      "prompt": "How should the frequency 2182 kHz be spoken on the radio?",
+      "options": [
+        { "key": "a", "text": "Twenty-one eighty-two kilohertz" },
+        { "key": "b", "text": "Two one eight two kilohertz" },
+        { "key": "c", "text": "TOO WUN AIT TOO kilohertz" },
+        { "key": "d", "text": "TOO TOUSAND WUN AIT TOO kilohertz" }
       ],
       "answer": "c",
-      "explanation": "Distress has the highest priority. It indicates grave and imminent danger to a vessel or person. All other traffic must yield to distress communications."
+      "explanation": "Each digit is spoken individually using ITU pronunciation. You do not group digits into larger numbers (like \"twenty-one\"), and TOUSAND is only used for exact multiples of 1000."
+    },
+    {
+      "type": "takeaway",
+      "points": [
+        "The ITU phonetic alphabet assigns a unique code word to each letter (A = Alfa, B = Bravo, etc.) to prevent misunderstanding over radio.",
+        "Always say \"I SPELL\" before spelling a word phonetically.",
+        "Numbers are spoken digit-by-digit using ITU pronunciations (0 = ZERO, 1 = WUN, 5 = FIFE, 9 = NINER, etc.).",
+        "TOUSAND is used only for exact multiples of one thousand.",
+        "Practise until phonetic spelling becomes automatic — hesitation costs time in emergencies."
+      ]
     }
   ]
 }

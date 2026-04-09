@@ -1,40 +1,109 @@
 {
   "version": 1,
-  "title": "What is an MMSI?",
+  "title": "VHF Radio Basics",
   "sections": [
     {
       "type": "text",
-      "content": "The Maritime Mobile Service Identity (MMSI) is a unique 9-digit number assigned to a vessel's radio station. It serves as the digital address for DSC calls, enabling automated identification and selective calling. Every DSC-equipped vessel must have an MMSI programmed into its radio before operation."
+      "content": "Maritime VHF radio operates in the Very High Frequency band between 156 and 174 MHz. It is the primary system for short-range voice and data communication at sea, used for distress alerting, safety broadcasts, ship-to-ship coordination, and ship-to-shore telephone calls. Every GMDSS-equipped vessel carries at least one fixed VHF installation with Digital Selective Calling (DSC) capability."
+    },
+    {
+      "type": "text",
+      "content": "VHF maritime radio uses Frequency Modulation (FM) for its transmissions. The ITU designation for voice transmissions is F3E — frequency-modulated telephony. DSC data transmissions on Channel 70 use the designation F2B (frequency shift keying) or G2B (phase shift keying), depending on the equipment. FM provides good audio quality and is resistant to amplitude-based interference such as ignition noise from engines, which is why it was chosen over AM for maritime use."
+    },
+    {
+      "type": "callout",
+      "variant": "info",
+      "title": "Line-of-Sight Propagation",
+      "content": "VHF signals travel in straight lines from transmitting antenna to receiving antenna. They do not follow the curvature of the Earth (unlike MF ground waves) and are not reflected by the ionosphere (unlike HF sky waves). This means VHF range is fundamentally limited by the horizon — if the antennas cannot 'see' each other, communication is not possible."
+    },
+    {
+      "type": "text",
+      "content": "Several factors affect VHF range. The most important is antenna height at both the transmitting and receiving ends — taller antennas can see further over the horizon. Atmospheric conditions also play a role: temperature inversions and ducting can occasionally extend range well beyond normal limits, while heavy rain has minimal effect at VHF frequencies. Transmitter power matters too, but has less impact than antenna height. The maximum permitted output power for a fixed VHF installation is 25 watts, while low-power mode is 1 watt. Typical range for a ship-mounted VHF radio is 20 to 60 nautical miles, depending on the antenna heights involved."
     },
     {
       "type": "table",
-      "headers": ["MMSI Prefix", "Type", "Example"],
+      "headers": ["Radio System", "Frequency Band", "Propagation", "Typical Range", "Primary Role"],
       "rows": [
-        ["2xx–7xx (MID)", "Ship station", "211234567 (Germany)"],
-        ["00MIDxxxx", "Coast station", "002241022"],
-        ["0MIDxxxxx", "Group call", "021234567"],
-        ["111 + MID", "SAR aircraft", "111211234"],
-        ["970", "SART (AIS)", "970012345"],
-        ["972", "MOB device", "972012345"],
-        ["974", "EPIRB (AIS)", "974012345"]
+        [
+          "VHF",
+          "156–174 MHz",
+          "Line-of-sight",
+          "20–60 NM",
+          "Short-range: ship-to-ship, port operations, distress"
+        ],
+        [
+          "MF",
+          "300 kHz – 3 MHz",
+          "Ground wave",
+          "Up to ~400 NM",
+          "Regional: medium-range distress and routine traffic"
+        ],
+        [
+          "HF",
+          "3–30 MHz",
+          "Sky wave (ionospheric reflection)",
+          "Hundreds to thousands of NM",
+          "Long-range: ocean-crossing communications"
+        ]
       ]
     },
     {
-      "type": "tool-embed",
-      "tool": "mmsi-decoder",
-      "config": {}
+      "type": "exercise",
+      "prompt": "What ITU emission designation is used for VHF voice transmissions?",
+      "options": [
+        { "key": "a", "text": "A3E — amplitude-modulated telephony" },
+        { "key": "b", "text": "F3E — frequency-modulated telephony" },
+        { "key": "c", "text": "J3E — single sideband telephony" },
+        { "key": "d", "text": "G2B — phase shift keying" }
+      ],
+      "answer": "b",
+      "explanation": "Maritime VHF voice uses frequency modulation, designated F3E by the ITU. A3E is AM (used in aviation), J3E is SSB (used on HF/MF maritime), and G2B is used for DSC data on Channel 70."
+    },
+    {
+      "type": "text",
+      "content": "The line-of-sight limitation is actually an advantage for VHF: because signals do not travel beyond the horizon, the same channel frequencies can be reused by stations that are far enough apart without causing interference. This frequency reuse is why the relatively small number of VHF maritime channels can serve thousands of vessels simultaneously around the world."
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "title": "Range Rule of Thumb",
+      "content": "The approximate line-of-sight range in nautical miles can be estimated using the formula: Range (NM) ≈ 2.5 × (√h₁ + √h₂), where h₁ and h₂ are the antenna heights in metres at each end. For example, two ships with antennas at 25 metres: 2.5 × (5 + 5) = 25 NM."
+    },
+    {
+      "type": "fill-blank",
+      "prompt": "The maximum permitted output power for a fixed VHF marine radio installation is ___ watts.",
+      "answer": "25",
+      "alternatives": ["25W", "25 W", "twenty-five"],
+      "explanation": "Fixed VHF marine radios have a maximum output power of 25 watts (high power). The low-power setting is 1 watt, which should be used whenever communication range allows to reduce interference."
+    },
+    {
+      "type": "text",
+      "content": "Compared to HF and MF systems, VHF has clear advantages and limitations. HF radio uses sky wave propagation — signals bounce off the ionosphere and can reach thousands of nautical miles, providing global coverage. However, HF requires larger antennas, is subject to ionospheric variability, and audio quality is lower. MF radio uses ground wave propagation, where signals follow the Earth's surface for several hundred nautical miles, serving a regional role. VHF offers the best audio clarity and most reliable short-range communication, which is why it remains the first choice for day-to-day maritime operations and the primary distress frequency."
     },
     {
       "type": "exercise",
-      "prompt": "How many digits are in a ship station MMSI?",
+      "prompt": "Why can VHF frequencies be reused by stations far apart without interference?",
       "options": [
-        { "key": "a", "text": "6 digits" },
-        { "key": "b", "text": "7 digits" },
-        { "key": "c", "text": "9 digits" },
-        { "key": "d", "text": "12 digits" }
+        { "key": "a", "text": "VHF signals are absorbed by seawater after a short distance" },
+        {
+          "key": "b",
+          "text": "VHF signals are limited to line-of-sight and do not travel beyond the horizon"
+        },
+        { "key": "c", "text": "VHF uses spread-spectrum technology to avoid interference" },
+        { "key": "d", "text": "International regulations prevent simultaneous transmissions" }
       ],
-      "answer": "c",
-      "explanation": "An MMSI is always 9 digits. For ship stations, it begins with a 3-digit Maritime Identification Digit (MID) indicating the country of registration."
+      "answer": "b",
+      "explanation": "Because VHF propagation is line-of-sight, signals do not travel beyond the radio horizon. Stations separated by a sufficient distance cannot receive each other's transmissions, allowing the same channel frequencies to be allocated to different users in different areas."
+    },
+    {
+      "type": "takeaway",
+      "points": [
+        "Maritime VHF operates on 156–174 MHz using FM (F3E for voice, F2B/G2B for DSC data on Ch 70).",
+        "VHF is line-of-sight: range depends primarily on antenna height at both ends, typically 20–60 NM.",
+        "Maximum output power is 25 W (high) / 1 W (low); use minimum power necessary.",
+        "HF uses sky wave for global range; MF uses ground wave for regional range; VHF provides the best audio quality for short-range work.",
+        "The line-of-sight limitation enables frequency reuse, allowing the same channels to serve vessels worldwide."
+      ]
     }
   ]
 }

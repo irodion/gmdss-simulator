@@ -1,32 +1,101 @@
 {
   "version": 1,
-  "title": "EPIRB",
+  "title": "MMSI and Call Signs",
   "sections": [
     {
       "type": "text",
-      "content": "An Emergency Position Indicating Radio Beacon (EPIRB) is a distress beacon that transmits on 406 MHz to the Cospas-Sarsat satellite system. When activated, it sends a coded signal containing the vessel's identity and, if GPS-equipped, its precise position. A secondary signal on 121.5 MHz serves as a homing frequency for SAR aircraft."
+      "content": "Every vessel and shore station in the GMDSS is identified by a Maritime Mobile Service Identity (MMSI) — a unique 9-digit number programmed into the ship's DSC controller. When you press the distress button or send any DSC call, your MMSI is automatically included in the digital message. Unlike a voice call sign that you speak aloud, the MMSI is transmitted as data and decoded by the receiving equipment."
     },
     {
       "type": "callout",
       "variant": "info",
-      "title": "Satellite Detection",
-      "content": "A 406 MHz EPIRB transmits your vessel's identity and position to Cospas-Sarsat satellites. Detection time is typically under an hour with MEOSAR, and position accuracy is within 5 km (or 100 m with internal GPS)."
+      "title": "Self-Powered on Installation",
+      "content": "The MMSI is programmed into the DSC equipment during installation and is automatically embedded in every DSC transmission. You never need to enter it manually before sending a call — the controller handles it."
     },
     {
       "type": "text",
-      "content": "EPIRBs must be registered with the national authority and the registration details kept current. Float-free EPIRBs activate automatically when the hydrostatic release mechanism detects submersion. Battery life is a minimum of 48 hours once activated."
+      "content": "The structure of a 9-digit MMSI reveals what kind of station it identifies. The key building block is the Maritime Identification Digit (MID) — a 3-digit country code assigned by the ITU. For example, MID 428 is assigned to Israel, 211 to Germany, and 311 to the United States. The position of the MID within the 9 digits, along with any leading prefix digits, tells you whether the MMSI belongs to a ship, a coast station, a group of vessels, an aircraft, or a navigational aid."
+    },
+    {
+      "type": "table",
+      "headers": ["Type", "Format", "Example", "Notes"],
+      "rows": [
+        ["Ship station", "MIDxxxxxx", "428123456", "MID in positions 1-3; most common type"],
+        ["Coast station", "00MIDxxxx", "004281234", "Leading 00 + MID in positions 3-5"],
+        ["Ship group", "0MIDxxxxx", "042812345", "Leading 0 + MID; used for fleet calls"],
+        [
+          "SAR aircraft",
+          "111MIDxxx",
+          "111428123",
+          "Prefix 111 identifies search-and-rescue aircraft"
+        ],
+        ["AIS-SART", "970xxxxxx", "970211234", "Prefix 970; AIS search-and-rescue transponder"],
+        ["MOB device", "972xxxxxx", "972211234", "Prefix 972; man-overboard device"],
+        ["EPIRB-AIS", "974xxxxxx", "974211234", "Prefix 974; EPIRB with AIS transmitter"],
+        ["Navigational aid", "99MIDxxxx", "994281234", "Prefix 99 + MID; buoys, lighthouses, etc."]
+      ]
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "title": "Reading an MMSI at a Glance",
+      "content": "If the first digit is non-zero, it is a ship station (MID starts at digit 1). If it begins with 00, it is a coast station. If it begins with a single 0, it is a group call. Prefixes 970, 972, and 974 indicate AIS-SART, MOB, and EPIRB-AIS devices respectively. Prefix 111 marks SAR aircraft, and 99 marks navigational aids."
+    },
+    {
+      "type": "text",
+      "content": "Radio call signs serve a complementary role to the MMSI. A call sign is an alphanumeric identifier assigned by the vessel's flag state — for example, 4XAB2 (Israel) or DABC (Germany). The first one or two characters of a call sign identify the country of registration, following ITU allocations. While the MMSI is used exclusively in digital transmissions (DSC, AIS), the call sign is spoken during voice procedures and printed on the ship's radio licence."
+    },
+    {
+      "type": "callout",
+      "variant": "info",
+      "title": "Call Sign Country Prefixes",
+      "content": "Call sign prefixes are allocated by the ITU in blocks. For example, prefixes starting with 4X are assigned to Israel, DA-DR to Germany, and K/N/W to the United States. The first one or two characters always identify the country."
     },
     {
       "type": "exercise",
-      "prompt": "On which frequencies does a 406 MHz EPIRB transmit?",
+      "prompt": "An MMSI beginning with 00 identifies which type of station?",
       "options": [
-        { "key": "a", "text": "156.8 MHz and 161.975 MHz" },
-        { "key": "b", "text": "406 MHz and 121.5 MHz" },
-        { "key": "c", "text": "9 GHz only" },
-        { "key": "d", "text": "2182 kHz and 406 MHz" }
+        { "key": "a", "text": "Ship station" },
+        { "key": "b", "text": "Coast station" },
+        { "key": "c", "text": "Ship group call" },
+        { "key": "d", "text": "SAR aircraft" }
       ],
       "answer": "b",
-      "explanation": "A 406 MHz EPIRB transmits a digital identity signal on 406 MHz (detected by Cospas-Sarsat satellites) and a homing signal on 121.5 MHz for SAR aircraft to locate the beacon."
+      "explanation": "An MMSI with the prefix 00 followed by the MID identifies a coast station (e.g., 004281234). Ship stations have the MID in the first three positions with no leading zeros."
+    },
+    {
+      "type": "fill-blank",
+      "prompt": "The 3-digit country code embedded in every MMSI is called the Maritime Identification ___.",
+      "answer": "Digit",
+      "alternatives": ["Digits", "digit", "digits", "MID"],
+      "explanation": "The Maritime Identification Digit (MID) is a 3-digit code assigned by the ITU to each country. Its position within the 9-digit MMSI varies depending on the station type."
+    },
+    {
+      "type": "exercise",
+      "prompt": "Which MMSI prefix identifies an AIS-SART device?",
+      "options": [
+        { "key": "a", "text": "111" },
+        { "key": "b", "text": "972" },
+        { "key": "c", "text": "970" },
+        { "key": "d", "text": "974" }
+      ],
+      "answer": "c",
+      "explanation": "The prefix 970 identifies an AIS Search and Rescue Transponder (AIS-SART). Prefix 972 is for MOB devices, 974 for EPIRB-AIS, and 111 for SAR aircraft."
+    },
+    {
+      "type": "tool-embed",
+      "tool": "mmsi-decoder",
+      "config": {}
+    },
+    {
+      "type": "takeaway",
+      "points": [
+        "An MMSI is a unique 9-digit number automatically included in every DSC transmission.",
+        "The Maritime Identification Digit (MID) is a 3-digit ITU country code whose position in the MMSI indicates the station type.",
+        "Ship stations place the MID at positions 1-3; coast stations use prefix 00; group calls use prefix 0; SAR aircraft use 111; navigational aids use 99.",
+        "Special device prefixes: 970 (AIS-SART), 972 (MOB), 974 (EPIRB-AIS).",
+        "Call signs are alphanumeric identifiers used in voice procedures, with the first one or two characters identifying the country of registration."
+      ]
     }
   ]
 }

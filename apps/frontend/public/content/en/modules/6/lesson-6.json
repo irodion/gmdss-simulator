@@ -1,0 +1,103 @@
+{
+  "version": 1,
+  "title": "Pyrotechnics and Visual Signals",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Pyrotechnic distress signals remain an essential component of maritime safety equipment, providing a visual means of attracting attention and guiding rescuers to survivors. Despite advances in electronic communication, visual signals serve a critical role in the final stages of rescue when a searching vessel or aircraft is within visual range. Pyrotechnics should be used when rescuers are in sight or reasonably expected to be in the vicinity."
+    },
+    {
+      "type": "table",
+      "headers": ["Signal", "Height/Duration", "Visibility", "Use"],
+      "rows": [
+        [
+          "Red parachute rocket",
+          "300 m height, 40 s burn",
+          "25+ NM at night",
+          "Day or night; primary long-range distress signal"
+        ],
+        [
+          "Red hand-held flare",
+          "Held at arm's length, 1 min burn",
+          "5-7 NM at night",
+          "Day or night; close-range pinpointing"
+        ],
+        [
+          "Orange hand-held smoke",
+          "3-4 min duration",
+          "3-4 NM in daylight",
+          "Daytime only; marks position for surface craft and aircraft"
+        ],
+        [
+          "Buoyant orange smoke signal",
+          "3-4 min duration",
+          "3-4 NM in daylight",
+          "Daytime only; thrown into water, marks position"
+        ]
+      ]
+    },
+    {
+      "type": "text",
+      "content": "The red parachute rocket is the most effective long-range distress signal. It is launched vertically and deploys a parachute that suspends a bright red flare at approximately 300 metres altitude. The flare burns for at least 40 seconds and can be seen at over 25 nautical miles on a clear night. It is effective both day and night and should be the first pyrotechnic used when attempting to attract distant attention."
+    },
+    {
+      "type": "text",
+      "content": "The red hand-held flare produces a bright red light for approximately 1 minute. It is held at arm's length, pointing downwind to avoid hot drips and sparks blowing back onto the user. Visibility is 5 to 7 nautical miles at night. Hand-held flares are primarily used for close-range signalling to guide approaching rescue craft to your exact position."
+    },
+    {
+      "type": "callout",
+      "variant": "warning",
+      "title": "Safe Use of Pyrotechnics",
+      "content": "Always fire pyrotechnics downwind to avoid blowback of hot debris. Hold hand-held flares at arm's length over the side of the vessel. Read the instructions on each device before use. Check expiry dates regularly — expired pyrotechnics may fail or behave unpredictably."
+    },
+    {
+      "type": "text",
+      "content": "Orange smoke signals — both hand-held and buoyant — are effective only during daylight hours. They produce a dense orange smoke cloud for 3 to 4 minutes, visible at 3 to 4 nautical miles. Smoke is particularly useful for indicating wind direction to helicopter pilots and for marking a position on the water surface. The buoyant version is thrown into the sea and floats while producing smoke."
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "title": "Storage and Maintenance",
+      "content": "Store pyrotechnics in a cool, dry location that is easily accessible in an emergency. Check expiry dates during routine safety drills. SOLAS carriage requirements vary by vessel class — consult the vessel's safety equipment certificate for specific requirements."
+    },
+    {
+      "type": "exercise",
+      "prompt": "Which pyrotechnic signal has the greatest visibility range at night?",
+      "options": [
+        { "key": "a", "text": "Red hand-held flare" },
+        { "key": "b", "text": "Red parachute rocket" },
+        { "key": "c", "text": "Orange smoke signal" }
+      ],
+      "answer": "b",
+      "explanation": "The red parachute rocket has a night-time visibility of over 25 nautical miles, far exceeding the 5-7 NM range of a hand-held flare. Orange smoke signals are daylight-only and visible at 3-4 NM."
+    },
+    {
+      "type": "fill-blank",
+      "prompt": "Orange smoke signals are effective only during ___ and produce smoke for 3 to 4 minutes.",
+      "answer": "daylight",
+      "alternatives": ["daytime", "day"],
+      "explanation": "Orange smoke is only visible during daylight hours. At night, the smoke cloud cannot be seen. For night-time signalling, red parachute rockets and red hand-held flares should be used instead."
+    },
+    {
+      "type": "exercise",
+      "prompt": "When using a red hand-held flare, you should:",
+      "options": [
+        { "key": "a", "text": "Hold it close to your body to keep it steady" },
+        { "key": "b", "text": "Hold it at arm's length, pointed downwind" },
+        { "key": "c", "text": "Throw it into the water immediately after ignition" }
+      ],
+      "answer": "b",
+      "explanation": "A hand-held flare must be held at arm's length over the side of the vessel and pointed downwind. This prevents hot drips, sparks, and residue from blowing back onto the user or the vessel. Throwing it into the water would extinguish it."
+    },
+    {
+      "type": "takeaway",
+      "points": [
+        "Red parachute rocket: 300 m height, 40 s burn, 25+ NM visibility at night — the primary long-range distress signal.",
+        "Red hand-held flare: 1-minute burn, 5-7 NM at night — for close-range pinpointing, held downwind at arm's length.",
+        "Orange smoke: 3-4 minutes, 3-4 NM — daytime only; useful for helicopter wind indication.",
+        "Use pyrotechnics when rescuers are in sight or expected; fire downwind to avoid blowback.",
+        "Store in cool, dry, accessible locations and check expiry dates regularly."
+      ]
+    }
+  ]
+}

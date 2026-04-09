@@ -1,38 +1,95 @@
 {
   "version": 1,
-  "title": "DSC Overview",
+  "title": "The VHF Radio Panel",
   "sections": [
     {
       "type": "text",
-      "content": "Digital Selective Calling (DSC) is an automated digital system that allows radio operators to send pre-formatted digital messages on VHF Channel 70. DSC can alert specific stations or all stations in range, and is a core component of the Global Maritime Distress and Safety System (GMDSS)."
+      "content": "A fixed-mount marine VHF radio has a standardised set of controls that every operator must know. While manufacturers differ in layout and styling, the core controls are consistent across all approved GMDSS VHF installations. Understanding each control's purpose — and what it does not do — is essential before operating the radio."
+    },
+    {
+      "type": "text",
+      "content": "The Channel Selector is typically a rotary knob or up/down buttons that cycle through the available VHF channels. Modern radios display the channel number and sometimes the frequency on an LCD screen. The Volume / ON-OFF knob combines two functions: rotating it from the fully counter-clockwise position clicks the radio on, and further rotation increases the speaker volume. Volume affects only the audio output level — it has no effect on transmission power or reception sensitivity."
+    },
+    {
+      "type": "callout",
+      "variant": "warning",
+      "title": "Squelch — Often Misunderstood",
+      "content": "The Squelch control sets a threshold below which the receiver stays silent. When properly adjusted, it silences background static while still allowing incoming signals to be heard. Squelch affects reception only — it has no effect on your transmitted signal or power. If squelch is set too high, you may miss weak signals from distant stations. The correct technique is to open squelch fully (hearing static), then slowly increase it until the static just disappears."
+    },
+    {
+      "type": "text",
+      "content": "The PTT (Push-To-Talk) button is located on the side of the microphone handset. Pressing PTT switches the radio from receive mode to transmit mode. VHF marine radio is half-duplex on simplex channels — you can either talk or listen, but not both at the same time. Release PTT immediately when you finish speaking so you can hear the other station's reply. A common beginner mistake is holding PTT while trying to listen."
+    },
+    {
+      "type": "exercise",
+      "prompt": "What does the squelch control on a VHF radio actually do?",
+      "options": [
+        { "key": "a", "text": "It adjusts the transmit power between high and low" },
+        { "key": "b", "text": "It sets a threshold to silence background noise on the receiver" },
+        { "key": "c", "text": "It filters out interference from other channels" },
+        { "key": "d", "text": "It encrypts the signal for secure communications" }
+      ],
+      "answer": "b",
+      "explanation": "Squelch sets a signal-strength threshold on the receiver. Signals below the threshold are silenced (you hear nothing), while signals above it come through the speaker. It affects reception only, not transmission."
+    },
+    {
+      "type": "text",
+      "content": "The High/Low Power toggle switches the transmitter between 25 watts (high) and 1 watt (low). Regulations require operators to use the minimum power necessary for reliable communication. For nearby vessels or port operations, 1 watt is usually sufficient and reduces interference to other stations. Some radios offer a medium power setting around 5–10 watts as well."
+    },
+    {
+      "type": "text",
+      "content": "The Ch 16 Quick-Select button instantly tunes the radio to Channel 16 (156.800 MHz) — the international distress, safety, and calling frequency. This button allows rapid access to Channel 16 from any working channel without scrolling through the channel selector. In an emergency, this single button press could save critical seconds."
+    },
+    {
+      "type": "text",
+      "content": "Dual Watch (DW) is a monitoring feature that alternates the receiver between your selected working channel and Channel 16. The radio rapidly switches back and forth, pausing on whichever channel has an active signal. This allows you to work on another channel while still monitoring Channel 16 for distress or calling traffic. When a signal is detected on Channel 16, the radio stays on Channel 16 until the transmission ends."
     },
     {
       "type": "callout",
       "variant": "info",
-      "title": "One-Button Distress",
-      "content": "DSC enables you to send a distress alert at the press of a single button. The alert includes your MMSI and, if available from a connected GPS, your position and nature of distress — transmitted automatically on Channel 70."
+      "title": "DSC Distress Button",
+      "content": "Every GMDSS VHF radio has a dedicated DSC Distress button, protected by a spring-loaded flip cover or recessed behind a guard to prevent accidental activation. Pressing and holding this button for 5 seconds transmits an automated distress alert on Channel 70 containing the vessel's MMSI, position, and time. This is the fastest way to alert all nearby vessels and coast stations simultaneously."
     },
     {
-      "type": "table",
-      "headers": ["DSC Category", "Purpose", "Addressed To"],
-      "rows": [
-        ["Distress", "Vessel in grave and imminent danger", "All stations"],
-        ["Urgency", "Urgent safety information", "All stations or specific station"],
-        ["Safety", "Navigational or meteorological warnings", "All stations or specific station"],
-        ["Routine", "Operational communications", "Specific station only"]
-      ]
+      "type": "fill-blank",
+      "prompt": "The Dual Watch feature alternates monitoring between your working channel and Channel ___.",
+      "answer": "16",
+      "alternatives": ["Ch 16", "ch16", "Ch16", "channel 16"],
+      "explanation": "Dual Watch monitors Channel 16 (the international distress and calling frequency) alongside whatever working channel you have selected. This ensures you do not miss distress calls or initial contact attempts while conducting routine communications."
+    },
+    {
+      "type": "text",
+      "content": "Additional controls include the Dimmer, which adjusts display and button backlight brightness for night-time use without affecting radio operation, and the channel name display which on modern sets may show the purpose of each channel (e.g., 'DISTRESS', 'SAR', 'PORT OPS'). Some radios also feature a scan function that cycles through multiple pre-selected channels, stopping when activity is detected."
+    },
+    {
+      "type": "tool-embed",
+      "tool": "channel-explorer",
+      "config": {}
     },
     {
       "type": "exercise",
-      "prompt": "On which VHF channel are DSC calls transmitted?",
+      "prompt": "Why is the DSC distress button protected by a flip cover?",
       "options": [
-        { "key": "a", "text": "Channel 6" },
-        { "key": "b", "text": "Channel 16" },
-        { "key": "c", "text": "Channel 70" },
-        { "key": "d", "text": "Channel 13" }
+        { "key": "a", "text": "To keep it clean and free from salt spray" },
+        {
+          "key": "b",
+          "text": "To prevent accidental activation, which would send a false distress alert"
+        },
+        { "key": "c", "text": "To indicate that the button is for authorised personnel only" },
+        { "key": "d", "text": "To protect the button's electronics from water damage" }
       ],
-      "answer": "c",
-      "explanation": "All VHF DSC calls are transmitted on Channel 70 (156.525 MHz), which is reserved exclusively for DSC digital transmissions."
+      "answer": "b",
+      "explanation": "The flip cover is a deliberate safety measure to prevent accidental pressing of the distress button. A false distress alert wastes SAR resources, can result in penalties, and undermines the reliability of the distress system. The cover ensures the operator must make a conscious decision to open it before pressing."
+    },
+    {
+      "type": "takeaway",
+      "points": [
+        "Volume controls audio output only; Squelch controls the receiver's noise threshold — neither affects transmission.",
+        "PTT switches between receive and transmit; release it immediately after speaking to hear the reply.",
+        "Use the High/Low power toggle to select minimum necessary power (25 W high, 1 W low).",
+        "The Ch 16 quick-select button and Dual Watch feature ensure you can always monitor the distress frequency.",
+        "The DSC distress button is protected by a flip cover to prevent false alerts — press and hold for 5 seconds to activate."
+      ]
     }
   ]
 }

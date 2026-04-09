@@ -1,31 +1,111 @@
 {
   "version": 1,
-  "title": "SECURITE Procedure",
+  "title": "Radio Ethics and Channel 16",
   "sections": [
     {
       "type": "text",
-      "content": "SECURITE (pronounced \"say-cure-ee-tay\") is the safety signal used to broadcast navigational or meteorological warnings. It is addressed to all stations and does not require acknowledgment. Safety messages include reports of floating hazards, unlit buoys, severe weather, or other dangers to navigation."
+      "content": "Marine radio frequencies are a shared, limited resource. Every transmission occupies a channel that other vessels may need — potentially for life-saving distress calls. International and national regulations therefore impose strict rules on what may and may not be transmitted. Violating these rules is not merely bad etiquette; it can be a criminal offence carrying fines, imprisonment, and loss of your radio operator certificate."
     },
     {
-      "type": "tool-embed",
-      "tool": "script-builder",
-      "config": { "scriptType": "securite" }
+      "type": "callout",
+      "variant": "warning",
+      "title": "Prohibited Transmissions",
+      "content": "The following are strictly prohibited on marine radio frequencies: personal conversations unrelated to vessel operations, playing music or entertainment, commercial advertising, profanity or obscene language, false or fraudulent distress signals, and any transmission without proper station identification."
     },
     {
       "type": "text",
-      "content": "The format is: SECURITE SECURITE SECURITE — ALL STATIONS (x3) — THIS IS — [station name x3] — [safety information including position of hazard] — OUT. Note that SECURITE messages end with OUT, not OVER, because no reply is expected."
+      "content": "The confidentiality of radio communications is a legal obligation, not just a courtesy. If you intercept a communication not intended for your station — whether it is a private radiotelephone call, a message between other vessels, or any other transmission — you are legally required to keep its contents secret. You must not disclose the content, the existence of the communication, or any information derived from it to any unauthorised person. This obligation is enshrined in the ITU Radio Regulations and enforced by national telecommunications law."
     },
     {
       "type": "exercise",
-      "prompt": "SECURITE messages end with which proword?",
+      "prompt": "You overhear a radiotelephone call between another vessel and a coast station discussing a medical emergency on board. What is your legal obligation?",
       "options": [
-        { "key": "a", "text": "OVER" },
-        { "key": "b", "text": "ROGER" },
-        { "key": "c", "text": "OUT" },
-        { "key": "d", "text": "WILCO" }
+        {
+          "key": "a",
+          "text": "Report the details to your captain and log it in the radio journal"
+        },
+        { "key": "b", "text": "Keep the contents confidential and not disclose them to anyone" },
+        { "key": "c", "text": "Contact the vessel to offer assistance" },
+        { "key": "d", "text": "Post the information on the ship's noticeboard for crew awareness" }
+      ],
+      "answer": "b",
+      "explanation": "Intercepted communications not addressed to your station must be kept confidential by law. You may not disclose the contents to anyone. The only exception is a distress call, which requires you to listen and stand by to assist."
+    },
+    {
+      "type": "text",
+      "content": "Channel 16 (156.800 MHz) is the international distress, safety, and calling frequency. It demands special discipline from every operator. Specific etiquette rules govern its use to ensure it remains available for emergencies at all times."
+    },
+    {
+      "type": "table",
+      "headers": ["Rule", "Requirement"],
+      "rows": [
+        ["Maximum call duration", "Initial contact on Ch 16 must not exceed 1 minute"],
+        ["Contact check duration", "Radio checks on Ch 16 must not exceed 10 seconds"],
+        ["Call interval", "If no reply is received, wait at least 2 minutes before calling again"],
+        [
+          "Working traffic",
+          "All working conversations must move to an appropriate working channel immediately"
+        ],
+        [
+          "Continuous watch",
+          "GMDSS vessels must maintain a continuous watch on Ch 16 and DSC Ch 70"
+        ]
+      ]
+    },
+    {
+      "type": "fill-blank",
+      "prompt": "If you call a station on Channel 16 and receive no reply, you must wait at least ___ minutes before trying again.",
+      "answer": "2",
+      "alternatives": ["two", "Two", "TWO"],
+      "explanation": "The mandatory waiting interval is 2 minutes. This prevents a single station from monopolising Channel 16 with repeated unanswered calls, which would block the channel for other users including emergency traffic."
+    },
+    {
+      "type": "text",
+      "content": "False distress signals are treated as one of the most serious offences in maritime law. Transmitting a false MAYDAY, false DSC distress alert, or activating an EPIRB without a genuine emergency wastes the resources of rescue coordination centres, coast guards, and nearby vessels. It can divert search and rescue assets away from real emergencies, potentially costing lives. In most jurisdictions, transmitting a false distress signal is a criminal offence punishable by heavy fines and imprisonment."
+    },
+    {
+      "type": "callout",
+      "variant": "warning",
+      "title": "Accidental False Alerts",
+      "content": "If you accidentally transmit a distress alert (for example, by pressing the DSC distress button unintentionally), you must immediately cancel it by broadcasting on Channel 16: \"ALL STATIONS, ALL STATIONS, ALL STATIONS, THIS IS [vessel name and call sign], CANCEL MY DISTRESS ALERT of [date and time UTC], OVER.\" Failing to cancel a false alert may trigger a full search and rescue operation."
+    },
+    {
+      "type": "text",
+      "content": "Every radio operator must observe proper channel allocation. Different channels are designated for specific purposes: intership safety (Ch 06), port operations, ship movement services, and public correspondence. Using a channel for the wrong purpose — for example, conducting casual conversation on a port operations channel — violates regulations and can interfere with critical operations. Local authorities may designate additional channel allocations specific to their waters, which operators must learn and respect."
+    },
+    {
+      "type": "exercise",
+      "prompt": "Which of the following is a criminal offence under maritime radio regulations?",
+      "options": [
+        { "key": "a", "text": "Conducting a radio check on Channel 16" },
+        { "key": "b", "text": "Using the abbreviated call format after initial contact" },
+        { "key": "c", "text": "Transmitting a false distress signal" },
+        { "key": "d", "text": "Switching to a working channel after initial contact" }
       ],
       "answer": "c",
-      "explanation": "SECURITE messages end with OUT because they are broadcasts that do not require a reply. OVER would indicate you expect a response."
+      "explanation": "Transmitting a false distress signal is a criminal offence in virtually all jurisdictions. It wastes rescue resources and can endanger lives by diverting assets from genuine emergencies."
+    },
+    {
+      "type": "exercise",
+      "prompt": "What is the maximum time an initial contact call on Channel 16 should last?",
+      "options": [
+        { "key": "a", "text": "30 seconds" },
+        { "key": "b", "text": "1 minute" },
+        { "key": "c", "text": "3 minutes" },
+        { "key": "d", "text": "5 minutes" }
+      ],
+      "answer": "b",
+      "explanation": "Initial contact on Channel 16 must not exceed 1 minute. The purpose is solely to establish contact and agree on a working channel. All substantive conversation must take place on the working channel."
+    },
+    {
+      "type": "takeaway",
+      "points": [
+        "Marine radio must never be used for personal chat, music, advertising, or profanity — violations carry legal penalties.",
+        "Intercepted communications not addressed to your station must be kept strictly confidential by law.",
+        "Channel 16 etiquette: calls max 1 minute, radio checks max 10 seconds, wait 2 minutes between unanswered calls.",
+        "False distress signals are a criminal offence — always cancel accidental alerts immediately on Channel 16.",
+        "Observe correct channel allocation (local and international) and never use a channel for an unintended purpose."
+      ]
     }
   ]
 }
