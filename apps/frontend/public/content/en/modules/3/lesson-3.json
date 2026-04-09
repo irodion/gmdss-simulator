@@ -28,15 +28,19 @@
         [
           "2",
           "MV Dorado (Ch 16)",
-          "Motor Vessel Tami, THIS IS Motor Vessel Dorado, Channel 06, OVER."
+          "Motor Vessel Tami, THIS IS Motor Vessel Dorado, Motor Vessel Dorado, Channel 06, OVER."
         ],
         ["3", "MV Tami (Ch 16)", "Channel 06, ROGER, OUT."],
         ["4", "(Both switch)", "Both vessels switch to Channel 06."],
-        ["5", "MV Tami (Ch 06)", "Motor Vessel Dorado, THIS IS Motor Vessel Tami, OVER."],
+        [
+          "5",
+          "MV Tami (Ch 06)",
+          "Motor Vessel Dorado, THIS IS Motor Vessel Tami, Motor Vessel Tami, OVER."
+        ],
         [
           "6",
           "MV Dorado (Ch 06)",
-          "Motor Vessel Tami, THIS IS Motor Vessel Dorado, ROGER, go ahead, OVER."
+          "Motor Vessel Tami, THIS IS Motor Vessel Dorado, Motor Vessel Dorado, ROGER, go ahead, OVER."
         ]
       ]
     },
