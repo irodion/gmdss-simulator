@@ -40,7 +40,7 @@
       "type": "callout",
       "variant": "info",
       "title": "World SAR Organisation",
-      "content": "The world's oceans are divided into 21 NAVAREAs for the coordination of maritime safety information and SAR services. Each NAVAREA has a designated coordinator nation responsible for SAR within that region. This ensures global coverage with no gaps in responsibility."
+      "content": "The world's oceans are divided into 21 NAVAREAs for Maritime Safety Information (MSI) broadcasts, and into Search and Rescue Regions (SRRs) for SAR coordination. Each SRR has a designated Rescue Coordination Centre (RCC). NAVAREAs and SRRs are separate systems — NAVAREAs handle navigational and weather warnings, while SRRs and their RCCs coordinate actual rescue operations."
     },
     {
       "type": "text",

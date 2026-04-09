@@ -9,7 +9,7 @@
     {
       "type": "callout",
       "variant": "info",
-      "title": "Self-Powered on Installation",
+      "title": "MMSI Programmed During Installation",
       "content": "The MMSI is programmed into the DSC equipment during installation and is automatically embedded in every DSC transmission. You never need to enter it manually before sending a call — the controller handles it."
     },
     {

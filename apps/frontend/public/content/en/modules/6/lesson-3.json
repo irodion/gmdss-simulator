@@ -11,11 +11,7 @@
       "headers": ["Feature", "Category 1 EPIRB", "Category 2 EPIRB"],
       "rows": [
         ["Activation", "Automatic (float-free with hydrostatic release)", "Manual only"],
-        [
-          "Hydrostatic release",
-          "Activates at 1-4 m depth (exam context: ~75 cm submersion)",
-          "Not applicable"
-        ],
+        ["Hydrostatic release", "Activates at 1.5–4 m depth", "Not applicable"],
         ["Frequencies", "406 MHz + 121.5 MHz", "406 MHz + 121.5 MHz"],
         ["Battery life", "Minimum 48 hours continuous", "Minimum 48 hours continuous"],
         ["Battery replacement", "Every 5 years", "Every 5 years"],

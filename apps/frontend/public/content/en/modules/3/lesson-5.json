@@ -67,7 +67,7 @@
       "type": "callout",
       "variant": "warning",
       "title": "Accidental False Alerts",
-      "content": "If you accidentally transmit a distress alert (for example, by pressing the DSC distress button unintentionally), you must immediately cancel it by broadcasting on Channel 16: \"ALL STATIONS, ALL STATIONS, ALL STATIONS, THIS IS [vessel name and call sign], CANCEL MY DISTRESS ALERT of [date and time UTC], OVER.\" Failing to cancel a false alert may trigger a full search and rescue operation."
+      "content": "If you accidentally transmit a distress alert (for example, by pressing the DSC distress button unintentionally), you must immediately cancel it by broadcasting on Channel 16: \"ALL STATIONS, ALL STATIONS, ALL STATIONS, THIS IS [vessel name and call sign], CANCEL MY DISTRESS ALERT of [date and time UTC], OUT.\" Failing to cancel a false alert may trigger a full search and rescue operation."
     },
     {
       "type": "text",

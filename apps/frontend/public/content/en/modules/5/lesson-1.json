@@ -95,7 +95,7 @@
       "type": "takeaway",
       "points": [
         "The priority hierarchy is: DISTRESS (MAYDAY) > URGENCY (PAN PAN) > SAFETY (SECURITE) > ROUTINE.",
-        "All stations must cease non-essential transmissions when distress traffic is in progress on any frequency.",
+        "All stations must cease non-essential transmissions capable of interfering when distress traffic is in progress.",
         "The ITU Radio Regulations (Article 31) and SOLAS Chapter IV provide the legal framework for communication priority.",
         "False distress alerts and deliberate interference with distress traffic are criminal offences under national and international law."
       ]

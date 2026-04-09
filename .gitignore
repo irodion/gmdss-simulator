@@ -34,3 +34,4 @@ test-results/
 
 # AI agent worktrees
 .claude/worktrees/
+docs/study_plan/

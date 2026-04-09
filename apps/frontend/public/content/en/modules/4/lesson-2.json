@@ -46,7 +46,7 @@
     },
     {
       "type": "text",
-      "content": "The format specifier in a DSC message determines who receives the call. There are four format types: All-Ships (the call is received by every DSC-equipped station in range), Individual (addressed to a single MMSI), Group (addressed to a fleet or group MMSI), and Area (addressed to all stations within a defined geographic area). Distress alerts always use the All-Ships format. Routine calls must be addressed to an individual station."
+      "content": "The format specifier in a DSC message determines who receives the call. There are four format types: All-Ships (the call is received by every DSC-equipped station in range), Individual (addressed to a single MMSI), Group (addressed to a fleet or group MMSI), and Area (addressed to all stations within a defined geographic area). Distress alerts always use the All-Ships format. Routine calls are typically addressed to an individual station, though group calls are also permitted under ITU-R M.493."
     },
     {
       "type": "table",

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useId, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 interface Props {
@@ -18,6 +18,7 @@ export function FillBlankSectionView({ prompt, answer, alternatives, explanation
   const { t } = useTranslation("learning");
   const [input, setInput] = useState("");
   const [submitted, setSubmitted] = useState(false);
+  const promptId = useId();
 
   function handleSubmit() {
     if (input.trim()) setSubmitted(true);
@@ -27,13 +28,16 @@ export function FillBlankSectionView({ prompt, answer, alternatives, explanation
 
   return (
     <div className="exercise">
-      <div className="exercise__prompt">{prompt}</div>
+      <div id={promptId} className="exercise__prompt">
+        {prompt}
+      </div>
       <div className="fill-blank__input-row">
         <input
           type="text"
           className="fill-blank__input"
           placeholder={t("typeYourAnswer")}
           value={input}
+          aria-labelledby={promptId}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={(e) => {
             if (e.key === "Enter") handleSubmit();
@@ -49,7 +53,11 @@ export function FillBlankSectionView({ prompt, answer, alternatives, explanation
       )}
 
       {submitted && (
-        <div className={`alert ${isCorrect ? "alert--success" : "alert--error"}`}>
+        <div
+          className={`alert ${isCorrect ? "alert--success" : "alert--error"}`}
+          role="status"
+          aria-live="polite"
+        >
           <strong>{isCorrect ? t("correct") : t("incorrect")}</strong> {explanation}
         </div>
       )}

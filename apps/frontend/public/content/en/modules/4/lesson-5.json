@@ -10,11 +10,11 @@
       "type": "callout",
       "variant": "warning",
       "title": "No Punitive Measures If Properly Reported",
-      "content": "Maritime authorities do not impose penalties for accidental false alerts provided the operator cancels promptly and follows the correct procedure. Failing to cancel a false alert, however, may result in an unnecessary SAR operation and potential disciplinary action."
+      "content": "Maritime authorities will generally not impose penalties for accidental false alerts provided the operator cancels promptly and follows the correct procedure. However, repeated or negligent violations may still lead to enforcement action. Failing to cancel a false alert may trigger an unnecessary SAR operation."
     },
     {
       "type": "text",
-      "content": "If you accidentally send a DSC distress alert, you must cancel it immediately. Turn off the equipment to stop the automatic repeat transmission, then turn it back on. Next, broadcast a voice cancellation on Channel 16 to inform all stations that the alert was false."
+      "content": "If you accidentally send a DSC distress alert, you must cancel it immediately. If your radio has a dedicated distress-cancel function, use it first to stop the automatic repeat transmission. Otherwise, turn off the equipment to stop the repeats, then turn it back on. In either case, broadcast a voice cancellation on Channel 16 to inform all stations that the alert was false."
     },
     {
       "type": "callout",

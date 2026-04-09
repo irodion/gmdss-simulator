@@ -25,7 +25,7 @@
         ["G", "Golf", "GOLF"],
         ["H", "Hotel", "HOHTELL"],
         ["I", "India", "INDEEAH"],
-        ["J", "Juliet", "JEWLEEETT"],
+        ["J", "Juliett", "JEWLEEETT"],
         ["K", "Kilo", "KEYLOH"],
         ["L", "Lima", "LEEMAH"],
         ["M", "Mike", "MIKE"],
@@ -46,7 +46,7 @@
     },
     {
       "type": "text",
-      "content": "Notice that some code words differ slightly from everyday English spelling. The ITU standard uses \"Alfa\" (not \"Alpha\") and \"Juliet\" (not \"Juliett\") to avoid pronunciation problems for non-English speakers. The pronunciation column shows where the emphasis should fall — the stressed syllable is shown in capital letters."
+      "content": "Notice that some code words differ slightly from everyday English spelling. The ITU standard uses \"Alfa\" (not \"Alpha\") and \"Juliett\" (two t's, not \"Juliet\") to avoid pronunciation problems for non-English speakers. The pronunciation column shows where the emphasis should fall — the stressed syllable is shown in capital letters."
     },
     {
       "type": "exercise",

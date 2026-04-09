@@ -14,7 +14,7 @@
       "type": "callout",
       "variant": "info",
       "title": "Survival Craft Battery Requirements",
-      "content": "SOLAS requires that survival craft portable VHF radios can operate for at least 8 hours at a duty cycle of 1:1:8 — meaning 1 part transmitting, 1 part receiving, and 8 parts standby, at low power (1 watt). This translates to roughly 48 minutes of actual transmit time over the 8-hour period. A rechargeable NiCd or NiMH battery provides the primary power source, and a non-rechargeable lithium battery must be carried as a spare."
+      "content": "SOLAS requires that survival craft portable VHF radios can operate for at least 8 hours at a duty cycle of 1:1:8 — meaning 1 part transmitting, 1 part receiving, and 8 parts standby, at high power (1 watt). This translates to roughly 48 minutes of actual transmit time over the 8-hour period. A rechargeable NiCd or NiMH battery provides the primary power source, and a non-rechargeable lithium battery must be carried as a spare."
     },
     {
       "type": "text",

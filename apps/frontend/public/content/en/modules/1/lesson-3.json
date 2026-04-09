@@ -61,7 +61,7 @@
       "type": "fill-blank",
       "prompt": "Under SOLAS, vessels must maintain a continuous watch on VHF Channel 16 and VHF Channel ___ for DSC alerts.",
       "answer": "70",
-      "alternatives": ["Ch 70", "ch 70"],
+      "alternatives": ["Ch 70", "ch 70", "Channel 70", "channel 70", "CH 70", "seventy"],
       "explanation": "VHF Channel 70 is the international DSC distress and safety calling frequency. GMDSS-equipped vessels must maintain continuous watch on this channel alongside the voice distress frequency Channel 16."
     },
     {

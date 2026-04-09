@@ -17,8 +17,8 @@
     {
       "type": "callout",
       "variant": "info",
-      "title": "Routine Calls — Individual Only",
-      "content": "Routine DSC calls must be addressed to a single station (Individual format). You cannot send a routine call to all ships. This prevents unnecessary interruptions to every vessel in range for ordinary operational matters."
+      "title": "Routine DSC Calls",
+      "content": "Routine DSC calls are addressed to a single station (Individual format) or a group MMSI (Group format). You cannot send a routine call to all ships — this prevents unnecessary interruptions to every vessel in range for ordinary operational matters."
     },
     {
       "type": "text",
