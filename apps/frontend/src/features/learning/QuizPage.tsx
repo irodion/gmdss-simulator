@@ -246,7 +246,7 @@ export function QuizPage() {
       )}
       {queued && (
         <div className="alert alert--info" role="status">
-          Your submission has been queued and will be sent when you are back online.
+          {t("offlineQueued")}
         </div>
       )}
 

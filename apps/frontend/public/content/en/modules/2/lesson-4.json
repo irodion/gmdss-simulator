@@ -18,7 +18,7 @@
     },
     {
       "type": "text",
-      "content": "In practice, the handheld must provide approximately 40 minutes to 1 hour of transmit time and 8 hours of listening on the rechargeable battery. Continuous listening (receive only) can last considerably longer. At the 1:1:8 duty cycle on low power, expect about 8 hours of operation. Disciplined, brief transmissions are important — especially in emergency situations where battery conservation is critical."
+      "content": "In practice, the handheld must provide approximately 40 minutes to 1 hour of transmit time and 8 hours of listening on the rechargeable battery. Continuous listening (receive only) can last considerably longer. At the 1:1:8 duty cycle at high power (1 watt), expect about 8 hours of operation. Disciplined, brief transmissions are important — especially in emergency situations where battery conservation is critical."
     },
     {
       "type": "exercise",
