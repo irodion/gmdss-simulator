@@ -399,7 +399,7 @@ interface RadioState {
   txPower: "high" | "low"; // 25W / 1W
   txState: "idle" | "transmitting";
   rxState: "idle" | "receiving";
-  dscFormState: DscMenuScreen | null;
+  dscMenu: DscMenuScreen;
   micPermission: "granted" | "denied" | "prompt";
   jurisdictionProfile: string; // active jurisdiction ID
 }

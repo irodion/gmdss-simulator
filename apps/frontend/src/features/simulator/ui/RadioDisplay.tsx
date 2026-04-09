@@ -16,7 +16,10 @@ export function RadioDisplay({ state }: RadioDisplayProps) {
     if (wasOpen) {
       setShowCoverWarning(true);
       const id = setTimeout(() => setShowCoverWarning(false), 2000);
-      return () => clearTimeout(id);
+      return () => {
+        clearTimeout(id);
+        setShowCoverWarning(false);
+      };
     }
   }, [state.flipCover]);
 

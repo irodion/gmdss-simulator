@@ -130,9 +130,18 @@ export function AccessibleRadioPanel({ state, onCommand }: Props) {
           <button
             type="button"
             className="btn btn--small"
-            onClick={() => onCommand({ type: "DSC_MENU_SELECT" })}
+            onClick={() =>
+              onCommand({
+                type:
+                  state.dscMenu.screen === "position-lat" || state.dscMenu.screen === "position-lon"
+                    ? "DSC_TOGGLE_HEMISPHERE"
+                    : "DSC_MENU_SELECT",
+              })
+            }
           >
-            Select
+            {state.dscMenu.screen === "position-lat" || state.dscMenu.screen === "position-lon"
+              ? "N/S · E/W"
+              : "Select"}
           </button>
           <button
             type="button"
@@ -159,10 +168,8 @@ export function AccessibleRadioPanel({ state, onCommand }: Props) {
       )}
 
       <div className="sim-a11y-row">
-        <label className="sim-a11y-label" htmlFor="a11y-digit">
-          Keypad:
-        </label>
-        <div className="sim-a11y-btngroup sim-a11y-btngroup--wrap">
+        <span className="sim-a11y-label">Keypad:</span>
+        <div className="sim-a11y-btngroup sim-a11y-btngroup--wrap" role="group" aria-label="Keypad">
           {[1, 2, 3, 4, 5, 6, 7, 8, 9, 0].map((d) => (
             <button
               key={d}

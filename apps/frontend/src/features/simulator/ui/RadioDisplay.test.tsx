@@ -1,5 +1,5 @@
 import { render, screen } from "@testing-library/react";
-import { describe, expect, test, vi } from "vite-plus/test";
+import { describe, expect, test } from "vite-plus/test";
 import { INITIAL_RADIO_STATE, type RadioState } from "@gmdss-simulator/utils";
 import { RadioDisplay } from "./RadioDisplay.tsx";
 
@@ -38,7 +38,6 @@ describe("RadioDisplay", () => {
   });
 
   test("shows cover warning when flip cover opens", () => {
-    vi.useFakeTimers();
     const closed: RadioState = { ...INITIAL_RADIO_STATE, flipCover: "closed" };
     const { rerender } = render(<RadioDisplay state={closed} />);
 
@@ -46,6 +45,5 @@ describe("RadioDisplay", () => {
     rerender(<RadioDisplay state={opened} />);
 
     expect(screen.getByText("DISTRESS COVER OPEN")).not.toBeNull();
-    vi.useRealTimers();
   });
 });
