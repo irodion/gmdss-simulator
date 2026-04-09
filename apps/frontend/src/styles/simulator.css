@@ -4,11 +4,29 @@
    All classes prefixed with sim- to avoid collision with pages.css
    ============================================================ */
 
+/* === DSEG7 LCD Font (SIL OFL 1.1) === */
+
+@font-face {
+  font-family: "DSEG7 Classic";
+  src: url("/fonts/DSEG7Classic-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "DSEG7 Classic";
+  src: url("/fonts/DSEG7Classic-Bold.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
 /* === Layout === */
 
 .sim-layout {
   display: grid;
-  grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+  grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
   gap: 17px;
   padding: 14px 14px 14px 0;
   min-height: 0;
@@ -137,7 +155,7 @@
   position: relative;
   display: grid;
   grid-template-columns: 122px 1fr 122px;
-  align-items: start;
+  align-items: center;
   gap: 16px;
   padding: 18px 20px 14px;
   border-radius: 19px;
@@ -231,10 +249,10 @@
 
 .sim-lcd {
   position: relative;
-  height: 86px;
+  height: 100px;
   margin-top: 2px;
   border-radius: 14px;
-  padding: 11px 16px;
+  padding: 12px 16px;
   border: 1px solid #6e8d68;
   background:
     linear-gradient(180deg, var(--lcd-0), var(--lcd-1) 55%, var(--lcd-2)),
@@ -245,6 +263,7 @@
     inset 0 1px 0 rgba(255, 255, 255, 0.2),
     0 0 18px rgba(130, 201, 137, 0.12);
   font-family: "Courier New", "Consolas", monospace;
+  text-align: center;
 }
 
 /* Dot-matrix overlay */
@@ -261,15 +280,16 @@
 .sim-lcd-main {
   position: relative;
   z-index: 1;
-  font-size: 27px;
-  line-height: 1;
+  font-family: "DSEG7 Classic", "Courier New", "Consolas", monospace;
+  font-size: 24px;
+  line-height: 1.2;
 }
 
 .sim-lcd-line {
   position: relative;
   z-index: 1;
-  margin-top: 8px;
-  font-size: 14px;
+  margin-top: 10px;
+  font-size: 13px;
   line-height: 1;
 }
 
@@ -277,10 +297,25 @@
   position: relative;
   z-index: 1;
   display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  margin-top: 8px;
-  font-size: 14px;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  margin-top: 10px;
+  font-size: 12px;
+}
+
+/* GPS icon in LCD footer */
+.sim-lcd-gps {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 13px;
+}
+
+.sim-lcd-gps__icon {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
 }
 
 /* === Button Row === */
@@ -332,17 +367,17 @@
   transform: translateY(1px);
 }
 
-/* === Lower Zone (DSC + Keypad + PTT) === */
+/* === Lower Zone (DSC + PTT + Keypad) === */
 
 .sim-lower-zone {
-  display: flex;
-  align-items: start;
-  gap: 12px;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 18px;
 }
 
-.sim-lower-zone > :last-child {
-  align-self: center;
-  margin-left: auto;
+.sim-lower-zone > .sim-ptt {
+  justify-self: center;
 }
 
 /* DSC Box */
@@ -572,6 +607,14 @@
   z-index: -1;
 }
 
+.sim-ptt::after {
+  content: "";
+  position: absolute;
+  inset: 12px;
+  border-radius: 50%;
+  background: rgba(183, 92, 39, 0.25);
+}
+
 .sim-ptt__label {
   position: relative;
   z-index: 1;
@@ -580,11 +623,7 @@
 }
 
 .sim-ptt__sub {
-  position: relative;
-  z-index: 1;
-  font-size: 9px;
-  margin-top: 2px;
-  opacity: 0.8;
+  display: none;
 }
 
 .sim-ptt--active {
@@ -1196,12 +1235,8 @@
   }
 
   .sim-lower-zone {
-    flex-wrap: wrap;
-    justify-content: center;
-  }
-
-  .sim-lower-zone > :last-child {
-    margin-left: 0;
+    grid-template-columns: 1fr;
+    justify-items: center;
   }
 
   .sim-ptt {
