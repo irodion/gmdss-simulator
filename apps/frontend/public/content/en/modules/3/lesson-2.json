@@ -73,7 +73,7 @@
     },
     {
       "type": "text",
-      "content": "A typical radio check exchange sounds like this: \"Coast Guard, Coast Guard, Coast Guard, THIS IS Motor Vessel Tami, Motor Vessel Tami, Motor Vessel Tami, RADIO CHECK on Channel 16, OVER.\" The reply would be: \"Motor Vessel Tami, THIS IS Coast Guard, reading you FIFE, OVER.\" You then respond: \"Coast Guard, THIS IS Motor Vessel Tami, ROGER, reading you FOWER, OUT.\""
+      "content": "A typical radio check exchange sounds like this: \"Coast Guard, Coast Guard, Coast Guard, THIS IS Motor Vessel Tami, Motor Vessel Tami, Motor Vessel Tami, RADIO CHECK on Channel 16, OVER.\" The reply (abbreviated format): \"Motor Vessel Tami, THIS IS Coast Guard, Coast Guard, reading you FIFE, OVER.\" You then respond: \"Coast Guard, THIS IS Motor Vessel Tami, Motor Vessel Tami, ROGER, reading you FOWER, OUT.\""
     },
     {
       "type": "fill-blank",
