@@ -100,7 +100,8 @@ describe("RotaryKnob", () => {
     slider.dispatchEvent(
       new PointerEvent("pointermove", { clientX: 80, clientY: 43, bubbles: true }),
     );
-    expect(onChange).toHaveBeenCalled();
+    // atan2(80-43, -(43-43)) = 90° → ratio (90+135)/270 ≈ 0.833 → value 83
+    expect(onChange).toHaveBeenCalledWith(83);
 
     // Release
     slider.dispatchEvent(new PointerEvent("pointerup", { pointerId: 1, bubbles: true }));
