@@ -13,7 +13,7 @@ catalog:
   "@vitejs/plugin-react": ^6.0.1
   "@vitest/coverage-v8": ^4.1.2
   better-auth: ^1.5.6
-  drizzle-orm: ^0.44.7
+  drizzle-orm: ^0.45.2
   fake-indexeddb: ^6.2.5
   fastify: ^5.8.4
   fastify-plugin: ^5.1.0
@@ -36,6 +36,7 @@ catalogMode: prefer
 overrides:
   vite: "catalog:"
   vitest: "catalog:"
+  serialize-javascript: ">=7.0.5"
 peerDependencyRules:
   allowAny:
     - vite
