@@ -50,18 +50,18 @@
       "type": "callout",
       "variant": "info",
       "title": "Key GMDSS Frequencies",
-      "content": "You should memorise these critical frequencies: VHF Ch 16 = 156.800 MHz (voice distress/safety/calling), VHF Ch 70 = 156.525 MHz (DSC distress/safety), 2182 kHz (MF voice distress), 2187.5 kHz (MF DSC distress), 518 kHz (international NAVTEX), 406 MHz (EPIRB satellite alerting)."
+      "content": "For the ROC exam, know these key frequencies: VHF Ch 16 = 156.800 MHz (voice distress/safety/calling), VHF Ch 70 = 156.525 MHz (DSC distress/safety), 518 kHz (international NAVTEX), 490 kHz (national NAVTEX), 406 MHz (EPIRB satellite alerting), 9 GHz (Radar-SART, X-band)."
     },
     {
       "type": "exercise",
-      "prompt": "On which frequency does a 406 MHz EPIRB transmit its distress signal?",
+      "prompt": "Which frequency band does NAVTEX use for international broadcasts?",
       "options": [
-        { "key": "a", "text": "156.525 MHz (VHF band)" },
-        { "key": "b", "text": "406 MHz (UHF band)" },
-        { "key": "c", "text": "9 GHz (X-band)" }
+        { "key": "a", "text": "VHF (156–174 MHz)" },
+        { "key": "b", "text": "MF (518 kHz)" },
+        { "key": "c", "text": "UHF (406 MHz)" }
       ],
       "answer": "b",
-      "explanation": "The 406 MHz EPIRB transmits in the UHF band at 406 MHz, which is detected by the Cospas-Sarsat satellite system. The VHF frequency 156.525 MHz is DSC Channel 70, and 9 GHz is the SART radar transponder frequency."
+      "explanation": "International NAVTEX broadcasts in English on 518 kHz, which is in the MF band. National NAVTEX uses 490 kHz (also MF). Both provide maritime safety information within approximately 400 NM range."
     },
     {
       "type": "text",
