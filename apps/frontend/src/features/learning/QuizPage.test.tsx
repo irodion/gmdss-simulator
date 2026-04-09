@@ -52,6 +52,11 @@ function renderQuiz() {
   );
 }
 
+function selectOption(text: string) {
+  const label = screen.getByText(text).closest("label")!;
+  fireEvent.click(label);
+}
+
 describe("QuizPage", () => {
   test("renders quiz after loading", async () => {
     renderQuiz();
@@ -90,11 +95,11 @@ describe("QuizPage", () => {
       expect(screen.getByText("Module 1 Checkpoint Quiz")).toBeDefined();
     });
 
-    fireEvent.click(screen.getByLabelText("Channel 9"));
+    selectOption("Channel 9");
     fireEvent.click(screen.getByText("Submit"));
 
     await waitFor(() => {
-      expect(screen.getByText("Score: 40%")).toBeDefined();
+      expect(screen.getByText("40%")).toBeDefined();
       expect(screen.getByText("Not passed. Try again.")).toBeDefined();
     });
   });
@@ -115,7 +120,7 @@ describe("QuizPage", () => {
       expect(screen.getByText("Module 1 Checkpoint Quiz")).toBeDefined();
     });
 
-    fireEvent.click(screen.getByLabelText("Channel 16"));
+    selectOption("Channel 16");
     fireEvent.click(screen.getByText("Submit"));
 
     await waitFor(() => {
@@ -133,7 +138,7 @@ describe("QuizPage", () => {
       expect(screen.getByText("Module 1 Checkpoint Quiz")).toBeDefined();
     });
 
-    fireEvent.click(screen.getByLabelText("Channel 16"));
+    selectOption("Channel 16");
     fireEvent.click(screen.getByText("Submit"));
 
     await waitFor(() => {
@@ -155,15 +160,11 @@ describe("QuizPage", () => {
       expect(screen.getByText("Module 1 Checkpoint Quiz")).toBeDefined();
     });
 
-    // Select answer
-    const radio = screen.getByLabelText("Channel 16");
-    fireEvent.click(radio);
-
-    // Submit
+    selectOption("Channel 16");
     fireEvent.click(screen.getByText("Submit"));
 
     await waitFor(() => {
-      expect(screen.getByText("Score: 100%")).toBeDefined();
+      expect(screen.getByText("100%")).toBeDefined();
       expect(screen.getByText("Passed!")).toBeDefined();
     });
   });
