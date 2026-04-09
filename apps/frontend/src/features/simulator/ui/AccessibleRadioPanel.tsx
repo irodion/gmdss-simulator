@@ -147,6 +147,7 @@ export function AccessibleRadioPanel({ state, onCommand }: Props) {
             type="button"
             className="btn btn--small"
             onClick={() => onCommand({ type: "DSC_MENU_UP" })}
+            aria-label="Previous option"
           >
             ▲
           </button>
@@ -154,6 +155,7 @@ export function AccessibleRadioPanel({ state, onCommand }: Props) {
             type="button"
             className="btn btn--small"
             onClick={() => onCommand({ type: "DSC_MENU_DOWN" })}
+            aria-label="Next option"
           >
             ▼
           </button>
