@@ -116,33 +116,33 @@ export function AccessibleRadioPanel({ state, onCommand }: Props) {
       <div className="sim-a11y-row">
         <span className="sim-a11y-label">DSC Menu:</span>
         <div className="sim-a11y-btngroup">
-          <button
-            type="button"
-            className="btn btn--small"
-            onClick={() =>
-              onCommand({
-                type: isDscMenuOpen(state) ? "DSC_MENU_BACK" : "OPEN_DSC_MENU",
-              })
-            }
-          >
-            {isDscMenuOpen(state) ? "Back" : "Menu"}
-          </button>
-          <button
-            type="button"
-            className="btn btn--small"
-            onClick={() =>
-              onCommand({
-                type:
-                  state.dscMenu.screen === "position-lat" || state.dscMenu.screen === "position-lon"
-                    ? "DSC_TOGGLE_HEMISPHERE"
-                    : "DSC_MENU_SELECT",
-              })
-            }
-          >
-            {state.dscMenu.screen === "position-lat" || state.dscMenu.screen === "position-lon"
-              ? "N/S · E/W"
-              : "Select"}
-          </button>
+          {(() => {
+            const menuOpen = isDscMenuOpen(state);
+            const isHemisphereScreen =
+              state.dscMenu.screen === "position-lat" || state.dscMenu.screen === "position-lon";
+            return (
+              <>
+                <button
+                  type="button"
+                  className="btn btn--small"
+                  onClick={() => onCommand({ type: menuOpen ? "DSC_MENU_BACK" : "OPEN_DSC_MENU" })}
+                >
+                  {menuOpen ? "Back" : "Menu"}
+                </button>
+                <button
+                  type="button"
+                  className="btn btn--small"
+                  onClick={() =>
+                    onCommand({
+                      type: isHemisphereScreen ? "DSC_TOGGLE_HEMISPHERE" : "DSC_MENU_SELECT",
+                    })
+                  }
+                >
+                  {isHemisphereScreen ? "N/S · E/W" : "Select"}
+                </button>
+              </>
+            );
+          })()}
           <button
             type="button"
             className="btn btn--small"
