@@ -24,5 +24,9 @@
   "checkpoint": "Checkpoint Quiz",
   "lessonLabel": "Lesson",
   "lessonNotFound": "Lesson not found",
-  "lessonUnavailable": "Lesson content unavailable. Try again when online."
+  "lessonUnavailable": "Lesson content unavailable. Try again when online.",
+  "keyTakeaways": "Key Takeaways",
+  "typeYourAnswer": "Type your answer...",
+  "offlineQueued": "Your submission has been queued and will be sent when you are back online.",
+  "questionsAnswered": "{{answered}}/{{total}} answered"
 }

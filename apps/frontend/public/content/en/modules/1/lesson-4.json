@@ -1,40 +1,149 @@
 {
   "version": 1,
-  "title": "Basic Call Procedure",
+  "title": "Frequency Bands Overview",
   "sections": [
     {
       "type": "text",
-      "content": "Before transmitting, always listen on the channel to ensure it is clear. A standard VHF call follows a structured format: the name of the station called (spoken up to three times), the words THIS IS, your vessel name (spoken up to three times), followed by your message, and ending with the appropriate proword."
+      "content": "Radio communication is the foundation of GMDSS, and understanding the electromagnetic spectrum is essential for any marine radio operator. The radio spectrum is divided into frequency bands, each with distinct propagation characteristics that make it suited to particular communication tasks. Maritime communications use several of these bands, from very low frequencies that follow the curvature of the Earth to microwave frequencies used by radar and satellite systems."
     },
     {
       "type": "table",
-      "headers": ["Proword", "Meaning"],
+      "headers": ["Band", "Abbreviation", "Frequency Range", "Maritime Use"],
       "rows": [
-        ["OVER", "I have finished speaking and expect a reply from you"],
-        ["OUT", "This conversation is finished; no reply is expected"],
-        ["ROGER", "I have received and understood your last transmission"],
-        ["WILCO", "I have received your message, understand it, and will comply"],
-        ["SAY AGAIN", "Please repeat your last transmission"],
-        ["CORRECTION", "I made an error; the correct version follows"]
+        [
+          "Very Low Frequency",
+          "VLF",
+          "10–30 kHz",
+          "Submarine communications; not commonly used in GMDSS"
+        ],
+        ["Low Frequency", "LF", "30–300 kHz", "Long-range navigational aids; limited GMDSS use"],
+        [
+          "Medium Frequency",
+          "MF",
+          "300–3,000 kHz",
+          "NAVTEX (518 kHz, 490 kHz), MF DSC distress (2187.5 kHz), MF voice distress (2182 kHz)"
+        ],
+        [
+          "High Frequency",
+          "HF",
+          "3–30 MHz",
+          "Long-range DSC alerting and voice communications across ocean basins"
+        ],
+        [
+          "Very High Frequency",
+          "VHF",
+          "30–300 MHz",
+          "Maritime band 156–174 MHz: Ch 16 voice distress (156.8 MHz), Ch 70 DSC (156.525 MHz), ship-to-ship and ship-to-shore"
+        ],
+        [
+          "Ultra High Frequency",
+          "UHF",
+          "300 MHz–1 GHz",
+          "EPIRB distress beacons (406 MHz via Cospas-Sarsat)"
+        ],
+        ["L-band", "L", "1–2 GHz", "Inmarsat satellite communications and GPS navigation"],
+        ["S-band", "S", "2–4 GHz", "Some radar and satellite applications"],
+        ["X-band", "X", "8–12 GHz", "Marine navigation radar; SART transponder (9 GHz)"]
       ]
     },
     {
       "type": "callout",
-      "variant": "warning",
-      "title": "Common Mistake",
-      "content": "OVER means you expect a reply. OUT means the conversation is finished. Never say \"OVER AND OUT\" — the two prowords are contradictory."
+      "variant": "info",
+      "title": "Key GMDSS Frequencies",
+      "content": "For the ROC exam, know these key frequencies: VHF Ch 16 = 156.800 MHz (voice distress/safety/calling), VHF Ch 70 = 156.525 MHz (DSC distress/safety), 518 kHz (international NAVTEX), 490 kHz (national NAVTEX), 406 MHz (EPIRB satellite alerting), 9 GHz (Radar-SART, X-band)."
     },
     {
       "type": "exercise",
-      "prompt": "When should you use the proword OVER?",
+      "prompt": "Which frequency band does NAVTEX use for international broadcasts?",
       "options": [
-        { "key": "a", "text": "When the conversation is finished" },
-        { "key": "b", "text": "When you expect a reply from the other station" },
-        { "key": "c", "text": "When you need to correct an error" },
-        { "key": "d", "text": "When you want to change channels" }
+        { "key": "a", "text": "VHF (156–174 MHz)" },
+        { "key": "b", "text": "MF (518 kHz)" },
+        { "key": "c", "text": "UHF (406 MHz)" }
       ],
       "answer": "b",
-      "explanation": "OVER indicates you have finished your transmission and are awaiting a reply. Use OUT when the conversation is complete and no reply is expected."
+      "explanation": "International NAVTEX broadcasts in English on 518 kHz, which is in the MF band. National NAVTEX uses 490 kHz (also MF). Both provide maritime safety information within approximately 400 NM range."
+    },
+    {
+      "type": "text",
+      "content": "Radio waves travel from transmitter to receiver by different propagation modes, and understanding these modes explains why certain frequency bands are used for certain purposes in GMDSS."
+    },
+    {
+      "type": "text",
+      "content": "Ground wave propagation occurs when radio waves follow the curvature of the Earth's surface. This is the dominant propagation mode for MF frequencies (300–3,000 kHz). Ground waves provide reliable coverage out to several hundred nautical miles and are not significantly affected by time of day. This is why MF is used for NAVTEX broadcasts and medium-range DSC alerting — it gives dependable, consistent coverage over Sea Area A2 distances."
+    },
+    {
+      "type": "text",
+      "content": "Sky wave propagation occurs when HF radio waves (3–30 MHz) are refracted by the ionosphere back down to the Earth's surface. This allows HF signals to travel thousands of nautical miles by 'bouncing' between the ionosphere and the ground. However, ionospheric conditions vary with time of day, season, and solar activity, so the optimum HF frequency changes throughout the day. Skilled operators select different HF channels depending on conditions. Sky wave propagation makes HF the primary long-range terrestrial communication method, covering Sea Areas A2 and A3 where MF ground wave cannot reach."
+    },
+    {
+      "type": "text",
+      "content": "Line-of-sight (LOS) propagation applies to VHF frequencies and above (VHF, UHF, L-band, and higher). At these frequencies, radio waves travel in essentially straight lines and do not follow the Earth's curvature or reflect off the ionosphere. This means range is limited by the horizon and is directly related to the height of both the transmitting and receiving antennas. Typical VHF range at sea is 20–60 nautical miles between ship and coast station, depending on antenna heights. This line-of-sight characteristic is why VHF is used for Sea Area A1, which is defined by the coverage range of VHF coast stations."
+    },
+    {
+      "type": "fill-blank",
+      "prompt": "HF radio waves can travel thousands of miles by reflecting off the ___, a process known as sky wave propagation.",
+      "answer": "ionosphere",
+      "alternatives": ["Ionosphere", "the ionosphere"],
+      "explanation": "The ionosphere is a layer of the Earth's upper atmosphere (approximately 60–1,000 km altitude) that becomes ionised by solar radiation. This ionised layer can refract HF radio waves back to Earth, enabling long-range communication well beyond the horizon."
+    },
+    {
+      "type": "table",
+      "headers": [
+        "Propagation Type",
+        "Frequency Bands",
+        "Mechanism",
+        "Typical Range",
+        "Reliability"
+      ],
+      "rows": [
+        [
+          "Ground wave",
+          "MF (300–3,000 kHz)",
+          "Follows Earth's surface curvature",
+          "Up to ~400 NM",
+          "Very reliable; consistent day and night"
+        ],
+        [
+          "Sky wave",
+          "HF (3–30 MHz)",
+          "Refracted by ionosphere",
+          "Thousands of NM",
+          "Variable; depends on ionospheric conditions, time of day, and solar activity"
+        ],
+        [
+          "Line-of-sight",
+          "VHF and above (>30 MHz)",
+          "Straight-line path between antennas",
+          "20–60 NM (ship to coast)",
+          "Very reliable within range; limited by antenna height and curvature of Earth"
+        ]
+      ]
+    },
+    {
+      "type": "exercise",
+      "prompt": "Which propagation mode allows MF radio signals to provide reliable coverage beyond the visual horizon?",
+      "options": [
+        { "key": "a", "text": "Sky wave propagation" },
+        { "key": "b", "text": "Ground wave propagation" },
+        { "key": "c", "text": "Line-of-sight propagation" }
+      ],
+      "answer": "b",
+      "explanation": "MF signals propagate primarily via ground wave, following the curvature of the Earth's surface. This gives MF reliable beyond-horizon coverage out to several hundred nautical miles without depending on ionospheric conditions. Sky wave propagation is the primary long-range mode for HF, not MF."
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "title": "Antenna Height and VHF Range",
+      "content": "Since VHF uses line-of-sight propagation, range increases with antenna height. A rough formula for the radio horizon in nautical miles is: D = 2.23 x (square root of antenna height in metres). A 25-metre antenna gives approximately 11 NM to the horizon. Ship-to-coast range is the sum of both station horizons."
+    },
+    {
+      "type": "takeaway",
+      "points": [
+        "The radio spectrum is divided into bands from VLF to X-band; maritime GMDSS primarily uses MF, HF, VHF, UHF, and L-band.",
+        "Critical GMDSS frequencies include: Ch 16 (156.8 MHz), Ch 70 (156.525 MHz), 2187.5 kHz (MF DSC), 518 kHz (NAVTEX), and 406 MHz (EPIRB).",
+        "Three propagation modes determine range: ground wave (MF, reliable to ~400 NM), sky wave (HF, thousands of NM via ionosphere), and line-of-sight (VHF+, limited by antenna height).",
+        "VHF line-of-sight range (20–60 NM) defines Sea Area A1 coverage; MF ground wave extends to A2; HF sky wave and Inmarsat satellite cover A3 and beyond."
+      ]
     }
   ]
 }

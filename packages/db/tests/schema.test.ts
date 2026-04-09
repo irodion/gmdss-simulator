@@ -134,24 +134,26 @@ describe("database schema", () => {
     await db.execute(sql`DELETE FROM "user" WHERE id = ${testUser.id}`);
   });
 
-  test("seeded data: 4 modules exist in order", async () => {
+  test("seeded data: 6 modules exist in order", async () => {
     const allModules = await db.select().from(modules).orderBy(modules.orderIndex);
 
-    expect(allModules).toHaveLength(4);
+    expect(allModules).toHaveLength(6);
     expect(allModules[0]!.id).toBe("module-1");
     expect(allModules[1]!.id).toBe("module-2");
     expect(allModules[2]!.id).toBe("module-3");
     expect(allModules[3]!.id).toBe("module-4");
+    expect(allModules[4]!.id).toBe("module-5");
+    expect(allModules[5]!.id).toBe("module-6");
   });
 
-  test("seeded data: 26 lessons across 4 modules", async () => {
+  test("seeded data: 33 lessons across 6 modules", async () => {
     const allLessons = await db.select().from(lessons);
-    expect(allLessons).toHaveLength(26);
+    expect(allLessons).toHaveLength(33);
   });
 
-  test("seeded data: 4 quizzes with questions", async () => {
+  test("seeded data: 6 quizzes with questions", async () => {
     const allQuizzes = await db.select().from(quizzes);
-    expect(allQuizzes).toHaveLength(4);
+    expect(allQuizzes).toHaveLength(6);
 
     for (const quiz of allQuizzes) {
       const questions = quiz.questions as unknown[];

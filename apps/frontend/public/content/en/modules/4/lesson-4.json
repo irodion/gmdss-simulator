@@ -1,44 +1,111 @@
 {
   "version": 1,
-  "title": "GPS and Position Reporting",
+  "title": "Non-Distress DSC",
   "sections": [
     {
       "type": "text",
-      "content": "Modern VHF DSC radios can be connected to a GPS receiver to automatically include position and time in every DSC alert. This is especially critical for distress alerts, where an accurate position can save valuable time in the SAR response. If GPS is not connected, position must be entered manually."
+      "content": "Not every DSC call is a distress alert. The Urgency, Safety, and Routine categories handle the full range of non-distress communications at sea — from medical advice requests and navigational warnings to everyday ship-to-shore telephone calls. Each category has specific rules about who can be addressed and how the call proceeds after the initial DSC exchange on Channel 70."
+    },
+    {
+      "type": "text",
+      "content": "An Urgency DSC call is used when a vessel or person faces a serious safety situation that does not rise to the level of grave and imminent danger. Examples include a crew member requiring urgent medical advice, a vessel that has lost steering but is not yet in immediate danger, or a request for assistance that is not yet a distress situation. Urgency calls may be sent as all-ships (to alert every station in range) or as individual calls (to a specific coast station or vessel)."
+    },
+    {
+      "type": "text",
+      "content": "A Safety DSC call is used to transmit important navigational or meteorological information — for example, a warning about a large unlit object drifting in a shipping lane, or a gale warning relay. Like urgency calls, safety calls may be addressed to all ships or to an individual station."
+    },
+    {
+      "type": "callout",
+      "variant": "info",
+      "title": "Routine DSC Calls",
+      "content": "Routine DSC calls are addressed to a single station (Individual format) or a group MMSI (Group format). You cannot send a routine call to all ships — this prevents unnecessary interruptions to every vessel in range for ordinary operational matters."
+    },
+    {
+      "type": "text",
+      "content": "Routine DSC calls handle everyday operational communications: requesting a radio link with a coast station, placing a telephone call via a shore-based operator, or establishing ship-to-ship contact for passage coordination. Every routine call must include a proposed working channel — the VHF channel on which the subsequent voice conversation will take place."
     },
     {
       "type": "table",
-      "headers": ["Format Element", "Example", "Notes"],
+      "headers": ["Category", "Addressing Options", "Working Channel", "Example Use"],
       "rows": [
-        ["Latitude", "48° 27.3' N", "Degrees and decimal minutes, N or S"],
-        ["Longitude", "004° 52.1' W", "Degrees and decimal minutes, E or W"],
         [
-          "Spoken form",
-          "FOUR EIGHT DEGREES TWO SEVEN DECIMAL THREE MINUTES NORTH",
-          "Each digit spoken individually"
+          "Urgency",
+          "All-Ships or Individual",
+          "Ch 16 (default)",
+          "Crew medical emergency; vessel disabled but not sinking"
         ],
         [
-          "Alternative",
-          "Bearing 045° from Cape Finisterre, distance 15 NM",
-          "Use when exact lat/lon is unavailable"
+          "Safety",
+          "All-Ships or Individual",
+          "Ch 16 (default) or proposed",
+          "Drifting container warning; relay of weather bulletin"
+        ],
+        [
+          "Routine",
+          "Individual only",
+          "Must propose a channel",
+          "Ship-to-shore phone call; passage coordination"
         ]
       ]
     },
     {
       "type": "text",
-      "content": "Always verify that your GPS is feeding current position data to the DSC radio. A stale or missing GPS fix will be indicated on the radio display. In distress, an inaccurate position could direct rescuers to the wrong location."
+      "content": "The DSC menu workflow for a non-distress call follows a consistent pattern across all equipment manufacturers. First, you enter the DSC menu and select the call category (Urgency, Safety, or Routine). Next, you choose the format specifier — Individual and enter the target MMSI, or select All-Ships if the category permits. For routine calls, you must then select a proposed working channel. Finally, you review the composed message and press the transmit key to send the call on Channel 70."
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "title": "Working Channel Proposals",
+      "content": "When proposing a working channel for a routine call, choose an inter-ship channel (such as Ch 6, 8, or 72) for ship-to-ship calls, or a port operations / coast station channel as appropriate. The called station may suggest a different channel in its acknowledgement."
+    },
+    {
+      "type": "text",
+      "content": "After the receiving station acknowledges your DSC call, both stations switch to the agreed working channel to begin voice communication. If the called station does not respond, you may repeat the DSC call after a waiting period — typically 5 minutes for routine calls. For urgency and safety calls, the default working channel is Channel 16, although a different channel may be proposed."
     },
     {
       "type": "exercise",
-      "prompt": "How is position typically expressed in maritime communications?",
+      "prompt": "Which format specifier is required for a routine DSC call?",
       "options": [
-        { "key": "a", "text": "UTM grid coordinates" },
-        { "key": "b", "text": "Degrees and minutes with N/S and E/W" },
-        { "key": "c", "text": "Decimal degrees only" },
-        { "key": "d", "text": "Maidenhead grid locator" }
+        { "key": "a", "text": "All-Ships" },
+        { "key": "b", "text": "Individual" },
+        { "key": "c", "text": "Area" },
+        { "key": "d", "text": "Group" }
       ],
       "answer": "b",
-      "explanation": "Maritime position is expressed in degrees, minutes, and decimal minutes with N/S for latitude and E/W for longitude (e.g., 48° 27.3' N, 004° 52.1' W)."
+      "explanation": "Routine DSC calls must use the Individual format specifier and be addressed to a single MMSI. Only Distress, Urgency, and Safety categories may use All-Ships."
+    },
+    {
+      "type": "fill-blank",
+      "prompt": "Every routine DSC call must include a proposed working ___.",
+      "answer": "channel",
+      "alternatives": ["Channel", "frequency", "Frequency"],
+      "explanation": "A routine DSC call must propose a working channel so that both stations know where to switch for the follow-up voice conversation after the DSC exchange on Channel 70."
+    },
+    {
+      "type": "exercise",
+      "prompt": "A vessel has lost steering and is drifting towards shallow water but is not yet in immediate danger. Which DSC category should the master use?",
+      "options": [
+        { "key": "a", "text": "Distress" },
+        { "key": "b", "text": "Safety" },
+        { "key": "c", "text": "Urgency" },
+        { "key": "d", "text": "Routine" }
+      ],
+      "answer": "c",
+      "explanation": "Urgency is the correct category when the situation is serious but the vessel is not yet in grave and imminent danger. If the danger becomes immediate, the master should upgrade to a Distress alert."
+    },
+    {
+      "type": "tool-embed",
+      "tool": "dsc-builder",
+      "config": { "category": "urgency" }
+    },
+    {
+      "type": "takeaway",
+      "points": [
+        "Non-distress DSC calls fall into three categories: Urgency, Safety, and Routine, each with specific addressing rules.",
+        "Urgency and Safety calls can be sent to all ships or to an individual station; Routine calls must be addressed to an individual MMSI only.",
+        "Routine calls must include a proposed working channel; Urgency and Safety calls default to Channel 16.",
+        "The DSC menu workflow is consistent: select category, choose format/MMSI, propose working channel (if required), review, and transmit on Channel 70."
+      ]
     }
   ]
 }

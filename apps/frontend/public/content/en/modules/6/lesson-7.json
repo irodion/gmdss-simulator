@@ -1,0 +1,120 @@
+{
+  "version": 1,
+  "title": "SAR Coordination",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Search and Rescue (SAR) operations at sea are governed by the International Convention on Maritime Search and Rescue (SAR Convention, 1979) and coordinated according to the procedures set out in the IAMSAR Manual (International Aeronautical and Maritime Search and Rescue Manual), which is published in three volumes. Effective SAR depends on clear roles, established communication protocols, and coordinated search patterns."
+    },
+    {
+      "type": "table",
+      "headers": ["Role", "Abbreviation", "Function"],
+      "rows": [
+        [
+          "Rescue Coordination Centre",
+          "RCC",
+          "Shore-based authority that receives distress alerts, develops SAR plans, and coordinates the overall operation"
+        ],
+        [
+          "On-Scene Coordinator",
+          "OSC",
+          "Coordinates all SAR units at the scene; usually the first capable vessel to arrive or a vessel designated by the RCC"
+        ],
+        [
+          "Search and Rescue Unit",
+          "SRU",
+          "Any vessel, aircraft, or other resource conducting the actual search and rescue at the scene"
+        ],
+        [
+          "Coordinator Surface Search",
+          "CSS",
+          "A vessel designated to coordinate surface search operations among multiple ships"
+        ]
+      ]
+    },
+    {
+      "type": "text",
+      "content": "When the RCC receives a distress alert, it initiates a sequence of actions: (1) attempt to establish contact with the vessel in distress to confirm the alert and obtain additional information, and (2) broadcast the distress information via NAVTEX and other appropriate means to alert vessels in the area. The RCC then designates SAR units and, if multiple vessels respond, appoints an On-Scene Coordinator to manage operations at the scene."
+    },
+    {
+      "type": "callout",
+      "variant": "info",
+      "title": "World SAR Organisation",
+      "content": "The world's oceans are divided into 21 NAVAREAs for Maritime Safety Information (MSI) broadcasts, and into Search and Rescue Regions (SRRs) for SAR coordination. Each SRR has a designated Rescue Coordination Centre (RCC). NAVAREAs and SRRs are separate systems — NAVAREAs handle navigational and weather warnings, while SRRs and their RCCs coordinate actual rescue operations."
+    },
+    {
+      "type": "text",
+      "content": "SAR communication follows established channel protocols. Initial distress communications take place on VHF Channel 16 (156.800 MHz), the international distress and calling frequency. Once contact is established, SAR operations typically move to a designated working channel to keep Channel 16 clear. Ship-to-aircraft communications during SAR operations use VHF Channel 6 (156.300 MHz), which is the international inter-ship safety channel designated for this purpose."
+    },
+    {
+      "type": "table",
+      "headers": ["Search Pattern", "Best Used For", "Description"],
+      "rows": [
+        [
+          "Expanding square",
+          "Small target area, position reasonably certain",
+          "SRU starts at datum and spirals outward in expanding squares; covers the most likely area first"
+        ],
+        [
+          "Sector search",
+          "Accurate position known, small search area",
+          "SRU passes through the datum on different headings, covering sectors like slices of a pie"
+        ],
+        [
+          "Parallel track (or parallel sweep)",
+          "Large area, position uncertain",
+          "Multiple SRUs or a single SRU cover a wide area in parallel lines, similar to mowing a lawn"
+        ]
+      ]
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "title": "IAMSAR Manual",
+      "content": "The IAMSAR Manual comes in three volumes: Volume I (Organisation and Management) for SAR administrators, Volume II (Mission Co-ordination) for RCCs and RSCs, and Volume III (Mobile Facilities) for use on board ships and aircraft. SOLAS vessels are required to carry Volume III."
+    },
+    {
+      "type": "text",
+      "content": "When a merchant vessel is designated as OSC, the master assumes coordination responsibility for all SRUs at the scene. The OSC assigns search areas, establishes communication schedules, and reports progress to the RCC. This is a significant responsibility, but masters of all SOLAS vessels are trained for it and are obligated under international law to render assistance to persons in distress at sea."
+    },
+    {
+      "type": "exercise",
+      "prompt": "Which SAR role is responsible for coordinating all units at the scene of a distress incident?",
+      "options": [
+        { "key": "a", "text": "RCC (Rescue Coordination Centre)" },
+        { "key": "b", "text": "OSC (On-Scene Coordinator)" },
+        { "key": "c", "text": "SRU (Search and Rescue Unit)" }
+      ],
+      "answer": "b",
+      "explanation": "The On-Scene Coordinator (OSC) manages and coordinates all SAR units at the scene. The RCC coordinates the overall operation from shore, while SRUs are the individual vessels and aircraft conducting the search. The OSC is usually the first capable vessel to arrive or one designated by the RCC."
+    },
+    {
+      "type": "fill-blank",
+      "prompt": "Ship-to-aircraft communications during SAR operations use VHF Channel ___.",
+      "answer": "6",
+      "alternatives": ["six", "06"],
+      "explanation": "VHF Channel 6 (156.300 MHz) is the designated frequency for ship-to-aircraft SAR communications. Initial distress calling is on Channel 16, and operational coordination then moves to working channels."
+    },
+    {
+      "type": "exercise",
+      "prompt": "Which search pattern is most appropriate when the distress position is accurately known and the search area is small?",
+      "options": [
+        { "key": "a", "text": "Parallel track search" },
+        { "key": "b", "text": "Expanding square search" },
+        { "key": "c", "text": "Sector search" }
+      ],
+      "answer": "c",
+      "explanation": "The sector search pattern is used when the position is accurately known and the search area is small. The SRU passes through the datum on multiple headings. The expanding square is used when position is reasonably certain but the area is slightly larger. Parallel track is used for large areas with uncertain positions."
+    },
+    {
+      "type": "takeaway",
+      "points": [
+        "Key SAR roles: RCC (shore coordination), OSC (on-scene coordination), SRU (search/rescue execution), CSS (surface search coordination).",
+        "RCC actions on receiving an alert: (1) contact the vessel in distress, (2) broadcast via NAVTEX and other means.",
+        "SAR communications: Channel 16 for initial distress, working channel for operations, Channel 6 for ship-to-aircraft.",
+        "Search patterns: expanding square (small area, reasonable position), sector (accurate position), parallel track (large area).",
+        "SOLAS vessels must carry IAMSAR Manual Volume III; the world is divided into 21 NAVAREAs for SAR coordination."
+      ]
+    }
+  ]
+}

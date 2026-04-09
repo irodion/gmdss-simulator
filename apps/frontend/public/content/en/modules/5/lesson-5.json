@@ -1,0 +1,117 @@
+{
+  "version": 1,
+  "title": "PAN PAN and MEDICO",
+  "sections": [
+    {
+      "type": "text",
+      "content": "The urgency signal PAN PAN (from French \"panne\" -- a breakdown) is used when a vessel or person faces a serious situation that does not constitute grave and imminent danger. It has the second-highest priority in maritime communications, above safety and routine traffic but below distress. Typical PAN PAN situations include loss of steering, a person overboard, engine failure in a shipping lane, or a serious but not immediately life-threatening injury."
+    },
+    {
+      "type": "callout",
+      "variant": "info",
+      "title": "PAN PAN vs. MAYDAY",
+      "content": "The key distinction is immediacy. If the danger is grave and imminent (risk of loss of vessel or life right now), use MAYDAY. If the situation is serious but not immediately life-threatening, use PAN PAN. If the situation escalates, you can always upgrade to MAYDAY."
+    },
+    {
+      "type": "text",
+      "content": "The voice format for a PAN PAN message is:"
+    },
+    {
+      "type": "table",
+      "headers": ["Element", "Content"],
+      "rows": [
+        ["1", "PAN PAN PAN PAN PAN PAN"],
+        ["2", "ALL STATIONS ALL STATIONS ALL STATIONS (or a specific station)"],
+        ["3", "THIS IS [vessel name x3, call sign, MMSI]"],
+        ["4", "Nature of urgency"],
+        ["5", "Position"],
+        ["6", "Assistance required"],
+        ["7", "Number of persons on board"],
+        ["8", "Any other useful information"],
+        ["9", "OVER"]
+      ]
+    },
+    {
+      "type": "text",
+      "content": "An urgency message may be addressed to ALL STATIONS or to a specific coast station, depending on the nature of the situation. For example, a loss-of-steering report would typically go to ALL STATIONS to warn nearby traffic, while a medical emergency might be directed to a specific coast station that can connect to medical services."
+    },
+    {
+      "type": "callout",
+      "variant": "warning",
+      "title": "Cancel When Resolved",
+      "content": "Unlike MAYDAY, a PAN PAN must be formally cancelled when the urgency is over. Transmit: PAN PAN, ALL STATIONS x3, THIS IS [vessel x3], the PAN PAN message of [date/time UTC] is cancelled, OUT. Failure to cancel leaves other stations and coast guards maintaining an unnecessary watch."
+    },
+    {
+      "type": "text",
+      "content": "MEDICO is a special category of urgency communication used when a person on board requires medical advice or assistance. The procedure uses the PAN PAN prefix to establish urgency priority. The vessel contacts a coast station, which connects the call to a designated Radio Medical Centre staffed by physicians who provide diagnosis and treatment guidance over the radio."
+    },
+    {
+      "type": "text",
+      "content": "The MEDICO message should include the following patient information to enable the doctor to make an informed assessment:"
+    },
+    {
+      "type": "table",
+      "headers": ["Item", "Details"],
+      "rows": [
+        ["Patient identity", "Gender and age"],
+        ["Consciousness", "Alert, drowsy, unconscious, or responsive to pain only"],
+        ["Vital signs", "Body temperature, blood pressure, pulse rate"],
+        ["Symptoms", "Description of complaint, location and severity of pain, onset and duration"],
+        ["Medical history", "Known conditions, allergies, previous surgeries"],
+        ["Current medication", "Any drugs the patient is taking"],
+        ["Treatment given", "First aid or medication already administered on board"],
+        ["Last meal", "Time and content of last food and drink intake"]
+      ]
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "title": "Prepare Before Calling",
+      "content": "Gather all patient information before initiating the MEDICO call. Having vital signs, symptoms, and medical history ready will allow the Radio Medical Centre to provide faster and more accurate advice."
+    },
+    {
+      "type": "tool-embed",
+      "tool": "script-builder",
+      "config": { "scriptType": "pan-pan" }
+    },
+    {
+      "type": "exercise",
+      "prompt": "A vessel has lost steering and is drifting in a traffic separation scheme, but the crew is not in immediate danger. Which signal should be used?",
+      "options": [
+        { "key": "a", "text": "MAYDAY" },
+        { "key": "b", "text": "PAN PAN" },
+        { "key": "c", "text": "SECURITE" }
+      ],
+      "answer": "b",
+      "explanation": "Loss of steering is a serious situation affecting the safety of the vessel, but the crew is not in grave and imminent danger. PAN PAN is the correct urgency signal. If the situation worsens to the point of immediate danger, it can be upgraded to MAYDAY."
+    },
+    {
+      "type": "fill-blank",
+      "prompt": "When the urgency situation is over, the vessel must transmit a ___ of the PAN PAN message.",
+      "answer": "cancellation",
+      "alternatives": ["cancel", "cancel message", "cancellation message"],
+      "explanation": "Unlike MAYDAY (which is ended by a coast station via SEELONCE FEENEE), a PAN PAN must be formally cancelled by the originating vessel once the urgency has passed. This informs all stations that the situation is resolved."
+    },
+    {
+      "type": "exercise",
+      "prompt": "Which of the following is NOT typically included in a MEDICO message to a Radio Medical Centre?",
+      "options": [
+        { "key": "a", "text": "Patient's body temperature and blood pressure" },
+        { "key": "b", "text": "Patient's next of kin and home address" },
+        { "key": "c", "text": "Treatment already given on board" }
+      ],
+      "answer": "b",
+      "explanation": "A MEDICO message focuses on clinical information the doctor needs to provide medical advice: vital signs, symptoms, medical history, current medication, treatment given, and last meal. Next-of-kin and home address are not relevant to the medical assessment."
+    },
+    {
+      "type": "takeaway",
+      "points": [
+        "PAN PAN is used for serious situations that are not immediately life-threatening -- it ranks below MAYDAY but above SECURITE.",
+        "The PAN PAN format is: PAN PAN x3, ALL STATIONS x3, THIS IS (vessel x3), nature of urgency, position, assistance required, persons on board, OVER.",
+        "PAN PAN must be formally cancelled when the urgency is resolved.",
+        "MEDICO uses PAN PAN priority to connect with a Radio Medical Centre via a coast station for medical advice.",
+        "A MEDICO message should include: gender, age, consciousness, vital signs, symptoms, medical history, medication, treatment given, and last meal."
+      ]
+    }
+  ]
+}

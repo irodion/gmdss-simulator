@@ -24,7 +24,7 @@ function authHeaders() {
 }
 
 describe("GET /api/content/modules", () => {
-  test("returns all 4 modules in order", async () => {
+  test("returns all 6 modules in order", async () => {
     const res = await app.inject({
       method: "GET",
       url: "/api/content/modules",
@@ -33,11 +33,13 @@ describe("GET /api/content/modules", () => {
 
     expect(res.statusCode).toBe(200);
     const body = res.json();
-    expect(body).toHaveLength(4);
+    expect(body).toHaveLength(6);
     expect(body[0].id).toBe("module-1");
     expect(body[1].id).toBe("module-2");
     expect(body[2].id).toBe("module-3");
     expect(body[3].id).toBe("module-4");
+    expect(body[4].id).toBe("module-5");
+    expect(body[5].id).toBe("module-6");
   });
 
   test("Module 1 is unlocked, Module 2 is locked for new user", async () => {
@@ -71,8 +73,8 @@ describe("GET /api/content/modules/:id/lessons", () => {
 
     expect(res.statusCode).toBe(200);
     const body = res.json();
-    expect(body).toHaveLength(6);
-    expect(body[0].title).toBe("What is VHF Maritime Radio?");
+    expect(body).toHaveLength(4);
+    expect(body[0].title).toBe("What is GMDSS?");
     expect(body[0].completed).toBe(false);
   });
 

@@ -133,6 +133,40 @@ describe("LessonRenderer", () => {
     expect(() => render(<LessonRenderer content={content} />)).not.toThrow();
   });
 
+  test("renders fill-blank sections", () => {
+    const content: LessonContent = {
+      version: 1,
+      title: "Test",
+      sections: [
+        {
+          type: "fill-blank",
+          prompt: "The distress channel is Channel ___",
+          answer: "16",
+          explanation: "Channel 16 is the international distress frequency.",
+        },
+      ],
+    };
+    render(<LessonRenderer content={content} />);
+    expect(screen.getByText("The distress channel is Channel ___")).toBeDefined();
+  });
+
+  test("renders takeaway sections", () => {
+    const content: LessonContent = {
+      version: 1,
+      title: "Test",
+      sections: [
+        {
+          type: "takeaway",
+          points: ["Channel 16 is for distress", "Always listen first"],
+        },
+      ],
+    };
+    render(<LessonRenderer content={content} />);
+    expect(screen.getByText("Key Takeaways")).toBeDefined();
+    expect(screen.getByText("Channel 16 is for distress")).toBeDefined();
+    expect(screen.getByText("Always listen first")).toBeDefined();
+  });
+
   test("ignores unknown section types gracefully", () => {
     const content: LessonContent = {
       version: 1,

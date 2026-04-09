@@ -1,0 +1,90 @@
+{
+  "version": 1,
+  "title": "AIS",
+  "sections": [
+    {
+      "type": "text",
+      "content": "The Automatic Identification System (AIS) is a self-organising maritime tracking system that enables vessels and shore stations to exchange identification, position, course, and speed data automatically. AIS operates on two dedicated VHF channels: 87B (161.975 MHz) and 88B (162.025 MHz). It supports ship-to-ship, ship-to-shore, and shore-to-ship communications, providing real-time situational awareness to bridge teams and vessel traffic services (VTS)."
+    },
+    {
+      "type": "text",
+      "content": "AIS uses Self-Organising Time Division Multiple Access (SOTDMA) technology. Each minute is divided into 2,250 time slots, and each station autonomously selects its own slots to transmit without requiring a central controller. This makes the system robust and scalable, capable of handling thousands of vessels in congested waters."
+    },
+    {
+      "type": "table",
+      "headers": ["Data Category", "Update Rate", "Information Included"],
+      "rows": [
+        [
+          "Dynamic (vessel underway)",
+          "Every 2-10 seconds",
+          "MMSI, position (from GPS), SOG (0-102 kt), COG (to 0.1°), true heading, rate of turn (0-720°/min), navigation status"
+        ],
+        ["Dynamic (vessel at anchor)", "Every 3 minutes", "Same dynamic data fields as above"],
+        [
+          "Static and voyage-related",
+          "Every 6 minutes",
+          "Ship name, call sign, IMO number, ship type, dimensions, destination, ETA, draught"
+        ]
+      ]
+    },
+    {
+      "type": "text",
+      "content": "The navigation status field is manually set by the officer of the watch and indicates the vessel's current operating condition. Common statuses include: at anchor, underway using engine, underway sailing, not under command, restricted in ability to manoeuvre, constrained by draught, moored, aground, and engaged in fishing. Accurate status reporting is important for collision avoidance and traffic management."
+    },
+    {
+      "type": "callout",
+      "variant": "info",
+      "title": "AIS-SART",
+      "content": "An AIS-SART (AIS Search and Rescue Transmitter) operates on the standard AIS channels 87B and 88B. It transmits 8 messages per minute (4 on each channel). The MMSI prefix for AIS-SARTs is 970. On an ECDIS or AIS display, an AIS-SART appears as a distinctive symbol: a circle with an X inside."
+    },
+    {
+      "type": "text",
+      "content": "Since 1 July 2022, all newly installed EPIRBs must include an internal AIS transmitter (AIS-EPIRB). These devices carry the MMSI prefix 974 and transmit AIS position reports alongside the standard 406 MHz satellite signal. This dual-mode operation provides both satellite alerting for long-range detection and AIS signalling for close-range homing by nearby vessels, significantly improving the chances of rapid rescue."
+    },
+    {
+      "type": "callout",
+      "variant": "warning",
+      "title": "Navigation Status Responsibility",
+      "content": "The navigation status on AIS must be manually updated by the OOW. Failure to set the correct status — for example, leaving the status as 'underway using engine' while at anchor — can mislead other vessels and VTS, creating a safety hazard."
+    },
+    {
+      "type": "exercise",
+      "prompt": "How frequently does AIS transmit dynamic data when a vessel is underway?",
+      "options": [
+        { "key": "a", "text": "Every 3 minutes" },
+        { "key": "b", "text": "Every 2 to 10 seconds" },
+        { "key": "c", "text": "Every 6 minutes" }
+      ],
+      "answer": "b",
+      "explanation": "When a vessel is underway, AIS transmits dynamic data (position, speed, course, heading, etc.) every 2 to 10 seconds depending on the vessel's speed and rate of turn. At anchor, the rate drops to every 3 minutes. Static data is sent every 6 minutes."
+    },
+    {
+      "type": "fill-blank",
+      "prompt": "AIS-SART devices use the MMSI prefix ___, while AIS-EPIRBs use the prefix 974.",
+      "answer": "970",
+      "alternatives": [],
+      "explanation": "AIS-SARTs are identified by the MMSI prefix 970. Since July 2022, new EPIRBs with internal AIS transmitters carry the MMSI prefix 974. Both appear on AIS-equipped displays, aiding search and rescue."
+    },
+    {
+      "type": "exercise",
+      "prompt": "On which VHF channels does AIS operate?",
+      "options": [
+        { "key": "a", "text": "Channel 16 (156.800 MHz) and Channel 70 (156.525 MHz)" },
+        { "key": "b", "text": "Channel 87B (161.975 MHz) and Channel 88B (162.025 MHz)" },
+        { "key": "c", "text": "Channel 6 (156.300 MHz) and Channel 13 (156.650 MHz)" }
+      ],
+      "answer": "b",
+      "explanation": "AIS uses two dedicated VHF data link channels: 87B at 161.975 MHz and 88B at 162.025 MHz. Channel 16 is the international distress and calling frequency, and Channel 70 is reserved for DSC."
+    },
+    {
+      "type": "takeaway",
+      "points": [
+        "AIS operates on VHF channels 87B (161.975 MHz) and 88B (162.025 MHz) using self-organising time-slot technology.",
+        "Dynamic data is transmitted every 2-10 seconds underway, every 3 minutes at anchor; static data every 6 minutes.",
+        "AIS-SART: MMSI prefix 970, 8 messages/minute, displays as a circle with X on ECDIS.",
+        "Since 1 July 2022, new EPIRBs must include internal AIS (prefix 974) for dual-mode alerting.",
+        "Navigation status must be manually updated by the OOW to ensure accurate traffic information."
+      ]
+    }
+  ]
+}

@@ -1,0 +1,93 @@
+{
+  "version": 1,
+  "title": "MAYDAY RELAY",
+  "sections": [
+    {
+      "type": "text",
+      "content": "A MAYDAY RELAY is transmitted by a station that is not itself in distress but is relaying a distress message on behalf of another vessel. The relay ensures that a distress situation is made known to coast stations and other vessels that may be able to assist, even when the vessel in distress is unable to communicate effectively."
+    },
+    {
+      "type": "text",
+      "content": "A MAYDAY RELAY should be transmitted in the following circumstances: (1) the vessel in distress is unable to transmit the distress call itself, for example due to equipment failure or because the crew is occupied with survival; (2) a distress call has been heard but remains unanswered after a reasonable interval and no coast station has acknowledged; (3) the vessel in distress has been interrupted mid-transmission and has not resumed; or (4) the vessel in distress or a coast station has specifically requested a relay."
+    },
+    {
+      "type": "callout",
+      "variant": "info",
+      "title": "Who May Relay?",
+      "content": "Any vessel or coast station that is aware of a distress situation may transmit a MAYDAY RELAY. There is no restriction on which station initiates the relay -- the priority is ensuring that the distress is communicated."
+    },
+    {
+      "type": "text",
+      "content": "The voice format for a MAYDAY RELAY is as follows:"
+    },
+    {
+      "type": "table",
+      "headers": ["Element", "Content"],
+      "rows": [
+        ["1", "MAYDAY RELAY MAYDAY RELAY MAYDAY RELAY"],
+        ["2", "THIS IS [own vessel name x3, own call sign, own MMSI]"],
+        ["3", "Following received from [vessel in distress, its MMSI] on Channel 16"],
+        ["4", "QUOTE"],
+        ["5", "[Repeat the full MAYDAY message as received]"],
+        ["6", "UNQUOTE"],
+        ["7", "OVER"]
+      ]
+    },
+    {
+      "type": "text",
+      "content": "When relaying, your first priority should be to contact a coast station, as coast stations have the resources and authority to coordinate search and rescue operations. If you are unable to reach a coast station, relay the MAYDAY on Channel 16 to all stations. Ensure you quote the original message as accurately as possible -- do not paraphrase or omit details, even if they seem redundant."
+    },
+    {
+      "type": "callout",
+      "variant": "warning",
+      "title": "Do Not Delay a Relay",
+      "content": "If a distress call goes unanswered, do not wait indefinitely for someone else to relay it. A delay in relaying could cost lives. If no acknowledgment is heard after a reasonable interval, transmit the relay yourself."
+    },
+    {
+      "type": "text",
+      "content": "On DSC, a distress relay alert can also be sent. However, ships should normally relay distress by voice on Channel 16 after attempting to contact a coast station. DSC distress relay alerts transmitted by ships are intended primarily for situations where no voice communication with a coast station is possible. Coast stations use DSC relay alerts to broadcast distress information to all ships in the area."
+    },
+    {
+      "type": "exercise",
+      "prompt": "Which of the following is NOT a valid reason to transmit a MAYDAY RELAY?",
+      "options": [
+        { "key": "a", "text": "The vessel in distress cannot transmit due to equipment failure" },
+        {
+          "key": "b",
+          "text": "A distress call has been heard and promptly acknowledged by a coast station"
+        },
+        { "key": "c", "text": "The distress call has gone unanswered after a reasonable interval" }
+      ],
+      "answer": "b",
+      "explanation": "If a coast station has already acknowledged the distress call, there is no need to relay it. A MAYDAY RELAY is used when the distress call has not been acknowledged, when the vessel cannot transmit, or when a relay has been specifically requested."
+    },
+    {
+      "type": "fill-blank",
+      "prompt": "In a MAYDAY RELAY, the original distress message is enclosed between the words QUOTE and ___.",
+      "answer": "UNQUOTE",
+      "alternatives": ["unquote"],
+      "explanation": "The prowords QUOTE and UNQUOTE are used to clearly delimit the original distress message being relayed, distinguishing it from the relaying station's own identification and transmission."
+    },
+    {
+      "type": "exercise",
+      "prompt": "When transmitting a MAYDAY RELAY, who should you try to contact first?",
+      "options": [
+        { "key": "a", "text": "All stations on Channel 16" },
+        { "key": "b", "text": "The nearest coast station" },
+        { "key": "c", "text": "The vessel in distress" }
+      ],
+      "answer": "b",
+      "explanation": "Your first priority when relaying a distress message should be to contact a coast station, as they have the resources and authority to coordinate search and rescue operations. If no coast station can be reached, relay to all stations on Channel 16."
+    },
+    {
+      "type": "takeaway",
+      "points": [
+        "A MAYDAY RELAY is sent when the vessel in distress cannot transmit, or when its call goes unanswered or is interrupted.",
+        "Any vessel or coast station may transmit a MAYDAY RELAY -- there is no restriction.",
+        "The format is: MAYDAY RELAY x3, THIS IS (own vessel x3, MMSI), following received from (vessel in distress, MMSI), QUOTE, repeat original message, UNQUOTE, OVER.",
+        "Contact a coast station first; if none responds, relay on Channel 16 to all stations.",
+        "Quote the original distress message exactly -- do not paraphrase or omit details."
+      ]
+    }
+  ]
+}

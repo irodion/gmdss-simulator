@@ -1,0 +1,104 @@
+{
+  "version": 1,
+  "title": "Communication Priority",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Maritime radio communications follow a strict priority hierarchy established by the ITU Radio Regulations and SOLAS Convention. This hierarchy ensures that life-threatening situations always take precedence over routine traffic. Every GMDSS operator must understand and respect this order of priority at all times."
+    },
+    {
+      "type": "table",
+      "headers": ["Priority", "Category", "Signal", "Purpose"],
+      "rows": [
+        [
+          "1 (Highest)",
+          "Distress",
+          "MAYDAY",
+          "Grave and imminent danger to a vessel or person; immediate assistance required"
+        ],
+        [
+          "2",
+          "Urgency",
+          "PAN PAN",
+          "Urgent message concerning the safety of a vessel or person, but no immediate danger"
+        ],
+        [
+          "3",
+          "Safety",
+          "SECURITE",
+          "Navigational or meteorological warnings important to safety of shipping"
+        ],
+        ["4 (Lowest)", "Routine", "No prefix", "Normal operational and commercial traffic"]
+      ]
+    },
+    {
+      "type": "text",
+      "content": "Distress communications have absolute priority over all other transmissions. When a distress call or distress traffic is in progress on any frequency, all stations that are aware of it must immediately cease any transmission capable of interfering with that distress traffic. This obligation applies regardless of the station's flag state or the nature of its routine traffic."
+    },
+    {
+      "type": "callout",
+      "variant": "warning",
+      "title": "Silence During Distress",
+      "content": "When distress traffic is in progress, all stations must cease non-essential transmissions on the distress frequency. Failure to observe radio silence during distress communications is a serious offence under international and national maritime law."
+    },
+    {
+      "type": "text",
+      "content": "The legal framework for communication priority is rooted in Article 31 of the ITU Radio Regulations, which states that distress calls and messages shall have absolute priority over all other transmissions. SOLAS Chapter IV reinforces this by requiring all GMDSS-equipped vessels to maintain a continuous watch on DSC Channel 70 (VHF) and the relevant MF/HF DSC frequencies for their sea area. National legislation in most countries imposes criminal penalties for the transmission of false distress alerts or for deliberate interference with distress communications."
+    },
+    {
+      "type": "text",
+      "content": "Urgency and safety traffic also enjoy protection under the priority system. An urgency message (PAN PAN) takes priority over all traffic except distress. A safety message (SECURITE) takes priority over routine traffic. However, neither urgency nor safety traffic imposes an automatic obligation of radio silence on other stations -- that obligation is reserved exclusively for distress."
+    },
+    {
+      "type": "callout",
+      "variant": "info",
+      "title": "Continuous Watch Obligation",
+      "content": "SOLAS requires all ships fitted with GMDSS equipment to maintain a continuous DSC watch on VHF Channel 70 and, depending on the sea area, on MF 2187.5 kHz and/or HF DSC frequencies. This ensures distress alerts are received at all times."
+    },
+    {
+      "type": "exercise",
+      "prompt": "Which of the following has the HIGHEST priority in maritime communications?",
+      "options": [
+        { "key": "a", "text": "PAN PAN (Urgency)" },
+        { "key": "b", "text": "SECURITE (Safety)" },
+        { "key": "c", "text": "MAYDAY (Distress)" },
+        { "key": "d", "text": "Routine operational traffic" }
+      ],
+      "answer": "c",
+      "explanation": "MAYDAY (Distress) has absolute priority over all other communications. The priority order is: Distress > Urgency > Safety > Routine."
+    },
+    {
+      "type": "fill-blank",
+      "prompt": "When distress traffic is in progress, all other stations must immediately cease any transmission capable of ___ with that traffic.",
+      "answer": "interfering",
+      "alternatives": ["interference"],
+      "explanation": "Under the ITU Radio Regulations and SOLAS, all stations aware of ongoing distress traffic must cease transmissions that could interfere with it. This obligation is absolute and applies to all stations."
+    },
+    {
+      "type": "exercise",
+      "prompt": "A vessel is conducting routine operational traffic on VHF Channel 16 when a MAYDAY call is heard. What must the vessel do?",
+      "options": [
+        {
+          "key": "a",
+          "text": "Continue the routine call and wait for the distress traffic to finish"
+        },
+        {
+          "key": "b",
+          "text": "Immediately cease the routine transmission and listen to the distress traffic"
+        },
+        { "key": "c", "text": "Switch to a working channel and continue the routine call there" }
+      ],
+      "answer": "b",
+      "explanation": "Distress has absolute priority. The vessel must immediately stop all non-essential transmissions on the distress frequency and listen to the distress traffic. Continuing to transmit -- even on a different topic -- would be a violation of international regulations."
+    },
+    {
+      "type": "takeaway",
+      "points": [
+        "The priority hierarchy is: DISTRESS (MAYDAY) > URGENCY (PAN PAN) > SAFETY (SECURITE) > ROUTINE.",
+        "All stations must cease non-essential transmissions capable of interfering when distress traffic is in progress.",
+        "The ITU Radio Regulations (Article 31) and SOLAS Chapter IV provide the legal framework for communication priority.",
+        "False distress alerts and deliberate interference with distress traffic are criminal offences under national and international law."
+      ]
+    }
+  ]
+}

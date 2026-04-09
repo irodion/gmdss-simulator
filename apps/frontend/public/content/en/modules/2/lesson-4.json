@@ -1,31 +1,91 @@
 {
   "version": 1,
-  "title": "Urgency, Safety, and Routine DSC",
+  "title": "Handheld VHF and Antennas",
   "sections": [
     {
       "type": "text",
-      "content": "Non-distress DSC calls are used for urgency, safety, and routine communications. Urgency and safety calls can be addressed to all stations or a specific station. Routine calls are always addressed to a specific station using their MMSI. Each category triggers a different alert on the receiving radio."
-    },
-    {
-      "type": "tool-embed",
-      "tool": "dsc-builder",
-      "config": { "category": "urgency" }
+      "content": "In addition to the fixed-mount VHF radio, GMDSS requires vessels to carry portable (handheld) VHF radios for use in survival craft and on deck. Handheld VHF radios are compact, battery-powered units that provide essential communication capability when the main radio is inaccessible — such as during abandonment, on-deck operations, or as a backup if the fixed installation fails."
     },
     {
       "type": "text",
-      "content": "An urgency DSC alert is used when you need to transmit an urgent message concerning safety (e.g., person overboard, loss of steering). A safety DSC alert precedes navigational or meteorological warnings. Routine DSC is used to establish contact with another station before switching to a working channel."
+      "content": "The GMDSS-compliant handheld VHF has a minimum low power of 0.25 W and a high power of 1 W — significantly less than a fixed installation's 25 watts. Despite the lower power, handhelds are effective for short-range communication. They must be waterproof to at least 1 metre depth for 5 minutes, and must carry at least Channel 16 plus one additional working channel. A dedicated Channel 16 quick-access button is standard. The primary power source is a rechargeable NiCd battery, and a spare non-rechargeable lithium battery must be carried."
+    },
+    {
+      "type": "callout",
+      "variant": "info",
+      "title": "Survival Craft Battery Requirements",
+      "content": "SOLAS requires that survival craft portable VHF radios can operate for at least 8 hours at a duty cycle of 1:1:8 — meaning 1 part transmitting, 1 part receiving, and 8 parts standby, at high power (1 watt). This translates to roughly 48 minutes of actual transmit time over the 8-hour period. A rechargeable NiCd or NiMH battery provides the primary power source, and a non-rechargeable lithium battery must be carried as a spare."
+    },
+    {
+      "type": "text",
+      "content": "In practice, the handheld must provide approximately 40 minutes to 1 hour of transmit time and 8 hours of listening on the rechargeable battery. Continuous listening (receive only) can last considerably longer. At the 1:1:8 duty cycle at high power (1 watt), expect about 8 hours of operation. Disciplined, brief transmissions are important — especially in emergency situations where battery conservation is critical."
     },
     {
       "type": "exercise",
-      "prompt": "Which DSC category is used for navigational warnings?",
+      "prompt": "What is the minimum waterproof requirement for a GMDSS handheld VHF?",
       "options": [
-        { "key": "a", "text": "Distress" },
-        { "key": "b", "text": "Urgency" },
-        { "key": "c", "text": "Safety" },
-        { "key": "d", "text": "Routine" }
+        { "key": "a", "text": "Splash resistant only" },
+        { "key": "b", "text": "Submersible to 1 metre for 5 minutes" },
+        { "key": "c", "text": "Submersible to 1 metre for 30 minutes" },
+        { "key": "d", "text": "Submersible to 3 metres for 1 hour" }
       ],
-      "answer": "c",
-      "explanation": "The Safety category is used for navigational and meteorological warnings. Urgency is for situations involving danger to a vessel or person, but not grave and imminent danger."
+      "answer": "b",
+      "explanation": "GMDSS handheld VHF radios must be waterproof to at least 1 metre depth for 5 minutes. This ensures the radio survives brief submersion in rough seas or during man-overboard situations."
+    },
+    {
+      "type": "text",
+      "content": "Antenna height is the single most important factor determining VHF range. Because VHF signals travel in straight lines, the higher the antenna, the further it can 'see' over the horizon. This relationship applies to both the transmitting and receiving antennas — the total range depends on the height at both ends of the link."
+    },
+    {
+      "type": "table",
+      "headers": ["Scenario", "Antenna Heights", "Approximate Range"],
+      "rows": [
+        ["Handheld to handheld (in liferaft)", "~1 m each", "~5 NM"],
+        ["Yacht to yacht", "~4 m each", "~15 NM"],
+        ["Ship to ship", "~25 m each", "~25 NM"],
+        ["Yacht (9 m) to coast station", "9 m / ~100 m", "~35 NM"],
+        ["Large ship (25 m) to coast station", "25 m / ~100 m", "~40 NM"],
+        ["Ship with high antenna (90 m) to coast station", "90 m / ~100 m", "~60 NM"]
+      ]
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "title": "Maximise Your Range",
+      "content": "If communication is difficult, gaining antenna height is far more effective than increasing power. A handheld held at arm's length above your head, or used from the highest accessible point on the vessel, can noticeably improve range. In a survival craft, standing while transmitting (if safe to do so) raises the antenna and may make the difference between being heard or not."
+    },
+    {
+      "type": "fill-blank",
+      "prompt": "A handheld VHF in a liferaft (antenna height ~1 m) communicating with another liferaft has an approximate range of ___ nautical miles.",
+      "answer": "5",
+      "alternatives": ["5 NM", "five", "~5", "about 5"],
+      "explanation": "With both antennas at approximately 1 metre height (typical for a handheld in a liferaft), VHF range is limited to roughly 5 nautical miles due to the very low radio horizon."
+    },
+    {
+      "type": "text",
+      "content": "Fixed VHF installations use an external antenna mounted as high as practical on the vessel — typically at the masthead on sailing yachts or atop the wheelhouse on commercial vessels. The standard marine VHF antenna is a vertically polarised omnidirectional whip, usually a half-wave or 5/8-wave design. Antenna gain is measured in dBd (decibels relative to a dipole): a 3 dBd gain antenna concentrates the signal toward the horizon, improving range over flat water but potentially causing signal gaps in heavy seas when the vessel rolls."
+    },
+    {
+      "type": "exercise",
+      "prompt": "Which factor has the greatest effect on VHF communication range?",
+      "options": [
+        { "key": "a", "text": "Transmitter output power" },
+        { "key": "b", "text": "Antenna height at both ends" },
+        { "key": "c", "text": "The channel frequency selected" },
+        { "key": "d", "text": "The brand and model of the radio" }
+      ],
+      "answer": "b",
+      "explanation": "Antenna height is the dominant factor for VHF range because VHF uses line-of-sight propagation. Doubling the power only adds about 1.5 dB (barely noticeable), while increasing antenna height extends the radio horizon significantly."
+    },
+    {
+      "type": "takeaway",
+      "points": [
+        "GMDSS handheld VHF: minimum 0.25 W (low) / 1 W (high), waterproof to 1 m for 5 min, Ch 16 + at least one working channel, NiCd battery + spare lithium.",
+        "Survival craft battery requirement: 8 hours at 1:1:8 duty cycle on 1 W; carry a spare non-rechargeable lithium battery.",
+        "Antenna height is the most important factor for VHF range — far more impactful than increasing power.",
+        "Handheld-to-handheld range is about 5 NM; ship-to-ship (25 m antennas) about 25 NM; ship (90 m) to shore about 60 NM.",
+        "In emergencies, conserve battery by using low power and keeping transmissions brief."
+      ]
     }
   ]
 }

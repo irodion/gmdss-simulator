@@ -1,47 +1,160 @@
 {
   "version": 1,
-  "title": "What is VHF Maritime Radio?",
+  "title": "What is GMDSS?",
   "sections": [
     {
       "type": "text",
-      "content": "VHF (Very High Frequency) maritime radio operates in the 156–174 MHz band and is the primary means of short-range communication at sea. It uses line-of-sight propagation, meaning the signal travels in a straight line from antenna to antenna. Typical range is 20–60 nautical miles depending on antenna height and atmospheric conditions."
+      "content": "The Global Maritime Distress and Safety System (GMDSS) is an internationally agreed-upon set of safety procedures, equipment types, and communication protocols used to increase safety at sea and make it easier to rescue distressed ships, boats, and aircraft. Rather than relying on a single communication method, GMDSS integrates multiple technologies — satellite communications, terrestrial radio, and electronic positioning — so that a vessel in distress can alert rescue authorities and nearby ships regardless of the area in which it operates."
+    },
+    {
+      "type": "text",
+      "content": "GMDSS was developed by the International Maritime Organization (IMO) and is mandated under the International Convention for the Safety of Life at Sea (SOLAS). It replaced the previous system of manual Morse code watches and operator-dependent distress procedures with automated digital alerting that can function without human intervention at the moment of emergency. If a vessel sinks rapidly, for example, its float-free EPIRB will activate automatically and transmit a distress alert via satellite."
     },
     {
       "type": "callout",
       "variant": "info",
-      "title": "Key Fact",
-      "content": "VHF Channel 16 (156.800 MHz) is the international distress and calling frequency, monitored by vessels and coast stations required to maintain a continuous VHF watch."
+      "title": "A Paradigm Shift",
+      "content": "Before GMDSS, distress communication depended on a trained Morse operator being on watch at the right time and on the right frequency. A ship could sink without any alert being sent if the radio operator was incapacitated. GMDSS eliminated this single point of failure through automation and redundancy."
+    },
+    {
+      "type": "text",
+      "content": "GMDSS defines nine functional requirements that every compliant vessel must be able to perform. These functions ensure that distress situations are communicated promptly and that search and rescue operations can be coordinated effectively."
     },
     {
       "type": "table",
-      "headers": ["System", "Frequency", "Typical Range", "Primary Use"],
+      "headers": ["#", "Functional Requirement", "Description"],
       "rows": [
-        ["VHF", "156–174 MHz", "20–60 NM", "Short-range ship-to-ship and ship-to-shore"],
         [
-          "HF/MF",
-          "1.6–27.5 MHz",
-          "Hundreds to thousands of NM",
-          "Medium/long-range ocean communications"
+          "1",
+          "Ship-to-shore distress alerting",
+          "Transmit a distress alert from the vessel to a Rescue Coordination Centre (RCC) ashore"
         ],
         [
-          "Satellite",
-          "1.5–1.6 GHz (L-band)",
-          "Global",
-          "Global distress alerting and communications"
+          "2",
+          "Shore-to-ship distress alerting",
+          "Receive distress alerts and safety information broadcast by shore authorities"
+        ],
+        [
+          "3",
+          "Ship-to-ship distress alerting",
+          "Transmit and receive distress alerts between vessels at sea"
+        ],
+        [
+          "4",
+          "SAR coordination communications",
+          "Enable communication between the on-scene coordinator (OSC) and vessels involved in a search and rescue operation"
+        ],
+        [
+          "5",
+          "On-scene communications",
+          "Communicate between the vessel in distress and assisting units on scene"
+        ],
+        [
+          "6",
+          "Signals for locating",
+          "Transmit and detect signals that help locate a vessel or survivors (e.g., SART, AIS-SART, EPIRB homing)"
+        ],
+        [
+          "7",
+          "Maritime Safety Information (MSI)",
+          "Receive navigational warnings, meteorological forecasts, and other urgent safety broadcasts"
+        ],
+        [
+          "8",
+          "General communications",
+          "Carry out routine operational and business communications (ship-to-shore and ship-to-ship)"
+        ],
+        [
+          "9",
+          "Bridge-to-bridge communications",
+          "Exchange navigational safety information directly between the bridges of nearby vessels"
         ]
       ]
     },
     {
       "type": "exercise",
-      "prompt": "What is the typical range of a VHF maritime radio?",
+      "prompt": "Which of the following best describes the primary purpose of GMDSS?",
       "options": [
-        { "key": "a", "text": "5–10 nautical miles" },
-        { "key": "b", "text": "20–60 nautical miles depending on antenna height" },
-        { "key": "c", "text": "200–500 nautical miles" },
-        { "key": "d", "text": "Unlimited (global coverage)" }
+        { "key": "a", "text": "To provide high-speed internet access to vessels at sea" },
+        {
+          "key": "b",
+          "text": "To ensure automated distress alerting and coordinated search and rescue communications worldwide"
+        },
+        { "key": "c", "text": "To replace all radio communications with satellite-only systems" }
       ],
       "answer": "b",
-      "explanation": "VHF radio uses line-of-sight propagation. Range depends primarily on antenna height at both ends, typically achieving 20–60 NM."
+      "explanation": "GMDSS is fundamentally a safety system. Its core purpose is to automate distress alerting and provide reliable communications for search and rescue coordination. While it supports general communications, safety is its primary function."
+    },
+    {
+      "type": "text",
+      "content": "GMDSS was adopted by the IMO in 1988 through amendments to the SOLAS Convention. Implementation was phased in gradually: the first phase began on 1 February 1992, when new vessels were required to carry GMDSS equipment, and existing vessels began transitioning. Full and mandatory implementation for all SOLAS vessels was achieved on 1 February 1999. From that date, the traditional requirement for a dedicated radio officer maintaining Morse code watches was officially abolished for GMDSS-equipped vessels."
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "title": "Key Dates to Remember",
+      "content": "1988 — IMO adopts GMDSS amendments to SOLAS. 1992 — Phased implementation begins. 1 February 1999 — Full mandatory implementation; Morse code watch requirement ends."
+    },
+    {
+      "type": "fill-blank",
+      "prompt": "Full mandatory implementation of GMDSS for all SOLAS vessels was achieved on 1 February ___.",
+      "answer": "1999",
+      "alternatives": [],
+      "explanation": "The GMDSS transition period ran from 1992 to 1999. After 1 February 1999, all SOLAS convention vessels were required to be fully GMDSS-compliant."
+    },
+    {
+      "type": "text",
+      "content": "GMDSS relies on four main sub-systems working together to provide overlapping coverage across all ocean areas:"
+    },
+    {
+      "type": "table",
+      "headers": ["Sub-system", "Technology", "Primary Role"],
+      "rows": [
+        [
+          "Digital Selective Calling (DSC)",
+          "Terrestrial radio (VHF, MF, HF)",
+          "Automated digital distress alerting and calling on dedicated frequencies; the backbone of terrestrial GMDSS communications"
+        ],
+        [
+          "Inmarsat",
+          "Geostationary satellites (~70°N to 70°S)",
+          "Two-way voice, data, and distress alerting via satellite for vessels outside reliable terrestrial radio range"
+        ],
+        [
+          "Cospas-Sarsat",
+          "Polar-orbiting and geostationary satellites",
+          "Detection and location of 406 MHz distress beacons (EPIRBs, PLBs, ELTs) anywhere on Earth, including polar regions"
+        ],
+        [
+          "Maritime Safety Information (MSI)",
+          "NAVTEX (518/490 kHz) and SafetyNET (Inmarsat-C)",
+          "Broadcast delivery of navigational warnings, weather forecasts, and SAR information to vessels"
+        ]
+      ]
+    },
+    {
+      "type": "text",
+      "content": "These sub-systems complement each other. DSC provides fast, automated alerting on terrestrial radio frequencies. Inmarsat extends coverage to mid-ocean areas via satellite. Cospas-Sarsat provides a global safety net for locating EPIRBs even in polar regions where Inmarsat coverage does not reach. MSI systems ensure that vessels continuously receive safety-critical broadcasts. Together, they fulfil all nine GMDSS functional requirements across every sea area."
+    },
+    {
+      "type": "exercise",
+      "prompt": "Which GMDSS sub-system provides distress beacon detection and location services in polar regions where Inmarsat coverage is unavailable?",
+      "options": [
+        { "key": "a", "text": "Digital Selective Calling (DSC)" },
+        { "key": "b", "text": "NAVTEX" },
+        { "key": "c", "text": "Cospas-Sarsat" }
+      ],
+      "answer": "c",
+      "explanation": "Cospas-Sarsat uses polar-orbiting satellites (LEO) in addition to geostationary satellites, giving it truly global coverage including the polar regions (Sea Area A4) that fall outside Inmarsat's geostationary satellite footprint."
+    },
+    {
+      "type": "takeaway",
+      "points": [
+        "GMDSS is an IMO-mandated global safety system that automates distress alerting and coordinates search and rescue communications.",
+        "It defines nine functional requirements covering distress alerting (ship-shore, shore-ship, ship-ship), SAR coordination, on-scene communications, locating signals, MSI, general communications, and bridge-to-bridge communications.",
+        "GMDSS replaced manual Morse code watch-keeping with automated digital alerting — adopted in 1988, phased from 1992, fully mandatory from 1 February 1999.",
+        "Four sub-systems provide overlapping global coverage: DSC (terrestrial radio), Inmarsat (satellite), Cospas-Sarsat (beacon detection), and MSI (safety broadcasts)."
+      ]
     }
   ]
 }

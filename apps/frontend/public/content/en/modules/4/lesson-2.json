@@ -1,37 +1,108 @@
 {
   "version": 1,
-  "title": "SART",
+  "title": "DSC Overview and Categories",
   "sections": [
     {
       "type": "text",
-      "content": "A Search and Rescue Transponder (SART) operates in the 9 GHz radar band. When interrogated by a nearby ship's or aircraft's X-band radar, the SART responds with a signal that appears as a distinctive pattern on the radar screen, guiding rescuers directly to the survivor's position."
+      "content": "Digital Selective Calling (DSC) is the backbone of the GMDSS alerting system. It replaces the old practice of keeping a continuous voice watch on distress frequencies by allowing ships and coast stations to send and receive automated digital calls. A DSC call is a short burst of digital data — not a voice message — that identifies the calling station, specifies the purpose of the call, and can propose a working channel for follow-up voice communication."
     },
     {
-      "type": "table",
-      "headers": ["Characteristic", "Detail"],
-      "rows": [
-        ["Operating frequency", "9 GHz (X-band radar)"],
-        ["Radar display", "12 equally spaced dots extending outward from the SART position"],
-        ["Detection range", "Approximately 8 NM by ship radar, 30 NM by aircraft"],
-        ["Battery life", "Minimum 96 hours standby + 8 hours continuous operation"],
-        ["Mounting", "At least 1 metre above sea level for best radar detection"]
-      ]
+      "type": "callout",
+      "variant": "info",
+      "title": "Channel 70 — DSC Only",
+      "content": "VHF Channel 70 (156.525 MHz) is reserved exclusively for DSC transmissions. No voice traffic is permitted on this channel. All GMDSS-equipped vessels maintain an automatic watch on Ch 70 at all times."
     },
     {
       "type": "text",
-      "content": "As the rescuing vessel approaches, the 12 dots merge into 12 concentric arcs, and finally into complete circles when very close. This changing pattern confirms you are closing on the SART position."
+      "content": "DSC uses Binary-to-Ground (B2G) modulation to encode data into short digital bursts. Each DSC message is transmitted twice in rapid succession for error correction. The entire call takes less than half a second on VHF, making it highly efficient compared to voice alerting. Because the receiving equipment decodes the call automatically, no human operator needs to be actively listening at the moment the call arrives — an audible alarm sounds when a relevant call is received."
+    },
+    {
+      "type": "text",
+      "content": "Every DSC message contains several key fields: the format specifier (who the call is addressed to), the calling station's MMSI, the call category, and additional information that varies by category. For distress calls this includes the nature of distress, the vessel's position, and the time the position was valid. For routine calls it includes a proposed working channel."
+    },
+    {
+      "type": "table",
+      "headers": ["Category", "Priority", "Typical Use"],
+      "rows": [
+        [
+          "Distress",
+          "Highest",
+          "Vessel in grave and imminent danger requiring immediate assistance"
+        ],
+        [
+          "Urgency",
+          "Second",
+          "Urgent safety matter concerning a vessel or person (e.g., medical emergency, vessel not in immediate danger)"
+        ],
+        ["Safety", "Third", "Important navigational or meteorological warnings"],
+        ["Routine", "Lowest", "Ordinary ship-to-ship or ship-to-shore operational calls"]
+      ]
+    },
+    {
+      "type": "callout",
+      "variant": "warning",
+      "title": "Category Determines Priority",
+      "content": "DSC equipment processes incoming calls by priority. A distress alert will always override any other category and trigger an immediate audible and visual alarm on the bridge. Using an incorrect category (especially Distress for a non-distress situation) is a serious offence."
+    },
+    {
+      "type": "text",
+      "content": "The format specifier in a DSC message determines who receives the call. There are four format types: All-Ships (the call is received by every DSC-equipped station in range), Individual (addressed to a single MMSI), Group (addressed to a fleet or group MMSI), and Area (addressed to all stations within a defined geographic area). Distress alerts always use the All-Ships format. Routine calls are typically addressed to an individual station, though group calls are also permitted under ITU-R M.493."
+    },
+    {
+      "type": "table",
+      "headers": ["Format Specifier", "Recipient", "Used With"],
+      "rows": [
+        ["All-Ships", "Every station in range", "Distress, Urgency, Safety"],
+        ["Individual", "One specific MMSI", "All categories"],
+        ["Group", "Fleet/group MMSI", "Urgency, Safety, Routine"],
+        ["Area", "All stations in a geographic area", "Urgency, Safety"]
+      ]
     },
     {
       "type": "exercise",
-      "prompt": "How does a SART appear on a ship's radar?",
+      "prompt": "Which VHF channel is exclusively reserved for DSC digital transmissions?",
       "options": [
-        { "key": "a", "text": "A single bright dot" },
-        { "key": "b", "text": "12 equally spaced dots in a line from the SART position" },
-        { "key": "c", "text": "A flashing ring around the radar center" },
-        { "key": "d", "text": "A continuous line pointing toward the SART" }
+        { "key": "a", "text": "Channel 16" },
+        { "key": "b", "text": "Channel 13" },
+        { "key": "c", "text": "Channel 70" },
+        { "key": "d", "text": "Channel 6" }
       ],
-      "answer": "b",
-      "explanation": "A SART produces 12 equally spaced dots on the radar display, extending outward from the SART's position. As you get closer, these dots become arcs and then full circles."
+      "answer": "c",
+      "explanation": "VHF Channel 70 (156.525 MHz) is dedicated exclusively to DSC data transmissions. Channel 16 is the international distress and calling frequency for voice communications."
+    },
+    {
+      "type": "fill-blank",
+      "prompt": "A routine DSC call must always be addressed to a(n) ___ station, not sent as an all-ships call.",
+      "answer": "individual",
+      "alternatives": ["Individual", "specific", "single"],
+      "explanation": "Routine DSC calls use the Individual format specifier and are directed to one specific MMSI. Only Distress, Urgency, and Safety categories may use the All-Ships format."
+    },
+    {
+      "type": "exercise",
+      "prompt": "Which DSC call category has the second-highest priority?",
+      "options": [
+        { "key": "a", "text": "Safety" },
+        { "key": "b", "text": "Routine" },
+        { "key": "c", "text": "Urgency" },
+        { "key": "d", "text": "Distress" }
+      ],
+      "answer": "c",
+      "explanation": "The priority order from highest to lowest is: Distress, Urgency, Safety, Routine. Urgency is used when there is a serious safety concern but the vessel is not in grave and imminent danger."
+    },
+    {
+      "type": "tool-embed",
+      "tool": "dsc-builder",
+      "config": {}
+    },
+    {
+      "type": "takeaway",
+      "points": [
+        "DSC is a digital alerting system that sends automated calls on dedicated frequencies — VHF Channel 70 for VHF DSC.",
+        "DSC uses B2G modulation and transmits each call twice for error correction; the entire burst takes under half a second on VHF.",
+        "Four call categories exist in descending priority: Distress, Urgency, Safety, and Routine.",
+        "Format specifiers determine the recipient: All-Ships, Individual, Group, or Area.",
+        "Routine calls must use the Individual format; Distress alerts always use All-Ships."
+      ]
     }
   ]
 }

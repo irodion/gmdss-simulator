@@ -1,33 +1,99 @@
 {
   "version": 1,
-  "title": "Distress Alerts via DSC",
+  "title": "VHF Channel System",
   "sections": [
     {
       "type": "text",
-      "content": "To send a DSC distress alert, lift the protective cover over the distress button and press and hold it for approximately 5 seconds. The radio will transmit a distress alert on Channel 70 containing your MMSI, position (if GPS-connected), time, and nature of distress. After transmission, the radio automatically switches to Channel 16 for voice follow-up."
+      "content": "The international maritime VHF band is divided into 59 channels, each with a bandwidth of 25 kHz. Channel frequencies start at 156.025 MHz (Channel 01) and are spaced at 25 kHz intervals (156.025, 156.050, 156.075, and so on). Some channels in the upper part of the band extend above 157 MHz for the ship transmit frequency and into the 160–162 MHz range for coast station transmit frequencies in duplex pairs."
     },
     {
-      "type": "tool-embed",
-      "tool": "dsc-builder",
-      "config": { "category": "distress" }
+      "type": "text",
+      "content": "VHF channels operate in one of three modes. Simplex channels use a single frequency for both transmitting and receiving — only one station can talk at a time, controlled by PTT. Duplex channels use two different frequencies: one for the ship to transmit and another for the coast station to transmit. This allows simultaneous two-way conversation, similar to a telephone call, and is used for ship-to-shore telephone services. Semi-duplex means a ship uses only one frequency of a duplex pair in simplex mode, which is common for inter-ship communication on channels designated as duplex."
+    },
+    {
+      "type": "callout",
+      "variant": "info",
+      "title": "Simplex vs Duplex",
+      "content": "On a simplex channel, you press PTT to talk and release to listen — like a walkie-talkie. On a full duplex channel (with coast station equipment), both parties can speak and listen simultaneously — like a phone call. Most ship-to-ship communication is simplex, even on channels that have duplex capability."
+    },
+    {
+      "type": "table",
+      "headers": ["Channel", "Frequency (MHz)", "Mode", "Purpose"],
+      "rows": [
+        ["Ch 06", "156.300", "Simplex", "Inter-ship SAR (Search and Rescue)"],
+        ["Ch 08", "156.400", "Simplex", "Commercial inter-ship"],
+        ["Ch 12", "156.600", "Simplex", "Port operations"],
+        ["Ch 13", "156.650", "Simplex", "Bridge-to-bridge navigation safety"],
+        ["Ch 14", "156.700", "Simplex", "Port operations"],
+        ["Ch 15", "156.750", "Simplex", "Internal ship use (1 W only)"],
+        ["Ch 16", "156.800", "Simplex", "International distress, safety, and calling"],
+        ["Ch 17", "156.850", "Simplex", "Internal ship use (1 W only)"],
+        ["Ch 70", "156.525", "Simplex", "DSC only — no voice allowed"],
+        ["Ch 75", "156.775", "Simplex", "Guard band (1 W only)"],
+        ["Ch 76", "156.825", "Simplex", "Guard band (1 W only)"],
+        ["AIS 1 (87B)", "161.975", "Simplex", "Automatic Identification System"],
+        ["AIS 2 (88B)", "162.025", "Simplex", "Automatic Identification System"]
+      ]
+    },
+    {
+      "type": "exercise",
+      "prompt": "Which VHF channel is reserved exclusively for Digital Selective Calling and must never be used for voice?",
+      "options": [
+        { "key": "a", "text": "Channel 16" },
+        { "key": "b", "text": "Channel 13" },
+        { "key": "c", "text": "Channel 70" },
+        { "key": "d", "text": "Channel 06" }
+      ],
+      "answer": "c",
+      "explanation": "Channel 70 (156.525 MHz) is dedicated exclusively to DSC digital data transmissions. Voice communication is strictly prohibited on this channel. Channel 16 is the voice distress and calling frequency."
+    },
+    {
+      "type": "text",
+      "content": "Channels 75 and 76 are guard bands that sit immediately adjacent to Channel 16 (156.775 and 156.825 MHz, flanking 156.800 MHz). They exist to protect Channel 16 from adjacent-channel interference. Transmissions on Ch 75 and Ch 76 are restricted to 1 watt maximum power. Similarly, Channels 15 and 17 are designated for on-board communications (internal ship use) and are also limited to 1 watt to prevent interference with nearby vessels."
     },
     {
       "type": "callout",
       "variant": "warning",
-      "title": "Auto-Repeat",
-      "content": "Hold the distress button for 5 seconds. The radio will automatically repeat the distress alert every 3.5–4.5 minutes until it is acknowledged by a coast station."
+      "title": "AIS Channels — Do Not Transmit",
+      "content": "Channels 87B (AIS 1, 161.975 MHz) and 88B (AIS 2, 162.025 MHz) are used by the Automatic Identification System. These channels carry automated digital ship tracking data. Never transmit voice on these frequencies — doing so will interfere with AIS and may cause vessels to disappear from other ships' navigation displays."
+    },
+    {
+      "type": "fill-blank",
+      "prompt": "Channel 13 (156.650 MHz) is designated for ___ navigation safety communications.",
+      "answer": "bridge-to-bridge",
+      "alternatives": ["bridge to bridge", "Bridge-to-bridge", "Bridge to bridge"],
+      "explanation": "Channel 13 is the bridge-to-bridge channel used for navigation safety communications between vessels, particularly in congested waterways, near bridges, and during overtaking or meeting situations. It is mandatory to monitor Ch 13 in many port areas."
+    },
+    {
+      "type": "text",
+      "content": "When making initial contact with another station, the calling procedure begins on Channel 16. Once contact is established, both stations agree to switch to a working channel for their conversation. This keeps Channel 16 clear for distress and calling traffic. The choice of working channel depends on the type of communication: inter-ship traffic typically uses channels like Ch 06 or 08, while port operations use Ch 12 or 14 as assigned locally."
+    },
+    {
+      "type": "tool-embed",
+      "tool": "channel-explorer",
+      "config": {}
     },
     {
       "type": "exercise",
-      "prompt": "What should you do immediately after sending a DSC distress alert?",
+      "prompt": "What is the maximum permitted transmit power on Channels 15, 17, 75, and 76?",
       "options": [
-        { "key": "a", "text": "Turn off the radio to conserve battery" },
-        { "key": "b", "text": "Begin a voice MAYDAY call on Channel 16" },
-        { "key": "c", "text": "Send another DSC alert on a different channel" },
-        { "key": "d", "text": "Switch to Channel 13 and wait" }
+        { "key": "a", "text": "25 watts" },
+        { "key": "b", "text": "5 watts" },
+        { "key": "c", "text": "1 watt" },
+        { "key": "d", "text": "These channels prohibit all transmissions" }
       ],
-      "answer": "b",
-      "explanation": "After sending a DSC distress alert, the radio switches to Channel 16 where you should immediately begin a voice MAYDAY call with full details of your distress situation."
+      "answer": "c",
+      "explanation": "Channels 15 and 17 (on-board/internal use) and Channels 75 and 76 (guard bands adjacent to Ch 16) are all restricted to a maximum of 1 watt to prevent interference with Channel 16 and nearby vessels."
+    },
+    {
+      "type": "takeaway",
+      "points": [
+        "The maritime VHF band has 59 channels with 25 kHz spacing; channels can be simplex, duplex, or semi-duplex.",
+        "Channel 16 (156.800 MHz) is for distress, safety, and calling; Channel 70 (156.525 MHz) is for DSC data only.",
+        "Channels 75/76 are guard bands and Ch 15/17 are for on-board use — all limited to 1 watt.",
+        "Channel 13 is for bridge-to-bridge navigation safety; Ch 06 for inter-ship SAR; Ch 12/14 for port operations.",
+        "AIS uses channels 87B (161.975 MHz) and 88B (162.025 MHz) — never transmit voice on AIS channels."
+      ]
     }
   ]
 }

@@ -1,35 +1,113 @@
 {
   "version": 1,
-  "title": "MAYDAY RELAY",
+  "title": "Ship-to-Ship and Ship-to-Shore",
   "sections": [
     {
       "type": "text",
-      "content": "A MAYDAY RELAY is transmitted when a vessel aware of a distress situation determines that the vessel in distress is unable to send its own distress call, or when no coast station has acknowledged a distress call. Any vessel or coast station may transmit a MAYDAY RELAY on behalf of the distressed vessel."
+      "content": "Maritime VHF communication follows strict procedures for establishing contact between vessels and between a vessel and a coast station. The key principle is that Channel 16 (156.8 MHz) is used only for initial contact and distress — all working conversations must move to an appropriate working channel as quickly as possible to keep Channel 16 clear."
     },
     {
       "type": "callout",
       "variant": "info",
-      "title": "When to Relay",
-      "content": "Use MAYDAY RELAY when you hear a distress call that no coast station has acknowledged, or when the vessel in distress cannot communicate on its own behalf."
+      "title": "Ship-to-Ship Procedure",
+      "content": "Both vessels monitor Channel 16. The calling vessel initiates contact on Channel 16 using the full call format. Once the called vessel responds, the CALLED station (the vessel that was called) nominates a suitable intership working channel. Both vessels then switch to that channel and begin their exchange."
     },
     {
       "type": "text",
-      "content": "The MAYDAY RELAY format is: MAYDAY RELAY (x3) — THIS IS — [your vessel name x3] — The following MAYDAY was received from [vessel in distress] at [time] — then repeat the original MAYDAY message — OVER."
+      "content": "Here is a complete ship-to-ship call walkthrough between Motor Vessel Tami and Motor Vessel Dorado:"
+    },
+    {
+      "type": "table",
+      "headers": ["Step", "Station", "Transmission"],
+      "rows": [
+        [
+          "1",
+          "MV Tami (Ch 16)",
+          "Motor Vessel Dorado, Motor Vessel Dorado, Motor Vessel Dorado, THIS IS Motor Vessel Tami, Motor Vessel Tami, Motor Vessel Tami, OVER."
+        ],
+        [
+          "2",
+          "MV Dorado (Ch 16)",
+          "Motor Vessel Tami, THIS IS Motor Vessel Dorado, Motor Vessel Dorado, Channel 06, OVER."
+        ],
+        ["3", "MV Tami (Ch 16)", "Channel 06, ROGER, OUT."],
+        ["4", "(Both switch)", "Both vessels switch to Channel 06."],
+        [
+          "5",
+          "MV Tami (Ch 06)",
+          "Motor Vessel Dorado, THIS IS Motor Vessel Tami, Motor Vessel Tami, OVER."
+        ],
+        [
+          "6",
+          "MV Dorado (Ch 06)",
+          "Motor Vessel Tami, THIS IS Motor Vessel Dorado, Motor Vessel Dorado, ROGER, go ahead, OVER."
+        ]
+      ]
+    },
+    {
+      "type": "text",
+      "content": "Note that after agreeing on the working channel, the calling vessel says \"OUT\" on Channel 16 (not \"OVER\") because no further exchange is needed on that channel. The conversation continues on the working channel."
     },
     {
       "type": "exercise",
-      "prompt": "When should you send a MAYDAY RELAY?",
+      "prompt": "In a ship-to-ship call, which station selects the working channel?",
       "options": [
-        { "key": "a", "text": "Whenever you hear any MAYDAY call" },
-        {
-          "key": "b",
-          "text": "When a vessel in distress cannot communicate or no coast station has acknowledged"
-        },
-        { "key": "c", "text": "Only when instructed by a coast station" },
-        { "key": "d", "text": "When you want to practice distress procedures" }
+        { "key": "a", "text": "The calling station" },
+        { "key": "b", "text": "The called station" },
+        { "key": "c", "text": "Whichever station has higher authority" },
+        { "key": "d", "text": "The station with the lower MMSI number" }
       ],
       "answer": "b",
-      "explanation": "A MAYDAY RELAY is sent when the vessel in distress cannot send its own call, or when you hear a distress call that has not been acknowledged by any coast station."
+      "explanation": "The called station (the vessel receiving the call) nominates the working channel. This is because the called station knows which channels are already in use in its area and can select a clear one."
+    },
+    {
+      "type": "text",
+      "content": "Ship-to-shore communication follows a similar pattern but with important differences. When calling a coast station, the vessel initiates contact on Channel 16. The coast station responds and assigns the working channel. Unlike ship-to-ship calls, the coast station controls the duration of the exchange and may terminate the call when necessary to manage traffic on its working channels."
+    },
+    {
+      "type": "callout",
+      "variant": "info",
+      "title": "Ship-to-Shore Procedure",
+      "content": "The vessel calls the coast station on Channel 16 using the full call format. The coast station replies, assigns a working channel, and both switch. The coast station has authority over the working channel: it controls timing, may ask you to wait, and decides when the exchange ends."
+    },
+    {
+      "type": "text",
+      "content": "Many coast stations broadcast a Traffic List (also called Tango Lima, using the phonetic alphabet). This is a list of vessel names for which the coast station is holding messages — such as telegrams, telephone patches, or navigational information. Traffic Lists are broadcast at scheduled times on designated working channels. If you hear your vessel's name on a Traffic List, you should contact the coast station to collect your messages."
+    },
+    {
+      "type": "fill-blank",
+      "prompt": "A coast station's broadcast listing vessels that have pending messages is called a Traffic List, spoken phonetically as Tango ___.",
+      "answer": "Lima",
+      "alternatives": ["LIMA", "lima"],
+      "explanation": "Traffic List is abbreviated as TL, spoken phonetically as \"Tango Lima\" using the ITU phonetic alphabet. T = Tango, L = Lima."
+    },
+    {
+      "type": "callout",
+      "variant": "warning",
+      "title": "Keep Channel 16 Clear",
+      "content": "Your initial exchange on Channel 16 must be as brief as possible — just enough to establish contact and agree on a working channel. All substantive conversation happens on the working channel. Lengthy transmissions on Channel 16 block distress communications."
+    },
+    {
+      "type": "exercise",
+      "prompt": "After a coast station assigns you a working channel, what should you say before switching?",
+      "options": [
+        { "key": "a", "text": "ROGER, OVER" },
+        { "key": "b", "text": "Channel [number], ROGER, OUT" },
+        { "key": "c", "text": "WILCO, STANDBY" },
+        { "key": "d", "text": "RECEIVED, OVER AND OUT" }
+      ],
+      "answer": "b",
+      "explanation": "You confirm the channel number, say ROGER to acknowledge, and say OUT because no further exchange is needed on Channel 16. You then switch to the assigned working channel."
+    },
+    {
+      "type": "takeaway",
+      "points": [
+        "Channel 16 is for initial contact and distress only — move to a working channel immediately after establishing contact.",
+        "In ship-to-ship calls, the called station selects the working channel.",
+        "In ship-to-shore calls, the coast station assigns the working channel and controls the duration of the exchange.",
+        "A Traffic List (Tango Lima) is a coast station broadcast listing vessels that have pending messages.",
+        "Always confirm the working channel number and say OUT before switching away from Channel 16."
+      ]
     }
   ]
 }

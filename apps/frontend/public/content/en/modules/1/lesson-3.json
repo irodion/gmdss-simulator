@@ -1,33 +1,103 @@
 {
   "version": 1,
-  "title": "VHF Channel System",
+  "title": "Operator Certificates and Regulations",
   "sections": [
     {
       "type": "text",
-      "content": "The international VHF maritime channel plan assigns specific frequencies to numbered channels. Channels can be simplex (transmit and receive on the same frequency) or duplex (different frequencies for ship and shore). Channel numbering follows the ITU Radio Regulations, with some regional variations."
+      "content": "Operating maritime radio equipment under GMDSS requires a valid operator certificate issued by the national maritime authority. The certificate you need depends on which Sea Areas your vessel operates in. There are two main GMDSS operator certificates recognised internationally under the ITU Radio Regulations."
     },
     {
-      "type": "tool-embed",
-      "tool": "channel-explorer",
-      "config": { "jurisdiction": "international" }
+      "type": "table",
+      "headers": ["Certificate", "Full Name", "Sea Areas Covered", "Typical Vessels"],
+      "rows": [
+        [
+          "ROC (SRC)",
+          "Restricted Operator Certificate (Short Range Certificate)",
+          "A1 only",
+          "Coastal traders, ferries, fishing vessels, recreational craft operating within VHF range of shore"
+        ],
+        [
+          "GOC (LRC)",
+          "General Operator Certificate (Long Range Certificate)",
+          "A1, A2, A3, and A4",
+          "Ocean-going cargo ships, tankers, passenger vessels, any vessel operating beyond VHF coast station range"
+        ]
+      ]
+    },
+    {
+      "type": "text",
+      "content": "The ROC — also known as the Short Range Certificate (SRC) in many countries — is the entry-level GMDSS qualification. It covers the operation of VHF radio with DSC, NAVTEX, EPIRB, SART, and other A1 equipment. The GOC (or Long Range Certificate, LRC) covers everything in the ROC plus MF/HF radio, Inmarsat terminals, and the additional procedures required for ocean voyages."
     },
     {
       "type": "callout",
       "variant": "warning",
-      "title": "Channel 70 — DSC Only",
-      "content": "Never transmit voice on Channel 70 — it is reserved exclusively for Digital Selective Calling (DSC). Voice transmissions on this channel will interfere with automated distress alerting."
+      "title": "Legal Requirement",
+      "content": "Operating a marine radio without a valid operator certificate is a criminal offence in most jurisdictions. Penalties can include fines, confiscation of equipment, and in serious cases, imprisonment. The certificate must be carried on board and available for inspection."
+    },
+    {
+      "type": "text",
+      "content": "The SRC/ROC examination typically consists of two parts. Part A is a written examination lasting 30 minutes, comprising 20 multiple-choice questions. The pass mark is 80%, meaning you must answer at least 16 questions correctly. Part B is a practical examination lasting approximately 15 minutes, in which you must demonstrate competence in operating VHF DSC equipment, sending and receiving distress alerts, and performing routine radio procedures. The pass mark for the practical examination is 75%."
     },
     {
       "type": "exercise",
-      "prompt": "Which channel is the international distress and calling channel?",
+      "prompt": "What is the pass mark for the SRC/ROC written examination (Part A)?",
       "options": [
-        { "key": "a", "text": "Channel 9" },
-        { "key": "b", "text": "Channel 13" },
-        { "key": "c", "text": "Channel 16" },
-        { "key": "d", "text": "Channel 70" }
+        { "key": "a", "text": "70% (14 out of 20)" },
+        { "key": "b", "text": "80% (16 out of 20)" },
+        { "key": "c", "text": "90% (18 out of 20)" }
       ],
-      "answer": "c",
-      "explanation": "Channel 16 (156.800 MHz) is the international distress, safety, and calling frequency. Channel 70 is reserved for DSC digital alerts, not voice."
+      "answer": "b",
+      "explanation": "The Part A written examination requires a pass mark of 80%. With 20 multiple-choice questions, this means you must get at least 16 correct to pass."
+    },
+    {
+      "type": "text",
+      "content": "SOLAS Chapter IV sets out the international regulatory framework for GMDSS. It specifies which vessels must comply (generally all cargo ships of 300 gross tonnage and above engaged on international voyages, and all passenger ships on international voyages regardless of size), what equipment must be carried based on the vessel's Sea Area classification, and the requirements for qualified radio personnel."
+    },
+    {
+      "type": "text",
+      "content": "Watchkeeping is a fundamental obligation under GMDSS. Every SOLAS vessel must maintain a continuous watch on the appropriate distress and safety frequencies while at sea. For A1 vessels, this means an unbroken watch on VHF Channel 16 (156.800 MHz) for voice and VHF Channel 70 (156.525 MHz) for DSC. The DSC watch is typically automated by the radio equipment's dedicated receiver, but the bridge officer must ensure the equipment is powered on and functioning at all times."
+    },
+    {
+      "type": "fill-blank",
+      "prompt": "Under SOLAS, vessels must maintain a continuous watch on VHF Channel 16 and VHF Channel ___ for DSC alerts.",
+      "answer": "70",
+      "alternatives": ["Ch 70", "ch 70", "Channel 70", "channel 70", "CH 70", "seventy"],
+      "explanation": "VHF Channel 70 is the international DSC distress and safety calling frequency. GMDSS-equipped vessels must maintain continuous watch on this channel alongside the voice distress frequency Channel 16."
+    },
+    {
+      "type": "text",
+      "content": "The radio log is a legal document that must be maintained on every GMDSS-equipped vessel. It must record all distress and safety communications, including the time, frequency, and content of messages sent and received. Details of equipment tests, battery checks, and any radio malfunctions must also be logged. The radio log must be kept available for inspection by maritime authorities and port state control inspectors, and must be preserved for a minimum period after the entries are made (typically at least one year, though national requirements may vary)."
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "title": "What to Log",
+      "content": "Record all distress alerts (sent and received), urgency and safety communications, DSC test calls, routine equipment tests, battery condition checks, and any radio equipment failures or repairs. If in doubt, log it — a complete record protects both the vessel and the operator."
+    },
+    {
+      "type": "exercise",
+      "prompt": "Which certificate is required to operate GMDSS equipment on an ocean-going cargo vessel sailing through Sea Areas A1, A2, and A3?",
+      "options": [
+        { "key": "a", "text": "ROC (Restricted Operator Certificate)" },
+        { "key": "b", "text": "GOC (General Operator Certificate)" },
+        { "key": "c", "text": "Either ROC or GOC is acceptable" }
+      ],
+      "answer": "b",
+      "explanation": "The ROC only covers Sea Area A1. Any vessel operating in A2, A3, or A4 requires at least one operator holding the GOC (General Operator Certificate), which covers all four Sea Areas."
+    },
+    {
+      "type": "text",
+      "content": "GMDSS operator certificates do not expire in most countries, but some administrations require periodic revalidation or evidence of continued competence (such as sea service records). Regardless of formal validity, operators should keep their knowledge current, as regulations, equipment, and procedures evolve over time. Flag state administrations may impose additional national requirements beyond the SOLAS and ITU minimums."
+    },
+    {
+      "type": "takeaway",
+      "points": [
+        "The ROC (SRC) covers Sea Area A1 equipment; the GOC (LRC) covers all Sea Areas A1–A4.",
+        "The SRC exam has two parts: Part A written (30 min, 20 MCQ, 80% pass) and Part B practical (15 min, 75% pass).",
+        "Operating marine radio without a valid certificate is a criminal offence.",
+        "Vessels must maintain continuous watch on VHF Ch 16 (voice) and Ch 70 (DSC), and keep a radio log of all distress and safety communications.",
+        "SOLAS Chapter IV is the international legal framework governing GMDSS carriage requirements and radio personnel qualifications."
+      ]
     }
   ]
 }

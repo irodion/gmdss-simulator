@@ -1,0 +1,100 @@
+{
+  "version": 1,
+  "title": "SECURITE Procedure",
+  "sections": [
+    {
+      "type": "text",
+      "content": "The safety signal SECURITE (pronounced \"say-cure-ee-tay\", from the French word for safety) is used to transmit navigational and meteorological warnings that are important to the safety of shipping. It has the third-highest priority -- above routine traffic but below urgency and distress. Unlike MAYDAY and PAN PAN, a SECURITE broadcast does not concern a vessel in danger; it concerns a hazard or condition that other vessels need to be aware of."
+    },
+    {
+      "type": "text",
+      "content": "Common uses of the SECURITE signal include warnings about floating hazards (containers, debris, logs), unlit or off-station navigational buoys, newly discovered shoals or wrecks, severe weather approaching an area, and any other condition that could endanger safe navigation."
+    },
+    {
+      "type": "callout",
+      "variant": "info",
+      "title": "Pronunciation",
+      "content": "SECURITE is always pronounced \"say-cure-ee-tay\" (four syllables, stress on the last), following the French pronunciation. It must never be anglicised to \"security\" as this could cause confusion."
+    },
+    {
+      "type": "text",
+      "content": "The standard procedure for a SECURITE broadcast has two stages on VHF. First, transmit a DSC safety call on Channel 70, indicating the working channel on which the safety information will be broadcast. Second, transmit the voice message. The initial announcement is made on Channel 16, and if the message is lengthy, the detailed information is given on a designated working channel."
+    },
+    {
+      "type": "text",
+      "content": "The voice format for a SECURITE message is:"
+    },
+    {
+      "type": "table",
+      "headers": ["Element", "Content"],
+      "rows": [
+        ["1", "SECURITE SECURITE SECURITE"],
+        ["2", "ALL STATIONS ALL STATIONS ALL STATIONS"],
+        ["3", "THIS IS [station name x3, call sign]"],
+        [
+          "4",
+          "Safety information, including position of the hazard (latitude/longitude or bearing and distance from a known point)"
+        ],
+        ["5", "OUT"]
+      ]
+    },
+    {
+      "type": "callout",
+      "variant": "warning",
+      "title": "OUT, Not OVER",
+      "content": "A SECURITE message ends with OUT, not OVER. This is because it is a broadcast -- no reply or acknowledgment is expected or required from receiving stations. OUT signals the end of the transmission with no further communication expected."
+    },
+    {
+      "type": "text",
+      "content": "No acknowledgment is required from stations receiving a SECURITE broadcast. The information is provided for the benefit of all shipping in the area; each vessel's master decides independently what action, if any, to take. However, if a vessel discovers a navigational hazard, it has a duty under SOLAS to report it by any available means, and a SECURITE broadcast is the appropriate method."
+    },
+    {
+      "type": "text",
+      "content": "Coast stations regularly transmit scheduled SECURITE broadcasts containing weather forecasts, navigational warnings, and notices to mariners. These are typically broadcast at fixed times on designated working channels after an initial announcement on Channel 16. Vessels should be aware of the broadcast schedule for their operating area."
+    },
+    {
+      "type": "tool-embed",
+      "tool": "script-builder",
+      "config": { "scriptType": "securite" }
+    },
+    {
+      "type": "exercise",
+      "prompt": "A vessel spots a large shipping container floating awash in a busy shipping lane. Which signal should be used to warn other traffic?",
+      "options": [
+        { "key": "a", "text": "MAYDAY" },
+        { "key": "b", "text": "PAN PAN" },
+        { "key": "c", "text": "SECURITE" }
+      ],
+      "answer": "c",
+      "explanation": "A floating hazard is a navigational danger that other vessels need to know about, but it does not involve a vessel or person in distress or urgency. SECURITE is the correct signal for broadcasting navigational warnings."
+    },
+    {
+      "type": "fill-blank",
+      "prompt": "A SECURITE message ends with ___ because no reply or acknowledgment is expected.",
+      "answer": "OUT",
+      "alternatives": ["out"],
+      "explanation": "SECURITE is a one-way broadcast -- the transmitting station does not expect or require a response. OUT indicates the end of the transmission with no further communication. OVER, by contrast, invites a reply."
+    },
+    {
+      "type": "exercise",
+      "prompt": "Before transmitting a voice SECURITE message on VHF, what should be done first?",
+      "options": [
+        { "key": "a", "text": "Transmit a DSC safety call on Channel 70" },
+        { "key": "b", "text": "Contact the nearest coast station on a working channel" },
+        { "key": "c", "text": "Transmit a DSC urgency alert on Channel 70" }
+      ],
+      "answer": "a",
+      "explanation": "The standard VHF procedure is to first transmit a DSC safety call on Channel 70, indicating the working channel for the detailed safety information, and then broadcast the voice SECURITE message."
+    },
+    {
+      "type": "takeaway",
+      "points": [
+        "SECURITE (\"say-cure-ee-tay\") is used for navigational and meteorological safety warnings.",
+        "The format is: SECURITE x3, ALL STATIONS x3, THIS IS (station x3), safety information with position, OUT.",
+        "Use OUT (not OVER) -- no acknowledgment is required or expected.",
+        "On VHF, send a DSC safety call on Channel 70 first, then voice on Channel 16, with details on a working channel if needed.",
+        "Any vessel that discovers a navigational hazard has a SOLAS duty to report it, and SECURITE is the appropriate broadcast method."
+      ]
+    }
+  ]
+}

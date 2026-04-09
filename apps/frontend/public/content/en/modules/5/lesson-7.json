@@ -1,0 +1,119 @@
+{
+  "version": 1,
+  "title": "Responding to Distress",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Under SOLAS Regulation V/33 and the International Convention on Maritime Search and Rescue (SAR Convention), every vessel at sea that receives a distress signal is legally obligated to proceed with all speed to render assistance, provided doing so does not place their own vessel, crew, or passengers in serious danger. This is one of the oldest and most fundamental obligations of seafarers."
+    },
+    {
+      "type": "callout",
+      "variant": "warning",
+      "title": "Legal Obligation",
+      "content": "The duty to render assistance to persons in distress at sea is enshrined in international law (SOLAS, SAR Convention, and UNCLOS Article 98). Failure to respond without valid justification can result in criminal prosecution under the flag state's national law."
+    },
+    {
+      "type": "text",
+      "content": "When you hear a distress call, your first actions should be: (1) listen carefully and record all details -- vessel name, MMSI, position, nature of distress, number of persons on board, and any other information given; (2) plot the position of the vessel in distress on your chart to determine your distance and estimated time of arrival; (3) continue to listen on the distress frequency for further communications and any instructions from a coast station."
+    },
+    {
+      "type": "text",
+      "content": "A critical rule in GMDSS is that ships must NOT send a DSC distress acknowledgment. Only coast stations are authorised to acknowledge DSC distress alerts. The reason is straightforward: if multiple ships were to send DSC acknowledgments, the resulting burst of digital signals could block the distress frequency and prevent the coast station from receiving the original alert or coordinating the response."
+    },
+    {
+      "type": "callout",
+      "variant": "warning",
+      "title": "Ships Must Not Acknowledge by DSC",
+      "content": "Never press the DSC acknowledgment button when you receive a distress alert on your DSC controller. Only coast stations send DSC distress acknowledgments. Ships acknowledge by VOICE on Channel 16."
+    },
+    {
+      "type": "text",
+      "content": "If a coast station has already acknowledged the distress and is coordinating the response, you should continue to listen and follow instructions. Do not transmit unless you have information that will contribute to the rescue, such as your position and estimated time of arrival at the scene."
+    },
+    {
+      "type": "text",
+      "content": "However, if no coast station has acknowledged the distress call within a reasonable time (approximately five minutes), a ship should acknowledge by VOICE on Channel 16 using the following format:"
+    },
+    {
+      "type": "table",
+      "headers": ["Element", "Content"],
+      "rows": [
+        ["1", "MAYDAY"],
+        ["2", "[Vessel in distress name x3]"],
+        ["3", "THIS IS [own vessel name x3, call sign, MMSI]"],
+        ["4", "Received MAYDAY"],
+        ["5", "My position is [own position]"],
+        ["6", "My distance and estimated time of arrival at your position"],
+        ["7", "OVER"]
+      ]
+    },
+    {
+      "type": "text",
+      "content": "If no coast station has responded at all, you should also consider transmitting a MAYDAY RELAY to ensure the distress is communicated to the wider area and to coast stations on other frequencies."
+    },
+    {
+      "type": "text",
+      "content": "Once on scene, follow the instructions of the On-Scene Coordinator (OSC). The OSC may be a coast guard vessel, a designated merchant vessel, or SAR aircraft. The OSC directs the search pattern, assigns sectors, and coordinates communication between assisting vessels. Maintain a listening watch on the designated on-scene frequency and report any sightings or developments immediately."
+    },
+    {
+      "type": "callout",
+      "variant": "tip",
+      "title": "On-Scene Discipline",
+      "content": "When multiple vessels arrive at the scene, orderly communication is essential. Transmit only when you have relevant information. Follow the OSC's instructions regarding search patterns, approach procedures, and frequency allocation."
+    },
+    {
+      "type": "fill-blank",
+      "prompt": "Ships must acknowledge a distress call by ___ on Channel 16, not by DSC.",
+      "answer": "voice",
+      "alternatives": ["VOICE", "Voice", "radiotelephone"],
+      "explanation": "Only coast stations are authorised to send DSC distress acknowledgments. Ships must acknowledge by voice on Channel 16 to avoid blocking the DSC distress frequency with multiple digital acknowledgments."
+    },
+    {
+      "type": "exercise",
+      "prompt": "Why must ships NOT send a DSC acknowledgment when they receive a distress alert?",
+      "options": [
+        {
+          "key": "a",
+          "text": "Because DSC acknowledgments are only transmitted on MF/HF, not VHF"
+        },
+        {
+          "key": "b",
+          "text": "Because multiple DSC acknowledgments could block the distress frequency and prevent the coast station from receiving the alert"
+        },
+        {
+          "key": "c",
+          "text": "Because DSC equipment cannot transmit acknowledgments while receiving"
+        }
+      ],
+      "answer": "b",
+      "explanation": "If multiple ships were to send DSC acknowledgments simultaneously, the resulting transmissions could block Channel 70 and prevent the coast station from receiving the distress alert or coordinating the response. Only coast stations acknowledge by DSC."
+    },
+    {
+      "type": "exercise",
+      "prompt": "A distress call has been received and no coast station has acknowledged after five minutes. What should your vessel do?",
+      "options": [
+        { "key": "a", "text": "Send a DSC distress acknowledgment on Channel 70" },
+        {
+          "key": "b",
+          "text": "Acknowledge by voice on Channel 16 and consider transmitting a MAYDAY RELAY"
+        },
+        {
+          "key": "c",
+          "text": "Wait for a coast station to respond -- it is not your responsibility"
+        }
+      ],
+      "answer": "b",
+      "explanation": "If no coast station has acknowledged within a reasonable time, a ship should acknowledge the distress by voice on Channel 16 (giving its position and ETA) and consider transmitting a MAYDAY RELAY to ensure the distress reaches coast stations."
+    },
+    {
+      "type": "takeaway",
+      "points": [
+        "SOLAS and international law impose a legal obligation on all vessels to render assistance to persons in distress at sea.",
+        "Ships must NOT send DSC distress acknowledgments -- only coast stations do. Ships acknowledge by VOICE on Channel 16.",
+        "If no coast station responds within approximately five minutes, acknowledge by voice and consider transmitting a MAYDAY RELAY.",
+        "On scene, follow the instructions of the On-Scene Coordinator (OSC) and transmit only when you have relevant information.",
+        "Always listen, record details, and plot the distress position before transmitting."
+      ]
+    }
+  ]
+}

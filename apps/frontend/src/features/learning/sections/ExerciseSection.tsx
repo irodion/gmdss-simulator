@@ -46,8 +46,7 @@ export function ExerciseSectionView({ prompt, options, answer, explanation }: Pr
       {!submitted && selected && (
         <button
           type="button"
-          className="btn btn--primary"
-          style={{ marginTop: 14 }}
+          className="btn btn--primary exercise__submit"
           onClick={() => setSubmitted(true)}
         >
           {t("checkAnswer")}

@@ -174,15 +174,15 @@ export default async function progressRoutes(fastify: FastifyInstance) {
       results,
     });
 
-    const unlocked: string[] = [];
+    const unlocked: { id: string; title: string }[] = [];
     if (passed) {
       const nextModules = await fastify.db
-        .select({ id: modules.id })
+        .select({ id: modules.id, title: modules.title })
         .from(modules)
         .where(eq(modules.prerequisiteModuleId, quiz.moduleId));
 
       for (const next of nextModules) {
-        unlocked.push(next.id);
+        unlocked.push(next);
       }
     }
 

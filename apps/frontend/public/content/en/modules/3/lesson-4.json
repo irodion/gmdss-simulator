@@ -1,31 +1,102 @@
 {
   "version": 1,
-  "title": "PAN PAN Procedure",
+  "title": "Internal Communications and Routine",
   "sections": [
     {
       "type": "text",
-      "content": "PAN PAN (from French \"panne\" — breakdown) is the urgency signal used when a vessel or person faces a situation that is serious but not involving grave and imminent danger. Common urgency situations include person overboard, loss of steering, engine failure in a shipping lane, or a medical emergency requiring advice."
+      "content": "Not all maritime radio communication happens between separate vessels or with shore stations. Vessels also use VHF radio for internal on-board communication between the bridge, engine room, mooring stations, and other positions. The ITU designates specific channels and power levels for this purpose to prevent interference with external traffic."
     },
     {
-      "type": "tool-embed",
-      "tool": "script-builder",
-      "config": { "scriptType": "pan-pan" }
+      "type": "callout",
+      "variant": "info",
+      "title": "On-board Communication Channels",
+      "content": "Channel 15 and Channel 17 are designated for on-board communications. These channels must be used at LOW POWER (1 watt) only. The reduced power ensures that transmissions do not carry beyond the vessel and interfere with other ships or coast stations using the same frequencies."
     },
     {
       "type": "text",
-      "content": "The PAN PAN format is: PAN PAN PAN PAN PAN PAN — ALL STATIONS (x3) or specific station — THIS IS — [vessel name x3] — [nature of urgency] — [position] — [assistance required] — [number of persons on board] — [any other useful information] — OVER."
+      "content": "On-board stations follow a naming convention to keep communications clear and organised. The main station (typically the bridge or radio room) is identified by the vessel's name followed by \"Control.\" Substations are identified by the vessel's name followed by a phonetic letter. For example, aboard the vessel Tami, the bridge would be \"Tami Control,\" the bow mooring station might be \"Tami Alfa,\" the stern mooring station \"Tami Bravo,\" and the engine room \"Tami Charlie.\""
+    },
+    {
+      "type": "table",
+      "headers": ["Station", "Identifier", "Typical Location"],
+      "rows": [
+        ["Main station", "Vessel name + \"Control\"", "Bridge / Radio room"],
+        ["Substation 1", "Vessel name + \"Alfa\"", "Bow / Forecastle"],
+        ["Substation 2", "Vessel name + \"Bravo\"", "Stern / Aft deck"],
+        ["Substation 3", "Vessel name + \"Charlie\"", "Engine room"],
+        ["Substation 4", "Vessel name + \"Delta\"", "Cargo area / Hold"]
+      ]
+    },
+    {
+      "type": "text",
+      "content": "On-board calls use an abbreviated reading — since all parties are on the same vessel, there is no need for the full three-times call format. A typical on-board exchange would be: \"Tami Control, THIS IS Tami Bravo, lines secured aft, OVER.\" The reply: \"Tami Bravo, THIS IS Tami Control, ROGER, OUT.\""
     },
     {
       "type": "exercise",
-      "prompt": "What signal word indicates an urgency situation?",
+      "prompt": "What is the maximum transmit power allowed on Channels 15 and 17 for on-board communications?",
       "options": [
-        { "key": "a", "text": "MAYDAY" },
-        { "key": "b", "text": "PAN PAN" },
-        { "key": "c", "text": "SECURITE" },
-        { "key": "d", "text": "SOS" }
+        { "key": "a", "text": "25 watts" },
+        { "key": "b", "text": "5 watts" },
+        { "key": "c", "text": "1 watt" },
+        { "key": "d", "text": "10 watts" }
+      ],
+      "answer": "c",
+      "explanation": "Channels 15 and 17 are designated for on-board use at 1 watt (low power) only. This prevents the signal from carrying beyond the vessel and causing interference."
+    },
+    {
+      "type": "text",
+      "content": "When a vessel is underway, it may be required to send a Transit Report (Tango Romeo) to coast stations along its route. A Transit Report communicates essential voyage details so that maritime authorities can track vessel movements and coordinate search and rescue if the vessel fails to arrive. The report typically includes: the vessel's name and call sign, port of departure, destination port, any intermediate stops, estimated time of arrival, and the number of persons on board (crew and passengers)."
+    },
+    {
+      "type": "callout",
+      "variant": "warning",
+      "title": "Transit Reports Are Mandatory in Many Waters",
+      "content": "Some coastal states require Transit Reports (TR) for all vessels transiting their waters. Failing to submit a required TR means that rescue services may not know your vessel is overdue, critically delaying any search and rescue response."
+    },
+    {
+      "type": "fill-blank",
+      "prompt": "A Transit Report is abbreviated as TR, spoken phonetically as Tango ___.",
+      "answer": "Romeo",
+      "alternatives": ["ROMEO", "romeo"],
+      "explanation": "TR stands for Transit Report. Using the ITU phonetic alphabet: T = Tango, R = Romeo."
+    },
+    {
+      "type": "text",
+      "content": "Vessels can also place radiotelephone calls through commercial shore stations. These calls connect the ship's VHF radio to the public telephone network, allowing crew to make voice calls to numbers ashore. The coast station acts as an operator, connecting the radio channel to a telephone line. The vessel contacts the coast station, requests a telephone call, and provides the destination number. The coast station sets up the connection on a working channel. Charges apply and are billed to the vessel's account."
+    },
+    {
+      "type": "exercise",
+      "prompt": "On board the vessel Pacific Star, the engine room substation would be identified as:",
+      "options": [
+        { "key": "a", "text": "Pacific Star Engine" },
+        { "key": "b", "text": "Pacific Star Charlie" },
+        { "key": "c", "text": "Engine Room Control" },
+        { "key": "d", "text": "Pacific Star Three" }
       ],
       "answer": "b",
-      "explanation": "PAN PAN is the urgency signal, indicating a serious situation that does not involve immediate danger to the vessel or person. MAYDAY is for distress (grave and imminent danger)."
+      "explanation": "Substations are identified by the vessel name followed by a phonetic letter. The engine room, as the third substation, would typically be \"Pacific Star Charlie.\" Numbers are not used — only phonetic letters."
+    },
+    {
+      "type": "exercise",
+      "prompt": "Which of the following is NOT typically included in a Transit Report?",
+      "options": [
+        { "key": "a", "text": "Port of departure" },
+        { "key": "b", "text": "Vessel's cargo manifest details" },
+        { "key": "c", "text": "Number of persons on board" },
+        { "key": "d", "text": "Destination port" }
+      ],
+      "answer": "b",
+      "explanation": "A Transit Report includes the vessel name, call sign, departure port, destination, intermediate stops, ETA, and number of persons on board. Detailed cargo manifests are not part of a standard TR — they are reported separately through port authority systems."
+    },
+    {
+      "type": "takeaway",
+      "points": [
+        "Channels 15 and 17 are reserved for on-board communications at 1 watt (low power) only.",
+        "The main station is called \"[Vessel name] Control\"; substations use phonetic letters (Alfa, Bravo, Charlie, etc.).",
+        "On-board calls use an abbreviated format since all stations belong to the same vessel.",
+        "Transit Reports (Tango Romeo) communicate voyage details to coast stations for safety tracking.",
+        "Radiotelephone calls to shore numbers can be placed through commercial coast stations on working channels."
+      ]
     }
   ]
 }

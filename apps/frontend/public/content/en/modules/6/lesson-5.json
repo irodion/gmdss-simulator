@@ -1,0 +1,89 @@
+{
+  "version": 1,
+  "title": "PLBs, GPS, and Position Reporting",
+  "sections": [
+    {
+      "type": "text",
+      "content": "A Personal Locator Beacon (PLB) is a compact, portable 406 MHz distress beacon registered to an individual person rather than a vessel. PLBs operate through the same Cospas-Sarsat satellite system as EPIRBs but are smaller, lighter, and designed for personal use. They are manually activated and intended as a last-resort distress signal when a person is separated from the vessel or when ship-based equipment is unavailable."
+    },
+    {
+      "type": "table",
+      "headers": ["Feature", "PLB", "EPIRB"],
+      "rows": [
+        ["Registered to", "Individual person", "Vessel (MMSI)"],
+        ["Activation", "Manual only", "Cat 1: automatic (float-free); Cat 2: manual"],
+        ["Frequency", "406 MHz (+ optional 121.5 MHz homing)", "406 MHz + 121.5 MHz"],
+        ["Battery life", "24+ hours", "48+ hours"],
+        ["Size", "Pocket-sized, lightweight", "Larger, buoyant housing"],
+        ["Satellite system", "Cospas-Sarsat", "Cospas-Sarsat"],
+        ["Typical user", "Individual crew, hikers, aviators", "Vessel (SOLAS or recreational)"]
+      ]
+    },
+    {
+      "type": "text",
+      "content": "While PLBs provide a valuable personal safety net, they are not a substitute for the vessel's EPIRB. The shorter battery life (24+ hours versus 48+ hours for an EPIRB) and the lack of automatic float-free activation mean that PLBs serve a complementary role in the overall safety equipment inventory."
+    },
+    {
+      "type": "callout",
+      "variant": "info",
+      "title": "GPS-DSC Integration",
+      "content": "When a GPS receiver is connected to the VHF DSC radio, the vessel's position and time are automatically included in every DSC alert. This GPS-DSC integration is critical for distress alerting — if the GPS feed fails, the operator must enter the position manually before sending a DSC distress alert."
+    },
+    {
+      "type": "text",
+      "content": "Accurate position reporting is fundamental to maritime safety and SAR operations. The standard maritime position format uses latitude expressed as degrees and decimal minutes (DD° MM.M' N/S) and longitude as degrees and decimal minutes (DDD° MM.M' E/W). For example, a position might be written as 51° 28.3' N, 003° 12.7' W."
+    },
+    {
+      "type": "text",
+      "content": "When communicating position by voice radio, the standard phraseology is: 'My position is [latitude] North/South, [longitude] East/West.' For example: 'My position is five one degrees two eight decimal three minutes North, zero zero three degrees one two decimal seven minutes West.' Alternatively, position may be given as a bearing and distance from a known landmark: 'My position is two four five degrees from Cape Clear lighthouse, distance one two nautical miles.'"
+    },
+    {
+      "type": "callout",
+      "variant": "warning",
+      "title": "GPS Failure",
+      "content": "If the GPS connection to the DSC radio is lost, the radio may display a 'no position' warning. The operator must manually enter the vessel's last known or estimated position before transmitting a DSC distress alert. Sending a distress alert without position data severely hampers the SAR response."
+    },
+    {
+      "type": "exercise",
+      "prompt": "What is the minimum battery life required for a PLB?",
+      "options": [
+        { "key": "a", "text": "24 hours" },
+        { "key": "b", "text": "48 hours" },
+        { "key": "c", "text": "96 hours" }
+      ],
+      "answer": "a",
+      "explanation": "PLBs must provide at least 24 hours of continuous transmission. This is shorter than the 48-hour requirement for EPIRBs, reflecting the PLB's role as a compact personal device rather than a primary vessel distress beacon."
+    },
+    {
+      "type": "fill-blank",
+      "prompt": "Maritime positions use the format: latitude DD° MM.M' N/S, longitude ___ E/W.",
+      "answer": "DDD° MM.M'",
+      "alternatives": ["DDD MM.M"],
+      "explanation": "Longitude is expressed in degrees (three digits, 000-180), decimal minutes, and East or West hemisphere indicator. The three-digit format for longitude degrees distinguishes it from the two-digit latitude format."
+    },
+    {
+      "type": "exercise",
+      "prompt": "If the GPS feed to your DSC radio fails, what must you do before sending a distress alert?",
+      "options": [
+        { "key": "a", "text": "Send the alert without position — the satellite will locate you" },
+        { "key": "b", "text": "Wait until the GPS reconnects before sending any alert" },
+        {
+          "key": "c",
+          "text": "Manually enter your last known or estimated position into the DSC radio"
+        }
+      ],
+      "answer": "c",
+      "explanation": "If the GPS feed is lost, the operator must manually enter the vessel's position before transmitting a DSC distress alert. Sending a distress alert without position data makes it far harder for SAR services to locate you. Do not wait for GPS to reconnect if the situation is urgent."
+    },
+    {
+      "type": "takeaway",
+      "points": [
+        "PLBs are personal 406 MHz beacons registered to an individual, with 24+ hour battery life and manual activation only.",
+        "PLBs complement but do not replace the vessel's EPIRB.",
+        "GPS-DSC integration automatically includes position and time in DSC alerts; if GPS fails, enter position manually.",
+        "Standard maritime position format: latitude DD° MM.M' N/S, longitude DDD° MM.M' E/W.",
+        "Position can also be communicated as a bearing and distance from a known landmark."
+      ]
+    }
+  ]
+}

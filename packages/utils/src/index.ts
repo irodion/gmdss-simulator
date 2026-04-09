@@ -14,6 +14,8 @@ export type {
   ExerciseSection,
   ToolEmbedSection,
   ToolEmbedTool,
+  FillBlankSection,
+  TakeawaySection,
 } from "./lesson-content-types.ts";
 export type { MmsiStationType, MmsiDecodeResult } from "./mmsi-types.ts";
 export { decodeMmsi } from "./mmsi-decoder.ts";
