@@ -981,7 +981,7 @@
   padding: 0;
   margin: -1px;
   overflow: hidden;
-  clip: rect(0, 0, 0, 0);
+  clip-path: inset(50%);
   white-space: nowrap;
   border: 0;
 }
@@ -1003,6 +1003,11 @@
 .quiz-question__option:hover {
   border-color: var(--text-dim);
   background: var(--surface-dark);
+}
+
+.quiz-question__option:focus-within {
+  border-color: var(--orange-0);
+  box-shadow: 0 0 0 2px rgba(214, 122, 57, 0.4);
 }
 
 .quiz-question__option--selected {

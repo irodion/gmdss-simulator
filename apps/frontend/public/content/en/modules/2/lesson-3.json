@@ -66,7 +66,7 @@
     },
     {
       "type": "text",
-      "content": "When making initial contact with another station, the calling procedure begins on Channel 16. Once contact is established, both stations agree to switch to a working channel for their conversation. This keeps Channel 16 clear for distress and calling traffic. The choice of working channel depends on the type of communication: inter-ship traffic typically uses channels like Ch 06, 08, or 72, while port operations use Ch 12 or 14 as assigned locally."
+      "content": "When making initial contact with another station, the calling procedure begins on Channel 16. Once contact is established, both stations agree to switch to a working channel for their conversation. This keeps Channel 16 clear for distress and calling traffic. The choice of working channel depends on the type of communication: inter-ship traffic typically uses channels like Ch 06 or 08, while port operations use Ch 12 or 14 as assigned locally."
     },
     {
       "type": "tool-embed",

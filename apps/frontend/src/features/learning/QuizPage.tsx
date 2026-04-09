@@ -45,6 +45,13 @@ export function QuizPage() {
   const [queued, setQueued] = useState(false);
 
   useEffect(() => {
+    setQuiz(null);
+    setResult(null);
+    setAnswers({});
+    setSubmitError("");
+    setQueued(false);
+    setLoading(true);
+
     async function load() {
       try {
         const data = await apiFetch<QuizData>(`/api/content/modules/${moduleId}/quiz`);
@@ -290,7 +297,7 @@ export function QuizPage() {
             </button>
             {!allAnswered && (
               <span className="quiz-submit__hint">
-                {answeredCount}/{totalQuestions} answered
+                {t("questionsAnswered", { answered: answeredCount, total: totalQuestions })}
               </span>
             )}
           </div>
