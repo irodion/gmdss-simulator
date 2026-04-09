@@ -1,9 +1,10 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import type { RadioCommand, FlipCoverState } from "@gmdss-simulator/utils";
+import type { RadioCommand, FlipCoverState, DscMenuScreen } from "@gmdss-simulator/utils";
 
 interface DistressButtonProps {
   flipCover: FlipCoverState;
+  dscMenuScreen: DscMenuScreen["screen"];
   onCommand: (cmd: RadioCommand) => void;
 }
 
@@ -40,7 +41,7 @@ function DscStatusLine() {
   );
 }
 
-export function DistressButton({ flipCover, onCommand }: DistressButtonProps) {
+export function DistressButton({ flipCover, dscMenuScreen, onCommand }: DistressButtonProps) {
   const { t } = useTranslation("simulator");
   const [countdown, setCountdown] = useState<number | null>(null);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -59,6 +60,21 @@ export function DistressButton({ flipCover, onCommand }: DistressButtonProps) {
 
   const handleFlipCoverClick = useCallback(() => {
     onCommand({ type: isOpen ? "CLOSE_FLIP_COVER" : "OPEN_FLIP_COVER" });
+    try {
+      const ctx = new AudioContext();
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.frequency.value = 1200;
+      gain.gain.setValueAtTime(0.3, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.05);
+      osc.start();
+      osc.stop(ctx.currentTime + 0.05);
+      osc.onended = () => void ctx.close();
+    } catch {
+      /* audio not available */
+    }
   }, [isOpen, onCommand]);
 
   const handleDistressDown = useCallback(() => {
@@ -96,7 +112,7 @@ export function DistressButton({ flipCover, onCommand }: DistressButtonProps) {
       <div className="sim-dsc-controls">
         <button
           type="button"
-          className="sim-distress-btn"
+          className={`sim-distress-btn${isOpen ? " sim-distress-btn--exposed" : ""}`}
           onPointerDown={handleDistressDown}
           onPointerUp={handleDistressUp}
           onPointerCancel={handleDistressUp}
@@ -125,10 +141,29 @@ export function DistressButton({ flipCover, onCommand }: DistressButtonProps) {
             </div>
           )}
         </button>
-        <button type="button" className="sim-dsc-btn">
+        <button
+          type="button"
+          className="sim-dsc-btn"
+          onClick={() =>
+            onCommand({
+              type:
+                dscMenuScreen === "position-lat" || dscMenuScreen === "position-lon"
+                  ? "DSC_TOGGLE_HEMISPHERE"
+                  : "DSC_MENU_SELECT",
+            })
+          }
+        >
           CALL
         </button>
-        <button type="button" className="sim-dsc-btn">
+        <button
+          type="button"
+          className="sim-dsc-btn"
+          onClick={() =>
+            onCommand({
+              type: dscMenuScreen === "closed" ? "OPEN_DSC_MENU" : "DSC_MENU_BACK",
+            })
+          }
+        >
           MENU
         </button>
       </div>

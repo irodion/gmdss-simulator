@@ -399,7 +399,7 @@ interface RadioState {
   txPower: "high" | "low"; // 25W / 1W
   txState: "idle" | "transmitting";
   rxState: "idle" | "receiving";
-  dscFormState: DscFormState | null;
+  dscFormState: DscMenuScreen | null;
   micPermission: "granted" | "denied" | "prompt";
   jurisdictionProfile: string; // active jurisdiction ID
 }
@@ -1085,7 +1085,7 @@ src/
   features/radio/
     domain/                    # Layer 1: Radio Domain
       radio-machine.ts         # Pure state model, no side effects
-      radio-types.ts           # RadioState, RadioCommand, DscFormState
+      radio-types.ts           # RadioState, RadioCommand, DscMenuScreen
       radio-commands.ts        # Command creators
       radio-selectors.ts       # Derived state (frequency from channel, etc.)
 

@@ -147,8 +147,8 @@ describe("radioReducer", () => {
 
   describe("SET_SQUELCH", () => {
     it("sets squelch value", () => {
-      const state = radioReducer(INITIAL_RADIO_STATE, { type: "SET_SQUELCH", value: 50 });
-      expect(state.squelch).toBe(50);
+      const state = radioReducer(INITIAL_RADIO_STATE, { type: "SET_SQUELCH", value: 7 });
+      expect(state.squelch).toBe(7);
     });
 
     it("clamps to 0", () => {
@@ -156,9 +156,9 @@ describe("radioReducer", () => {
       expect(state.squelch).toBe(0);
     });
 
-    it("clamps to 100", () => {
-      const state = radioReducer(INITIAL_RADIO_STATE, { type: "SET_SQUELCH", value: 150 });
-      expect(state.squelch).toBe(100);
+    it("clamps to 9", () => {
+      const state = radioReducer(INITIAL_RADIO_STATE, { type: "SET_SQUELCH", value: 15 });
+      expect(state.squelch).toBe(9);
     });
   });
 
@@ -276,24 +276,24 @@ describe("radioReducer", () => {
     it("requires flip cover open to start distress hold", () => {
       const state = radioReducer(INITIAL_RADIO_STATE, { type: "START_DISTRESS_HOLD" });
       expect(state.distressHoldStartMs).toBeNull(); // blocked
-      expect(state.dscForm).toBe("closed");
+      expect(state.dscMenu.screen).toBe("closed");
     });
 
     it("starts distress hold with flip cover open", () => {
       const open: RadioState = { ...INITIAL_RADIO_STATE, flipCover: "open" };
       const state = radioReducer(open, { type: "START_DISTRESS_HOLD" });
       expect(state.distressHoldStartMs).toBe(1000);
-      expect(state.dscForm).toBe("confirming");
+      expect(state.dscMenu.screen).toBe("confirming");
     });
 
     it("blocks distress hold when already sending", () => {
       const sending: RadioState = {
         ...INITIAL_RADIO_STATE,
         flipCover: "open",
-        dscForm: "sending",
+        dscMenu: { screen: "sending" },
       };
       const state = radioReducer(sending, { type: "START_DISTRESS_HOLD" });
-      expect(state.dscForm).toBe("sending"); // unchanged
+      expect(state.dscMenu.screen).toBe("sending"); // unchanged
     });
 
     it("cancels distress hold", () => {
@@ -301,11 +301,11 @@ describe("radioReducer", () => {
         ...INITIAL_RADIO_STATE,
         flipCover: "open",
         distressHoldStartMs: 500,
-        dscForm: "confirming",
+        dscMenu: { screen: "confirming" },
       };
       const state = radioReducer(holding, { type: "CANCEL_DISTRESS_HOLD" });
       expect(state.distressHoldStartMs).toBeNull();
-      expect(state.dscForm).toBe("closed");
+      expect(state.dscMenu.screen).toBe("closed");
     });
 
     it("ignores cancel when not holding", () => {
@@ -321,13 +321,13 @@ describe("radioReducer", () => {
         ...INITIAL_RADIO_STATE,
         channel: 12,
         flipCover: "open",
-        dscForm: "confirming",
+        dscMenu: { screen: "confirming" },
         distressHoldStartMs: 0,
       };
       const state = radioReducer(confirming, { type: "COMPLETE_DISTRESS_HOLD" });
 
       expect(state.channel).toBe(16);
-      expect(state.dscForm).toBe("sent");
+      expect(state.dscMenu.screen).toBe("sent");
       expect(state.txRx).toBe("idle");
       expect(state.distressHoldStartMs).toBeNull();
       expect(state.distressRepeatTimerMs).toBeGreaterThan(5000);
@@ -337,7 +337,7 @@ describe("radioReducer", () => {
 
     it("ignores COMPLETE_DISTRESS_HOLD when not confirming", () => {
       const state = radioReducer(INITIAL_RADIO_STATE, { type: "COMPLETE_DISTRESS_HOLD" });
-      expect(state.dscForm).toBe("closed"); // unchanged
+      expect(state.dscMenu.screen).toBe("closed"); // unchanged
     });
   });
 
@@ -348,7 +348,6 @@ describe("radioReducer", () => {
         nature: "fire",
       });
       expect(state.selectedNature).toBe("fire");
-      expect(state.dscForm).toBe("nature-select");
     });
   });
 
@@ -362,6 +361,513 @@ describe("radioReducer", () => {
     it("disables GPS lock", () => {
       const state = radioReducer(INITIAL_RADIO_STATE, { type: "SET_GPS_LOCK", locked: false });
       expect(state.gpsLock).toBe(false);
+    });
+  });
+
+  describe("DSC menu", () => {
+    it("opens menu from closed state", () => {
+      const state = radioReducer(INITIAL_RADIO_STATE, { type: "OPEN_DSC_MENU" });
+      expect(state.dscMenu).toEqual({ screen: "top-menu", cursor: 0 });
+    });
+
+    it("ignores OPEN_DSC_MENU when already open", () => {
+      const open: RadioState = {
+        ...INITIAL_RADIO_STATE,
+        dscMenu: { screen: "top-menu", cursor: 0 },
+      };
+      const state = radioReducer(open, { type: "OPEN_DSC_MENU" });
+      expect(state.dscMenu).toEqual({ screen: "top-menu", cursor: 0 });
+    });
+
+    it("navigates up/down in top menu", () => {
+      const open: RadioState = {
+        ...INITIAL_RADIO_STATE,
+        dscMenu: { screen: "top-menu", cursor: 0 },
+      };
+      const down = radioReducer(open, { type: "DSC_MENU_DOWN" });
+      expect(down.dscMenu).toEqual({ screen: "top-menu", cursor: 1 });
+
+      const up = radioReducer(open, { type: "DSC_MENU_UP" });
+      expect(up.dscMenu).toEqual({ screen: "top-menu", cursor: 3 }); // wraps
+    });
+
+    it("selects Individual Call from top menu", () => {
+      const open: RadioState = {
+        ...INITIAL_RADIO_STATE,
+        dscMenu: { screen: "top-menu", cursor: 0 },
+      };
+      const state = radioReducer(open, { type: "DSC_MENU_SELECT" });
+      expect(state.dscMenu).toEqual({ screen: "individual-mmsi", buffer: "" });
+    });
+
+    it("selects All Ships from top menu", () => {
+      const open: RadioState = {
+        ...INITIAL_RADIO_STATE,
+        dscMenu: { screen: "top-menu", cursor: 1 },
+      };
+      const state = radioReducer(open, { type: "DSC_MENU_SELECT" });
+      expect(state.dscMenu).toEqual({ screen: "allships-category", cursor: 0 });
+    });
+
+    it("selects Distress Setup from top menu", () => {
+      const open: RadioState = {
+        ...INITIAL_RADIO_STATE,
+        dscMenu: { screen: "top-menu", cursor: 2 },
+      };
+      const state = radioReducer(open, { type: "DSC_MENU_SELECT" });
+      expect(state.dscMenu).toEqual({ screen: "distress-setup", cursor: 0 });
+    });
+
+    it("enters MMSI digits", () => {
+      const entry: RadioState = {
+        ...INITIAL_RADIO_STATE,
+        dscMenu: { screen: "individual-mmsi", buffer: "21123" },
+      };
+      const state = radioReducer(entry, { type: "DSC_DIGIT", digit: 9 });
+      expect(state.dscMenu).toEqual({ screen: "individual-mmsi", buffer: "211239" });
+    });
+
+    it("limits MMSI to 9 digits", () => {
+      const full: RadioState = {
+        ...INITIAL_RADIO_STATE,
+        dscMenu: { screen: "individual-mmsi", buffer: "211239680" },
+      };
+      const state = radioReducer(full, { type: "DSC_DIGIT", digit: 1 });
+      expect(state).toBe(full); // unchanged
+    });
+
+    it("backspace removes last MMSI digit", () => {
+      const entry: RadioState = {
+        ...INITIAL_RADIO_STATE,
+        dscMenu: { screen: "individual-mmsi", buffer: "211" },
+      };
+      const state = radioReducer(entry, { type: "DSC_BACKSPACE" });
+      expect(state.dscMenu).toEqual({ screen: "individual-mmsi", buffer: "21" });
+    });
+
+    it("confirms 9-digit MMSI and moves to channel entry", () => {
+      const ready: RadioState = {
+        ...INITIAL_RADIO_STATE,
+        dscMenu: { screen: "individual-mmsi", buffer: "211239680" },
+      };
+      const state = radioReducer(ready, { type: "DSC_MENU_SELECT" });
+      expect(state.dscMenu).toEqual({
+        screen: "individual-channel",
+        mmsi: "211239680",
+        buffer: "",
+      });
+    });
+
+    it("rejects incomplete MMSI on select", () => {
+      const incomplete: RadioState = {
+        ...INITIAL_RADIO_STATE,
+        dscMenu: { screen: "individual-mmsi", buffer: "2112" },
+      };
+      const state = radioReducer(incomplete, { type: "DSC_MENU_SELECT" });
+      expect(state).toBe(incomplete); // unchanged
+    });
+
+    it("enters channel digits and confirms valid channel", () => {
+      const chEntry: RadioState = {
+        ...INITIAL_RADIO_STATE,
+        dscMenu: { screen: "individual-channel", mmsi: "211239680", buffer: "" },
+      };
+      let state = radioReducer(chEntry, { type: "DSC_DIGIT", digit: 0 });
+      state = radioReducer(state, { type: "DSC_DIGIT", digit: 6 });
+      expect(state.dscMenu).toEqual({
+        screen: "individual-channel",
+        mmsi: "211239680",
+        buffer: "06",
+      });
+
+      state = radioReducer(state, { type: "DSC_MENU_SELECT" });
+      expect(state.dscMenu).toEqual({
+        screen: "individual-confirm",
+        mmsi: "211239680",
+        channel: 6,
+      });
+    });
+
+    it("rejects invalid channel on select", () => {
+      const badCh: RadioState = {
+        ...INITIAL_RADIO_STATE,
+        dscMenu: { screen: "individual-channel", mmsi: "211239680", buffer: "30" },
+      };
+      const state = radioReducer(badCh, { type: "DSC_MENU_SELECT" });
+      expect(state).toBe(badCh); // channel 30 is invalid
+    });
+
+    it("sends individual call from confirm screen", () => {
+      const confirm: RadioState = {
+        ...INITIAL_RADIO_STATE,
+        dscMenu: { screen: "individual-confirm", mmsi: "211239680", channel: 6 },
+      };
+      const state = radioReducer(confirm, { type: "DSC_MENU_SELECT" });
+      expect(state.dscMenu).toEqual({ screen: "sent", callType: "individual" });
+      expect(state.channel).toBe(6);
+    });
+
+    it("navigates back from sub-screens to top menu", () => {
+      const mmsiEntry: RadioState = {
+        ...INITIAL_RADIO_STATE,
+        dscMenu: { screen: "individual-mmsi", buffer: "211" },
+      };
+      const state = radioReducer(mmsiEntry, { type: "DSC_MENU_BACK" });
+      expect(state.dscMenu).toEqual({ screen: "top-menu", cursor: 0 });
+    });
+
+    it("closes menu from top menu via BACK", () => {
+      const open: RadioState = {
+        ...INITIAL_RADIO_STATE,
+        dscMenu: { screen: "top-menu", cursor: 0 },
+      };
+      const state = radioReducer(open, { type: "DSC_MENU_BACK" });
+      expect(state.dscMenu).toEqual({ screen: "closed" });
+    });
+
+    it("closes menu from sent screen via BACK", () => {
+      const sent: RadioState = {
+        ...INITIAL_RADIO_STATE,
+        dscMenu: { screen: "sent", callType: "individual" },
+      };
+      const state = radioReducer(sent, { type: "DSC_MENU_BACK" });
+      expect(state.dscMenu).toEqual({ screen: "closed" });
+    });
+
+    it("selects nature in distress setup and closes menu", () => {
+      const setup: RadioState = {
+        ...INITIAL_RADIO_STATE,
+        dscMenu: { screen: "distress-setup", cursor: 1 }, // "fire"
+      };
+      const state = radioReducer(setup, { type: "DSC_MENU_SELECT" });
+      expect(state.selectedNature).toBe("fire");
+      expect(state.dscMenu).toEqual({ screen: "closed" });
+    });
+
+    it("all ships urgency flow", () => {
+      const cat: RadioState = {
+        ...INITIAL_RADIO_STATE,
+        dscMenu: { screen: "allships-category", cursor: 0 },
+      };
+      let state = radioReducer(cat, { type: "DSC_MENU_SELECT" });
+      expect(state.dscMenu).toEqual({
+        screen: "allships-channel",
+        category: "urgency",
+        buffer: "",
+      });
+
+      state = radioReducer(state, { type: "DSC_DIGIT", digit: 1 });
+      state = radioReducer(state, { type: "DSC_DIGIT", digit: 6 });
+      state = radioReducer(state, { type: "DSC_MENU_SELECT" });
+      expect(state.dscMenu).toEqual({
+        screen: "allships-confirm",
+        category: "urgency",
+        channel: 16,
+      });
+
+      state = radioReducer(state, { type: "DSC_MENU_SELECT" });
+      expect(state.dscMenu).toEqual({ screen: "sent", callType: "allships" });
+      expect(state.channel).toBe(16);
+    });
+
+    it("DSC_ENTER works like DSC_MENU_SELECT on digit screens", () => {
+      const ready: RadioState = {
+        ...INITIAL_RADIO_STATE,
+        dscMenu: { screen: "individual-mmsi", buffer: "211239680" },
+      };
+      const state = radioReducer(ready, { type: "DSC_ENTER" });
+      expect(state.dscMenu.screen).toBe("individual-channel");
+    });
+
+    it("blocks PTT when DSC menu is open", () => {
+      const menuOpen: RadioState = {
+        ...INITIAL_RADIO_STATE,
+        dscMenu: { screen: "top-menu", cursor: 0 },
+      };
+      const state = radioReducer(menuOpen, { type: "PRESS_PTT" });
+      expect(state.txRx).toBe("idle");
+    });
+
+    it("shows POSITION INPUT in top menu when GPS unlocked", () => {
+      const noGps: RadioState = {
+        ...INITIAL_RADIO_STATE,
+        gpsLock: false,
+        dscMenu: { screen: "top-menu", cursor: 3 },
+      };
+      // cursor 3 with no GPS = POSITION INPUT (inserted before CALL LOG)
+      const state = radioReducer(noGps, { type: "DSC_MENU_SELECT" });
+      expect(state.dscMenu.screen).toBe("position-lat");
+    });
+
+    it("position entry full flow", () => {
+      const noGps: RadioState = {
+        ...INITIAL_RADIO_STATE,
+        gpsLock: false,
+        dscMenu: { screen: "position-lat", buffer: "", hemisphere: "N" },
+      };
+
+      // Enter latitude: 5130.500 N
+      let state = noGps;
+      for (const d of [5, 1, 3, 0, 5]) {
+        state = radioReducer(state, { type: "DSC_DIGIT", digit: d });
+      }
+      expect(state.dscMenu).toEqual({
+        screen: "position-lat",
+        buffer: "51305",
+        hemisphere: "N",
+      });
+
+      // Confirm lat
+      state = radioReducer(state, { type: "DSC_MENU_SELECT" });
+      expect(state.dscMenu.screen).toBe("position-lon");
+
+      // Enter longitude: 00007.500 W
+      for (const d of [0, 0, 0, 0, 7, 5]) {
+        state = radioReducer(state, { type: "DSC_DIGIT", digit: d });
+      }
+      // Toggle hemisphere to W
+      state = radioReducer(state, { type: "DSC_TOGGLE_HEMISPHERE" });
+
+      // Confirm lon
+      state = radioReducer(state, { type: "DSC_MENU_SELECT" });
+      expect(state.dscMenu.screen).toBe("position-time");
+
+      // Enter time: 1430
+      for (const d of [1, 4, 3, 0]) {
+        state = radioReducer(state, { type: "DSC_DIGIT", digit: d });
+      }
+
+      // Confirm time
+      state = radioReducer(state, { type: "DSC_MENU_SELECT" });
+      expect(state.dscMenu.screen).toBe("position-confirm");
+
+      // Confirm position
+      state = radioReducer(state, { type: "DSC_MENU_SELECT" });
+      expect(state.dscMenu.screen).toBe("closed");
+      expect(state.manualPosition).not.toBeNull();
+      expect(state.manualPosition?.timeUtc).toBe("1430");
+    });
+
+    it("toggles hemisphere on position-lat", () => {
+      const lat: RadioState = {
+        ...INITIAL_RADIO_STATE,
+        dscMenu: { screen: "position-lat", buffer: "5130", hemisphere: "N" },
+      };
+      const state = radioReducer(lat, { type: "DSC_TOGGLE_HEMISPHERE" });
+      expect(state.dscMenu).toEqual({
+        screen: "position-lat",
+        buffer: "5130",
+        hemisphere: "S",
+      });
+    });
+
+    it("SET_MANUAL_POSITION sets position directly", () => {
+      const state = radioReducer(INITIAL_RADIO_STATE, {
+        type: "SET_MANUAL_POSITION",
+        lat: "5130.5 N",
+        lon: "00007.5 W",
+        timeUtc: "1430",
+      });
+      expect(state.manualPosition).toEqual({
+        lat: "5130.5 N",
+        lon: "00007.5 W",
+        timeUtc: "1430",
+      });
+    });
+  });
+
+  describe("DSC menu back navigation", () => {
+    it("goes back from individual-channel to individual-mmsi", () => {
+      const state: RadioState = {
+        ...INITIAL_RADIO_STATE,
+        dscMenu: { screen: "individual-channel", mmsi: "211239680", buffer: "06" },
+      };
+      const next = radioReducer(state, { type: "DSC_MENU_BACK" });
+      expect(next.dscMenu).toEqual({ screen: "individual-mmsi", buffer: "211239680" });
+    });
+
+    it("goes back from individual-confirm to individual-channel", () => {
+      const state: RadioState = {
+        ...INITIAL_RADIO_STATE,
+        dscMenu: { screen: "individual-confirm", mmsi: "211239680", channel: 6 },
+      };
+      const next = radioReducer(state, { type: "DSC_MENU_BACK" });
+      expect(next.dscMenu).toEqual({
+        screen: "individual-channel",
+        mmsi: "211239680",
+        buffer: "6",
+      });
+    });
+
+    it("goes back from allships-channel to allships-category", () => {
+      const state: RadioState = {
+        ...INITIAL_RADIO_STATE,
+        dscMenu: { screen: "allships-channel", category: "urgency", buffer: "16" },
+      };
+      const next = radioReducer(state, { type: "DSC_MENU_BACK" });
+      expect(next.dscMenu).toEqual({ screen: "allships-category", cursor: 0 });
+    });
+
+    it("goes back from allships-confirm to allships-channel", () => {
+      const state: RadioState = {
+        ...INITIAL_RADIO_STATE,
+        dscMenu: { screen: "allships-confirm", category: "safety", channel: 16 },
+      };
+      const next = radioReducer(state, { type: "DSC_MENU_BACK" });
+      expect(next.dscMenu).toEqual({
+        screen: "allships-channel",
+        category: "safety",
+        buffer: "16",
+      });
+    });
+
+    it("goes back from position-lon to position-lat", () => {
+      const state: RadioState = {
+        ...INITIAL_RADIO_STATE,
+        dscMenu: {
+          screen: "position-lon",
+          lat: "5130",
+          latHemi: "N",
+          buffer: "000",
+          hemisphere: "W",
+        },
+      };
+      const next = radioReducer(state, { type: "DSC_MENU_BACK" });
+      expect(next.dscMenu).toEqual({ screen: "position-lat", buffer: "5130", hemisphere: "N" });
+    });
+
+    it("goes back from position-time to position-lon", () => {
+      const state: RadioState = {
+        ...INITIAL_RADIO_STATE,
+        dscMenu: {
+          screen: "position-time",
+          lat: "5130",
+          latHemi: "N",
+          lon: "00007",
+          lonHemi: "W",
+          buffer: "14",
+        },
+      };
+      const next = radioReducer(state, { type: "DSC_MENU_BACK" });
+      expect(next.dscMenu.screen).toBe("position-lon");
+    });
+
+    it("goes back from position-confirm to position-time", () => {
+      const state: RadioState = {
+        ...INITIAL_RADIO_STATE,
+        dscMenu: {
+          screen: "position-confirm",
+          lat: "5130",
+          latHemi: "N",
+          lon: "00007",
+          lonHemi: "W",
+          timeUtc: "1430",
+        },
+      };
+      const next = radioReducer(state, { type: "DSC_MENU_BACK" });
+      expect(next.dscMenu.screen).toBe("position-time");
+    });
+
+    it("closes from call-log", () => {
+      const state: RadioState = {
+        ...INITIAL_RADIO_STATE,
+        dscMenu: { screen: "call-log" },
+      };
+      const next = radioReducer(state, { type: "DSC_MENU_BACK" });
+      expect(next.dscMenu.screen).toBe("closed");
+    });
+  });
+
+  describe("DSC hemisphere toggle", () => {
+    it("toggles position-lon hemisphere E to W", () => {
+      const state: RadioState = {
+        ...INITIAL_RADIO_STATE,
+        dscMenu: {
+          screen: "position-lon",
+          lat: "5130",
+          latHemi: "N",
+          buffer: "000",
+          hemisphere: "E",
+        },
+      };
+      const next = radioReducer(state, { type: "DSC_TOGGLE_HEMISPHERE" });
+      expect(next.dscMenu).toEqual({ ...state.dscMenu, hemisphere: "W" });
+    });
+
+    it("ignores toggle on non-position screens", () => {
+      const state: RadioState = {
+        ...INITIAL_RADIO_STATE,
+        dscMenu: { screen: "top-menu", cursor: 0 },
+      };
+      const next = radioReducer(state, { type: "DSC_TOGGLE_HEMISPHERE" });
+      expect(next).toBe(state);
+    });
+  });
+
+  describe("DSC menu select - call-log", () => {
+    it("opens call-log from top menu", () => {
+      const state: RadioState = {
+        ...INITIAL_RADIO_STATE,
+        dscMenu: { screen: "top-menu", cursor: 3 },
+      };
+      const next = radioReducer(state, { type: "DSC_MENU_SELECT" });
+      expect(next.dscMenu.screen).toBe("call-log");
+    });
+  });
+
+  describe("DSC allships safety flow", () => {
+    it("selects safety category", () => {
+      const state: RadioState = {
+        ...INITIAL_RADIO_STATE,
+        dscMenu: { screen: "allships-category", cursor: 1 },
+      };
+      const next = radioReducer(state, { type: "DSC_MENU_SELECT" });
+      expect(next.dscMenu).toEqual({
+        screen: "allships-channel",
+        category: "safety",
+        buffer: "",
+      });
+    });
+  });
+
+  describe("direct channel entry", () => {
+    it("accumulates digits in channelInput", () => {
+      let state = radioReducer(INITIAL_RADIO_STATE, { type: "DSC_DIGIT", digit: 1 });
+      expect(state.channelInput).toBe("1");
+      state = radioReducer(state, { type: "DSC_DIGIT", digit: 6 });
+      expect(state.channelInput).toBe("16");
+    });
+
+    it("limits to 2 digits", () => {
+      const state: RadioState = { ...INITIAL_RADIO_STATE, channelInput: "16" };
+      const next = radioReducer(state, { type: "DSC_DIGIT", digit: 0 });
+      expect(next).toBe(state);
+    });
+
+    it("switches channel on DSC_ENTER with valid input", () => {
+      const state: RadioState = { ...INITIAL_RADIO_STATE, channelInput: "9" };
+      const next = radioReducer(state, { type: "DSC_ENTER" });
+      expect(next.channel).toBe(9);
+      expect(next.channelInput).toBe("");
+    });
+
+    it("clears input on DSC_ENTER with invalid channel", () => {
+      const state: RadioState = { ...INITIAL_RADIO_STATE, channelInput: "30" };
+      const next = radioReducer(state, { type: "DSC_ENTER" });
+      expect(next.channel).toBe(16); // unchanged
+      expect(next.channelInput).toBe("");
+    });
+
+    it("backspace removes last digit", () => {
+      const state: RadioState = { ...INITIAL_RADIO_STATE, channelInput: "16" };
+      const next = radioReducer(state, { type: "DSC_BACKSPACE" });
+      expect(next.channelInput).toBe("1");
+    });
+
+    it("CLEAR_CHANNEL_INPUT clears buffer", () => {
+      const state: RadioState = { ...INITIAL_RADIO_STATE, channelInput: "7" };
+      const next = radioReducer(state, { type: "CLEAR_CHANNEL_INPUT" });
+      expect(next.channelInput).toBe("");
     });
   });
 

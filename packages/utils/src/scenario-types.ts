@@ -38,6 +38,7 @@ export interface ScenarioDefinition {
   readonly vessel: ScenarioVessel;
   readonly requiredChannel: number;
   readonly allowedChannels?: readonly number[];
+  readonly initialGpsLock?: boolean;
   readonly task: string;
   readonly scriptReference?: string;
   readonly scriptedResponses: readonly ScriptedResponse[];

@@ -92,11 +92,12 @@ export function createNoiseGenerator(ctx: AudioContext): {
 }
 
 /**
- * Map squelch level (0–100) to noise gain.
- * Higher squelch = less noise.
+ * Map squelch level (0–100, pre-scaled from 0–9) to noise gain.
+ * Real squelch is a threshold gate, not a volume fade:
+ * level 0 (open squelch) = full static, any level above ~11 = silence.
  */
 export function squelchToNoiseGain(squelch: number): number {
-  // Inverse: squelch 0 = full noise (0.15), squelch 100 = silence (0)
-  const ratio = 1 - squelch / 100;
-  return ratio * 0.15;
+  // squelch 0 = open (full noise), anything above = gate closed (silence)
+  // Threshold at ~11 corresponds to squelch level 1 on the 0-9 knob
+  return squelch < 11 ? 0.15 : 0;
 }

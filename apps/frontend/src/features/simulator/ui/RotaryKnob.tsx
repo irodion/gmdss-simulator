@@ -4,6 +4,7 @@ interface RotaryKnobProps {
   value: number;
   min?: number;
   max?: number;
+  step?: number;
   label: string;
   onChange: (value: number) => void;
 }
@@ -17,7 +18,8 @@ function clamp(v: number, min: number, max: number): number {
   return Math.max(min, Math.min(max, v));
 }
 
-export function RotaryKnob({ value, min = 0, max = 100, label, onChange }: RotaryKnobProps) {
+export function RotaryKnob({ value, min = 0, max = 100, step, label, onChange }: RotaryKnobProps) {
+  const effectiveStep = step ?? Math.max(1, Math.round((max - min) / 20));
   const knobRef = useRef<HTMLDivElement>(null);
   const rectRef = useRef<DOMRect | null>(null);
 
@@ -61,16 +63,15 @@ export function RotaryKnob({ value, min = 0, max = 100, label, onChange }: Rotar
 
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent) => {
-      const step = 5;
       if (e.key === "ArrowUp" || e.key === "ArrowRight") {
         e.preventDefault();
-        onChange(clamp(value + step, min, max));
+        onChange(clamp(value + effectiveStep, min, max));
       } else if (e.key === "ArrowDown" || e.key === "ArrowLeft") {
         e.preventDefault();
-        onChange(clamp(value - step, min, max));
+        onChange(clamp(value - effectiveStep, min, max));
       }
     },
-    [value, min, max, onChange],
+    [value, min, max, onChange, effectiveStep],
   );
 
   const angle = valueToAngle(value, min, max);

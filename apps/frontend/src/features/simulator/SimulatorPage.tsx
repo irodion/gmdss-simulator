@@ -5,6 +5,8 @@ import {
   type RubricDefinition,
   type ScoreBreakdown,
   scoreTranscript,
+  squelchToPercent,
+  isDscMenuOpen,
 } from "@gmdss-simulator/utils";
 
 import { useRadio } from "./hooks/use-radio.ts";
@@ -22,6 +24,7 @@ import { TranscriptView } from "./ui/TranscriptView.tsx";
 import { DebriefPanel } from "./ui/DebriefPanel.tsx";
 import { MicButton } from "./ui/MicButton.tsx";
 import { AccessibleRadioPanel } from "./ui/AccessibleRadioPanel.tsx";
+import { DscKeypad } from "./ui/DscKeypad.tsx";
 
 import "../../styles/simulator.css";
 
@@ -67,11 +70,28 @@ export function SimulatorPage() {
     return () => controller.abort();
   }, []);
 
+  // Auto-clear direct channel input after 3s of inactivity
+  const sendRadioCommand = radio.send;
+  useEffect(() => {
+    if (!radio.state.channelInput) return;
+    const id = setTimeout(() => sendRadioCommand({ type: "CLEAR_CHANNEL_INPUT" }), 3000);
+    return () => clearTimeout(id);
+  }, [radio.state.channelInput, sendRadioCommand]);
+
   // Sync audio engine with radio knobs
   useEffect(() => {
-    audio.setSquelch(radio.state.squelch);
+    audio.setSquelch(squelchToPercent(radio.state.squelch));
     audio.setVolume(radio.state.volume);
   }, [radio.state.squelch, radio.state.volume, audio]);
+
+  const applyScenarioDefaults = useCallback(
+    (scenario: ScenarioDefinition) => {
+      if (scenario.initialGpsLock === false) {
+        radio.send({ type: "SET_GPS_LOCK", locked: false });
+      }
+    },
+    [radio],
+  );
 
   const handleSelectScenario = useCallback(
     async (scenario: ScenarioDefinition) => {
@@ -79,12 +99,16 @@ export function SimulatorPage() {
       setRubric(r);
       setScore(null);
       session.dispatch({ type: "LOAD_SCENARIO", scenario });
+      applyScenarioDefaults(scenario);
     },
-    [session],
+    [session, applyScenarioDefaults],
   );
 
   const handleStart = useCallback(async () => {
-    await audio.init({ volume: radio.state.volume, squelch: radio.state.squelch });
+    await audio.init({
+      volume: radio.state.volume,
+      squelch: squelchToPercent(radio.state.squelch),
+    });
     session.dispatch({ type: "START_SCENARIO" });
   }, [session, audio, radio.state.volume, radio.state.squelch]);
 
@@ -121,8 +145,9 @@ export function SimulatorPage() {
     audio.destroy();
     if (scenario) {
       session.dispatch({ type: "LOAD_SCENARIO", scenario });
+      applyScenarioDefaults(scenario);
     }
-  }, [session, radio, audio]);
+  }, [session, radio, audio, applyScenarioDefaults]);
 
   const handleBack = useCallback(() => {
     session.dispatch({ type: "RESET" });
@@ -226,6 +251,9 @@ export function SimulatorPage() {
                 <RadioDisplay state={radio.state} />
                 <RotaryKnob
                   value={radio.state.squelch}
+                  min={0}
+                  max={9}
+                  step={1}
                   label={t("sql")}
                   onChange={(v) => radio.send({ type: "SET_SQUELCH", value: v })}
                 />
@@ -238,12 +266,31 @@ export function SimulatorPage() {
                   onClick={() => radio.send({ type: "TOGGLE_DUAL_WATCH" })}
                 />
                 <RadioButton label="H/L" onClick={() => radio.send({ type: "TOGGLE_POWER" })} />
-                <RadioButton label="CH +" onClick={() => radio.send({ type: "CHANNEL_UP" })} />
-                <RadioButton label="CH -" onClick={() => radio.send({ type: "CHANNEL_DOWN" })} />
+                <RadioButton
+                  label="CH +"
+                  onClick={() =>
+                    radio.send({
+                      type: isDscMenuOpen(radio.state) ? "DSC_MENU_UP" : "CHANNEL_UP",
+                    })
+                  }
+                />
+                <RadioButton
+                  label="CH -"
+                  onClick={() =>
+                    radio.send({
+                      type: isDscMenuOpen(radio.state) ? "DSC_MENU_DOWN" : "CHANNEL_DOWN",
+                    })
+                  }
+                />
               </div>
 
               <div className="sim-lower-zone">
-                <DistressButton flipCover={radio.state.flipCover} onCommand={radio.send} />
+                <DistressButton
+                  flipCover={radio.state.flipCover}
+                  dscMenuScreen={radio.state.dscMenu.screen}
+                  onCommand={radio.send}
+                />
+                <DscKeypad onCommand={radio.send} />
                 <PttButton
                   disabled={
                     radio.state.channel === 70 ||

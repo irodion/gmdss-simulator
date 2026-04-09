@@ -19,6 +19,17 @@ import {
   beginReceive,
   endReceive,
   setGpsLock,
+  openDscMenu,
+  dscMenuUp,
+  dscMenuDown,
+  dscMenuSelect,
+  dscMenuBack,
+  dscDigit,
+  dscBackspace,
+  dscEnter,
+  dscToggleHemisphere,
+  clearChannelInput,
+  setManualPosition,
 } from "../src/radio-commands.ts";
 
 describe("radio command creators", () => {
@@ -96,5 +107,54 @@ describe("radio command creators", () => {
 
   it("setGpsLock", () => {
     expect(setGpsLock(true)).toEqual({ type: "SET_GPS_LOCK", locked: true });
+  });
+
+  it("openDscMenu", () => {
+    expect(openDscMenu()).toEqual({ type: "OPEN_DSC_MENU" });
+  });
+
+  it("dscMenuUp", () => {
+    expect(dscMenuUp()).toEqual({ type: "DSC_MENU_UP" });
+  });
+
+  it("dscMenuDown", () => {
+    expect(dscMenuDown()).toEqual({ type: "DSC_MENU_DOWN" });
+  });
+
+  it("dscMenuSelect", () => {
+    expect(dscMenuSelect()).toEqual({ type: "DSC_MENU_SELECT" });
+  });
+
+  it("dscMenuBack", () => {
+    expect(dscMenuBack()).toEqual({ type: "DSC_MENU_BACK" });
+  });
+
+  it("dscDigit", () => {
+    expect(dscDigit(5)).toEqual({ type: "DSC_DIGIT", digit: 5 });
+  });
+
+  it("dscBackspace", () => {
+    expect(dscBackspace()).toEqual({ type: "DSC_BACKSPACE" });
+  });
+
+  it("dscEnter", () => {
+    expect(dscEnter()).toEqual({ type: "DSC_ENTER" });
+  });
+
+  it("dscToggleHemisphere", () => {
+    expect(dscToggleHemisphere()).toEqual({ type: "DSC_TOGGLE_HEMISPHERE" });
+  });
+
+  it("clearChannelInput", () => {
+    expect(clearChannelInput()).toEqual({ type: "CLEAR_CHANNEL_INPUT" });
+  });
+
+  it("setManualPosition", () => {
+    expect(setManualPosition("51 N", "0 W", "1430")).toEqual({
+      type: "SET_MANUAL_POSITION",
+      lat: "51 N",
+      lon: "0 W",
+      timeUtc: "1430",
+    });
   });
 });
