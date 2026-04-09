@@ -343,16 +343,16 @@ async function seed() {
           questions: [
             {
               id: "m1q1",
-              text: "How many functional requirements does GMDSS define?",
+              text: "Which of the following is NOT one of the nine GMDSS functional requirements?",
               options: [
-                { key: "a", text: "5" },
-                { key: "b", text: "7" },
-                { key: "c", text: "9" },
-                { key: "d", text: "12" },
+                { key: "a", text: "Ship-to-shore distress alerting" },
+                { key: "b", text: "Transmission of maritime safety information" },
+                { key: "c", text: "Cargo manifest reporting to port authorities" },
+                { key: "d", text: "Locating signals for search and rescue" },
               ],
               correct_answer: "c",
               explanation:
-                "GMDSS defines 9 radiocommunication functions that every SOLAS vessel must perform.",
+                "Cargo manifest reporting is not a GMDSS function. The nine requirements cover distress alerting (ship-to-shore, shore-to-ship, ship-to-ship), SAR coordination, on-scene communications, locating signals, MSI, general communications, and bridge-to-bridge safety.",
             },
             {
               id: "m1q2",
