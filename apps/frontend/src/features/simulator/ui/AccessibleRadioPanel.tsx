@@ -3,6 +3,8 @@ import {
   VALID_CHANNELS,
   channelFrequency,
   isDscOnly,
+  isDscMenuOpen,
+  displayLines,
   type RadioCommand,
   type RadioState,
 } from "@gmdss-simulator/utils";
@@ -68,7 +70,7 @@ export function AccessibleRadioPanel({ state, onCommand }: Props) {
           type="range"
           className="sim-a11y-range"
           min={0}
-          max={100}
+          max={9}
           value={state.squelch}
           onChange={(e) => onCommand({ type: "SET_SQUELCH", value: Number(e.target.value) })}
         />
@@ -107,6 +109,94 @@ export function AccessibleRadioPanel({ state, onCommand }: Props) {
           )}
           {state.txRx === "idle" && <span style={{ color: "var(--text-dim)" }}>Idle</span>}
         </span>
+      </div>
+
+      <hr className="sim-a11y-divider" />
+
+      <div className="sim-a11y-row">
+        <span className="sim-a11y-label">DSC Menu:</span>
+        <div className="sim-a11y-btngroup">
+          {(() => {
+            const menuOpen = isDscMenuOpen(state);
+            const isHemisphereScreen =
+              state.dscMenu.screen === "position-lat" || state.dscMenu.screen === "position-lon";
+            return (
+              <>
+                <button
+                  type="button"
+                  className="btn btn--small"
+                  onClick={() => onCommand({ type: menuOpen ? "DSC_MENU_BACK" : "OPEN_DSC_MENU" })}
+                >
+                  {menuOpen ? "Back" : "Menu"}
+                </button>
+                <button
+                  type="button"
+                  className="btn btn--small"
+                  onClick={() =>
+                    onCommand({
+                      type: isHemisphereScreen ? "DSC_TOGGLE_HEMISPHERE" : "DSC_MENU_SELECT",
+                    })
+                  }
+                >
+                  {isHemisphereScreen ? "N/S · E/W" : "Select"}
+                </button>
+              </>
+            );
+          })()}
+          <button
+            type="button"
+            className="btn btn--small"
+            onClick={() => onCommand({ type: "DSC_MENU_UP" })}
+            aria-label="Previous option"
+          >
+            ▲
+          </button>
+          <button
+            type="button"
+            className="btn btn--small"
+            onClick={() => onCommand({ type: "DSC_MENU_DOWN" })}
+            aria-label="Next option"
+          >
+            ▼
+          </button>
+        </div>
+      </div>
+
+      {isDscMenuOpen(state) && (
+        <div className="sim-a11y-row" role="status" aria-live="polite">
+          <span className="sim-a11y-label">Screen:</span>
+          <span className="sim-a11y-mono">{displayLines(state).sub}</span>
+        </div>
+      )}
+
+      <div className="sim-a11y-row">
+        <span className="sim-a11y-label">Keypad:</span>
+        <div className="sim-a11y-btngroup sim-a11y-btngroup--wrap" role="group" aria-label="Keypad">
+          {[1, 2, 3, 4, 5, 6, 7, 8, 9, 0].map((d) => (
+            <button
+              key={d}
+              type="button"
+              className="btn btn--small sim-a11y-digit"
+              onClick={() => onCommand({ type: "DSC_DIGIT", digit: d })}
+            >
+              {d}
+            </button>
+          ))}
+          <button
+            type="button"
+            className="btn btn--small"
+            onClick={() => onCommand({ type: "DSC_BACKSPACE" })}
+          >
+            DEL
+          </button>
+          <button
+            type="button"
+            className="btn btn--small"
+            onClick={() => onCommand({ type: "DSC_ENTER" })}
+          >
+            ENT
+          </button>
+        </div>
       </div>
     </div>
   );

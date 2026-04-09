@@ -8,7 +8,7 @@
 
 .sim-layout {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 312px;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
   gap: 17px;
   padding: 14px 14px 14px 0;
   min-height: 0;
@@ -137,7 +137,7 @@
   position: relative;
   display: grid;
   grid-template-columns: 122px 1fr 122px;
-  align-items: center;
+  align-items: start;
   gap: 16px;
   padding: 18px 20px 14px;
   border-radius: 19px;
@@ -232,6 +232,7 @@
 .sim-lcd {
   position: relative;
   height: 86px;
+  margin-top: 2px;
   border-radius: 14px;
   padding: 11px 16px;
   border: 1px solid #6e8d68;
@@ -331,13 +332,17 @@
   transform: translateY(1px);
 }
 
-/* === Lower Zone (DSC + PTT) === */
+/* === Lower Zone (DSC + Keypad + PTT) === */
 
 .sim-lower-zone {
-  display: grid;
-  grid-template-columns: 333px 1fr;
-  align-items: center;
-  gap: 18px;
+  display: flex;
+  align-items: start;
+  gap: 12px;
+}
+
+.sim-lower-zone > :last-child {
+  align-self: center;
+  margin-left: auto;
 }
 
 /* DSC Box */
@@ -402,7 +407,7 @@
   color: #f8e9e6;
   letter-spacing: 0.05em;
   cursor: pointer;
-  transition: transform 0.3s ease;
+  transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
   transform-origin: top center;
   z-index: 2;
 }
@@ -410,6 +415,56 @@
 .sim-flip-cover--open {
   transform: perspective(200px) rotateX(-90deg);
   pointer-events: none;
+}
+
+/* Exposed distress button glow when cover is open */
+.sim-distress-btn--exposed::before {
+  animation: distress-pulse 2s ease-in-out infinite;
+}
+
+@keyframes distress-pulse {
+  0%,
+  100% {
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.18),
+      0 0 8px rgba(200, 50, 50, 0.4);
+  }
+  50% {
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.18),
+      0 0 20px rgba(200, 50, 50, 0.8);
+  }
+}
+
+/* LCD cover-open warning overlay */
+.sim-lcd-warning {
+  position: absolute;
+  inset: 0;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(180, 130, 30, 0.85);
+  color: #fff;
+  font-family: "Courier New", "Consolas", monospace;
+  font-size: 14px;
+  font-weight: bold;
+  letter-spacing: 0.05em;
+  z-index: 5;
+  animation: lcd-warning-fade 2s ease-out forwards;
+}
+
+@keyframes lcd-warning-fade {
+  0% {
+    opacity: 1;
+  }
+  70% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    pointer-events: none;
+  }
 }
 
 /* Distress countdown overlay */
@@ -425,6 +480,39 @@
   font-weight: bold;
   color: #fff;
   z-index: 3;
+}
+
+/* Digital keypad panel */
+.sim-keypad-box {
+  min-height: auto;
+  padding: 10px;
+  flex-shrink: 0;
+}
+
+.sim-keypad-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 44px);
+  grid-auto-rows: 34px;
+  gap: 4px;
+  justify-content: center;
+}
+
+.sim-keypad-grid .sim-dsc-btn {
+  width: 44px;
+  height: 34px;
+  font-size: 15px;
+  font-family: "Courier New", "Consolas", monospace;
+  border-radius: 6px;
+  padding: 0;
+}
+
+.sim-keypad-grid .sim-dsc-btn:active {
+  transform: translateY(1px);
+}
+
+.sim-keypad-grid .sim-keypad-fn {
+  font-size: 11px;
+  color: #a0c8ff;
 }
 
 /* Small DSC buttons (CALL / MENU) */
@@ -451,7 +539,7 @@
 
 .sim-ptt {
   position: relative;
-  justify-self: start;
+  flex-shrink: 0;
   width: 110px;
   height: 110px;
   display: grid;
@@ -1108,13 +1196,17 @@
   }
 
   .sim-lower-zone {
-    grid-template-columns: 1fr;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .sim-lower-zone > :last-child {
+    margin-left: 0;
   }
 
   .sim-ptt {
     width: 88px;
     height: 88px;
-    justify-self: center;
   }
 
   .sim-screen-row {
@@ -1207,4 +1299,28 @@
 .sim-a11y-range {
   flex: 1;
   accent-color: var(--orange-0);
+}
+
+.sim-a11y-divider {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 8px 0;
+}
+
+.sim-a11y-btngroup {
+  display: flex;
+  gap: 8px;
+}
+
+.sim-a11y-btngroup--wrap {
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.sim-a11y-digit {
+  min-width: 32px;
+}
+
+.sim-a11y-mono {
+  font-family: "Courier New", "Consolas", monospace;
 }

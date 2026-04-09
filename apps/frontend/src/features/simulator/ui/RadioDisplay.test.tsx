@@ -36,4 +36,14 @@ describe("RadioDisplay", () => {
     expect(lcd.textContent).toContain("CH 09");
     expect(lcd.textContent).toContain("156.450");
   });
+
+  test("shows cover warning when flip cover opens", () => {
+    const closed: RadioState = { ...INITIAL_RADIO_STATE, flipCover: "closed" };
+    const { rerender } = render(<RadioDisplay state={closed} />);
+
+    const opened: RadioState = { ...INITIAL_RADIO_STATE, flipCover: "open" };
+    rerender(<RadioDisplay state={opened} />);
+
+    expect(screen.getByText("DISTRESS COVER OPEN")).not.toBeNull();
+  });
 });

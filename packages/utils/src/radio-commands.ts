@@ -23,3 +23,21 @@ export const selectNature = (nature: NatureOfDistress): RadioCommand => ({
 export const beginReceive = (): RadioCommand => ({ type: "BEGIN_RECEIVE" });
 export const endReceive = (): RadioCommand => ({ type: "END_RECEIVE" });
 export const setGpsLock = (locked: boolean): RadioCommand => ({ type: "SET_GPS_LOCK", locked });
+
+// DSC menu commands
+export const openDscMenu = (): RadioCommand => ({ type: "OPEN_DSC_MENU" });
+export const dscMenuUp = (): RadioCommand => ({ type: "DSC_MENU_UP" });
+export const dscMenuDown = (): RadioCommand => ({ type: "DSC_MENU_DOWN" });
+export const dscMenuSelect = (): RadioCommand => ({ type: "DSC_MENU_SELECT" });
+export const dscMenuBack = (): RadioCommand => ({ type: "DSC_MENU_BACK" });
+export const dscDigit = (digit: number): RadioCommand => ({ type: "DSC_DIGIT", digit });
+export const dscBackspace = (): RadioCommand => ({ type: "DSC_BACKSPACE" });
+export const dscEnter = (): RadioCommand => ({ type: "DSC_ENTER" });
+export const dscToggleHemisphere = (): RadioCommand => ({ type: "DSC_TOGGLE_HEMISPHERE" });
+export const clearChannelInput = (): RadioCommand => ({ type: "CLEAR_CHANNEL_INPUT" });
+export const setManualPosition = (lat: string, lon: string, timeUtc: string): RadioCommand => ({
+  type: "SET_MANUAL_POSITION",
+  lat,
+  lon,
+  timeUtc,
+});

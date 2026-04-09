@@ -56,13 +56,20 @@ export {
 export type {
   PowerLevel,
   TxRxState,
-  DscFormState,
+  DscMenuScreen,
   FlipCoverState,
   RadioState,
   RadioCommand,
   RadioEvent,
 } from "./radio-types.ts";
-export { INITIAL_RADIO_STATE, radioReducer } from "./radio-machine.ts";
+export { squelchToPercent } from "./radio-constants.ts";
+export {
+  INITIAL_RADIO_STATE,
+  radioReducer,
+  getTopMenuItems,
+  ALLSHIPS_CATEGORIES,
+  NATURE_LIST,
+} from "./radio-machine.ts";
 export {
   setChannel,
   channelUp,
@@ -83,9 +90,27 @@ export {
   beginReceive,
   endReceive,
   setGpsLock,
+  openDscMenu,
+  dscMenuUp,
+  dscMenuDown,
+  dscMenuSelect,
+  dscMenuBack,
+  dscDigit,
+  dscBackspace,
+  dscEnter,
+  dscToggleHemisphere,
+  clearChannelInput,
+  setManualPosition,
 } from "./radio-commands.ts";
 export type { DisplayLines } from "./radio-selectors.ts";
-export { displayLines, isVoiceBlocked, isDscOnly, channelFrequency } from "./radio-selectors.ts";
+export {
+  displayLines,
+  isVoiceBlocked,
+  isDscOnly,
+  isDscMenuOpen,
+  isDscDigitScreen,
+  channelFrequency,
+} from "./radio-selectors.ts";
 export type { ChannelEntry } from "./channel-table.ts";
 export {
   VALID_CHANNELS,
