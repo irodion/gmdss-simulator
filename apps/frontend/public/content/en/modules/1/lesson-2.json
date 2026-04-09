@@ -90,6 +90,12 @@
     },
     {
       "type": "callout",
+      "variant": "tip",
+      "title": "SOLAS vs Non-SOLAS Vessels",
+      "content": "The equipment table above applies to SOLAS-compulsory vessels (cargo ships ≥300 GT on international voyages, all passenger ships). Small craft and pleasure boats are generally not SOLAS vessels and are not legally required to carry NAVTEX receivers, SARTs, or EPIRBs — though all of these are strongly recommended. National regulations may impose additional requirements for non-SOLAS vessels."
+    },
+    {
+      "type": "callout",
       "variant": "warning",
       "title": "EPIRB Registration",
       "content": "A 406 MHz EPIRB must be properly registered with the national authority and encoded with the vessel's MMSI or other unique identifier. An unregistered EPIRB delays rescue because the RCC cannot identify the vessel or confirm whether the alert is genuine."
