@@ -18,10 +18,14 @@ function clamp(v: number, min: number, max: number): number {
   return Math.max(min, Math.min(max, v));
 }
 
+/** Max angle change per pointer-move event before we consider it a dead-zone crossing. */
+const DEAD_ZONE_THRESHOLD_DEG = 90;
+
 export function RotaryKnob({ value, min = 0, max = 100, step, label, onChange }: RotaryKnobProps) {
   const effectiveStep = step ?? Math.max(1, Math.round((max - min) / 20));
   const knobRef = useRef<HTMLDivElement>(null);
   const rectRef = useRef<DOMRect | null>(null);
+  const prevAngleRef = useRef<number | null>(null);
 
   const handlePointerMove = useCallback(
     (e: PointerEvent) => {
@@ -30,6 +34,11 @@ export function RotaryKnob({ value, min = 0, max = 100, step, label, onChange }:
       const cx = rect.left + rect.width / 2;
       const cy = rect.top + rect.height / 2;
       const angle = Math.atan2(e.clientX - cx, -(e.clientY - cy)) * (180 / Math.PI);
+
+      const prev = prevAngleRef.current;
+      if (prev !== null && Math.abs(angle - prev) > DEAD_ZONE_THRESHOLD_DEG) return;
+      prevAngleRef.current = angle;
+
       const clamped = clamp(angle, -135, 135);
       const ratio = (clamped + 135) / 270;
       onChange(Math.round(min + ratio * (max - min)));
@@ -45,6 +54,7 @@ export function RotaryKnob({ value, min = 0, max = 100, step, label, onChange }:
       knob.removeEventListener("pointermove", handlePointerMove);
       knob.removeEventListener("pointerup", handlePointerUp);
       rectRef.current = null;
+      prevAngleRef.current = null;
     },
     [handlePointerMove],
   );
@@ -54,6 +64,7 @@ export function RotaryKnob({ value, min = 0, max = 100, step, label, onChange }:
       const knob = knobRef.current;
       if (!knob) return;
       rectRef.current = knob.getBoundingClientRect();
+      prevAngleRef.current = null;
       knob.setPointerCapture(e.pointerId);
       knob.addEventListener("pointermove", handlePointerMove);
       knob.addEventListener("pointerup", handlePointerUp);

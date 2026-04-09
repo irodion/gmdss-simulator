@@ -290,7 +290,6 @@ export function SimulatorPage() {
                   dscMenuScreen={radio.state.dscMenu.screen}
                   onCommand={radio.send}
                 />
-                <DscKeypad onCommand={radio.send} />
                 <PttButton
                   disabled={
                     radio.state.channel === 70 ||
@@ -301,6 +300,7 @@ export function SimulatorPage() {
                   active={txRx === "transmitting"}
                   onCommand={radio.send}
                 />
+                <DscKeypad onCommand={radio.send} />
               </div>
 
               <div className="sim-signal" aria-label="Signal status">
