@@ -228,6 +228,12 @@ export function generateNumberChallenges(count: number): DrillChallenge[] {
     generators.push(extras[randomInt(extras.length)]!);
   }
 
+  // Fisher-Yates shuffle so category order varies each session
+  for (let i = generators.length - 1; i > 0; i--) {
+    const j = randomInt(i + 1);
+    [generators[i], generators[j]] = [generators[j]!, generators[i]!];
+  }
+
   return generators.map((gen, i) => {
     const data = gen();
     return {
