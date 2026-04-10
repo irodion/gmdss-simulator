@@ -22,23 +22,22 @@ export function ProgressPage() {
   const [clearState, setClearState] = useState<ClearState>("idle");
   const [clearError, setClearError] = useState("");
 
-  const loadProgress = useCallback(() => {
+  const loadProgress = useCallback(async () => {
     setError("");
-    void Promise.all([
-      apiFetch<Module[]>("/api/content/modules"),
-      apiFetch<ProgressData>("/api/progress"),
-    ])
-      .then(([mods, prog]) => {
-        setModules(mods);
-        setProgress(prog);
-      })
-      .catch(() => {
-        setError("Failed to load progress");
-      });
+    try {
+      const [mods, prog] = await Promise.all([
+        apiFetch<Module[]>("/api/content/modules"),
+        apiFetch<ProgressData>("/api/progress"),
+      ]);
+      setModules(mods);
+      setProgress(prog);
+    } catch {
+      setError("Failed to load progress");
+    }
   }, []);
 
   useEffect(() => {
-    loadProgress();
+    void loadProgress();
   }, [loadProgress]);
 
   async function handleClear() {
@@ -46,12 +45,11 @@ export function ProgressPage() {
     setClearError("");
     try {
       await apiFetch("/api/progress", { method: "DELETE" });
-      setClearState("idle");
-      loadProgress();
+      await loadProgress();
     } catch {
-      setClearState("idle");
       setClearError("Failed to clear progress");
     }
+    setClearState("idle");
   }
 
   const stats = useMemo(() => {

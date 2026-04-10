@@ -287,6 +287,7 @@ describe("DELETE /api/progress", () => {
     });
     expect(progressRes.json().modules["module-1"].lessonsCompleted).toBe(1);
     expect(progressRes.json().modules["module-1"].quizBestScore).toBe(100);
+    expect(progressRes.json().modules["module-2"].status).toBe("in_progress");
 
     // Clear progress
     const deleteRes = await app.inject({
@@ -305,5 +306,6 @@ describe("DELETE /api/progress", () => {
     });
     expect(progressRes.json().modules["module-1"].lessonsCompleted).toBe(0);
     expect(progressRes.json().modules["module-1"].quizBestScore).toBeNull();
+    expect(progressRes.json().modules["module-2"].status).toBe("locked");
   });
 });
