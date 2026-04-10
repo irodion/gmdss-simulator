@@ -4,9 +4,9 @@ import {
   type DrillType,
   type DrillChallenge,
   type DrillResult,
-  createPhoneticChallenge,
   createScriptChallenge,
-  createNumberChallenge,
+  generatePhoneticChallenges,
+  generateNumberChallenges,
   scoreDrill,
 } from "./drill-types.ts";
 
@@ -20,14 +20,12 @@ const DRILL_TABS: { type: DrillType; label: string }[] = [
   { type: "script-reading", label: "Script Reading" },
 ];
 
-const PHONETIC_CALLSIGNS = ["PHQR", "5BCD2", "OZCM", "MKLW9", "BLUE DUCK", "HAMSAT"];
-
 function generateChallenges(type: DrillType): DrillChallenge[] {
   switch (type) {
     case "phonetic":
-      return PHONETIC_CALLSIGNS.map((cs, i) => createPhoneticChallenge(cs, `phonetic-${i}`));
+      return generatePhoneticChallenges(6);
     case "number-pronunciation":
-      return [0, 1, 2, 3].map((i) => createNumberChallenge(i));
+      return generateNumberChallenges(6);
     case "script-reading":
       return [0, 1, 2, 3, 4, 5].map((i) => createScriptChallenge(i));
   }
@@ -48,13 +46,14 @@ const PLACEHOLDERS: Record<DrillType, string> = {
 export function DrillPage() {
   const { t } = useTranslation("simulator");
   const [drillType, setDrillType] = useState<DrillType>("phonetic");
+  const [sessionKey, setSessionKey] = useState(0);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [inputText, setInputText] = useState("");
   const [results, setResults] = useState<DrillResult[]>([]);
   const [showResult, setShowResult] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const challenges = useMemo(() => generateChallenges(drillType), [drillType]);
+  const challenges = useMemo(() => generateChallenges(drillType), [drillType, sessionKey]);
   const current = challenges[currentIndex];
   const wordLimit = WORD_LIMITS[drillType];
   const wordCount = inputText.trim() ? inputText.trim().split(/\s+/).length : 0;
@@ -96,6 +95,7 @@ export function DrillPage() {
     setInputText("");
     setCurrentIndex(0);
     setResults([]);
+    setSessionKey((k) => k + 1);
   }, []);
 
   const lastResult = results[results.length - 1];

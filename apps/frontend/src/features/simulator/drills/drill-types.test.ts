@@ -4,7 +4,9 @@ import {
   PHONETIC_ALPHABET,
   createPhoneticChallenge,
   createScriptChallenge,
-  createNumberChallenge,
+  pronounceDigits,
+  generatePhoneticChallenges,
+  generateNumberChallenges,
   scoreDrill,
 } from "./drill-types.ts";
 
@@ -73,18 +75,96 @@ describe("createScriptChallenge — new scripts", () => {
   });
 });
 
-describe("createNumberChallenge", () => {
-  test("creates a number pronunciation challenge", () => {
-    const c = createNumberChallenge(0);
-    expect(c.type).toBe("number-pronunciation");
-    expect(c.expectedAnswer).toContain("DEGREES");
-    expect(c.expectedAnswer).toContain("MINUTES");
+describe("pronounceDigits", () => {
+  test("single digit", () => {
+    expect(pronounceDigits("0")).toBe("ZERO");
+    expect(pronounceDigits("5")).toBe("FIFE");
   });
 
-  test("uses maritime number pronunciation", () => {
-    const c = createNumberChallenge(0);
-    expect(c.expectedAnswer).toContain("TREE");
-    expect(c.expectedAnswer).toContain("ZERO");
+  test("multi-digit", () => {
+    expect(pronounceDigits("15")).toBe("WUN FIFE");
+  });
+
+  test("zero-padded", () => {
+    expect(pronounceDigits("005")).toBe("ZERO ZERO FIFE");
+  });
+
+  test("empty string", () => {
+    expect(pronounceDigits("")).toBe("");
+  });
+});
+
+describe("generatePhoneticChallenges", () => {
+  test("returns requested count", () => {
+    expect(generatePhoneticChallenges(6)).toHaveLength(6);
+    expect(generatePhoneticChallenges(3)).toHaveLength(3);
+  });
+
+  test("all challenges have phonetic type", () => {
+    const challenges = generatePhoneticChallenges(6);
+    for (const c of challenges) {
+      expect(c.type).toBe("phonetic");
+    }
+  });
+
+  test("no duplicate prompts", () => {
+    const challenges = generatePhoneticChallenges(6);
+    const prompts = challenges.map((c) => c.prompt);
+    expect(new Set(prompts).size).toBe(prompts.length);
+  });
+
+  test("includes vessel names (prompt with space)", () => {
+    const challenges = generatePhoneticChallenges(6);
+    const hasVessel = challenges.some((c) => c.prompt.replace("Spell: ", "").includes(" "));
+    expect(hasVessel).toBe(true);
+  });
+
+  test("generated expected answers score 100% against themselves", () => {
+    const challenges = generatePhoneticChallenges(6);
+    for (const c of challenges) {
+      const result = scoreDrill(c, c.expectedAnswer);
+      expect(result.score).toBe(100);
+    }
+  });
+});
+
+describe("generateNumberChallenges", () => {
+  test("returns requested count", () => {
+    expect(generateNumberChallenges(6)).toHaveLength(6);
+    expect(generateNumberChallenges(3)).toHaveLength(3);
+  });
+
+  test("all challenges have number-pronunciation type", () => {
+    const challenges = generateNumberChallenges(6);
+    for (const c of challenges) {
+      expect(c.type).toBe("number-pronunciation");
+    }
+  });
+
+  test("expected answers contain only valid maritime tokens", () => {
+    const validTokens =
+      /^(ZERO|WUN|TOO|TREE|FOW-ER|FIFE|SIX|SEV-EN|AIT|NIN-ER|DEGREES|MINUTES|NORTH|SOUTH|EAST|WEST|UTC|CHANNEL)$/;
+    const challenges = generateNumberChallenges(6);
+    for (const c of challenges) {
+      const tokens = c.expectedAnswer.split(/\s+/);
+      for (const token of tokens) {
+        expect(token).toMatch(validTokens);
+      }
+    }
+  });
+
+  test("generated expected answers score 100% against themselves", () => {
+    const challenges = generateNumberChallenges(6);
+    for (const c of challenges) {
+      const result = scoreDrill(c, c.expectedAnswer);
+      expect(result.score).toBe(100);
+    }
+  });
+
+  test("two calls produce different sets", () => {
+    const a = generateNumberChallenges(6).map((c) => c.expectedAnswer);
+    const b = generateNumberChallenges(6).map((c) => c.expectedAnswer);
+    expect(a).not.toEqual(b);
   });
 });
 

@@ -56,6 +56,14 @@ export const PHONETIC_ALPHABET: Record<string, string> = {
   "9": "NIN-ER",
 };
 
+/** Convert a digit string to maritime pronunciation using PHONETIC_ALPHABET. */
+export function pronounceDigits(digits: string): string {
+  return digits
+    .split("")
+    .map((d) => PHONETIC_ALPHABET[d] ?? d)
+    .join(" ");
+}
+
 /** Generate a phonetic drill challenge from a callsign or text. */
 export function createPhoneticChallenge(text: string, id: string): DrillChallenge {
   const expected = text
@@ -71,6 +79,165 @@ export function createPhoneticChallenge(text: string, id: string): DrillChalleng
     expectedAnswer: expected,
     hint: `Use the NATO phonetic alphabet: ${expected}`,
   };
+}
+
+// ── Phonetic drill generation ──
+
+const CALLSIGN_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+
+const VESSEL_ADJECTIVES = [
+  "RED",
+  "BLUE",
+  "STAR",
+  "IRON",
+  "WILD",
+  "GREY",
+  "GOLD",
+  "DARK",
+  "SWIFT",
+  "BOLD",
+  "PROUD",
+  "CALM",
+  "NORTH",
+  "SOUTH",
+] as const;
+
+const VESSEL_NOUNS = [
+  "HAWK",
+  "WIND",
+  "WAVE",
+  "DUCK",
+  "STAR",
+  "REEF",
+  "GULL",
+  "TIDE",
+  "CREST",
+  "SAIL",
+  "HELM",
+  "ANCHOR",
+  "PEARL",
+  "CORAL",
+] as const;
+
+function randomInt(max: number): number {
+  return Math.floor(Math.random() * max);
+}
+
+function randomCallsign(): string {
+  const len = 4 + randomInt(3); // 4–6 chars
+  let result = "";
+  for (let i = 0; i < len; i++) {
+    result += CALLSIGN_CHARS[randomInt(CALLSIGN_CHARS.length)]!;
+  }
+  return result;
+}
+
+function randomVesselName(): string {
+  const adj = VESSEL_ADJECTIVES[randomInt(VESSEL_ADJECTIVES.length)]!;
+  const noun = VESSEL_NOUNS[randomInt(VESSEL_NOUNS.length)]!;
+  return `${adj} ${noun}`;
+}
+
+/** Generate a set of unique phonetic drill challenges. */
+export function generatePhoneticChallenges(count: number): DrillChallenge[] {
+  const seen = new Set<string>();
+  const challenges: DrillChallenge[] = [];
+
+  for (let i = 0; i < count; i++) {
+    const useVessel = i >= Math.ceil(count / 2);
+    let text: string;
+    let attempts = 0;
+    do {
+      // Fall back to callsigns (effectively infinite space) if vessel names collide
+      text = useVessel && attempts < 30 ? randomVesselName() : randomCallsign();
+      attempts++;
+    } while (seen.has(text));
+    seen.add(text);
+    challenges.push(createPhoneticChallenge(text, `phonetic-${i}`));
+  }
+
+  return challenges;
+}
+
+// ── Number pronunciation generation ──
+
+const VHF_CHANNELS = [6, 8, 10, 12, 13, 14, 16, 67, 68, 69, 70, 71, 72, 73, 77] as const;
+
+function pad(n: number, width: number): string {
+  return String(n).padStart(width, "0");
+}
+
+function randomPosition(): { prompt: string; expected: string } {
+  const latDeg = randomInt(90);
+  const latMin = randomInt(60);
+  const lonDeg = randomInt(180);
+  const lonMin = randomInt(60);
+  const ns = Math.random() < 0.5 ? "N" : "S";
+  const ew = Math.random() < 0.5 ? "E" : "W";
+  const nsWord = ns === "N" ? "NORTH" : "SOUTH";
+  const ewWord = ew === "E" ? "EAST" : "WEST";
+
+  const prompt = `${pad(latDeg, 2)}°${pad(latMin, 2)}'${ns} ${pad(lonDeg, 3)}°${pad(lonMin, 2)}'${ew}`;
+  const expected =
+    `${pronounceDigits(pad(latDeg, 2))} DEGREES ${pronounceDigits(pad(latMin, 2))} MINUTES ${nsWord} ` +
+    `${pronounceDigits(pad(lonDeg, 3))} DEGREES ${pronounceDigits(pad(lonMin, 2))} MINUTES ${ewWord}`;
+
+  return { prompt, expected };
+}
+
+function randomBearing(): { prompt: string; expected: string } {
+  const deg = randomInt(360);
+  const prompt = `Bearing: ${pad(deg, 3)}°`;
+  const expected = `${pronounceDigits(pad(deg, 3))} DEGREES`;
+  return { prompt, expected };
+}
+
+function randomTime(): { prompt: string; expected: string } {
+  const h = randomInt(24);
+  const m = randomInt(60);
+  const hhmm = `${pad(h, 2)}${pad(m, 2)}`;
+  const prompt = `Time: ${hhmm} UTC`;
+  const expected = `${pronounceDigits(hhmm)} UTC`;
+  return { prompt, expected };
+}
+
+function randomChannel(): { prompt: string; expected: string } {
+  const ch = VHF_CHANNELS[randomInt(VHF_CHANNELS.length)]!;
+  const prompt = `Channel ${ch}`;
+  const expected = `CHANNEL ${pronounceDigits(String(ch))}`;
+  return { prompt, expected };
+}
+
+type NumberGenerator = () => { prompt: string; expected: string };
+
+/** Generate a set of number pronunciation drill challenges. */
+export function generateNumberChallenges(count: number): DrillChallenge[] {
+  // Guaranteed distribution: 2 positions, 1 bearing, 1 time, 1 channel
+  const base: NumberGenerator[] = [
+    randomPosition,
+    randomPosition,
+    randomBearing,
+    randomTime,
+    randomChannel,
+  ];
+  const extras: NumberGenerator[] = [randomPosition, randomBearing, randomTime, randomChannel];
+
+  // Take up to count from guaranteed set, then fill remaining randomly
+  const generators = base.slice(0, count);
+  while (generators.length < count) {
+    generators.push(extras[randomInt(extras.length)]!);
+  }
+
+  return generators.map((gen, i) => {
+    const data = gen();
+    return {
+      id: `number-${i}`,
+      type: "number-pronunciation",
+      prompt: `Read using maritime pronunciation:\n${data.prompt}`,
+      expectedAnswer: data.expected,
+      hint: data.expected,
+    };
+  });
 }
 
 // ── Script Reading challenges ──
@@ -120,40 +287,6 @@ export function createScriptChallenge(index: number): DrillChallenge {
     id: `script-${index}`,
     type: "script-reading",
     prompt: data.prompt,
-    expectedAnswer: data.expected,
-    hint: data.expected,
-  };
-}
-
-// ── Number Pronunciation challenges ──
-
-const NUMBER_CHALLENGES: { position: string; expected: string }[] = [
-  {
-    position: "36°08'N 005°21'W",
-    expected: "TREE SIX DEGREES ZERO AIT MINUTES NORTH ZERO ZERO FIFE DEGREES TOO WUN MINUTES WEST",
-  },
-  {
-    position: "51°28'N 003°12'W",
-    expected: "FIFE WUN DEGREES TOO AIT MINUTES NORTH ZERO ZERO TREE DEGREES WUN TOO MINUTES WEST",
-  },
-  {
-    position: "48°22'N 004°48'W",
-    expected:
-      "FOW-ER AIT DEGREES TOO TOO MINUTES NORTH ZERO ZERO FOW-ER DEGREES FOW-ER AIT MINUTES WEST",
-  },
-  {
-    position: "50°10'N 001°25'W",
-    expected:
-      "FIFE ZERO DEGREES WUN ZERO MINUTES NORTH ZERO ZERO WUN DEGREES TOO FIFE MINUTES WEST",
-  },
-];
-
-export function createNumberChallenge(index: number): DrillChallenge {
-  const data = NUMBER_CHALLENGES[index % NUMBER_CHALLENGES.length]!;
-  return {
-    id: `number-${index}`,
-    type: "number-pronunciation",
-    prompt: `Read this position using maritime pronunciation:\n${data.position}`,
     expectedAnswer: data.expected,
     hint: data.expected,
   };
