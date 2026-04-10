@@ -152,4 +152,71 @@ describe("ProgressPage", () => {
       expect(vi.mocked(apiFetch)).toHaveBeenCalledWith("/api/progress", { method: "DELETE" });
     });
   });
+
+  test("shows error when clear progress fails", async () => {
+    render(<ProgressPage />);
+    await waitFor(() => {
+      expect(screen.getByText("Clear progress")).toBeDefined();
+    });
+
+    vi.mocked(apiFetch).mockImplementation((path: string, opts?: RequestInit) => {
+      if (opts?.method === "DELETE") return Promise.reject(new Error("fail"));
+      if (path === "/api/content/modules") return Promise.resolve(mockModules);
+      return Promise.resolve(mockProgress);
+    });
+
+    fireEvent.click(screen.getByText("Clear progress"));
+    fireEvent.click(screen.getByText("Clear everything"));
+    await waitFor(() => {
+      expect(screen.getByText("Failed to clear progress")).toBeDefined();
+    });
+  });
+
+  test("renders completed module with badge", async () => {
+    const completedProgress = {
+      modules: {
+        "module-1": {
+          lessonsCompleted: 6,
+          lessonsTotal: 6,
+          quizBestScore: 90,
+          quizPassed: true,
+          status: "completed",
+        },
+        "module-2": {
+          lessonsCompleted: 0,
+          lessonsTotal: 6,
+          quizBestScore: null,
+          quizPassed: false,
+          status: "locked",
+        },
+      },
+    };
+
+    vi.mocked(apiFetch).mockImplementation((path: string) => {
+      if (path === "/api/content/modules") return Promise.resolve(mockModules);
+      if (path === "/api/progress") return Promise.resolve(completedProgress);
+      return Promise.resolve({ success: true });
+    });
+
+    const { container } = render(<ProgressPage />);
+    await waitFor(() => {
+      expect(screen.getByText("VHF Fundamentals")).toBeDefined();
+    });
+    expect(container.querySelector(".me-mod--completed")).not.toBeNull();
+    expect(container.querySelector(".me-mod__badge")).not.toBeNull();
+  });
+
+  test("shows 0% when no lessons exist", async () => {
+    const emptyProgress = { modules: {} };
+    vi.mocked(apiFetch).mockImplementation((path: string) => {
+      if (path === "/api/content/modules") return Promise.resolve([]);
+      if (path === "/api/progress") return Promise.resolve(emptyProgress);
+      return Promise.resolve({ success: true });
+    });
+
+    render(<ProgressPage />);
+    await waitFor(() => {
+      expect(screen.getByText("0%")).toBeDefined();
+    });
+  });
 });
