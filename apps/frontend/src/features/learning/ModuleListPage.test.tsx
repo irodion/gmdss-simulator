@@ -47,18 +47,23 @@ const mockModules = [
 ];
 
 beforeEach(() => {
-  vi.mocked(apiFetch).mockResolvedValue(mockModules);
+  vi.mocked(apiFetch).mockImplementation((url: string) => {
+    if (url === "/api/progress") {
+      return Promise.resolve({ modules: {} });
+    }
+    return Promise.resolve(mockModules);
+  });
 });
 
 describe("ModuleListPage", () => {
   test("shows loading state initially", () => {
     vi.mocked(apiFetch).mockReturnValue(new Promise(() => {}));
-    render(
+    const { container } = render(
       <MemoryRouter>
         <ModuleListPage />
       </MemoryRouter>,
     );
-    expect(screen.getByText("Loading...")).toBeDefined();
+    expect(container.querySelector(".lesson-page__loading-bar")).not.toBeNull();
   });
 
   test("renders modules after loading", async () => {
