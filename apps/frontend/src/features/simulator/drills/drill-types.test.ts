@@ -8,6 +8,7 @@ import {
   generatePhoneticChallenges,
   generateNumberChallenges,
   scoreDrill,
+  bestDrillScore,
 } from "./drill-types.ts";
 
 describe("PHONETIC_ALPHABET", () => {
@@ -345,5 +346,71 @@ describe("scoreDrill — number normalization", () => {
     const challenge = makeChallenge("OVER");
     const result = scoreDrill(challenge, "OVER");
     expect(result.score).toBe(100);
+  });
+});
+
+describe("scoreDrill — STT corrections", () => {
+  function makeChallenge(expected: string): DrillChallenge {
+    return { id: "stt-test", type: "phonetic", prompt: "test", expectedAnswer: expected };
+  }
+
+  test("ALPHA from STT matches expected ALFA", () => {
+    const challenge = makeChallenge("ALFA BRAVO");
+    expect(scoreDrill(challenge, "ALPHA BRAVO").score).toBe(100);
+  });
+
+  test("FOR homophone matches FOW-ER via correction + maritime equivalence", () => {
+    const challenge = makeChallenge("FOW-ER");
+    expect(scoreDrill(challenge, "FOR").score).toBe(100);
+  });
+
+  test("WON matches WUN via correction + maritime equivalence", () => {
+    const challenge = makeChallenge("WUN");
+    expect(scoreDrill(challenge, "WON").score).toBe(100);
+  });
+
+  test("ATE matches AIT via correction + maritime equivalence", () => {
+    const challenge = makeChallenge("AIT");
+    expect(scoreDrill(challenge, "ATE").score).toBe(100);
+  });
+
+  test("NINER without hyphen matches NIN-ER", () => {
+    const challenge = makeChallenge("NIN-ER");
+    expect(scoreDrill(challenge, "NINER").score).toBe(100);
+  });
+
+  test("FOWER without hyphen matches FOW-ER", () => {
+    const challenge = makeChallenge("FOW-ER");
+    expect(scoreDrill(challenge, "FOWER").score).toBe(100);
+  });
+
+  test("SEVEN matches SEV-EN", () => {
+    const challenge = makeChallenge("SEV-EN");
+    expect(scoreDrill(challenge, "SEVEN").score).toBe(100);
+  });
+});
+
+describe("bestDrillScore", () => {
+  function makeChallenge(expected: string): DrillChallenge {
+    return { id: "best-test", type: "phonetic", prompt: "test", expectedAnswer: expected };
+  }
+
+  test("picks highest-scoring candidate", () => {
+    const challenge = makeChallenge("ALFA BRAVO CHARLIE");
+    const result = bestDrillScore(challenge, ["ALFA", "ALFA BRAVO", "ALFA BRAVO CHARLIE"]);
+    expect(result.score).toBe(100);
+    expect(result.studentAnswer).toBe("ALFA BRAVO CHARLIE");
+  });
+
+  test("single candidate degrades to scoreDrill", () => {
+    const challenge = makeChallenge("ALFA");
+    const result = bestDrillScore(challenge, ["ALFA"]);
+    expect(result.score).toBe(100);
+  });
+
+  test("empty candidate string scores 0", () => {
+    const challenge = makeChallenge("ALFA");
+    const result = bestDrillScore(challenge, [""]);
+    expect(result.score).toBe(0);
   });
 });

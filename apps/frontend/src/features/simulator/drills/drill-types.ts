@@ -56,6 +56,18 @@ export const PHONETIC_ALPHABET: Record<string, string> = {
   "9": "NIN-ER",
 };
 
+/** Common STT misrecognitions → canonical maritime/NATO forms. */
+const STT_CORRECTIONS: Record<string, string> = {
+  ALPHA: "ALFA",
+  JULIETT: "JULIET",
+  FOR: "FOUR",
+  WON: "ONE",
+  ATE: "EIGHT",
+  NINER: "NIN-ER",
+  FOWER: "FOW-ER",
+  SEVEN: "SEV-EN",
+};
+
 /** Convert a digit string to maritime pronunciation using PHONETIC_ALPHABET. */
 export function pronounceDigits(digits: string): string {
   return digits
@@ -360,6 +372,7 @@ function normalizeAnswer(raw: string): string[] {
     .replace(/[",.]/g, " ")
     .split(/\s+/)
     .filter(Boolean)
+    .map((token) => STT_CORRECTIONS[token] ?? token)
     .flatMap((token) => {
       // Digits → expand each digit to its word form (maritime pronunciation)
       if (/^\d+$/.test(token)) {
@@ -481,6 +494,16 @@ export function scoreDrill(challenge: DrillChallenge, studentAnswer: string): Dr
       : 100;
 
   return { challenge, studentAnswer, score, matchedWords: matched, missedWords: requiredMissed };
+}
+
+/** Score multiple candidate transcripts and return the highest-scoring result. */
+export function bestDrillScore(challenge: DrillChallenge, candidates: string[]): DrillResult {
+  let best = scoreDrill(challenge, candidates[0] ?? "");
+  for (let i = 1; i < candidates.length; i++) {
+    const result = scoreDrill(challenge, candidates[i]!);
+    if (result.score > best.score) best = result;
+  }
+  return best;
 }
 
 /** Simple Levenshtein distance for fuzzy matching. */

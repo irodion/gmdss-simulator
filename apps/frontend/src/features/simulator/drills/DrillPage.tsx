@@ -7,7 +7,7 @@ import {
   createScriptChallenge,
   generatePhoneticChallenges,
   generateNumberChallenges,
-  scoreDrill,
+  bestDrillScore,
 } from "./drill-types.ts";
 
 import { MicButton } from "../ui/MicButton.tsx";
@@ -49,6 +49,7 @@ export function DrillPage() {
   const [sessionKey, setSessionKey] = useState(0);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [inputText, setInputText] = useState("");
+  const [altTexts, setAltTexts] = useState<readonly string[]>([]);
   const [results, setResults] = useState<DrillResult[]>([]);
   const [showResult, setShowResult] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -63,6 +64,7 @@ export function DrillPage() {
     setDrillType(type);
     setCurrentIndex(0);
     setInputText("");
+    setAltTexts([]);
     setResults([]);
     setShowResult(false);
   }, []);
@@ -79,20 +81,24 @@ export function DrillPage() {
   }, [inputText]);
 
   const handleSubmit = useCallback(() => {
-    if (!current || !inputText.trim() || overLimit) return;
-    setResults((r) => [...r, scoreDrill(current, inputText.trim())]);
+    const trimmed = inputText.trim();
+    if (!current || !trimmed || overLimit) return;
+    const candidates = [trimmed, ...altTexts.filter((t) => t.trim() !== trimmed)];
+    setResults((r) => [...r, bestDrillScore(current, candidates)]);
     setShowResult(true);
-  }, [current, inputText, overLimit]);
+  }, [current, inputText, overLimit, altTexts]);
 
   const handleNext = useCallback(() => {
     setShowResult(false);
     setInputText("");
+    setAltTexts([]);
     setCurrentIndex((i) => Math.min(i + 1, challenges.length - 1));
   }, [challenges.length]);
 
   const handleRestart = useCallback(() => {
     setShowResult(false);
     setInputText("");
+    setAltTexts([]);
     setCurrentIndex(0);
     setResults([]);
     setSessionKey((k) => k + 1);
@@ -148,7 +154,7 @@ export function DrillPage() {
                 aria-label="Drill answer"
                 className={overLimit ? "sim-input--over-limit" : ""}
               />
-              <MicButton onTranscript={handleInputChange} />
+              <MicButton onTranscript={handleInputChange} onAlternatives={setAltTexts} />
               <button
                 type="button"
                 onClick={handleSubmit}
