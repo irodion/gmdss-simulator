@@ -210,6 +210,28 @@ describe("POST /api/progress/quiz/:id/submit", () => {
     expect(body.modules["module-2"].status).toBe("in_progress");
   });
 
+  test("quiz validation rejects bad payload", async () => {
+    const res = await app.inject({
+      method: "POST",
+      url: "/api/progress/quiz/module-1-checkpoint/submit",
+      headers: auth(),
+      payload: { answers: "not-an-array" },
+    });
+
+    expect(res.statusCode).toBe(400);
+  });
+
+  test("returns 404 for nonexistent quiz", async () => {
+    const res = await app.inject({
+      method: "POST",
+      url: "/api/progress/quiz/nonexistent/submit",
+      headers: auth(),
+      payload: { answers: [] },
+    });
+
+    expect(res.statusCode).toBe(404);
+  });
+
   test("cannot submit quiz for locked module", async () => {
     const res = await app.inject({
       method: "POST",
@@ -228,5 +250,60 @@ describe("POST /api/progress/quiz/:id/submit", () => {
     });
 
     expect(res.statusCode).toBe(403);
+  });
+});
+
+describe("DELETE /api/progress", () => {
+  test("clears all lesson and quiz progress", async () => {
+    // Complete a lesson first
+    await app.inject({
+      method: "POST",
+      url: "/api/progress/lesson/lesson-1-1/complete",
+      headers: auth(),
+    });
+
+    // Submit a quiz
+    await app.inject({
+      method: "POST",
+      url: "/api/progress/quiz/module-1-checkpoint/submit",
+      headers: auth(),
+      payload: {
+        answers: [
+          { questionId: "m1q1", selected: "c" },
+          { questionId: "m1q2", selected: "a" },
+          { questionId: "m1q3", selected: "b" },
+          { questionId: "m1q4", selected: "b" },
+          { questionId: "m1q5", selected: "c" },
+          { questionId: "m1q6", selected: "d" },
+        ],
+      },
+    });
+
+    // Verify progress exists
+    let progressRes = await app.inject({
+      method: "GET",
+      url: "/api/progress",
+      headers: auth(),
+    });
+    expect(progressRes.json().modules["module-1"].lessonsCompleted).toBe(1);
+    expect(progressRes.json().modules["module-1"].quizBestScore).toBe(100);
+
+    // Clear progress
+    const deleteRes = await app.inject({
+      method: "DELETE",
+      url: "/api/progress",
+      headers: auth(),
+    });
+    expect(deleteRes.statusCode).toBe(200);
+    expect(deleteRes.json().success).toBe(true);
+
+    // Verify progress is cleared
+    progressRes = await app.inject({
+      method: "GET",
+      url: "/api/progress",
+      headers: auth(),
+    });
+    expect(progressRes.json().modules["module-1"].lessonsCompleted).toBe(0);
+    expect(progressRes.json().modules["module-1"].quizBestScore).toBeNull();
   });
 });

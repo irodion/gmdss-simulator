@@ -192,10 +192,10 @@ export default async function progressRoutes(fastify: FastifyInstance) {
   fastify.delete("/", async (request, reply) => {
     const userId = request.user.id;
 
-    await Promise.all([
-      fastify.db.delete(quizAttempts).where(eq(quizAttempts.userId, userId)),
-      fastify.db.delete(lessonProgress).where(eq(lessonProgress.userId, userId)),
-    ]);
+    await fastify.db.transaction(async (tx) => {
+      await tx.delete(quizAttempts).where(eq(quizAttempts.userId, userId));
+      await tx.delete(lessonProgress).where(eq(lessonProgress.userId, userId));
+    });
 
     return reply.send({ success: true });
   });

@@ -20,6 +20,7 @@ export function ProgressPage() {
   const [progress, setProgress] = useState<ProgressData | null>(null);
   const [error, setError] = useState("");
   const [clearState, setClearState] = useState<ClearState>("idle");
+  const [clearError, setClearError] = useState("");
 
   const loadProgress = useCallback(() => {
     setError("");
@@ -42,13 +43,14 @@ export function ProgressPage() {
 
   async function handleClear() {
     setClearState("clearing");
+    setClearError("");
     try {
       await apiFetch("/api/progress", { method: "DELETE" });
       setClearState("idle");
       loadProgress();
     } catch {
       setClearState("idle");
-      setError("Failed to clear progress");
+      setClearError("Failed to clear progress");
     }
   }
 
@@ -179,6 +181,12 @@ export function ProgressPage() {
       </div>
 
       <div className="me-danger-zone">
+        {clearError && (
+          <div className="alert alert--error" role="alert" style={{ marginBottom: 12 }}>
+            {clearError}
+          </div>
+        )}
+
         {clearState === "idle" && (
           <button
             type="button"

@@ -170,6 +170,8 @@ describe("ProgressPage", () => {
     await waitFor(() => {
       expect(screen.getByText("Failed to clear progress")).toBeDefined();
     });
+    // Progress data should still be visible (error is inline, not page-replacing)
+    expect(screen.getByText("VHF Fundamentals")).toBeDefined();
   });
 
   test("renders completed module with badge", async () => {
