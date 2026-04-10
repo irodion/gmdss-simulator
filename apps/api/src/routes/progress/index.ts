@@ -189,6 +189,17 @@ export default async function progressRoutes(fastify: FastifyInstance) {
     return reply.send({ score, passed, threshold: quiz.passThreshold, results, unlocked });
   });
 
+  fastify.delete("/", async (request, reply) => {
+    const userId = request.user.id;
+
+    await Promise.all([
+      fastify.db.delete(quizAttempts).where(eq(quizAttempts.userId, userId)),
+      fastify.db.delete(lessonProgress).where(eq(lessonProgress.userId, userId)),
+    ]);
+
+    return reply.send({ success: true });
+  });
+
   fastify.get("/attempts", async (_request, reply) => {
     return reply.send([]);
   });
