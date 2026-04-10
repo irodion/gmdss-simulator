@@ -224,7 +224,7 @@ type NumberGenerator = () => { prompt: string; expected: string };
 
 /** Generate a set of number pronunciation drill challenges. */
 export function generateNumberChallenges(count: number): DrillChallenge[] {
-  // Guaranteed distribution: 2 positions, 1 bearing, 1 time, 1 channel
+  // Base distribution (when count >= 5): 2 positions, 1 bearing, 1 time, 1 channel
   const base: NumberGenerator[] = [
     randomPosition,
     randomPosition,
