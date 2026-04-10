@@ -2,5 +2,14 @@
   "title": "Progress",
   "overallProgress": "Overall progress",
   "moduleProgress": "Module progress",
-  "noAttempts": "No simulator attempts yet."
+  "noAttempts": "No simulator attempts yet.",
+  "lessonsDone_one": "{{count}} lesson done",
+  "lessonsDone_other": "{{count}} lessons done",
+  "quizzesPassedLabel": "Quizzes passed",
+  "bestScore": "Best: {{score}}%",
+  "clearProgress": "Clear progress",
+  "clearProgressConfirm": "This will erase all lesson completions and quiz scores. This cannot be undone.",
+  "clearProgressCancel": "Cancel",
+  "clearProgressAction": "Clear everything",
+  "clearing": "Clearing..."
 }
