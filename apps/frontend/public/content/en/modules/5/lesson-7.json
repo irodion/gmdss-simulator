@@ -18,7 +18,7 @@
     },
     {
       "type": "text",
-      "content": "A critical rule in GMDSS is that ships must NOT send a DSC distress acknowledgment. Only coast stations are authorised to acknowledge DSC distress alerts. The reason is straightforward: if multiple ships were to send DSC acknowledgments, the resulting burst of digital signals could block the distress frequency and prevent the coast station from receiving the original alert or coordinating the response."
+      "content": "A critical rule in GMDSS is that ships must NOT send a DSC distress acknowledgment. Only coast stations are authorised to acknowledge DSC distress alerts (ITU-R M.541-9). There are two reasons: first, a DSC acknowledgment causes the distressed vessel's equipment to stop retransmitting the alert automatically -- if the coast station has not yet received it, a premature ship acknowledgment means the coast station may never receive it at all. Second, if multiple ships were to send DSC acknowledgments, the resulting burst of digital signals could block Channel 70 and interfere with the coast station's ability to coordinate the response."
     },
     {
       "type": "callout",
@@ -32,7 +32,7 @@
     },
     {
       "type": "text",
-      "content": "However, if no coast station has acknowledged the distress call within a reasonable time (approximately five minutes), a ship should acknowledge by VOICE on Channel 16 using the following format:"
+      "content": "However, if no coast station has acknowledged the distress call within a reasonable time (approximately five minutes), a ship should acknowledge by VOICE on Channel 16 using the following format. Because SOLAS obliges you to proceed immediately to render assistance, your acknowledgement reports the position, speed, and ETA of help already under way:"
     },
     {
       "type": "table",
@@ -43,7 +43,7 @@
         ["3", "THIS IS [own vessel name x3, call sign, MMSI]"],
         ["4", "Received MAYDAY"],
         ["5", "My position is [own position]"],
-        ["6", "My distance and estimated time of arrival at your position"],
+        ["6", "My speed [X knots], distance and estimated time of arrival at your position"],
         ["7", "OVER"]
       ]
     },
@@ -66,7 +66,7 @@
       "prompt": "Ships must acknowledge a distress call by ___ on Channel 16, not by DSC.",
       "answer": "voice",
       "alternatives": ["VOICE", "Voice", "radiotelephone"],
-      "explanation": "Only coast stations are authorised to send DSC distress acknowledgments. Ships must acknowledge by voice on Channel 16 to avoid blocking the DSC distress frequency with multiple digital acknowledgments."
+      "explanation": "Only coast stations are authorised to send DSC distress acknowledgments (ITU-R M.541-9). A ship's DSC acknowledgment would cause the distressed vessel's equipment to stop retransmitting, potentially before the coast station has received the alert. Ships acknowledge by voice on Channel 16 instead."
     },
     {
       "type": "exercise",
@@ -86,7 +86,7 @@
         }
       ],
       "answer": "b",
-      "explanation": "If multiple ships were to send DSC acknowledgments simultaneously, the resulting transmissions could block Channel 70 and prevent the coast station from receiving the distress alert or coordinating the response. Only coast stations acknowledge by DSC."
+      "explanation": "A DSC acknowledgment causes the distressed vessel's equipment to stop retransmitting the alert. If a ship acknowledges before the coast station has received it, the coast station may never receive the alert at all. Additionally, multiple simultaneous DSC acknowledgments could block Channel 70 and interfere with the coast station's coordination of the response. Only coast stations acknowledge by DSC (ITU-R M.541-9)."
     },
     {
       "type": "exercise",

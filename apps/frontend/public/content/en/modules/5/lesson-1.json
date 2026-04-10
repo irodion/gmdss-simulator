@@ -71,7 +71,7 @@
       "type": "fill-blank",
       "prompt": "When distress traffic is in progress, all other stations must immediately cease any transmission capable of ___ with that traffic.",
       "answer": "interfering",
-      "alternatives": ["interference"],
+      "alternatives": ["interference", "interfere"],
       "explanation": "Under the ITU Radio Regulations and SOLAS, all stations aware of ongoing distress traffic must cease transmissions that could interfere with it. This obligation is absolute and applies to all stations."
     },
     {
