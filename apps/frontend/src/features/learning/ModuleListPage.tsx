@@ -21,6 +21,8 @@ export function ModuleListPage() {
 
   useEffect(() => {
     async function load() {
+      setProgress({});
+      setError("");
       const cacheKey = userId ? `modules:${userId}` : "modules";
       try {
         const [data, prog] = await Promise.all([
@@ -46,9 +48,10 @@ export function ModuleListPage() {
 
   if (loading) {
     return (
-      <div className="module-list">
-        <div className="lesson-page__loading">
+      <div className="module-list" aria-busy="true">
+        <div className="lesson-page__loading" role="status">
           <div className="lesson-page__loading-bar" />
+          <span className="sr-only">{t("common:loading")}</span>
         </div>
       </div>
     );

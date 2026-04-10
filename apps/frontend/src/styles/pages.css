@@ -144,6 +144,12 @@
   }
 }
 
+@media (prefers-reduced-motion: reduce) {
+  .module-card--enter {
+    animation: none;
+  }
+}
+
 /* Card grid */
 .card-grid {
   display: grid;

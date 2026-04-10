@@ -63,7 +63,7 @@ describe("ModuleListPage", () => {
         <ModuleListPage />
       </MemoryRouter>,
     );
-    expect(container.querySelector(".lesson-page__loading-bar")).toBeDefined();
+    expect(container.querySelector(".lesson-page__loading-bar")).not.toBeNull();
   });
 
   test("renders modules after loading", async () => {
