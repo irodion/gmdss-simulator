@@ -3,16 +3,23 @@ import { useSpeechRecognition } from "../hooks/use-speech-recognition.ts";
 
 interface MicButtonProps {
   onTranscript: (text: string) => void;
+  onAlternatives?: (texts: readonly string[]) => void;
 }
 
-export function MicButton({ onTranscript }: MicButtonProps) {
-  const { transcript, listening, supported, start, stop } = useSpeechRecognition();
+export function MicButton({ onTranscript, onAlternatives }: MicButtonProps) {
+  const { transcript, alternatives, listening, supported, start, stop } = useSpeechRecognition();
 
   useEffect(() => {
     if (transcript) {
       onTranscript(transcript);
     }
   }, [transcript, onTranscript]);
+
+  useEffect(() => {
+    if (onAlternatives) {
+      onAlternatives(alternatives);
+    }
+  }, [alternatives, onAlternatives]);
 
   if (!supported) return null;
 

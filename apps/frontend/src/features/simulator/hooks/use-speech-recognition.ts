@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 
 interface SpeechRecognitionResult {
   transcript: string;
+  alternatives: readonly string[];
   listening: boolean;
   supported: boolean;
   start: () => void;
@@ -11,6 +12,7 @@ interface SpeechRecognitionResult {
 type SpeechRecognitionAPI = new () => {
   continuous: boolean;
   interimResults: boolean;
+  maxAlternatives: number;
   lang: string;
   onresult: ((e: { results: SpeechRecognitionResultList }) => void) | null;
   onerror: (() => void) | null;
@@ -24,6 +26,7 @@ interface SpeechRecognitionResultList {
   readonly length: number;
   item: (i: number) => {
     readonly isFinal: boolean;
+    readonly length: number;
     item: (j: number) => { readonly transcript: string };
   };
 }
@@ -35,11 +38,15 @@ function getSpeechRecognition(): SpeechRecognitionAPI | null {
     null) as SpeechRecognitionAPI | null;
 }
 
+const MAX_ALTERNATIVES = 3;
+
 export function useSpeechRecognition(): SpeechRecognitionResult {
   const [transcript, setTranscript] = useState("");
+  const [alternatives, setAlternatives] = useState<string[]>([]);
   const [listening, setListening] = useState(false);
   const recognitionRef = useRef<InstanceType<SpeechRecognitionAPI> | null>(null);
   const accumulatedRef = useRef("");
+  const prevAltsRef = useRef("");
 
   const Ctor = getSpeechRecognition();
   const supported = Ctor !== null;
@@ -48,12 +55,15 @@ export function useSpeechRecognition(): SpeechRecognitionResult {
     if (!Ctor || recognitionRef.current) return;
 
     accumulatedRef.current = "";
+    prevAltsRef.current = "";
     setTranscript("");
+    setAlternatives([]);
 
     const recognition = new Ctor();
     recognition.continuous = true;
     recognition.interimResults = true;
-    recognition.lang = "en-US";
+    recognition.maxAlternatives = MAX_ALTERNATIVES;
+    recognition.lang = "en-GB";
 
     recognition.onresult = (event) => {
       const results = event.results;
@@ -76,6 +86,28 @@ export function useSpeechRecognition(): SpeechRecognitionResult {
 
       const full = (accumulatedRef.current + " " + interimText).trim();
       setTranscript(full.toUpperCase());
+
+      // Build alternative transcripts (indices 1..N) from final results
+      const alts: string[] = [];
+      for (let alt = 1; alt < MAX_ALTERNATIVES; alt++) {
+        let altFinal = "";
+        for (let i = 0; i < results.length; i++) {
+          const result = results.item(i);
+          if (!result.isFinal) continue;
+          const idx = alt < result.length ? alt : 0;
+          altFinal += result.item(idx).transcript + " ";
+        }
+        const altFull = (altFinal.trim() || accumulatedRef.current).trim();
+        if (altFull && altFull.toUpperCase() !== full.toUpperCase()) {
+          alts.push(altFull.toUpperCase());
+        }
+      }
+      // Only update state when alternatives actually changed
+      const altsKey = alts.join("\0");
+      if (altsKey !== prevAltsRef.current) {
+        prevAltsRef.current = altsKey;
+        setAlternatives(alts);
+      }
     };
 
     recognition.onerror = () => {
@@ -110,5 +142,5 @@ export function useSpeechRecognition(): SpeechRecognitionResult {
     };
   }, []);
 
-  return { transcript, listening, supported, start, stop };
+  return { transcript, alternatives, listening, supported, start, stop };
 }
