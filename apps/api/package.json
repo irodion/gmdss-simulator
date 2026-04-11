@@ -13,12 +13,15 @@
     "@fastify/cookie": "catalog:",
     "@fastify/cors": "catalog:",
     "@fastify/rate-limit": "catalog:",
+    "@fastify/websocket": "catalog:",
     "@gmdss-simulator/db": "workspace:*",
+    "@gmdss-simulator/utils": "workspace:*",
     "better-auth": "catalog:",
     "drizzle-orm": "catalog:",
     "fastify": "catalog:",
     "fastify-plugin": "catalog:",
     "ioredis": "catalog:",
+    "openai": "catalog:",
     "zod": "catalog:"
   },
   "devDependencies": {

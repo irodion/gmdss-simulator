@@ -46,8 +46,11 @@ export default defineConfig({
         "src/features/simulator/drills/DrillPage.tsx",
         "src/features/simulator/audio/**",
         "src/features/simulator/hooks/use-audio.ts",
+        "src/features/simulator/hooks/use-ai-session.ts",
         "src/features/simulator/hooks/use-speech-recognition.ts",
+        "src/features/simulator/transport/**",
         "src/features/simulator/ui/MicButton.tsx",
+        "src/features/simulator/ui/TurnStatusIndicator.tsx",
       ],
       thresholds: {
         lines: 85,

@@ -58,6 +58,9 @@ describe("useScriptedResponses", () => {
         audio: {
           init: vi.fn(),
           speak: vi.fn().mockResolvedValue(undefined),
+          playAudioBuffer: vi.fn(),
+          startCapture: vi.fn(),
+          stopCapture: vi.fn().mockResolvedValue({ cleanBlob: new Blob(), durationMs: 0 }),
           setSquelch: vi.fn(),
           setVolume: vi.fn(),
           destroy: vi.fn(),
@@ -91,7 +94,16 @@ describe("useScriptedResponses", () => {
       useScriptedResponses({
         session: { state, dispatch },
         radio: { state: { txRx: "idle" } as any, send, reset: vi.fn(), events: [] },
-        audio: { init: vi.fn(), speak, setSquelch: vi.fn(), setVolume: vi.fn(), destroy: vi.fn() },
+        audio: {
+          init: vi.fn(),
+          speak,
+          playAudioBuffer: vi.fn(),
+          startCapture: vi.fn(),
+          stopCapture: vi.fn().mockResolvedValue({ cleanBlob: new Blob(), durationMs: 0 }),
+          setSquelch: vi.fn(),
+          setVolume: vi.fn(),
+          destroy: vi.fn(),
+        },
       }),
     );
 
@@ -142,6 +154,9 @@ describe("useScriptedResponses", () => {
         audio: {
           init: vi.fn(),
           speak: vi.fn(),
+          playAudioBuffer: vi.fn(),
+          startCapture: vi.fn(),
+          stopCapture: vi.fn().mockResolvedValue({ cleanBlob: new Blob(), durationMs: 0 }),
           setSquelch: vi.fn(),
           setVolume: vi.fn(),
           destroy: vi.fn(),

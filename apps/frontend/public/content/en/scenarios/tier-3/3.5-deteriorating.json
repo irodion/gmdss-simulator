@@ -1,0 +1,50 @@
+{
+  "id": "3.5",
+  "tier": 3,
+  "category": "distress",
+  "title": "Deteriorating Situation",
+  "description": "Your vessel has lost propulsion in a shipping lane. Start with a PAN PAN urgency call. When the situation worsens (taking on water), upgrade to a MAYDAY distress call.",
+  "stationPersona": "COAST_GUARD_MRCC",
+  "stationName": "RESCUE COORDINATION CENTRE",
+  "vessel": {
+    "name": "BLUE DUCK",
+    "callsign": "5BCD2",
+    "mmsi": "211239680",
+    "position": "51°22'N 001°48'E",
+    "personsOnBoard": 5
+  },
+  "requiredChannel": 16,
+  "initialGpsLock": true,
+  "task": "You have lost engine power in a busy shipping lane. Make a PAN PAN urgency call on Channel 16. After the station acknowledges, your situation worsens — the vessel is now taking on water. Upgrade your call to a MAYDAY.",
+  "scriptReference": "PAN PAN PAN PAN PAN PAN, ALL STATIONS ALL STATIONS ALL STATIONS, THIS IS {{vesselName}} {{vesselName}} {{vesselName}}, CALLSIGN {{callsign}}, POSITION {{position}}, LOST ENGINE POWER IN SHIPPING LANE, REQUIRE STANDBY ASSISTANCE, {{personsOnBoard}} PERSONS ON BOARD, OVER",
+  "scriptedResponses": [
+    {
+      "id": "pan-ack",
+      "speaker": "COAST_GUARD_MRCC",
+      "text": "BLUE DUCK, THIS IS RESCUE COORDINATION CENTRE. RECEIVED YOUR PAN PAN. CONFIRM POSITION FIVE ONE DEGREES TWO TWO MINUTES NORTH, ZERO ZERO ONE DEGREES FOUR EIGHT MINUTES EAST. STANDBY. OVER.",
+      "triggerAfterTurnIndex": 0,
+      "condition": { "type": "always" }
+    },
+    {
+      "id": "situation-update",
+      "speaker": "COAST_GUARD_MRCC",
+      "text": "BLUE DUCK, THIS IS RESCUE COORDINATION CENTRE. ROGER YOUR SITUATION UPDATE. LIFEBOAT CREW DISPATCHED. CONFIRM NUMBER OF PERSONS ON BOARD AND WHETHER LIFE RAFTS ARE AVAILABLE. OVER.",
+      "triggerAfterTurnIndex": 1,
+      "condition": { "type": "always" }
+    },
+    {
+      "id": "mayday-ack",
+      "speaker": "COAST_GUARD_MRCC",
+      "text": "MAYDAY. BLUE DUCK. THIS IS RESCUE COORDINATION CENTRE. RECEIVED MAYDAY. ALL STATIONS SEELONCE MAYDAY. HELICOPTER AND LIFEBOAT EN ROUTE. ESTIMATED ARRIVAL TWO ZERO MINUTES. OVER.",
+      "triggerAfterTurnIndex": 2,
+      "condition": { "type": "always" }
+    }
+  ],
+  "rubricId": "v1/escalation",
+  "hints": [
+    "Start with PAN PAN — this is an urgency, not yet a distress",
+    "Include your vessel name, callsign, position, and nature of urgency",
+    "When the situation worsens, upgrade to MAYDAY",
+    "A MAYDAY upgrade requires all distress fields"
+  ]
+}

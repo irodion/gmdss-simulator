@@ -78,5 +78,10 @@ export type SessionCommand =
       readonly text: string;
       readonly channel: number;
     }
+  | {
+      readonly type: "UPDATE_TURN_TEXT";
+      readonly turnIndex: number;
+      readonly text: string;
+    }
   | { readonly type: "COMPLETE_SCENARIO" }
   | { readonly type: "RESET" };

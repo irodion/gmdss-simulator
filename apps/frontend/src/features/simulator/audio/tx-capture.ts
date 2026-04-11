@@ -30,9 +30,10 @@ export class TxCapture {
 
     // Clean path: MediaRecorder for STT
     this.chunks = [];
-    this.recorder = new MediaRecorder(this.stream, {
-      mimeType: this.getSupportedMimeType(),
-    });
+    const mimeType = this.getSupportedMimeType();
+    this.recorder = mimeType
+      ? new MediaRecorder(this.stream, { mimeType })
+      : new MediaRecorder(this.stream); // browser default codec
     this.recorder.ondataavailable = (e) => {
       if (e.data.size > 0) this.chunks.push(e.data);
     };
@@ -103,12 +104,18 @@ export class TxCapture {
   }
 
   private getSupportedMimeType(): string {
-    const types = ["audio/webm;codecs=opus", "audio/webm", "audio/ogg;codecs=opus"];
+    const types = [
+      "audio/webm;codecs=opus",
+      "audio/webm",
+      "audio/ogg;codecs=opus",
+      "audio/mp4", // Safari/WebKit
+      "audio/mp4;codecs=aac",
+    ];
     for (const type of types) {
       if (typeof MediaRecorder !== "undefined" && MediaRecorder.isTypeSupported(type)) {
         return type;
       }
     }
-    return "audio/webm";
+    return "";
   }
 }

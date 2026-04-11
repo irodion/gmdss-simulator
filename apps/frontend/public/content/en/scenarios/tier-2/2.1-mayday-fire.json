@@ -1,0 +1,47 @@
+{
+  "id": "2.1",
+  "tier": 2,
+  "category": "distress",
+  "title": "MAYDAY — Fire on Board",
+  "description": "Your vessel has a fire in the engine room. Make a voice MAYDAY call on Channel 16 with all required distress fields. The Coast Guard will acknowledge. You may optionally send a DSC distress alert first.",
+  "stationPersona": "COAST_GUARD_MRCC",
+  "stationName": "RESCUE COORDINATION CENTRE",
+  "vessel": {
+    "name": "BLUE DUCK",
+    "callsign": "5BCD2",
+    "mmsi": "211239680",
+    "position": "50°06'N 001°12'W",
+    "personsOnBoard": 8
+  },
+  "requiredChannel": 16,
+  "initialGpsLock": true,
+  "task": "Make a voice MAYDAY call on Channel 16 to the Rescue Coordination Centre. Include all required distress fields: vessel name, callsign, position, nature of distress, assistance required, and persons on board. You may send a DSC distress alert first (optional — not graded).",
+  "scriptReference": "MAYDAY MAYDAY MAYDAY, THIS IS {{vesselName}} {{vesselName}} {{vesselName}}, CALLSIGN {{callsign}}, MMSI {{mmsi}}, POSITION {{position}}, FIRE IN ENGINE ROOM, REQUIRE IMMEDIATE ASSISTANCE, {{personsOnBoard}} PERSONS ON BOARD, OVER",
+  "scriptedResponses": [
+    {
+      "id": "mayday-ack",
+      "speaker": "COAST_GUARD_MRCC",
+      "text": "MAYDAY. BLUE DUCK BLUE DUCK BLUE DUCK. THIS IS RESCUE COORDINATION CENTRE. RECEIVED MAYDAY. ALL STATIONS SEELONCE MAYDAY. RESCUE COORDINATION CENTRE. TIME ONE FOUR THREE ZERO. OUT.",
+      "triggerAfterTurnIndex": 0,
+      "condition": { "type": "always" }
+    },
+    {
+      "id": "followup",
+      "speaker": "COAST_GUARD_MRCC",
+      "text": "BLUE DUCK, THIS IS RESCUE COORDINATION CENTRE. CONFIRM YOUR POSITION FIVE ZERO DEGREES ZERO SIX MINUTES NORTH, ZERO ZERO ONE DEGREES ONE TWO MINUTES WEST. LIFEBOAT AND HELICOPTER BEING DISPATCHED. OVER.",
+      "triggerAfterTurnIndex": 1,
+      "condition": { "type": "always" }
+    }
+  ],
+  "rubricId": "v1/distress",
+  "hints": [
+    "Say MAYDAY three times",
+    "Say THIS IS followed by your vessel name three times",
+    "State your callsign or MMSI",
+    "Give your position",
+    "State the nature of distress (fire)",
+    "State the assistance required",
+    "State the number of persons on board",
+    "End with OVER"
+  ]
+}
