@@ -25,4 +25,5 @@ COPY tsconfig.base.json ./
 
 EXPOSE 3001
 
+USER node
 CMD ["node", "apps/api/src/index.ts"]
