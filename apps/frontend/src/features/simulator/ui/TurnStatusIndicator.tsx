@@ -20,7 +20,10 @@ export function TurnStatusIndicator({ status, sttFailureCount, onRetry }: Props)
   return (
     <div className="sim-turn-status" role="status" aria-live="polite">
       {status === "processing" && (
-        <span className="sim-turn-status__dot sim-turn-status__dot--pulse" />
+        <>
+          <span className="sim-turn-status__dot sim-turn-status__dot--pulse" aria-hidden="true" />
+          <span className="sr-only">{t("turnStatus.processing", "Processing...")}</span>
+        </>
       )}
       {status === "slow" && (
         <span className="sim-turn-status__text">{t("turnStatus.slow", "Processing...")}</span>

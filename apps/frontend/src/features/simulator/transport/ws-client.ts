@@ -19,6 +19,7 @@ export interface WsClientOptions {
 export class WsClient {
   private ws: WebSocket | null = null;
   private opts: WsClientOptions;
+  private hadError = false;
 
   constructor(opts: WsClientOptions) {
     this.opts = opts;
@@ -30,6 +31,7 @@ export class WsClient {
   connect(): void {
     if (this.ws) return;
 
+    this.hadError = false;
     this.opts.onStatusChange("connecting");
 
     // If apiUrl is empty, use same-origin WebSocket
@@ -52,13 +54,13 @@ export class WsClient {
 
     this.ws.onclose = () => {
       this.ws = null;
-      // No auto-reconnect: simulator sessions have server-side state that
-      // cannot be recovered. The UI should show the disconnect and let the
-      // user retry the scenario.
-      this.opts.onStatusChange("disconnected");
+      if (!this.hadError) {
+        this.opts.onStatusChange("disconnected");
+      }
     };
 
     this.ws.onerror = () => {
+      this.hadError = true;
       this.opts.onStatusChange("error");
     };
   }

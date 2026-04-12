@@ -137,6 +137,9 @@ export default async function simulatorWsRoute(fastify: FastifyInstance, opts: S
     socket.on("close", () => {
       if (session) {
         cancelActiveTurn(session);
+        // Best-effort save of interrupted session
+        void saveAttempt(session).catch(() => {});
+        session = null;
       }
     });
 
@@ -269,6 +272,11 @@ export default async function simulatorWsRoute(fastify: FastifyInstance, opts: S
         } else {
           send({ type: "error", turnId, code: "STT_FAILED", message: "Speech not recognized" });
         }
+        clearTimeout(slowTimer);
+        clearTimeout(timeoutTimer);
+        if (session.activeTurnId === turnId) {
+          session.activeAbortController = null;
+        }
         return;
       }
 
@@ -332,6 +340,7 @@ export default async function simulatorWsRoute(fastify: FastifyInstance, opts: S
         });
       } catch (err) {
         if (isStaleTurn(session, turnId)) return;
+        if (controller.signal.aborted) return;
         const errMessage = err instanceof Error ? err.message : String(err);
 
         // Use real transcript if STT succeeded, text input, or placeholder
@@ -385,6 +394,35 @@ export default async function simulatorWsRoute(fastify: FastifyInstance, opts: S
       }
     }
 
+    async function saveAttempt(sess: SimulatorSession): Promise<string | null> {
+      const latestScore = sess.latestScore;
+      const [record] = await fastify.db
+        .insert(simulatorAttempts)
+        .values({
+          userId: sess.userId,
+          scenarioId: sess.scenario.id,
+          scenarioVersion: "1.0.0",
+          rubricVersion: sess.rubric.version,
+          jurisdictionProfile: "international",
+          startedAt: new Date(sess.startedAt),
+          endedAt: new Date(),
+          transcriptLog: sess.turns,
+          scoreBreakdown: latestScore ?? null,
+          overallScore: latestScore?.overall ?? null,
+          fieldCheckResults: null,
+          feedback: null,
+          sttProvider: sess.providerMeta.sttProvider ?? null,
+          sttConfidence: sess.providerMeta.sttConfidences,
+          llmProvider: sess.providerMeta.llmProvider ?? null,
+          llmPromptHash: sess.providerMeta.llmPromptHash ?? null,
+          ttsProvider: sess.providerMeta.ttsProvider ?? null,
+          fallbackTurns:
+            sess.providerMeta.fallbackTurns.length > 0 ? sess.providerMeta.fallbackTurns : null,
+        })
+        .returning({ id: simulatorAttempts.id });
+      return record?.id ?? null;
+    }
+
     async function handleSessionEnd(): Promise<void> {
       if (!session) return;
 
@@ -393,38 +431,10 @@ export default async function simulatorWsRoute(fastify: FastifyInstance, opts: S
         await session.activeTurnPromise.catch(() => {});
       }
 
-      const latestScore = session.latestScore;
-
       try {
-        const [record] = await fastify.db
-          .insert(simulatorAttempts)
-          .values({
-            userId: session.userId,
-            scenarioId: session.scenario.id,
-            scenarioVersion: "1.0.0",
-            rubricVersion: session.rubric.version,
-            jurisdictionProfile: "international",
-            startedAt: new Date(session.startedAt),
-            endedAt: new Date(),
-            transcriptLog: session.turns,
-            scoreBreakdown: latestScore ?? null,
-            overallScore: latestScore?.overall ?? null,
-            fieldCheckResults: null,
-            feedback: null,
-            sttProvider: session.providerMeta.sttProvider ?? null,
-            sttConfidence: session.providerMeta.sttConfidences,
-            llmProvider: session.providerMeta.llmProvider ?? null,
-            llmPromptHash: session.providerMeta.llmPromptHash ?? null,
-            ttsProvider: session.providerMeta.ttsProvider ?? null,
-            fallbackTurns:
-              session.providerMeta.fallbackTurns.length > 0
-                ? session.providerMeta.fallbackTurns
-                : null,
-          })
-          .returning({ id: simulatorAttempts.id });
-
-        if (record) {
-          send({ type: "session_saved", attemptId: record.id });
+        const attemptId = await saveAttempt(session);
+        if (attemptId) {
+          send({ type: "session_saved", attemptId });
         }
       } catch (err) {
         send({ type: "error", code: "SAVE_FAILED", message: String(err) });

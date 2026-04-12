@@ -2,7 +2,7 @@
  * REST routes for simulator attempt records.
  */
 
-import { eq, desc } from "drizzle-orm";
+import { and, eq, desc } from "drizzle-orm";
 import { simulatorAttempts } from "@gmdss-simulator/db";
 import type { FastifyInstance } from "fastify";
 
@@ -37,10 +37,10 @@ export default async function attemptRoutes(fastify: FastifyInstance) {
     const [attempt] = await fastify.db
       .select()
       .from(simulatorAttempts)
-      .where(eq(simulatorAttempts.id, id))
+      .where(and(eq(simulatorAttempts.id, id), eq(simulatorAttempts.userId, userId)))
       .limit(1);
 
-    if (!attempt || attempt.userId !== userId) {
+    if (!attempt) {
       return reply.code(404).send({ error: "Attempt not found" });
     }
 

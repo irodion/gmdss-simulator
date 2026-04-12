@@ -20,6 +20,15 @@ import type { ScenarioDefinition, RubricDefinition } from "@gmdss-simulator/util
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const CONTENT_DIR = resolve(__dirname, "../../frontend/public/content/en");
 
+async function readFileIfExists(path: string): Promise<string | null> {
+  try {
+    return await readFile(path, "utf-8");
+  } catch (err: unknown) {
+    if (err && typeof err === "object" && "code" in err && err.code === "ENOENT") return null;
+    throw err;
+  }
+}
+
 export interface BuildAppOptions {
   logger?: boolean;
   databaseUrl: string;
@@ -76,7 +85,7 @@ export async function buildApp(opts: BuildAppOptions): Promise<FastifyInstance> 
       const scenario = JSON.parse(scenarioJson) as ScenarioDefinition;
 
       const rubricPath = resolve(contentDir, "rubrics", `${scenario.rubricId}.json`);
-      const rubricJson = await readFile(rubricPath, "utf-8").catch(() => null);
+      const rubricJson = await readFileIfExists(rubricPath);
       if (!rubricJson) {
         throw new Error(`Rubric ${scenario.rubricId} not found at ${rubricPath}`);
       }

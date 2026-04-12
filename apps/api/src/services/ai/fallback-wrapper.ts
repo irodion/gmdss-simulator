@@ -20,7 +20,10 @@ export class FallbackSttAdapter implements SttAdapter {
   async transcribe(audio: Buffer, opts: SttOptions): Promise<SttResult> {
     try {
       return await this.primary.transcribe(audio, opts);
-    } catch {
+    } catch (err) {
+      if (err instanceof Error && (err.message === "Turn cancelled" || err.name === "AbortError")) {
+        throw err;
+      }
       const result = await this.fallback.transcribe(audio, opts);
       return { ...result, provider: `${result.provider} (fallback)` };
     }
@@ -39,7 +42,10 @@ export class FallbackLlmAdapter implements LlmAdapter {
   async generateResponse(prompt: LlmPrompt): Promise<LlmResult> {
     try {
       return await this.primary.generateResponse(prompt);
-    } catch {
+    } catch (err) {
+      if (err instanceof Error && (err.message === "Turn cancelled" || err.name === "AbortError")) {
+        throw err;
+      }
       const result = await this.fallback.generateResponse(prompt);
       return { ...result, provider: `${result.provider} (fallback)` };
     }
@@ -58,7 +64,10 @@ export class FallbackTtsAdapter implements TtsAdapter {
   async synthesize(text: string, opts: TtsOptions): Promise<TtsResult> {
     try {
       return await this.primary.synthesize(text, opts);
-    } catch {
+    } catch (err) {
+      if (err instanceof Error && (err.message === "Turn cancelled" || err.name === "AbortError")) {
+        throw err;
+      }
       const result = await this.fallback.synthesize(text, opts);
       return { ...result, provider: `${result.provider} (fallback)` };
     }

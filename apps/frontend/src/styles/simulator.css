@@ -1393,6 +1393,13 @@
   }
 }
 
+@media (prefers-reduced-motion: reduce) {
+  .sim-turn-status__dot--pulse {
+    animation: none;
+    opacity: 1;
+  }
+}
+
 .sim-turn-status__text {
   font-style: italic;
 }

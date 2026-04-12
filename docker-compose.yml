@@ -35,7 +35,7 @@ services:
     environment:
       POSTGRES_DB: gmdss
       POSTGRES_USER: gmdss
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-gmdss}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD must be set}
     volumes:
       - pgdata:/var/lib/postgresql/data
     healthcheck:

@@ -34,3 +34,4 @@ RUN vp build
 FROM caddy:2-alpine
 COPY --from=build /app/apps/frontend/dist /srv
 COPY Caddyfile /etc/caddy/Caddyfile
+USER caddy

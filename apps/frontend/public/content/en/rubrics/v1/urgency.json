@@ -32,7 +32,9 @@
     {
       "id": "position",
       "label": "Position",
-      "patterns": ["\\d+.*(?:NORTH|SOUTH|EAST|WEST|[NS]).*\\d+|POSITION|LATITUDE|LONGITUDE"],
+      "patterns": [
+        "\\d+.*(?:NORTH|SOUTH|EAST|WEST|[NS]).*\\d+|(?:POSITION|LATITUDE|LONGITUDE)\\b(?=.*\\d)"
+      ],
       "required": true
     },
     {

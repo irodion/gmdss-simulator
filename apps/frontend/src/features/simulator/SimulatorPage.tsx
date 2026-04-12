@@ -190,8 +190,7 @@ export function SimulatorPage() {
     aiSession.state.aiActive &&
     aiSession.state.turnStatus !== "idle" &&
     aiSession.state.turnStatus !== "complete" &&
-    aiSession.state.turnStatus !== "error" &&
-    aiSession.state.turnStatus !== "fallback";
+    aiSession.state.turnStatus !== "error";
 
   const handleSubmitTransmission = useCallback(() => {
     if (!inputText.trim() || session.state.phase !== "active") return;
