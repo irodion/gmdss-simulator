@@ -129,21 +129,21 @@ export function SimulatorPage() {
       void audio.startCapture();
     }
     if (prev === "transmitting" && radio.state.txRx !== "transmitting") {
-      void audio.stopCapture().then(({ cleanBlob, durationMs }) => {
-        if (cleanBlob.size === 0 || durationMs < 200) return;
-        if (aiSession.state.aiActive) {
-          // AI connected: add placeholder locally (replaced by stt_result), send to server
-          session.dispatch({
-            type: "ADD_STUDENT_TURN",
-            text: "(audio)",
-            channel: radio.state.channel,
-            durationMs,
-          });
-          aiSession.sendAudioTurn(cleanBlob, radio.state.channel);
-        }
-        // If AI dropped, don't add an unresolvable placeholder — the user
-        // can re-transmit via text input now that scripted mode is active
-      });
+      void audio
+        .stopCapture()
+        .then(({ cleanBlob, durationMs }) => {
+          if (cleanBlob.size === 0 || durationMs < 200) return;
+          if (aiSession.state.aiActive) {
+            session.dispatch({
+              type: "ADD_STUDENT_TURN",
+              text: "(audio)",
+              channel: radio.state.channel,
+              durationMs,
+            });
+            aiSession.sendAudioTurn(cleanBlob, radio.state.channel);
+          }
+        })
+        .catch(() => {});
     }
   }, [radio.state.txRx, radio.state.channel, audio, aiSession, session]);
 
