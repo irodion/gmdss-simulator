@@ -1,0 +1,74 @@
+{
+  "id": "v1/urgency",
+  "version": "1.0.0",
+  "category": "urgency",
+  "requiredFields": [
+    {
+      "id": "pan_pan",
+      "label": "PAN PAN signal word",
+      "patterns": ["PAN\\s*PAN"],
+      "required": true
+    },
+    {
+      "id": "this_is",
+      "label": "THIS IS",
+      "patterns": ["THIS\\s+IS"],
+      "required": true
+    },
+    {
+      "id": "vessel_name",
+      "label": "Own vessel name",
+      "patterns": ["BLUE\\s*DUCK"],
+      "required": true
+    },
+    {
+      "id": "callsign",
+      "label": "Callsign or MMSI",
+      "patterns": [
+        "5\\s*B\\s*C\\s*D\\s*2|FIVE\\s*BRAVO\\s*CHARLIE\\s*DELTA\\s*(TWO|2)|211\\s*239\\s*680"
+      ],
+      "required": true
+    },
+    {
+      "id": "position",
+      "label": "Position",
+      "patterns": [
+        "\\d+.*(?:NORTH|SOUTH|EAST|WEST|[NS]).*\\d+|(?:POSITION|LATITUDE|LONGITUDE)\\b(?=.*\\d)"
+      ],
+      "required": true
+    },
+    {
+      "id": "nature",
+      "label": "Nature of urgency",
+      "patterns": ["ENGINE|PROPULSION|FAILURE|MEDICAL|DRIFT|DISABLED|LOST\\s*STEERING"],
+      "required": true
+    },
+    {
+      "id": "assistance",
+      "label": "Assistance or information required",
+      "patterns": ["REQUIRE|ASSISTANCE|REQUEST|STANDBY|ESCORT|TOW"],
+      "required": true
+    }
+  ],
+  "prowordRules": [
+    { "id": "pan_pan", "label": "PAN PAN (×3)", "pattern": "PAN\\s*PAN", "expectedCount": 3 },
+    { "id": "this_is", "label": "THIS IS", "pattern": "THIS\\s+IS" },
+    { "id": "over", "label": "OVER", "pattern": "\\bOVER\\b" }
+  ],
+  "sequenceRules": {
+    "fieldOrder": [
+      "pan_pan",
+      "this_is",
+      "vessel_name",
+      "callsign",
+      "position",
+      "nature",
+      "assistance",
+      "over"
+    ]
+  },
+  "channelRules": {
+    "requiredChannel": 16,
+    "blockChannel70Voice": true
+  }
+}

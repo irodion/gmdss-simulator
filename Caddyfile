@@ -1,0 +1,23 @@
+{$SITE_ADDRESS:localhost} {
+	# API and WebSocket reverse proxy
+	handle /api/* {
+		reverse_proxy api:3001
+	}
+
+	# WebSocket upgrade for simulator
+	@websocket {
+		header Connection *Upgrade*
+		header Upgrade websocket
+		path /api/simulator/ws
+	}
+	handle @websocket {
+		reverse_proxy api:3001
+	}
+
+	# Serve frontend static files
+	handle {
+		root * /srv
+		try_files {path} /index.html
+		file_server
+	}
+}

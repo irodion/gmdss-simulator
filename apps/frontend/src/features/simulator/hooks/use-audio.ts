@@ -1,12 +1,19 @@
 import { useCallback, useEffect, useRef } from "react";
 import { AudioEngine } from "../audio/audio-engine.ts";
 import { PlaybackQueue } from "../audio/playback-queue.ts";
+import { TxCapture } from "../audio/tx-capture.ts";
 
 export interface UseAudioResult {
   /** Init audio on user gesture. Optionally apply current knob values. */
   init: (opts?: { volume?: number; squelch?: number }) => Promise<void>;
   /** Speak text through radio DSP (station response). */
   speak: (text: string) => Promise<void>;
+  /** Play raw audio buffer through radio DSP (TTS response from server). */
+  playAudioBuffer: (audioData: ArrayBuffer) => Promise<void>;
+  /** Start mic capture (PTT pressed). Requires init() first. */
+  startCapture: () => Promise<void>;
+  /** Stop mic capture (PTT released). Returns the clean audio blob + duration. */
+  stopCapture: () => Promise<{ cleanBlob: Blob; durationMs: number }>;
   /** Update squelch (ambient noise level). */
   setSquelch: (value: number) => void;
   /** Update volume. */
@@ -18,6 +25,7 @@ export interface UseAudioResult {
 export function useAudio(): UseAudioResult {
   const engineRef = useRef<AudioEngine | null>(null);
   const queueRef = useRef<PlaybackQueue | null>(null);
+  const captureRef = useRef<TxCapture | null>(null);
   const initingRef = useRef(false);
 
   const init = useCallback(async (opts?: { volume?: number; squelch?: number }) => {
@@ -47,6 +55,32 @@ export function useAudio(): UseAudioResult {
     }
   }, []);
 
+  const playAudioBuffer = useCallback(async (audioData: ArrayBuffer) => {
+    if (queueRef.current) {
+      await queueRef.current.playAudio(audioData);
+    }
+  }, []);
+
+  const startCapture = useCallback(async () => {
+    const engine = engineRef.current;
+    if (!engine) return;
+    const ctx = await engine.init();
+    const gain = engine.getMasterGain();
+    if (!gain) return;
+    const capture = new TxCapture();
+    await capture.start(ctx, gain);
+    // Assign ref only after start() resolves so stopCapture() can't race
+    // against a pending getUserMedia() and lose the handle
+    captureRef.current = capture;
+  }, []);
+
+  const stopCapture = useCallback(async () => {
+    const capture = captureRef.current;
+    if (!capture) return { cleanBlob: new Blob(), durationMs: 0 };
+    captureRef.current = null;
+    return capture.stop();
+  }, []);
+
   const setSquelch = useCallback((value: number) => {
     engineRef.current?.setSquelchLevel(value);
   }, []);
@@ -56,6 +90,12 @@ export function useAudio(): UseAudioResult {
   }, []);
 
   const destroy = useCallback(() => {
+    // Always stop capture to release mic stream and audio nodes, even if
+    // MediaRecorder was never created (no supported MIME type on this browser)
+    if (captureRef.current) {
+      void captureRef.current.stop();
+    }
+    captureRef.current = null;
     queueRef.current?.clear();
     queueRef.current = null;
     engineRef.current?.destroy();
@@ -66,5 +106,14 @@ export function useAudio(): UseAudioResult {
     return () => destroy();
   }, [destroy]);
 
-  return { init, speak, setSquelch, setVolume, destroy };
+  return {
+    init,
+    speak,
+    playAudioBuffer,
+    startCapture,
+    stopCapture,
+    setSquelch,
+    setVolume,
+    destroy,
+  };
 }

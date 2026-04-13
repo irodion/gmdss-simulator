@@ -1,5 +1,12 @@
 import { eq, asc, sql } from "drizzle-orm";
-import { lessons, lessonProgress, modules, quizzes, quizAttempts } from "@gmdss-simulator/db";
+import {
+  lessons,
+  lessonProgress,
+  modules,
+  quizzes,
+  quizAttempts,
+  simulatorAttempts,
+} from "@gmdss-simulator/db";
 import type { FastifyInstance } from "fastify";
 import { z } from "zod";
 
@@ -193,6 +200,7 @@ export default async function progressRoutes(fastify: FastifyInstance) {
     const userId = request.user.id;
 
     await fastify.db.transaction(async (tx) => {
+      await tx.delete(simulatorAttempts).where(eq(simulatorAttempts.userId, userId));
       await tx.delete(quizAttempts).where(eq(quizAttempts.userId, userId));
       await tx.delete(lessonProgress).where(eq(lessonProgress.userId, userId));
     });
@@ -200,11 +208,5 @@ export default async function progressRoutes(fastify: FastifyInstance) {
     return reply.send({ success: true });
   });
 
-  fastify.get("/attempts", async (_request, reply) => {
-    return reply.send([]);
-  });
-
-  fastify.get("/attempts/:id", async (_request, reply) => {
-    return reply.code(404).send({ error: "No simulator attempts in Phase 1" });
-  });
+  // Simulator attempt endpoints moved to /api/simulator/attempts (Phase 4)
 }

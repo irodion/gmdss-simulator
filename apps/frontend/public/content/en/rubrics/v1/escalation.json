@@ -1,0 +1,95 @@
+{
+  "id": "v1/escalation",
+  "version": "1.0.0",
+  "category": "distress",
+  "requiredFields": [
+    {
+      "id": "pan_pan",
+      "label": "PAN PAN signal word",
+      "patterns": ["PAN\\s*PAN"],
+      "required": true
+    },
+    {
+      "id": "mayday",
+      "label": "MAYDAY signal word (escalation)",
+      "patterns": ["MAYDAY"],
+      "required": true
+    },
+    {
+      "id": "this_is",
+      "label": "THIS IS",
+      "patterns": ["THIS\\s+IS"],
+      "required": true
+    },
+    {
+      "id": "vessel_name",
+      "label": "Own vessel name",
+      "patterns": ["BLUE\\s*DUCK"],
+      "required": true
+    },
+    {
+      "id": "callsign",
+      "label": "Callsign or MMSI",
+      "patterns": [
+        "5\\s*B\\s*C\\s*D\\s*2|FIVE\\s*BRAVO\\s*CHARLIE\\s*DELTA\\s*(TWO|2)|211\\s*239\\s*680"
+      ],
+      "required": true
+    },
+    {
+      "id": "position",
+      "label": "Position",
+      "patterns": ["\\d+.*(?:NORTH|SOUTH|EAST|WEST|[NS]).*\\d+|POSITION|LATITUDE|LONGITUDE"],
+      "required": true
+    },
+    {
+      "id": "nature_urgency",
+      "label": "Nature of urgency (initial)",
+      "patterns": ["ENGINE|PROPULSION|FAILURE|LOST\\s*POWER"],
+      "required": true
+    },
+    {
+      "id": "nature_distress",
+      "label": "Nature of distress (escalation)",
+      "patterns": ["WATER|FLOODING|SINKING|TAKING\\s*ON"],
+      "required": true
+    },
+    {
+      "id": "assistance",
+      "label": "Assistance required",
+      "patterns": ["REQUIRE|ASSISTANCE|IMMEDIATE|HELP"],
+      "required": true
+    }
+  ],
+  "prowordRules": [
+    {
+      "id": "pan_pan",
+      "label": "PAN PAN (×3)",
+      "pattern": "PAN\\s*PAN",
+      "expectedCount": 3
+    },
+    {
+      "id": "mayday",
+      "label": "MAYDAY (×3)",
+      "pattern": "MAYDAY",
+      "expectedCount": 3
+    },
+    { "id": "this_is", "label": "THIS IS", "pattern": "THIS\\s+IS" },
+    { "id": "over", "label": "OVER", "pattern": "\\bOVER\\b" }
+  ],
+  "sequenceRules": {
+    "fieldOrder": [
+      "pan_pan",
+      "this_is",
+      "vessel_name",
+      "nature_urgency",
+      "mayday",
+      "nature_distress",
+      "assistance",
+      "over"
+    ]
+  },
+  "channelRules": {
+    "requiredChannel": 16,
+    "blockChannel70Voice": true
+  }
+}

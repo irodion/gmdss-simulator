@@ -67,6 +67,15 @@ export function sessionReducer(state: SessionState, command: SessionCommand): Se
       };
     }
 
+    case "UPDATE_TURN_TEXT": {
+      const turn = state.turns[command.turnIndex];
+      if (!turn) return state;
+      const updated: Turn = { ...turn, text: command.text };
+      const turns = [...state.turns];
+      turns[command.turnIndex] = updated;
+      return { ...state, turns };
+    }
+
     case "COMPLETE_SCENARIO": {
       if (state.phase !== "active") return state;
       return {

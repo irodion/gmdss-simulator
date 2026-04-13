@@ -13,9 +13,11 @@ interface Options {
   session: { state: SessionState; dispatch: (cmd: SessionCommand) => void };
   radio: UseRadioResult;
   audio: UseAudioResult;
+  /** When true, skip scripted responses (AI mode is handling responses) */
+  disabled?: boolean;
 }
 
-export function useScriptedResponses({ session, radio, audio }: Options) {
+export function useScriptedResponses({ session, radio, audio, disabled }: Options) {
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const sessionRef = useRef(session);
   const radioRef = useRef(radio);
@@ -37,7 +39,7 @@ export function useScriptedResponses({ session, radio, audio }: Options) {
   }, []);
 
   useEffect(() => {
-    if (phase !== "active") return;
+    if (phase !== "active" || disabled) return;
 
     const s = sessionRef.current;
     const resp = getNextScriptedResponse(s.state);
@@ -64,5 +66,5 @@ export function useScriptedResponses({ session, radio, audio }: Options) {
     return () => {
       if (timerRef.current) clearTimeout(timerRef.current);
     };
-  }, [turnCount, phase]);
+  }, [turnCount, phase, disabled]);
 }

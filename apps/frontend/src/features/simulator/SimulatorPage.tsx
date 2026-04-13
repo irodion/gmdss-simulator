@@ -13,6 +13,7 @@ import { useRadio } from "./hooks/use-radio.ts";
 import { useSession } from "./hooks/use-session.ts";
 import { useAudio } from "./hooks/use-audio.ts";
 import { useScriptedResponses } from "./hooks/use-scripted-responses.ts";
+import { useAiSession } from "./hooks/use-ai-session.ts";
 import { RadioDisplay } from "./ui/RadioDisplay.tsx";
 import { RotaryKnob } from "./ui/RotaryKnob.tsx";
 import { RadioButton } from "./ui/RadioButton.tsx";
@@ -25,19 +26,27 @@ import { DebriefPanel } from "./ui/DebriefPanel.tsx";
 import { MicButton } from "./ui/MicButton.tsx";
 import { AccessibleRadioPanel } from "./ui/AccessibleRadioPanel.tsx";
 import { DscKeypad } from "./ui/DscKeypad.tsx";
+import { TurnStatusIndicator } from "./ui/TurnStatusIndicator.tsx";
 
 import "../../styles/simulator.css";
 
-const SCENARIO_INDEX = [
-  "1.1-radio-check",
-  "1.2-channel-change",
-  "1.3-port-entry",
-  "1.4-position-report",
-  "1.5-nav-warning",
-];
+const SCENARIO_INDEX: Record<number, string[]> = {
+  1: [
+    "1.1-radio-check",
+    "1.2-channel-change",
+    "1.3-port-entry",
+    "1.4-position-report",
+    "1.5-nav-warning",
+  ],
+  2: ["2.1-mayday-fire"],
+  3: ["3.5-deteriorating"],
+  4: ["4.1-exam-distress"],
+};
 
-async function fetchScenario(filename: string): Promise<ScenarioDefinition> {
-  const resp = await fetch(`/content/en/scenarios/tier-1/${filename}.json`);
+const API_URL = (import.meta.env.VITE_API_URL as string) || "";
+
+async function fetchScenario(filename: string, tier: number): Promise<ScenarioDefinition> {
+  const resp = await fetch(`/content/en/scenarios/tier-${tier}/${filename}.json`);
   if (!resp.ok) throw new Error(`Failed to load scenario ${filename}: ${resp.status}`);
   return resp.json() as Promise<ScenarioDefinition>;
 }
@@ -59,13 +68,32 @@ export function SimulatorPage() {
   const [score, setScore] = useState<ScoreBreakdown | null>(null);
   const [inputText, setInputText] = useState("");
   const [a11yMode, setA11yMode] = useState(false);
+  const [aiMode, setAiMode] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // Load scenario index
+  const aiSession = useAiSession({
+    session,
+    radio,
+    audio,
+    apiUrl: API_URL,
+    enabled: aiMode,
+  });
+
+  // Load scenario index — all tiers
   useEffect(() => {
     const controller = new AbortController();
-    void Promise.all(SCENARIO_INDEX.map((name) => fetchScenario(name))).then((results) => {
-      if (!controller.signal.aborted) setScenarios(results);
+    const allPromises: Promise<ScenarioDefinition>[] = [];
+    for (const [tier, filenames] of Object.entries(SCENARIO_INDEX)) {
+      for (const name of filenames) {
+        allPromises.push(fetchScenario(name, Number(tier)));
+      }
+    }
+    void Promise.allSettled(allPromises).then((results) => {
+      if (controller.signal.aborted) return;
+      const loaded = results
+        .filter((r): r is PromiseFulfilledResult<ScenarioDefinition> => r.status === "fulfilled")
+        .map((r) => r.value);
+      setScenarios(loaded);
     });
     return () => controller.abort();
   }, []);
@@ -83,6 +111,41 @@ export function SimulatorPage() {
     audio.setSquelch(squelchToPercent(radio.state.squelch));
     audio.setVolume(radio.state.volume);
   }, [radio.state.squelch, radio.state.volume, audio]);
+
+  // In AI mode, capture mic audio on PTT and send to server for STT.
+  // Always stop capture on release to avoid mic leaks, even if AI disconnects mid-PTT.
+  const prevTxRxRef = useRef(radio.state.txRx);
+  useEffect(() => {
+    const prev = prevTxRxRef.current;
+    prevTxRxRef.current = radio.state.txRx;
+
+    if (session.state.phase !== "active") return;
+
+    if (
+      aiSession.state.aiActive &&
+      prev !== "transmitting" &&
+      radio.state.txRx === "transmitting"
+    ) {
+      void audio.startCapture();
+    }
+    if (prev === "transmitting" && radio.state.txRx !== "transmitting") {
+      void audio
+        .stopCapture()
+        .then(({ cleanBlob, durationMs }) => {
+          if (cleanBlob.size === 0 || durationMs < 200) return;
+          if (aiSession.state.aiActive) {
+            session.dispatch({
+              type: "ADD_STUDENT_TURN",
+              text: "(audio)",
+              channel: radio.state.channel,
+              durationMs,
+            });
+            aiSession.sendAudioTurn(cleanBlob, radio.state.channel);
+          }
+        })
+        .catch(() => {});
+    }
+  }, [radio.state.txRx, radio.state.channel, audio, aiSession, session]);
 
   const applyScenarioDefaults = useCallback(
     (scenario: ScenarioDefinition) => {
@@ -110,32 +173,82 @@ export function SimulatorPage() {
       squelch: squelchToPercent(radio.state.squelch),
     });
     session.dispatch({ type: "START_SCENARIO" });
-  }, [session, audio, radio.state.volume, radio.state.squelch]);
+
+    if (aiMode) {
+      aiSession.startAiSession();
+    }
+  }, [session, audio, radio.state.volume, radio.state.squelch, aiMode, aiSession]);
+
+  // Block transmit while AI handshake is in progress or a turn is being processed
+  const aiConnecting =
+    aiMode &&
+    !aiSession.state.aiActive &&
+    aiSession.state.wsStatus !== "disconnected" &&
+    aiSession.state.wsStatus !== "error";
+
+  const aiTurnInFlight =
+    aiSession.state.aiActive &&
+    aiSession.state.turnStatus !== "idle" &&
+    aiSession.state.turnStatus !== "complete" &&
+    aiSession.state.turnStatus !== "error";
 
   const handleSubmitTransmission = useCallback(() => {
     if (!inputText.trim() || session.state.phase !== "active") return;
     if (radio.state.channel === 70 || radio.state.channel === 75 || radio.state.channel === 76)
       return;
     if (radio.state.txRx === "receiving") return;
+    if (aiConnecting || aiTurnInFlight) return;
+
+    const text = inputText.trim().toUpperCase();
     session.dispatch({
       type: "ADD_STUDENT_TURN",
-      text: inputText.trim().toUpperCase(),
+      text,
       channel: radio.state.channel,
       durationMs: 3000,
     });
     setInputText("");
-  }, [inputText, session, radio.state.channel, radio.state.txRx]);
 
-  useScriptedResponses({ session, radio, audio });
+    if (aiSession.state.aiActive) {
+      aiSession.sendTextTurn(text, radio.state.channel);
+    }
+  }, [
+    inputText,
+    session,
+    radio.state.channel,
+    radio.state.txRx,
+    aiSession,
+    aiConnecting,
+    aiTurnInFlight,
+  ]);
+
+  useScriptedResponses({
+    session,
+    radio,
+    audio,
+    disabled: aiSession.state.aiActive,
+  });
 
   const handleEndScenario = useCallback(() => {
     if (!rubric || !session.state.scenario) return;
+
     const sc = session.state.scenario;
-    const s = scoreTranscript(session.state.turns, rubric, sc.requiredChannel, sc.allowedChannels);
-    setScore(s);
+    // If any turn still has an unresolved "(audio)" placeholder, the local
+    // transcript can't be scored accurately — use the server's last score instead
+    const hasUnresolvedAudio = session.state.turns.some((t) => t.text === "(audio)");
+    const finalScore =
+      hasUnresolvedAudio && aiSession.state.latestScore
+        ? aiSession.state.latestScore
+        : scoreTranscript(session.state.turns, rubric, sc.requiredChannel, sc.allowedChannels);
+    setScore(finalScore);
     session.dispatch({ type: "COMPLETE_SCENARIO" });
+
+    // Send session_end even if AI disconnected mid-scenario — the server may
+    // still have an open session from an earlier successful handshake
+    if (aiSession.state.sessionId) {
+      aiSession.endAiSession();
+    }
     audio.destroy();
-  }, [session, rubric, audio]);
+  }, [session, rubric, audio, aiSession]);
 
   const handleRetry = useCallback(() => {
     const scenario = session.state.scenario;
@@ -143,18 +256,20 @@ export function SimulatorPage() {
     radio.reset();
     setScore(null);
     audio.destroy();
+    aiSession.disconnect();
     if (scenario) {
       session.dispatch({ type: "LOAD_SCENARIO", scenario });
       applyScenarioDefaults(scenario);
     }
-  }, [session, radio, audio, applyScenarioDefaults]);
+  }, [session, radio, audio, aiSession, applyScenarioDefaults]);
 
   const handleBack = useCallback(() => {
     session.dispatch({ type: "RESET" });
     radio.reset();
     setScore(null);
     audio.destroy();
-  }, [session, radio, audio]);
+    aiSession.disconnect();
+  }, [session, radio, audio, aiSession]);
 
   // ── Scenario selection ──
   if (session.state.phase === "loading") {
@@ -164,6 +279,19 @@ export function SimulatorPage() {
         <p style={{ padding: "8px 20px 0", color: "var(--text-soft)", fontSize: 14 }}>
           {t("selectScenario")}
         </p>
+
+        <div style={{ padding: "8px 20px" }}>
+          <label style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13 }}>
+            <input type="checkbox" checked={aiMode} onChange={(e) => setAiMode(e.target.checked)} />
+            {t("aiMode", "AI Mode")}
+            <span style={{ color: "var(--text-soft)", fontSize: 12 }}>
+              {aiMode
+                ? t("aiModeOn", "(AI-powered responses)")
+                : t("aiModeOff", "(scripted responses)")}
+            </span>
+          </label>
+        </div>
+
         <div className="sim-scenario-list">
           {scenarios.map((sc) => (
             <div
@@ -230,6 +358,11 @@ export function SimulatorPage() {
               <span className="sim-meta">
                 {t("tier", { tier: scenario.tier })} / {scenario.category}
               </span>
+              {aiSession.state.aiActive && (
+                <span className="sim-meta" style={{ color: "var(--accent)" }}>
+                  AI
+                </span>
+              )}
             </div>
           </div>
 
@@ -295,7 +428,9 @@ export function SimulatorPage() {
                     radio.state.channel === 70 ||
                     radio.state.channel === 75 ||
                     radio.state.channel === 76 ||
-                    txRx === "receiving"
+                    txRx === "receiving" ||
+                    aiConnecting ||
+                    aiTurnInFlight
                   }
                   active={txRx === "transmitting"}
                   onCommand={radio.send}
@@ -317,27 +452,35 @@ export function SimulatorPage() {
           )}
 
           {session.state.phase === "active" && (
-            <div className="sim-input-row">
-              <input
-                ref={inputRef}
-                type="text"
-                value={inputText}
-                onChange={(e) => setInputText(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") handleSubmitTransmission();
-                }}
-                placeholder={t("input.placeholder")}
-                aria-label="Radio transmission text"
+            <>
+              <TurnStatusIndicator
+                status={aiSession.state.turnStatus}
+                sttFailureCount={aiSession.state.sttFailureCount}
               />
-              <MicButton onTranscript={setInputText} />
-              <button
-                type="button"
-                onClick={handleSubmitTransmission}
-                disabled={!inputText.trim() || txRx === "receiving"}
-              >
-                {t("input.submit")}
-              </button>
-            </div>
+              <div className="sim-input-row">
+                <input
+                  ref={inputRef}
+                  type="text"
+                  value={inputText}
+                  onChange={(e) => setInputText(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") handleSubmitTransmission();
+                  }}
+                  placeholder={t("input.placeholder")}
+                  aria-label="Radio transmission text"
+                />
+                <MicButton onTranscript={setInputText} />
+                <button
+                  type="button"
+                  onClick={handleSubmitTransmission}
+                  disabled={
+                    !inputText.trim() || txRx === "receiving" || aiConnecting || aiTurnInFlight
+                  }
+                >
+                  {t("input.submit")}
+                </button>
+              </div>
+            </>
           )}
 
           <FeedbackCard score={score} />
@@ -350,7 +493,12 @@ export function SimulatorPage() {
             </button>
           )}
           {session.state.phase === "active" && (
-            <button type="button" className="btn" onClick={handleEndScenario}>
+            <button
+              type="button"
+              className="btn"
+              onClick={handleEndScenario}
+              disabled={aiTurnInFlight}
+            >
               {t("endScenario")}
             </button>
           )}

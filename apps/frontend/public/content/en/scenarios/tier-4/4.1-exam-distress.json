@@ -1,0 +1,31 @@
+{
+  "id": "4.1",
+  "tier": 4,
+  "category": "distress",
+  "title": "Exam: Random Distress",
+  "description": "Timed exam scenario. Your vessel is sinking after a collision. Make a complete MAYDAY call with all required fields. No hints are provided — this simulates exam conditions.",
+  "stationPersona": "COAST_GUARD_MRCC",
+  "stationName": "RESCUE COORDINATION CENTRE",
+  "vessel": {
+    "name": "BLUE DUCK",
+    "callsign": "5BCD2",
+    "mmsi": "211239680",
+    "position": "48°52'N 002°18'W",
+    "personsOnBoard": 12
+  },
+  "requiredChannel": 16,
+  "initialGpsLock": true,
+  "task": "Your vessel has been in a collision and is sinking. Make a complete MAYDAY distress call on Channel 16. You must include all required fields. This is a timed exam — no hints provided.",
+  "scriptReference": "MAYDAY MAYDAY MAYDAY, THIS IS {{vesselName}} {{vesselName}} {{vesselName}}, CALLSIGN {{callsign}}, MMSI {{mmsi}}, POSITION {{position}}, COLLISION, VESSEL SINKING, REQUIRE IMMEDIATE ASSISTANCE, {{personsOnBoard}} PERSONS ON BOARD, MOTOR VESSEL, TWELVE METRES, WHITE HULL, OVER",
+  "scriptedResponses": [
+    {
+      "id": "mayday-ack",
+      "speaker": "COAST_GUARD_MRCC",
+      "text": "MAYDAY. BLUE DUCK BLUE DUCK BLUE DUCK. THIS IS RESCUE COORDINATION CENTRE. RECEIVED MAYDAY. ALL STATIONS SEELONCE MAYDAY. TIME ONE SIX FOUR FIVE. OUT.",
+      "triggerAfterTurnIndex": 0,
+      "condition": { "type": "always" }
+    }
+  ],
+  "rubricId": "v1/exam",
+  "hints": []
+}
