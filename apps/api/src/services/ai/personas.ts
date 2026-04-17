@@ -1,11 +1,3 @@
-/**
- * Station persona definitions and system prompt builder.
- *
- * Each persona represents a station the AI can play during a scenario.
- * The system prompt follows IMO SMCP rules and constrains the LLM to
- * respond only in proper marine radiotelephone protocol.
- */
-
 import type { LlmMessage, PersonaContext, StationPersona, StationPersonaId } from "./types.ts";
 
 export const PERSONAS: Record<StationPersonaId, StationPersona> = {
@@ -56,15 +48,10 @@ export const PERSONAS: Record<StationPersonaId, StationPersona> = {
   },
 };
 
-/** Map legacy scenario persona IDs to canonical StationPersonaId values. */
 const PERSONA_ALIASES: Record<string, StationPersonaId> = {
   PORT_CONTROL: "PORT_CONTROL_VTS",
 };
 
-/**
- * Look up a persona by ID.
- * Falls back to COAST_STATION for unknown IDs to avoid runtime errors.
- */
 export function getPersona(id: string): StationPersona {
   if (id in PERSONAS) {
     return PERSONAS[id as StationPersonaId];
@@ -79,40 +66,40 @@ export function getPersona(id: string): StationPersona {
 /**
  * Build the LLM system prompt for a station persona in a given scenario context.
  *
- * The prompt constrains the LLM to:
- * - Respond ONLY in standard marine radiotelephone protocol (IMO SMCP)
- * - Use correct prowords (OVER, OUT, ROGER, SAY AGAIN, CORRECTION)
- * - Use NATO/ITU phonetic alphabet for spelling
- * - Keep transmissions concise (radio, not conversation)
- * - Match communication priority (distress > urgency > safety > routine)
- * - Stay in character if the student makes protocol errors
+ * Design principles:
+ * - The model knows WHO it is (station identity) and WHAT to do (scenario instructions)
+ * - The model does NOT know the student's vessel name or callsign upfront — it must
+ *   learn them from the student's transmissions (just like a real station operator)
+ * - The model only knows the student's MMSI (received via DSC, visible on equipment)
+ * - Each scenario provides specific instructions for how the station should behave
  */
 export function buildSystemPrompt(persona: StationPersona, context: PersonaContext): string {
+  const scenarioInstructions =
+    context.stationPrompt ??
+    `A student is performing a radio exercise. Respond appropriately using standard marine protocol. ${context.scenarioDescription}`;
+
   return `You are ${context.stationName}, callsign ${context.callsign}, MMSI ${context.mmsi}.
 You are ${persona.roleDescription}
 
-RULES:
+YOUR TASK:
+${scenarioInstructions}
+
+RADIO PROTOCOL RULES:
 - Respond ONLY using standard marine radiotelephone protocol (IMO SMCP).
 - Use correct prowords: OVER (expecting reply), OUT (end of communication), ROGER (understood), SAY AGAIN (request repeat), CORRECTION (error fix).
 - Use the NATO/ITU phonetic alphabet for spelling (Alpha, Bravo, Charlie, etc.).
 - Keep transmissions concise — this is radio, not conversation.
-- Match the communication priority: distress > urgency > safety > routine.
-- If the student makes a protocol error, respond as a real station would (request clarification, correct channel, etc.) — do not break character.
-- Never mention that you are an AI, a language model, or a simulator.
-- Never use punctuation that wouldn't be spoken on radio (no parentheses, asterisks, or formatting).
 - Always end with OVER if expecting a reply, or OUT if ending communication.
+- Never mention that you are an AI, a language model, or a simulator.
+- Never use punctuation that wouldn't be spoken on radio.
 
-SCENARIO CONTEXT:
-${context.scenarioDescription}
-
-STUDENT VESSEL:
-- Name: ${context.vesselName}${context.vesselCallsign ? `\n- Callsign: ${context.vesselCallsign}` : ""}${context.vesselMmsi ? `\n- MMSI: ${context.vesselMmsi}` : ""}`;
+KNOWN INFORMATION:
+- Student vessel MMSI: ${context.vesselMmsi ?? "unknown"}
+- You do NOT know the student's vessel name or callsign until they identify themselves.
+- Extract the vessel name and callsign from the student's transmissions.
+- If you cannot understand the vessel name after the student has transmitted, ask them to say again.`;
 }
 
-/**
- * Build conversation history from turns for the LLM messages array.
- * Student turns become "user" messages, station turns become "assistant" messages.
- */
 export function turnsToLlmMessages(
   turns: ReadonlyArray<{ readonly speaker: "student" | "station"; readonly text: string }>,
 ): LlmMessage[] {

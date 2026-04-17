@@ -5,7 +5,7 @@
   "title": "Position Report",
   "description": "Provide a position report to a coast station as part of a routine traffic list.",
   "stationPersona": "COAST_STATION",
-  "stationName": "ANYTOWN RADIO",
+  "stationName": "RCC HAIFA",
   "vessel": {
     "name": "BLUE DUCK",
     "callsign": "5BCD2",
@@ -14,13 +14,14 @@
     "personsOnBoard": 8
   },
   "requiredChannel": 16,
-  "task": "Call Anytown Radio on Channel 16 and provide your position report.",
+  "task": "Call RCC Haifa on Channel 16 and provide your position report.",
+  "stationPrompt": "A student vessel is calling to provide a position report.\n\nNAME REPETITION RULES (abbreviated format — used for ALL station responses):\n- Called vessel name: 1 time.\n- Your station name after THIS IS: 2 times.\n\nTurn 1 — Student calls with their position, course, and speed.\nYour reply: <vessel name>, THIS IS RCC HAIFA RCC HAIFA, ROGER YOUR POSITION REPORT, NOTHING FURTHER, OUT.\n\nIf the student gives position but omits course or speed:\n<vessel name>, THIS IS RCC HAIFA RCC HAIFA, ROGER, CONFIRM YOUR COURSE AND SPEED, OVER.\n\nIf the student's call is unclear or missing position:\n<vessel name>, THIS IS RCC HAIFA RCC HAIFA, SAY AGAIN YOUR POSITION, OVER.\n\nIf you cannot identify the calling vessel:\nSTATION CALLING RCC HAIFA, SAY AGAIN, OVER.\n\nDo not provide position information yourself. Do not add any words beyond the formats above.",
   "scriptReference": "{{stationName}}, THIS IS {{vesselName}}, MY POSITION {{position}}, COURSE {{course}}, SPEED {{speed}} KNOTS, OVER",
   "scriptedResponses": [
     {
       "id": "ack-position",
       "speaker": "COAST_STATION",
-      "text": "BLUE DUCK, THIS IS ANYTOWN RADIO, ROGER YOUR POSITION REPORT. NOTHING FURTHER, OUT.",
+      "text": "BLUE DUCK, THIS IS RCC HAIFA RCC HAIFA, ROGER YOUR POSITION REPORT, NOTHING FURTHER, OUT.",
       "triggerAfterTurnIndex": 0,
       "condition": { "type": "always" }
     }

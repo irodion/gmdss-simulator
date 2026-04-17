@@ -88,10 +88,10 @@ export function useAiSession({
       case "stt_result": {
         if (turnMgr.isStale(msg.turnId)) return;
         setState((s) => ({ ...s, sttFailureCount: 0 }));
-        // Replace "(audio)" placeholder with the actual STT transcript
+        // Replace voice placeholder with the actual STT transcript
         const turns = sessionRef.current.state.turns;
         const lastStudentIdx = turns.findLastIndex(
-          (t) => t.speaker === "student" && t.text === "(audio)",
+          (t) => t.speaker === "student" && t.text === "[voice transmission]",
         );
         if (lastStudentIdx >= 0) {
           sessionRef.current.dispatch({

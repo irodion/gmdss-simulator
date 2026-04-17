@@ -19,7 +19,7 @@ const MOCK_SCENARIO: ScenarioDefinition = {
   title: "Radio Check",
   description: "Test scenario",
   stationPersona: "COAST_STATION",
-  stationName: "ANYTOWN RADIO",
+  stationName: "RCC HAIFA",
   vessel: { name: "BLUE DUCK", callsign: "5BCD2", mmsi: "211239680" },
   requiredChannel: 16,
   task: "Perform a radio check",
@@ -59,8 +59,8 @@ describe("createSession", () => {
     expect(session.activeTurnId).toBe(-1);
     expect(session.activeAbortController).toBeNull();
     expect(session.persona.id).toBe("COAST_STATION");
-    expect(session.personaContext.stationName).toBe("ANYTOWN RADIO");
-    expect(session.personaContext.vesselName).toBe("BLUE DUCK");
+    expect(session.personaContext.stationName).toBe("RCC HAIFA");
+    expect(session.personaContext.vesselMmsi).toBe("211239680");
   });
 
   test("resolves persona from scenario stationPersona field", () => {

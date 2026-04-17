@@ -1,25 +1,21 @@
 /**
- * TX Capture — microphone capture with dual output paths.
- * Clean path: MediaRecorder blob (for future STT).
- * Effected path: through radio DSP chain to speakers (self-monitoring).
+ * TX Capture — captures the microphone to a MediaRecorder blob for STT.
+ * Self-monitoring (mic → DSP → speakers) is intentionally disabled — real
+ * VHF radios do not play your own voice back and acoustic feedback corrupts STT.
  */
-
-import { createRadioDspChain } from "./radio-effects.ts";
 
 export class TxCapture {
   private stream: MediaStream | null = null;
   private recorder: MediaRecorder | null = null;
   private chunks: Blob[] = [];
-  private sourceNode: MediaStreamAudioSourceNode | null = null;
-  private dspChain: { input: AudioNode; output: AudioNode } | null = null;
   private startTime = 0;
 
   /**
    * Start capturing audio from the microphone.
-   * @param ctx AudioContext to use
-   * @param destination Where to route the effected monitor output
+   * The AudioContext and destination parameters are retained for API compatibility
+   * but not used — self-monitoring is disabled (see file header).
    */
-  async start(ctx: AudioContext, destination: AudioNode): Promise<void> {
+  async start(_ctx: AudioContext, _destination: AudioNode): Promise<void> {
     this.stream = await navigator.mediaDevices.getUserMedia({
       audio: {
         echoCancellation: true,
@@ -28,22 +24,15 @@ export class TxCapture {
       },
     });
 
-    // Clean path: MediaRecorder for STT
     this.chunks = [];
     const mimeType = this.getSupportedMimeType();
     this.recorder = mimeType
       ? new MediaRecorder(this.stream, { mimeType })
-      : new MediaRecorder(this.stream); // browser default codec
+      : new MediaRecorder(this.stream);
     this.recorder.ondataavailable = (e) => {
       if (e.data.size > 0) this.chunks.push(e.data);
     };
     this.recorder.start();
-
-    // Effected path: mic → DSP chain → speakers (self-monitoring)
-    this.sourceNode = ctx.createMediaStreamSource(this.stream);
-    this.dspChain = createRadioDspChain(ctx);
-    this.sourceNode.connect(this.dspChain.input);
-    this.dspChain.output.connect(destination);
 
     this.startTime = Date.now();
   }
@@ -80,18 +69,6 @@ export class TxCapture {
   }
 
   private cleanup(): void {
-    // Disconnect audio nodes
-    if (this.sourceNode) {
-      this.sourceNode.disconnect();
-      this.sourceNode = null;
-    }
-    if (this.dspChain) {
-      this.dspChain.input.disconnect();
-      this.dspChain.output.disconnect();
-      this.dspChain = null;
-    }
-
-    // Stop all media tracks
     if (this.stream) {
       for (const track of this.stream.getTracks()) {
         track.stop();

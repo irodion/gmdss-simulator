@@ -11,7 +11,7 @@ const ROUTINE_RUBRIC: RubricDefinition = {
     {
       id: "station_name",
       label: "Station name (called)",
-      patterns: ["ANYTOWN\\s*RADIO"],
+      patterns: ["RCC\\s*HAIFA"],
       required: true,
     },
     {
@@ -111,7 +111,7 @@ describe("scoreTranscript", () => {
       vi.spyOn(Date, "now").mockReturnValue(10000);
       const turns: Turn[] = [
         makeTurn(
-          "ANYTOWN RADIO ANYTOWN RADIO ANYTOWN RADIO, THIS IS BLUE DUCK BLUE DUCK BLUE DUCK, RADIO CHECK ON CHANNEL ONE SIX, OVER",
+          "RCC HAIFA RCC HAIFA RCC HAIFA, THIS IS BLUE DUCK BLUE DUCK BLUE DUCK, RADIO CHECK ON CHANNEL ONE SIX, OVER",
         ),
       ];
       const score = scoreTranscript(turns, ROUTINE_RUBRIC, 16);
@@ -129,7 +129,7 @@ describe("scoreTranscript", () => {
 
     it("penalizes missing vessel name", () => {
       vi.spyOn(Date, "now").mockReturnValue(10000);
-      const turns: Turn[] = [makeTurn("ANYTOWN RADIO, THIS IS, RADIO CHECK, OVER")];
+      const turns: Turn[] = [makeTurn("RCC HAIFA, THIS IS, RADIO CHECK, OVER")];
       const score = scoreTranscript(turns, ROUTINE_RUBRIC, 16);
 
       expect(score.overall).toBeLessThan(100);
@@ -141,7 +141,7 @@ describe("scoreTranscript", () => {
 
     it("penalizes missing OVER proword", () => {
       vi.spyOn(Date, "now").mockReturnValue(10000);
-      const turns: Turn[] = [makeTurn("ANYTOWN RADIO, THIS IS BLUE DUCK, RADIO CHECK")];
+      const turns: Turn[] = [makeTurn("RCC HAIFA, THIS IS BLUE DUCK, RADIO CHECK")];
       const score = scoreTranscript(turns, ROUTINE_RUBRIC, 16);
 
       const prowords = score.dimensions.find((d) => d.id === "prowords")!;
@@ -153,7 +153,7 @@ describe("scoreTranscript", () => {
       vi.spyOn(Date, "now").mockReturnValue(10000);
       const turns: Turn[] = [
         makeTurn(
-          "ANYTOWN RADIO, THIS IS BLUE DUCK, RADIO CHECK, OVER",
+          "RCC HAIFA, THIS IS BLUE DUCK, RADIO CHECK, OVER",
           12, // wrong channel
         ),
       ];
@@ -166,7 +166,7 @@ describe("scoreTranscript", () => {
 
     it("scores channel 70 voice as a violation", () => {
       vi.spyOn(Date, "now").mockReturnValue(10000);
-      const turns: Turn[] = [makeTurn("ANYTOWN RADIO, THIS IS BLUE DUCK, RADIO CHECK, OVER", 70)];
+      const turns: Turn[] = [makeTurn("RCC HAIFA, THIS IS BLUE DUCK, RADIO CHECK, OVER", 70)];
       const score = scoreTranscript(turns, ROUTINE_RUBRIC, 16);
 
       const channel = score.dimensions.find((d) => d.id === "channel")!;
@@ -177,7 +177,7 @@ describe("scoreTranscript", () => {
     it("gives partial credit for out-of-order fields", () => {
       vi.spyOn(Date, "now").mockReturnValue(10000);
       // vessel name before THIS IS (wrong order)
-      const turns: Turn[] = [makeTurn("BLUE DUCK, ANYTOWN RADIO, RADIO CHECK THIS IS, OVER")];
+      const turns: Turn[] = [makeTurn("BLUE DUCK, RCC HAIFA, RADIO CHECK THIS IS, OVER")];
       const score = scoreTranscript(turns, ROUTINE_RUBRIC, 16);
 
       const seq = score.dimensions.find((d) => d.id === "sequence")!;
@@ -188,7 +188,7 @@ describe("scoreTranscript", () => {
     it("handles multiple student turns", () => {
       vi.spyOn(Date, "now").mockReturnValue(10000);
       const turns: Turn[] = [
-        makeTurn("ANYTOWN RADIO, THIS IS BLUE DUCK", 16, 0),
+        makeTurn("RCC HAIFA, THIS IS BLUE DUCK", 16, 0),
         makeTurn("RADIO CHECK, OVER", 16, 1),
       ];
       const score = scoreTranscript(turns, ROUTINE_RUBRIC, 16);
@@ -239,7 +239,7 @@ describe("scoreTranscript", () => {
   describe("determinism", () => {
     it("produces identical scores for identical inputs", () => {
       vi.spyOn(Date, "now").mockReturnValue(10000);
-      const turns: Turn[] = [makeTurn("ANYTOWN RADIO, THIS IS BLUE DUCK, RADIO CHECK, OVER")];
+      const turns: Turn[] = [makeTurn("RCC HAIFA, THIS IS BLUE DUCK, RADIO CHECK, OVER")];
 
       const score1 = scoreTranscript(turns, ROUTINE_RUBRIC, 16);
       const score2 = scoreTranscript(turns, ROUTINE_RUBRIC, 16);
@@ -254,7 +254,7 @@ describe("scoreTranscript", () => {
       vi.spyOn(Date, "now").mockReturnValue(10000);
       const turns: Turn[] = [
         makeTurn(
-          "ANYTOWN RADIO ANYTOWN RADIO ANYTOWN RADIO, THIS IS BLUE DUCK BLUE DUCK BLUE DUCK, RADIO CHECK ON CHANNEL ONE SIX, OVER",
+          "RCC HAIFA RCC HAIFA RCC HAIFA, THIS IS BLUE DUCK BLUE DUCK BLUE DUCK, RADIO CHECK ON CHANNEL ONE SIX, OVER",
         ),
       ];
       const score = scoreTranscript(turns, ROUTINE_RUBRIC, 16);
@@ -274,7 +274,7 @@ describe("scoreTranscript", () => {
 
     it("wrong channel and missing prowords", () => {
       vi.spyOn(Date, "now").mockReturnValue(10000);
-      const turns: Turn[] = [makeTurn("ANYTOWN RADIO, THIS IS BLUE DUCK, RADIO CHECK", 12)];
+      const turns: Turn[] = [makeTurn("RCC HAIFA, THIS IS BLUE DUCK, RADIO CHECK", 12)];
       const score = scoreTranscript(turns, ROUTINE_RUBRIC, 16);
       expect(score.overall).toBe(73);
       expect(score.dimensions[1]?.score).toBe(50); // prowords partial

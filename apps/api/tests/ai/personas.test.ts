@@ -17,12 +17,12 @@ const ALL_IDS: StationPersonaId[] = [
 ];
 
 const SAMPLE_CONTEXT: PersonaContext = {
-  stationName: "ANYTOWN RADIO",
-  callsign: "ANYTOWN",
+  stationName: "RCC HAIFA",
+  callsign: "HAIFA",
   mmsi: "002320001",
   scenarioDescription: "Standard radio check on Channel 16.",
-  vesselName: "BLUE DUCK",
-  vesselCallsign: "5BCD2",
+  stationPrompt:
+    "A student vessel is performing a radio check. Respond with their vessel name, identify yourself, and report signal quality.",
   vesselMmsi: "211239680",
 };
 
@@ -67,8 +67,8 @@ describe("getPersona", () => {
 describe("buildSystemPrompt", () => {
   test("includes station name and callsign", () => {
     const prompt = buildSystemPrompt(PERSONAS.COAST_STATION, SAMPLE_CONTEXT);
-    expect(prompt).toContain("ANYTOWN RADIO");
-    expect(prompt).toContain("ANYTOWN");
+    expect(prompt).toContain("RCC HAIFA");
+    expect(prompt).toContain("HAIFA");
   });
 
   test("includes MMSI", () => {
@@ -90,28 +90,34 @@ describe("buildSystemPrompt", () => {
     expect(prompt).toContain("NATO/ITU phonetic alphabet");
   });
 
-  test("includes scenario context", () => {
+  test("uses stationPrompt for scenario instructions", () => {
     const prompt = buildSystemPrompt(PERSONAS.COAST_STATION, SAMPLE_CONTEXT);
+    expect(prompt).toContain("A student vessel is performing a radio check");
+  });
+
+  test("falls back to scenarioDescription when stationPrompt is absent", () => {
+    const context: PersonaContext = {
+      ...SAMPLE_CONTEXT,
+      stationPrompt: undefined,
+    };
+    const prompt = buildSystemPrompt(PERSONAS.COAST_STATION, context);
     expect(prompt).toContain("Standard radio check on Channel 16");
   });
 
-  test("includes student vessel details", () => {
+  test("includes student vessel MMSI but not name or callsign", () => {
     const prompt = buildSystemPrompt(PERSONAS.COAST_STATION, SAMPLE_CONTEXT);
-    expect(prompt).toContain("BLUE DUCK");
-    expect(prompt).toContain("5BCD2");
     expect(prompt).toContain("211239680");
+    expect(prompt).not.toContain("BLUE DUCK");
+    expect(prompt).not.toContain("5BCD2");
   });
 
-  test("omits callsign/MMSI lines when not provided", () => {
+  test("shows unknown MMSI when not provided", () => {
     const context: PersonaContext = {
       ...SAMPLE_CONTEXT,
-      vesselCallsign: undefined,
       vesselMmsi: undefined,
     };
     const prompt = buildSystemPrompt(PERSONAS.COAST_STATION, context);
-    expect(prompt).not.toContain("Callsign:");
-    expect(prompt).not.toContain("MMSI:");
-    expect(prompt).toContain("BLUE DUCK");
+    expect(prompt).toContain("unknown");
   });
 
   test.each(ALL_IDS)("produces non-empty prompt for %s", (id) => {

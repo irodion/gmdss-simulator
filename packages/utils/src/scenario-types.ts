@@ -40,6 +40,8 @@ export interface ScenarioDefinition {
   readonly allowedChannels?: readonly number[];
   readonly initialGpsLock?: boolean;
   readonly task: string;
+  /** Per-scenario LLM instructions for the station persona. */
+  readonly stationPrompt?: string;
   readonly scriptReference?: string;
   readonly scriptedResponses: readonly ScriptedResponse[];
   readonly rubricId: string;

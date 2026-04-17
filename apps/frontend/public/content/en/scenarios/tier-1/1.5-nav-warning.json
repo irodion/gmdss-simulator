@@ -5,7 +5,7 @@
   "title": "Navigational Warning Reception",
   "description": "Receive a SECURITE navigational warning broadcast and acknowledge it correctly.",
   "stationPersona": "COAST_STATION",
-  "stationName": "ANYTOWN RADIO",
+  "stationName": "RCC HAIFA",
   "vessel": {
     "name": "BLUE DUCK",
     "callsign": "5BCD2",
@@ -13,20 +13,21 @@
     "position": "50°10'N 001°25'W"
   },
   "requiredChannel": 16,
-  "task": "Listen to the SECURITE broadcast from Anytown Radio on Channel 16. Acknowledge that you have received the navigational warning.",
+  "task": "Listen to the SECURITE broadcast from RCC Haifa on Channel 16. Acknowledge that you have received the navigational warning.",
+  "stationPrompt": "You have just broadcast a SECURITE about an unlit buoy in position 50 degrees 10 minutes North, 001 degrees 25 minutes West. The student vessel must acknowledge.\n\nNAME REPETITION RULES (abbreviated format — used for ALL station responses):\n- Called vessel name: 1 time.\n- Your station name after THIS IS: 2 times.\n- Exception: SECURITE broadcast uses ALL STATIONS 3 times and station name 3 times.\n\nTurn 1 — Student acknowledges receipt of the SECURITE.\nYour reply: <vessel name>, THIS IS RCC HAIFA RCC HAIFA, ROGER, OUT.\n\nIf the student asks you to repeat the warning:\nSECURITE SECURITE SECURITE, ALL STATIONS ALL STATIONS ALL STATIONS, THIS IS RCC HAIFA RCC HAIFA RCC HAIFA, NAVIGATIONAL WARNING, UNLIT BUOY IN POSITION FIVE ZERO DEGREES ONE ZERO MINUTES NORTH ZERO ZERO ONE DEGREES TWO FIVE MINUTES WEST, MARINERS ARE ADVISED TO NAVIGATE WITH CAUTION, OUT.\n\nIf the student's call is unclear:\nSTATION CALLING RCC HAIFA, SAY AGAIN, OVER.\n\nDo not add any words beyond the formats above.",
   "scriptReference": "{{stationName}}, THIS IS {{vesselName}}, RECEIVED YOUR SECURITE, OVER",
   "scriptedResponses": [
     {
       "id": "securite-broadcast",
       "speaker": "COAST_STATION",
-      "text": "SECURITE SECURITE SECURITE. ALL STATIONS ALL STATIONS ALL STATIONS. THIS IS ANYTOWN RADIO. NAVIGATIONAL WARNING. UNLIT BUOY IN POSITION FIVE ZERO DEGREES ONE ZERO MINUTES NORTH, ZERO ZERO ONE DEGREES TWO FIVE MINUTES WEST. MARINERS ARE ADVISED TO NAVIGATE WITH CAUTION. OUT.",
+      "text": "SECURITE SECURITE SECURITE. ALL STATIONS ALL STATIONS ALL STATIONS. THIS IS RCC HAIFA. NAVIGATIONAL WARNING. UNLIT BUOY IN POSITION FIVE ZERO DEGREES ONE ZERO MINUTES NORTH, ZERO ZERO ONE DEGREES TWO FIVE MINUTES WEST. MARINERS ARE ADVISED TO NAVIGATE WITH CAUTION. OUT.",
       "triggerAfterTurnIndex": -1,
       "condition": { "type": "always" }
     },
     {
       "id": "ack-reception",
       "speaker": "COAST_STATION",
-      "text": "BLUE DUCK, THIS IS ANYTOWN RADIO, ROGER, OUT.",
+      "text": "BLUE DUCK, THIS IS RCC HAIFA RCC HAIFA, ROGER, OUT.",
       "triggerAfterTurnIndex": 0,
       "condition": { "type": "always" }
     }

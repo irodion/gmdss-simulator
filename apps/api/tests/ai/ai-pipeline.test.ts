@@ -15,7 +15,7 @@ const MOCK_RUBRIC: RubricDefinition = {
     {
       id: "station_name",
       label: "Station name",
-      patterns: ["ANYTOWN RADIO"],
+      patterns: ["RCC HAIFA"],
       required: true,
     },
   ],
@@ -28,12 +28,11 @@ function makeContext(overrides?: Partial<TurnContext>): TurnContext {
   return {
     persona: PERSONAS.COAST_STATION,
     personaContext: {
-      stationName: "ANYTOWN RADIO",
-      callsign: "ANYTOWN",
+      stationName: "RCC HAIFA",
+      callsign: "HAIFA",
       mmsi: "002320003",
       scenarioDescription: "Radio check scenario",
-      vesselName: "BLUE DUCK",
-      vesselCallsign: "5BCD2",
+      vesselMmsi: "211239680",
     },
     rubric: MOCK_RUBRIC,
     requiredChannel: 16,
@@ -58,13 +57,13 @@ function makeAdapters(
 describe("processTurn", () => {
   test("processes text input through full pipeline", async () => {
     const result = await processTurn(
-      { turnId: 0, text: "ANYTOWN RADIO THIS IS BLUE DUCK RADIO CHECK OVER" },
+      { turnId: 0, text: "RCC HAIFA THIS IS BLUE DUCK RADIO CHECK OVER" },
       makeContext(),
       makeAdapters(),
     );
 
     expect(result.turnId).toBe(0);
-    expect(result.transcript).toContain("ANYTOWN RADIO");
+    expect(result.transcript).toContain("RCC HAIFA");
     expect(result.sttConfidence).toBe(1);
     expect(result.sttProvider).toBe("text-input");
     expect(result.score.overall).toBeGreaterThan(0);
@@ -79,12 +78,12 @@ describe("processTurn", () => {
     const result = await processTurn(
       { turnId: 1, audio: Buffer.from("fake-audio"), audioMimeType: "audio/webm" },
       makeContext(),
-      makeAdapters({ text: "ANYTOWN RADIO THIS IS BLUE DUCK OVER" }),
+      makeAdapters({ text: "RCC HAIFA THIS IS BLUE DUCK OVER" }),
     );
 
     expect(result.sttProvider).toBe("mock");
     expect(result.sttConfidence).toBe(0.92);
-    expect(result.transcript).toContain("ANYTOWN RADIO");
+    expect(result.transcript).toContain("RCC HAIFA");
   });
 
   test("throws when neither audio nor text provided", async () => {
@@ -105,7 +104,7 @@ describe("processTurn", () => {
   test("scores against rubric correctly", async () => {
     // Transcript that mentions station name + OVER → should score well
     const result = await processTurn(
-      { turnId: 0, text: "ANYTOWN RADIO THIS IS BLUE DUCK RADIO CHECK OVER" },
+      { turnId: 0, text: "RCC HAIFA THIS IS BLUE DUCK RADIO CHECK OVER" },
       makeContext(),
       makeAdapters(),
     );

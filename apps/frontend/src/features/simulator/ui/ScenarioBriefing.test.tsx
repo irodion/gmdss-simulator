@@ -14,7 +14,7 @@ const MOCK_SCENARIO: ScenarioDefinition = {
   vessel: { name: "BLUE DUCK", callsign: "5BCD2", mmsi: "211239680" },
   requiredChannel: 16,
   task: "Perform a radio check on Channel 16.",
-  scriptReference: "ANYTOWN RADIO, THIS IS BLUE DUCK, RADIO CHECK, OVER",
+  scriptReference: "RCC HAIFA, THIS IS BLUE DUCK, RADIO CHECK, OVER",
   scriptedResponses: [],
   rubricId: "v1/routine",
 };
@@ -40,7 +40,7 @@ describe("ScenarioBriefing", () => {
     const btn = screen.getByText("SCRIPT REFERENCE");
     expect(btn).not.toBeNull();
     fireEvent.click(btn);
-    expect(screen.getByText(/ANYTOWN RADIO, THIS IS BLUE DUCK/)).not.toBeNull();
+    expect(screen.getByText(/RCC HAIFA, THIS IS BLUE DUCK/)).not.toBeNull();
   });
 
   test("displays category pill", () => {

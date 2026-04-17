@@ -70,6 +70,7 @@ export function SimulatorPage() {
   const [a11yMode, setA11yMode] = useState(false);
   const [aiMode, setAiMode] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+  const prevTxRxRef = useRef(radio.state.txRx);
 
   const aiSession = useAiSession({
     session,
@@ -114,34 +115,35 @@ export function SimulatorPage() {
 
   // In AI mode, capture mic audio on PTT and send to server for STT.
   // Always stop capture on release to avoid mic leaks, even if AI disconnects mid-PTT.
-  const prevTxRxRef = useRef(radio.state.txRx);
   useEffect(() => {
     const prev = prevTxRxRef.current;
     prevTxRxRef.current = radio.state.txRx;
 
     if (session.state.phase !== "active") return;
 
-    if (
-      aiSession.state.aiActive &&
-      prev !== "transmitting" &&
-      radio.state.txRx === "transmitting"
-    ) {
+    const pressed = prev !== "transmitting" && radio.state.txRx === "transmitting";
+    const released = prev === "transmitting" && radio.state.txRx !== "transmitting";
+
+    // Mute ambient noise during TX (real radios go silent when transmitting)
+    if (pressed) audio.setNoiseMuted(true);
+    if (released) audio.setNoiseMuted(false);
+
+    if (aiSession.state.aiActive && pressed) {
       void audio.startCapture();
     }
-    if (prev === "transmitting" && radio.state.txRx !== "transmitting") {
+    if (released) {
       void audio
         .stopCapture()
         .then(({ cleanBlob, durationMs }) => {
           if (cleanBlob.size === 0 || durationMs < 200) return;
-          if (aiSession.state.aiActive) {
-            session.dispatch({
-              type: "ADD_STUDENT_TURN",
-              text: "(audio)",
-              channel: radio.state.channel,
-              durationMs,
-            });
-            aiSession.sendAudioTurn(cleanBlob, radio.state.channel);
-          }
+          if (!aiSession.state.aiActive) return;
+          session.dispatch({
+            type: "ADD_STUDENT_TURN",
+            text: "[voice transmission]",
+            channel: radio.state.channel,
+            durationMs,
+          });
+          aiSession.sendAudioTurn(cleanBlob, radio.state.channel);
         })
         .catch(() => {});
     }
@@ -232,9 +234,9 @@ export function SimulatorPage() {
     if (!rubric || !session.state.scenario) return;
 
     const sc = session.state.scenario;
-    // If any turn still has an unresolved "(audio)" placeholder, the local
+    // If any turn still has an unresolved voice placeholder, the local
     // transcript can't be scored accurately — use the server's last score instead
-    const hasUnresolvedAudio = session.state.turns.some((t) => t.text === "(audio)");
+    const hasUnresolvedAudio = session.state.turns.some((t) => t.text === "[voice transmission]");
     const finalScore =
       hasUnresolvedAudio && aiSession.state.latestScore
         ? aiSession.state.latestScore

@@ -52,8 +52,7 @@ export function createSession(opts: {
     callsign: persona.defaultCallsign,
     mmsi: persona.defaultMmsi,
     scenarioDescription: opts.scenario.description,
-    vesselName: opts.scenario.vessel.name,
-    vesselCallsign: opts.scenario.vessel.callsign,
+    stationPrompt: opts.scenario.stationPrompt,
     vesselMmsi: opts.scenario.vessel.mmsi,
   };
 

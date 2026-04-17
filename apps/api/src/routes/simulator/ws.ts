@@ -214,10 +214,37 @@ export default async function simulatorWsRoute(fastify: FastifyInstance, opts: S
         studentTranscript = input.text.toUpperCase();
       } else if (input.audio) {
         try {
+          // Scenario-specific vocabulary hint — Whisper strongly biases toward words
+          // and style in the initial_prompt. Including a sample transmission with
+          // explicit 3x repetitions counteracts Whisper's built-in repetition penalty,
+          // which otherwise collapses "STATION STATION STATION" down to a single mention.
+          const v = session.scenario.vessel;
+          const station = session.personaContext.stationName;
+          // Station-name acronyms (e.g. "RCC" — Rescue Coordination Centre) are
+          // frequently misheard as more common US regulatory acronyms like "FCC".
+          // Spelling them out phonetically and explicitly marking the disambiguation
+          // helps Whisper choose the correct token.
+          const sttPrompt = [
+            `VHF marine radio transmission. Station: ${station} (${station}).`,
+            "Note: RCC means Rescue Coordination Centre — always transcribe as",
+            "RCC (Romeo-Charlie-Charlie), never FCC or ARC or RC.",
+            `Vessel: ${v.name}${v.callsign ? `, callsign ${v.callsign}` : ""}.`,
+            `Scenario: ${session.scenario.title}.`,
+            "Callers repeat the station name and their own vessel name up to three times",
+            "on the initial call. Transcribe every repetition verbatim — do not merge or",
+            "deduplicate repeated words.",
+            `Example: "${station} ${station} ${station}, THIS IS ${v.name} ${v.name} ${v.name}, RADIO CHECK, OVER."`,
+            "Expected vocabulary: RCC, MAYDAY, PAN PAN, SECURITE, THIS IS, OVER, OUT, ROGER,",
+            "SAY AGAIN, CORRECTION, RADIO CHECK, Channel One Six, Channel Seven Two,",
+            "Alpha Bravo Charlie Delta Echo Foxtrot Golf Hotel India Juliet Kilo Lima",
+            "Mike November Oscar Papa Quebec Romeo Sierra Tango Uniform Victor Whiskey",
+            "X-ray Yankee Zulu, position, latitude, longitude, degrees, minutes, north, south, east, west.",
+          ].join(" ");
           // Race STT against the abort signal so timeout doesn't hang on a slow provider
           const sttPromise = session.adapters.stt.transcribe(input.audio, {
             mimeType: input.audioMimeType ?? "audio/webm",
             language: "en",
+            prompt: sttPrompt,
           });
           const abortPromise = new Promise<never>((_, reject) => {
             controller.signal.addEventListener("abort", () => reject(new Error("Turn cancelled")), {
