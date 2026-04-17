@@ -52,7 +52,7 @@ test.describe.serial("Phase 3: Radio Simulator", () => {
     const input = page.locator('input[aria-label="Radio transmission text"]');
     await expect(input).toBeVisible();
     await input.fill(
-      "ANYTOWN RADIO ANYTOWN RADIO ANYTOWN RADIO THIS IS BLUE DUCK BLUE DUCK BLUE DUCK RADIO CHECK ON CHANNEL ONE SIX OVER",
+      "RCC HAIFA RCC HAIFA RCC HAIFA THIS IS BLUE DUCK BLUE DUCK BLUE DUCK RADIO CHECK ON CHANNEL ONE SIX OVER",
     );
     await page.click("text=Transmit");
 

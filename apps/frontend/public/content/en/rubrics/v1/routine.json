@@ -6,10 +6,7 @@
     {
       "id": "station_name",
       "label": "Station name (called)",
-      "patterns": [
-        "(ANYTOWN|ANYPORT|COAST\\s*GUARD?)\\s*(RADIO|STATION|CONTROL)?",
-        "PORT\\s*CONTROL"
-      ],
+      "patterns": ["HAIFA|ANYPORT|COAST\\s*GUARDS?|\\bRCC\\b", "PORT\\s*CONTROL"],
       "required": true
     },
     {

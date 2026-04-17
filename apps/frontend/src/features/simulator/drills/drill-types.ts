@@ -281,9 +281,9 @@ const SCRIPT_CHALLENGES: { prompt: string; expected: string }[] = [
   },
   {
     prompt:
-      "Read the following channel switch request aloud:\n\nVessel: M/V BLUE DUCK\nStation: Anytown Radio\nRequested working channel: 72",
+      "Read the following channel switch request aloud:\n\nVessel: M/V BLUE DUCK\nStation: RCC Haifa\nRequested working channel: 72",
     expected:
-      "ANYTOWN RADIO ANYTOWN RADIO ANYTOWN RADIO THIS IS BLUE DUCK BLUE DUCK BLUE DUCK REQUEST CHANNEL SEVEN TWO OVER",
+      "RCC HAIFA RCC HAIFA RCC HAIFA THIS IS BLUE DUCK BLUE DUCK BLUE DUCK REQUEST CHANNEL SEVEN TWO OVER",
   },
   {
     prompt:

@@ -103,7 +103,8 @@ export interface PersonaContext {
   readonly callsign: string;
   readonly mmsi: string;
   readonly scenarioDescription: string;
-  readonly vesselName: string;
-  readonly vesselCallsign?: string;
+  /** Per-scenario instructions for the LLM (what the station should do). */
+  readonly stationPrompt?: string;
+  /** Student vessel MMSI (known from DSC equipment). */
   readonly vesselMmsi?: string;
 }

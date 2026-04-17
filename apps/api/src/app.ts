@@ -64,18 +64,10 @@ export async function buildApp(opts: BuildAppOptions): Promise<FastifyInstance> 
   const aiConfig: AiConfig = opts.aiConfig ?? { provider: "mock" };
   const adapters = await createAdapterSet(aiConfig);
 
-  const scenarioCache = new Map<
-    string,
-    { scenario: ScenarioDefinition; rubric: RubricDefinition }
-  >();
-
   await app.register(simulatorWsRoute, {
     prefix: "/api/simulator",
     adapters,
     loadScenario: async (scenarioId: string) => {
-      const cached = scenarioCache.get(scenarioId);
-      if (cached) return cached;
-
       const tierDir = getTierDir(scenarioId);
       const scenarioPath = await findScenarioFile(contentDir, tierDir, scenarioId);
       if (!scenarioPath) {
@@ -91,9 +83,7 @@ export async function buildApp(opts: BuildAppOptions): Promise<FastifyInstance> 
       }
       const rubric = JSON.parse(rubricJson) as RubricDefinition;
 
-      const entry = { scenario, rubric };
-      scenarioCache.set(scenarioId, entry);
-      return entry;
+      return { scenario, rubric };
     },
   });
 

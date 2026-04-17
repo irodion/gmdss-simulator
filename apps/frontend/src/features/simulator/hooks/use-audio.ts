@@ -18,6 +18,8 @@ export interface UseAudioResult {
   setSquelch: (value: number) => void;
   /** Update volume. */
   setVolume: (value: number) => void;
+  /** Mute ambient noise during TX (real radios go silent when transmitting). */
+  setNoiseMuted: (muted: boolean) => void;
   /** Clean up. */
   destroy: () => void;
 }
@@ -61,20 +63,27 @@ export function useAudio(): UseAudioResult {
     }
   }, []);
 
+  // Track the pending startCapture promise so stopCapture can wait for it
+  const captureStartRef = useRef<Promise<void> | null>(null);
+
   const startCapture = useCallback(async () => {
     const engine = engineRef.current;
     if (!engine) return;
-    const ctx = await engine.init();
-    const gain = engine.getMasterGain();
-    if (!gain) return;
+    await engine.init();
     const capture = new TxCapture();
-    await capture.start(ctx, gain);
-    // Assign ref only after start() resolves so stopCapture() can't race
-    // against a pending getUserMedia() and lose the handle
-    captureRef.current = capture;
+    const startPromise = capture.start().then(() => {
+      captureRef.current = capture;
+    });
+    captureStartRef.current = startPromise;
+    await startPromise;
   }, []);
 
   const stopCapture = useCallback(async () => {
+    // Wait for any pending startCapture to finish first
+    if (captureStartRef.current) {
+      await captureStartRef.current.catch(() => {});
+      captureStartRef.current = null;
+    }
     const capture = captureRef.current;
     if (!capture) return { cleanBlob: new Blob(), durationMs: 0 };
     captureRef.current = null;
@@ -89,7 +98,24 @@ export function useAudio(): UseAudioResult {
     engineRef.current?.setVolume(value);
   }, []);
 
+  const setNoiseMuted = useCallback((muted: boolean) => {
+    engineRef.current?.setNoiseMuted(muted);
+  }, []);
+
   const destroy = useCallback(() => {
+    // If a startCapture is still in-flight, chain a stop() onto its resolution
+    // so the eventual TxCapture can't leave the mic stream dangling.
+    if (captureStartRef.current) {
+      void captureStartRef.current
+        .then(() => {
+          if (captureRef.current) {
+            void captureRef.current.stop();
+            captureRef.current = null;
+          }
+        })
+        .catch(() => {});
+      captureStartRef.current = null;
+    }
     // Always stop capture to release mic stream and audio nodes, even if
     // MediaRecorder was never created (no supported MIME type on this browser)
     if (captureRef.current) {
@@ -114,6 +140,7 @@ export function useAudio(): UseAudioResult {
     stopCapture,
     setSquelch,
     setVolume,
+    setNoiseMuted,
     destroy,
   };
 }

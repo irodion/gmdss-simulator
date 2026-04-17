@@ -16,6 +16,7 @@
   "requiredChannel": 16,
   "initialGpsLock": true,
   "task": "You have lost engine power in a busy shipping lane. Make a PAN PAN urgency call on Channel 16. After the station acknowledges, your situation worsens — the vessel is now taking on water. Upgrade your call to a MAYDAY.",
+  "stationPrompt": "You are monitoring Channel 16. A student vessel will first make a PAN PAN about engine failure, then upgrade to MAYDAY when taking on water.\n\nNAME REPETITION RULES:\n- Normal responses (abbreviated format): called vessel 1 time, your station name 2 times.\n- MAYDAY ACKNOWLEDGMENT is the EXCEPTION: both vessel name and station name are repeated 3 times each.\n\nTurn 1 — Student sends PAN PAN about engine failure.\nYour reply (abbreviated): <vessel name>, THIS IS RESCUE COORDINATION CENTRE RESCUE COORDINATION CENTRE, RECEIVED YOUR PAN PAN, CONFIRM POSITION <repeat their position back>, STANDBY, OVER.\n\nTurn 2 — Student reports situation worsening (taking on water).\nYour reply (abbreviated): <vessel name>, THIS IS RESCUE COORDINATION CENTRE RESCUE COORDINATION CENTRE, ROGER YOUR SITUATION UPDATE, LIFEBOAT CREW DISPATCHED, CONFIRM NUMBER OF PERSONS ON BOARD AND WHETHER LIFE RAFTS ARE AVAILABLE, OVER.\n\nTurn 3 — Student upgrades to MAYDAY.\nYour reply (MAYDAY ack format): MAYDAY, <vessel name> <vessel name> <vessel name>, THIS IS RESCUE COORDINATION CENTRE RESCUE COORDINATION CENTRE RESCUE COORDINATION CENTRE, RECEIVED MAYDAY, ALL STATIONS SEELONCE MAYDAY, HELICOPTER AND LIFEBOAT EN ROUTE, ESTIMATED ARRIVAL TWO ZERO MINUTES, OUT.\n\nIf any transmission is unclear:\n<vessel name>, THIS IS RESCUE COORDINATION CENTRE RESCUE COORDINATION CENTRE, SAY AGAIN, OVER.\n\nDo not add any words beyond the formats above. Follow the turn sequence strictly.",
   "scriptReference": "PAN PAN PAN PAN PAN PAN, ALL STATIONS ALL STATIONS ALL STATIONS, THIS IS {{vesselName}} {{vesselName}} {{vesselName}}, CALLSIGN {{callsign}}, POSITION {{position}}, LOST ENGINE POWER IN SHIPPING LANE, REQUIRE STANDBY ASSISTANCE, {{personsOnBoard}} PERSONS ON BOARD, OVER",
   "scriptedResponses": [
     {
@@ -35,7 +36,7 @@
     {
       "id": "mayday-ack",
       "speaker": "COAST_GUARD_MRCC",
-      "text": "MAYDAY. BLUE DUCK. THIS IS RESCUE COORDINATION CENTRE. RECEIVED MAYDAY. ALL STATIONS SEELONCE MAYDAY. HELICOPTER AND LIFEBOAT EN ROUTE. ESTIMATED ARRIVAL TWO ZERO MINUTES. OVER.",
+      "text": "MAYDAY. BLUE DUCK BLUE DUCK BLUE DUCK. THIS IS RESCUE COORDINATION CENTRE RESCUE COORDINATION CENTRE RESCUE COORDINATION CENTRE. RECEIVED MAYDAY. ALL STATIONS SEELONCE MAYDAY. HELICOPTER AND LIFEBOAT EN ROUTE. ESTIMATED ARRIVAL TWO ZERO MINUTES. OUT.",
       "triggerAfterTurnIndex": 2,
       "condition": { "type": "always" }
     }

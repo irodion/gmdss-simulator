@@ -5,7 +5,7 @@
   "title": "Channel Change",
   "description": "Initiate contact on Channel 16 and agree to move to a working channel.",
   "stationPersona": "COAST_STATION",
-  "stationName": "ANYTOWN RADIO",
+  "stationName": "RCC HAIFA",
   "vessel": {
     "name": "BLUE DUCK",
     "callsign": "5BCD2",
@@ -13,20 +13,21 @@
   },
   "requiredChannel": 16,
   "allowedChannels": [16, 72],
-  "task": "Call Anytown Radio on Channel 16 and request to move to Channel 72 for a routine message.",
+  "task": "Call RCC Haifa on Channel 16 and request to move to Channel 72 for a routine message.",
+  "stationPrompt": "A student vessel is calling you on Channel 16 to request a channel change.\n\nNAME REPETITION RULES (abbreviated format — used for ALL station responses):\n- Called vessel name: 1 time.\n- Your station name after THIS IS: 2 times.\n\nTurn 1 — Student calls on Ch.16 and requests to move to a working channel.\nYour reply: <vessel name>, THIS IS RCC HAIFA RCC HAIFA, AGREE CHANNEL <channel number in words>, OVER.\n\nTurn 2 — Student calls again on the new working channel.\nYour reply: <vessel name>, THIS IS RCC HAIFA RCC HAIFA ON CHANNEL <channel number in words>, GO AHEAD, OVER.\n\nTurn 3 — Student delivers their routine message.\nYour reply: <vessel name>, THIS IS RCC HAIFA RCC HAIFA, ROGER, OUT.\n\nIf the student's call is unclear:\nSTATION CALLING RCC HAIFA, SAY AGAIN, OVER.\n\nDo not initiate the call. Do not add any words beyond the formats above.",
   "scriptReference": "{{stationName}}, THIS IS {{vesselName}}, REQUEST CHANNEL SEVEN TWO, OVER",
   "scriptedResponses": [
     {
       "id": "ack-call",
       "speaker": "COAST_STATION",
-      "text": "BLUE DUCK, THIS IS ANYTOWN RADIO, AGREE CHANNEL SEVEN TWO, OVER.",
+      "text": "BLUE DUCK, THIS IS RCC HAIFA RCC HAIFA, AGREE CHANNEL SEVEN TWO, OVER.",
       "triggerAfterTurnIndex": 0,
       "condition": { "type": "always" }
     },
     {
       "id": "on-working-channel",
       "speaker": "COAST_STATION",
-      "text": "BLUE DUCK, THIS IS ANYTOWN RADIO ON CHANNEL SEVEN TWO, GO AHEAD, OVER.",
+      "text": "BLUE DUCK, THIS IS RCC HAIFA RCC HAIFA ON CHANNEL SEVEN TWO, GO AHEAD, OVER.",
       "triggerAfterTurnIndex": 1,
       "condition": { "type": "channel_is", "channel": 72 }
     }

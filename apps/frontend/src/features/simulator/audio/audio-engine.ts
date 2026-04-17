@@ -11,6 +11,10 @@ export class AudioEngine {
   private noiseGain: GainNode | null = null;
   private masterGain: GainNode | null = null;
   private started = false;
+  /** Squelch-derived noise level, remembered so we can restore it after TX. */
+  private squelchNoiseLevel = 0;
+  /** True while PTT is held — squelch changes must not unmute the noise. */
+  private noiseMuted = false;
 
   /**
    * Initialize the AudioContext (must be called from a user gesture handler).
@@ -67,8 +71,18 @@ export class AudioEngine {
    * Update the squelch level. Higher squelch = less static noise.
    */
   setSquelchLevel(squelch: number): void {
+    this.squelchNoiseLevel = squelchToNoiseGain(squelch);
+    if (!this.noiseGain || this.noiseMuted) return;
+    this.noiseGain.gain.value = this.squelchNoiseLevel;
+  }
+
+  /**
+   * Mute ambient noise (during TX) or restore it to the current squelch level.
+   */
+  setNoiseMuted(muted: boolean): void {
+    this.noiseMuted = muted;
     if (!this.noiseGain) return;
-    this.noiseGain.gain.value = squelchToNoiseGain(squelch);
+    this.noiseGain.gain.value = muted ? 0 : this.squelchNoiseLevel;
   }
 
   /**
@@ -98,5 +112,6 @@ export class AudioEngine {
       this.ctx = null;
     }
     this.started = false;
+    this.noiseMuted = false;
   }
 }
