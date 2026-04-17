@@ -128,6 +128,26 @@ describe("AudioEngine", () => {
     expect(() => engine.setSquelchLevel(50)).not.toThrow();
   });
 
+  test("setSquelchLevel does not override an active mute", async () => {
+    const engine = new AudioEngine();
+    const ctx = (await engine.init()) as unknown as MockAudioContext;
+    // The 2nd createGain call during init() builds the noise gain node
+    const noiseGainResult = ctx.createGain.mock.results[1];
+    const noiseGain = noiseGainResult!.value as { gain: { value: number } };
+
+    engine.setNoiseMuted(true);
+    expect(noiseGain.gain.value).toBe(0);
+
+    // Turning the squelch knob while muted must not bring noise back
+    engine.setSquelchLevel(0);
+    expect(noiseGain.gain.value).toBe(0);
+
+    engine.setNoiseMuted(false);
+    expect(noiseGain.gain.value).toBeGreaterThan(0);
+
+    engine.destroy();
+  });
+
   test("setVolume is safe before init", () => {
     const engine = new AudioEngine();
     expect(() => engine.setVolume(50)).not.toThrow();

@@ -6,7 +6,7 @@
     {
       "id": "station_name",
       "label": "Station name (called)",
-      "patterns": ["RCC\\s*HAIFA"],
+      "patterns": ["(?:RCC|R\\s*C\\s*C|FCC)\\s*HAIFA"],
       "required": true
     },
     {

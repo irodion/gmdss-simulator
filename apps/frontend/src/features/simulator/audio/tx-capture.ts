@@ -11,11 +11,11 @@ export class TxCapture {
   private startTime = 0;
 
   /**
-   * Start capturing audio from the microphone.
-   * The AudioContext and destination parameters are retained for API compatibility
-   * but not used — self-monitoring is disabled (see file header).
+   * Start capturing audio from the microphone. The capture is recorded directly
+   * via MediaRecorder; no AudioContext routing is needed since self-monitoring
+   * is disabled (see file header).
    */
-  async start(_ctx: AudioContext, _destination: AudioNode): Promise<void> {
+  async start(): Promise<void> {
     this.stream = await navigator.mediaDevices.getUserMedia({
       audio: {
         echoCancellation: true,

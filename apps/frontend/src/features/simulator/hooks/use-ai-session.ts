@@ -4,6 +4,7 @@ import type { ScoreBreakdown, SessionCommand, SessionState } from "@gmdss-simula
 import { WsClient, type WsStatus } from "../transport/ws-client.ts";
 import { TurnManager } from "../transport/turn-manager.ts";
 import type { ServerMessage, TurnStatus } from "../transport/transport-types.ts";
+import { VOICE_TRANSMISSION_PLACEHOLDER } from "../constants.ts";
 import type { UseAudioResult } from "./use-audio.ts";
 import type { UseRadioResult } from "./use-radio.ts";
 
@@ -91,7 +92,7 @@ export function useAiSession({
         // Replace voice placeholder with the actual STT transcript
         const turns = sessionRef.current.state.turns;
         const lastStudentIdx = turns.findLastIndex(
-          (t) => t.speaker === "student" && t.text === "[voice transmission]",
+          (t) => t.speaker === "student" && t.text === VOICE_TRANSMISSION_PLACEHOLDER,
         );
         if (lastStudentIdx >= 0) {
           sessionRef.current.dispatch({

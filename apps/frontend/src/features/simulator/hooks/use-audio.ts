@@ -69,11 +69,9 @@ export function useAudio(): UseAudioResult {
   const startCapture = useCallback(async () => {
     const engine = engineRef.current;
     if (!engine) return;
-    const ctx = await engine.init();
-    const gain = engine.getMasterGain();
-    if (!gain) return;
+    await engine.init();
     const capture = new TxCapture();
-    const startPromise = capture.start(ctx, gain).then(() => {
+    const startPromise = capture.start().then(() => {
       captureRef.current = capture;
     });
     captureStartRef.current = startPromise;
@@ -105,6 +103,19 @@ export function useAudio(): UseAudioResult {
   }, []);
 
   const destroy = useCallback(() => {
+    // If a startCapture is still in-flight, chain a stop() onto its resolution
+    // so the eventual TxCapture can't leave the mic stream dangling.
+    if (captureStartRef.current) {
+      void captureStartRef.current
+        .then(() => {
+          if (captureRef.current) {
+            void captureRef.current.stop();
+            captureRef.current = null;
+          }
+        })
+        .catch(() => {});
+      captureStartRef.current = null;
+    }
     // Always stop capture to release mic stream and audio nodes, even if
     // MediaRecorder was never created (no supported MIME type on this browser)
     if (captureRef.current) {
