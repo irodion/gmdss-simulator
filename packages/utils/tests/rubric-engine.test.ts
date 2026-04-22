@@ -292,3 +292,37 @@ describe("scoreTranscript", () => {
     });
   });
 });
+
+describe("scoreTranscript — channel 06 scenario", () => {
+  const CH06_RUBRIC: RubricDefinition = {
+    ...ROUTINE_RUBRIC,
+    id: "v1/routine-ch06",
+    channelRules: { requiredChannel: 6, blockChannel70Voice: true },
+  };
+
+  it("stays on channel 06 scores 100", () => {
+    const turns = [makeTurn("BLUE DUCK THIS IS BLUE DUCK RADIO CHECK OVER", 6, 0)];
+    const score = scoreTranscript(turns, CH06_RUBRIC, 6);
+    const channel = score.dimensions.find((d) => d.id === "channel")!;
+    expect(channel.score).toBe(100);
+    expect(channel.missingItems).toHaveLength(0);
+  });
+
+  it("switching to ch.16 mid-session reduces channel score", () => {
+    const turns = [
+      makeTurn("BLUE DUCK THIS IS BLUE DUCK RADIO CHECK OVER", 6, 0),
+      makeTurn("ROGER OUT", 16, 1),
+    ];
+    const score = scoreTranscript(turns, CH06_RUBRIC, 6);
+    const channel = score.dimensions.find((d) => d.id === "channel")!;
+    expect(channel.score).toBeLessThan(100);
+    expect(channel.missingItems.some((m) => m.includes("Ch.16"))).toBe(true);
+  });
+
+  it("all turns on wrong channel scores 0", () => {
+    const turns = [makeTurn("RADIO CHECK", 16, 0)];
+    const score = scoreTranscript(turns, CH06_RUBRIC, 6);
+    const channel = score.dimensions.find((d) => d.id === "channel")!;
+    expect(channel.score).toBe(0);
+  });
+});

@@ -153,6 +153,7 @@ export function SimulatorPage() {
 
   const applyScenarioDefaults = useCallback(
     (scenario: ScenarioDefinition) => {
+      radio.send({ type: "SET_CHANNEL", channel: scenario.requiredChannel });
       if (scenario.initialGpsLock === false) {
         radio.send({ type: "SET_GPS_LOCK", locked: false });
       }
