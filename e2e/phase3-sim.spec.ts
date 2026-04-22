@@ -27,19 +27,29 @@ test.describe.serial("Phase 3: Radio Simulator", () => {
   test("scenario selection loads Tier 1 scenarios", async ({ page }) => {
     await login(page);
     await page.goto("/sim");
-    await expect(page.locator("text=Radio Check")).toBeVisible({ timeout: 5000 });
-    await expect(page.locator("text=Channel Change")).toBeVisible();
-    await expect(page.locator("text=Port Entry Call")).toBeVisible();
-    await expect(page.locator("text=Position Report")).toBeVisible();
-    await expect(page.locator("text=Navigational Warning")).toBeVisible();
+    await expect(page.locator(".sim-scenario-card__title", { hasText: "Radio Check" })).toBeVisible(
+      { timeout: 5000 },
+    );
+    await expect(
+      page.locator(".sim-scenario-card__title", { hasText: "Channel Change" }),
+    ).toBeVisible();
+    await expect(
+      page.locator(".sim-scenario-card__title", { hasText: "Port Entry Call" }),
+    ).toBeVisible();
+    await expect(
+      page.locator(".sim-scenario-card__title", { hasText: "Position Report" }),
+    ).toBeVisible();
+    await expect(
+      page.locator(".sim-scenario-card__title", { hasText: "Navigational Warning" }),
+    ).toBeVisible();
   });
 
-  test("full scenario flow: select, transmit, score", async ({ page }) => {
+  test("full scenario flow: select, transmit, closing reply, auto-complete", async ({ page }) => {
     await login(page);
     await page.goto("/sim");
 
     // Select Radio Check scenario
-    await page.click("text=Radio Check");
+    await page.locator(".sim-scenario-card__title", { hasText: "Radio Check" }).click();
 
     // Briefing should show
     await expect(page.locator("text=Scenario Briefing")).toBeVisible({ timeout: 5000 });
@@ -48,31 +58,40 @@ test.describe.serial("Phase 3: Radio Simulator", () => {
     // Start scenario
     await page.click("text=Start Scenario");
 
-    // Type a radio transmission
+    // Type the opening radio check transmission
     const input = page.locator('input[aria-label="Radio transmission text"]');
     await expect(input).toBeVisible();
     await input.fill(
-      "RCC HAIFA RCC HAIFA RCC HAIFA THIS IS BLUE DUCK BLUE DUCK BLUE DUCK RADIO CHECK ON CHANNEL ONE SIX OVER",
+      "RCC HAIFA RCC HAIFA RCC HAIFA THIS IS BLUE DUCK BLUE DUCK BLUE DUCK RADIO CHECK ON CHANNEL ZERO SIX OVER",
     );
     await page.click("text=Transmit");
 
-    // Station response should appear in transcript
-    await expect(page.locator("text=READING YOU LOUD AND CLEAR")).toBeVisible({ timeout: 5000 });
+    // Station's first response should appear (readability report)
+    await expect(page.locator("text=READING YOU FIVE BY FIVE")).toBeVisible({ timeout: 5000 });
 
-    // End scenario
-    await page.click("text=End Scenario");
+    // Type the closing reply
+    await input.fill("RCC HAIFA THIS IS 5BCD2 5BCD2 ROGER NOTHING ELSE FOR YOU OUT");
+    await page.click("text=Transmit");
 
-    // Debrief should show score
-    await expect(page.locator("text=After-Action Review")).toBeVisible({ timeout: 5000 });
+    // Station's final response should appear
+    await expect(page.locator("text=ROGER, OUT")).toBeVisible({ timeout: 5000 });
+
+    // Auto-complete: debrief should appear without clicking "End Scenario"
+    await expect(page.locator("text=After-Action Review")).toBeVisible({ timeout: 8000 });
     await expect(page.locator("text=Retry Scenario")).toBeVisible();
+
+    // Closing section should be visible in debrief
+    await expect(page.locator("text=Closing")).toBeVisible();
   });
 
   test("drill page loads with all drill type tabs", async ({ page }) => {
     await login(page);
     await page.goto("/drill");
-    await expect(page.locator("text=Phonetic Alphabet")).toBeVisible({ timeout: 5000 });
-    await expect(page.locator("text=Number Pronunciation")).toBeVisible();
-    await expect(page.locator("text=Script Reading")).toBeVisible();
+    await expect(page.getByRole("button", { name: "Phonetic Alphabet" })).toBeVisible({
+      timeout: 5000,
+    });
+    await expect(page.getByRole("button", { name: "Number Pronunciation" })).toBeVisible();
+    await expect(page.getByRole("button", { name: "Script Reading" })).toBeVisible();
   });
 
   test("phonetic drill: submit and score", async ({ page }) => {
@@ -91,7 +110,7 @@ test.describe.serial("Phase 3: Radio Simulator", () => {
   test("accessible mode toggle works", async ({ page }) => {
     await login(page);
     await page.goto("/sim");
-    await page.click("text=Radio Check");
+    await page.locator(".sim-scenario-card__title", { hasText: "Radio Check" }).click();
     await expect(page.locator("text=Scenario Briefing")).toBeVisible({ timeout: 5000 });
 
     // Toggle accessible mode

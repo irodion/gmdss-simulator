@@ -32,10 +32,16 @@
     }
   ],
   "rubricId": "v1/routine",
+  "closingRubricId": "v1/routine-closing",
   "hints": [
     "Call the coast station three times by name",
     "Say THIS IS followed by your vessel name three times",
     "State RADIO CHECK and the channel number",
-    "End with OVER to invite a response"
-  ]
+    "End with OVER to invite a response",
+    "In your closing reply, say the station name",
+    "Say THIS IS followed by your callsign twice",
+    "Say ROGER to acknowledge",
+    "Say NOTHING ELSE FOR YOU, OUT"
+  ],
+  "closingScriptReference": "{{stationName}}, THIS IS {{callsign}} {{callsign}}, ROGER, NOTHING ELSE FOR YOU, OUT"
 }

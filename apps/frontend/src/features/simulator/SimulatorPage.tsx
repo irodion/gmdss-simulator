@@ -5,6 +5,8 @@ import {
   type RubricDefinition,
   type ScoreBreakdown,
   scoreTranscript,
+  resolveRubricTemplates,
+  getNextScriptedResponse,
   squelchToPercent,
   isDscMenuOpen,
 } from "@gmdss-simulator/utils";
@@ -66,7 +68,9 @@ export function SimulatorPage() {
 
   const [scenarios, setScenarios] = useState<ScenarioDefinition[]>([]);
   const [rubric, setRubric] = useState<RubricDefinition | null>(null);
+  const [closingRubric, setClosingRubric] = useState<RubricDefinition | null>(null);
   const [score, setScore] = useState<ScoreBreakdown | null>(null);
+  const [closingScore, setClosingScore] = useState<ScoreBreakdown | null>(null);
   const [inputText, setInputText] = useState("");
   const [a11yMode, setA11yMode] = useState(false);
   const [aiMode, setAiMode] = useState(false);
@@ -166,6 +170,15 @@ export function SimulatorPage() {
       const r = await fetchRubric(scenario.rubricId);
       setRubric(r);
       setScore(null);
+      setClosingScore(null);
+
+      if (scenario.closingRubricId) {
+        const cr = await fetchRubric(scenario.closingRubricId);
+        setClosingRubric(resolveRubricTemplates(cr, { callsign: scenario.vessel.callsign ?? "" }));
+      } else {
+        setClosingRubric(null);
+      }
+
       session.dispatch({ type: "LOAD_SCENARIO", scenario });
       applyScenarioDefaults(scenario);
     },
@@ -242,11 +255,38 @@ export function SimulatorPage() {
     const hasUnresolvedAudio = session.state.turns.some(
       (t) => t.text === VOICE_TRANSMISSION_PLACEHOLDER,
     );
-    const finalScore =
-      hasUnresolvedAudio && aiSession.state.latestScore
-        ? aiSession.state.latestScore
-        : scoreTranscript(session.state.turns, rubric, sc.requiredChannel, sc.allowedChannels);
-    setScore(finalScore);
+
+    if (hasUnresolvedAudio && aiSession.state.latestScore) {
+      setScore(aiSession.state.latestScore);
+    } else {
+      // Score only the first student turn against the opening rubric
+      const studentTurns = session.state.turns.filter((t) => t.speaker === "student");
+      const firstStudentTurn = studentTurns[0];
+      const openingTurns = firstStudentTurn
+        ? session.state.turns.filter(
+            (t) => t.speaker !== "student" || t.index === firstStudentTurn.index,
+          )
+        : [];
+      setScore(scoreTranscript(openingTurns, rubric, sc.requiredChannel, sc.allowedChannels));
+
+      // Score closing turn(s) if a closing rubric exists
+      if (closingRubric && studentTurns.length > 1) {
+        const closingStudentTurns = session.state.turns.filter(
+          (t) => t.speaker !== "student" || t.index !== firstStudentTurn!.index,
+        );
+        setClosingScore(
+          scoreTranscript(
+            closingStudentTurns,
+            closingRubric,
+            sc.requiredChannel,
+            sc.allowedChannels,
+          ),
+        );
+      } else {
+        setClosingScore(null);
+      }
+    }
+
     session.dispatch({ type: "COMPLETE_SCENARIO" });
 
     // Send session_end even if AI disconnected mid-scenario — the server may
@@ -255,13 +295,39 @@ export function SimulatorPage() {
       aiSession.endAiSession();
     }
     audio.destroy();
-  }, [session, rubric, audio, aiSession]);
+  }, [session, rubric, closingRubric, audio, aiSession]);
+
+  // Auto-complete after the station's final scripted response plays
+  const autoCompleteRef = useRef(false);
+  useEffect(() => {
+    if (session.state.phase !== "active") {
+      autoCompleteRef.current = false;
+      return;
+    }
+    if (!session.state.scenario?.closingRubricId) return;
+    if (autoCompleteRef.current) return;
+
+    const studentTurns = session.state.turns.filter((t) => t.speaker === "student");
+    if (studentTurns.length < 2) return;
+
+    const lastTurn = session.state.turns[session.state.turns.length - 1];
+    if (!lastTurn || lastTurn.speaker !== "station") return;
+
+    if (getNextScriptedResponse(session.state) !== null) return;
+
+    autoCompleteRef.current = true;
+    const timer = setTimeout(() => {
+      handleEndScenario();
+    }, 1500);
+    return () => clearTimeout(timer);
+  }, [session.state, handleEndScenario]);
 
   const handleRetry = useCallback(() => {
     const scenario = session.state.scenario;
     session.dispatch({ type: "RESET" });
     radio.reset();
     setScore(null);
+    setClosingScore(null);
     audio.destroy();
     aiSession.disconnect();
     if (scenario) {
@@ -274,6 +340,7 @@ export function SimulatorPage() {
     session.dispatch({ type: "RESET" });
     radio.reset();
     setScore(null);
+    setClosingScore(null);
     audio.destroy();
     aiSession.disconnect();
   }, [session, radio, audio, aiSession]);
@@ -329,6 +396,7 @@ export function SimulatorPage() {
       <DebriefPanel
         turns={session.state.turns}
         score={score}
+        closingScore={closingScore ?? undefined}
         stationPersona={session.state.scenario.stationPersona}
         onRetry={() => handleRetry()}
         onBack={handleBack}

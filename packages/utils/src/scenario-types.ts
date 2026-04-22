@@ -45,6 +45,7 @@ export interface ScenarioDefinition {
   readonly scriptReference?: string;
   readonly scriptedResponses: readonly ScriptedResponse[];
   readonly rubricId: string;
+  readonly closingRubricId?: string;
   readonly hints?: readonly string[];
 }
 
