@@ -266,7 +266,7 @@ export function SimulatorPage() {
     if (hasUnresolvedAudio && aiSession.state.latestScore) {
       setScore(aiSession.state.latestScore);
     } else {
-      // Score only the first student turn against the opening rubric
+      // Score the opening exchange (first student turn + station context) against the opening rubric
       const studentTurns = session.state.turns.filter((t) => t.speaker === "student");
       const firstStudentTurn = studentTurns[0];
       const openingTurns = firstStudentTurn
