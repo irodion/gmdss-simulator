@@ -44,7 +44,9 @@
     "breakdown": "Score Breakdown",
     "transcript": "Full Transcript",
     "you": "YOU",
-    "feedback": "Feedback"
+    "feedback": "Feedback",
+    "openingSection": "Opening — Radio Check Request",
+    "closingSection": "Closing — Acknowledgment"
   },
   "input": {
     "placeholder": "Type your radio transmission here...",

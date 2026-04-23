@@ -300,7 +300,9 @@ export function resolveRubricTemplates(
   function resolvePattern(pattern: string): string {
     return pattern.replace(templateRe, (_, key: string) => {
       const value = variables[key];
-      if (value == null) return "";
+      // Fail closed: an empty/missing value becomes a never-matching fragment
+      // instead of "", which would make the surrounding regex match anything.
+      if (value == null || value === "") return "(?!)";
       if (key === "callsign") return callsignToSpacedRegex(value);
       return escapeRegExp(value);
     });

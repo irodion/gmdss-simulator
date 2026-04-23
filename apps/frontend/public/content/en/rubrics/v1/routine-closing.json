@@ -17,8 +17,8 @@
     },
     {
       "id": "callsign",
-      "label": "Vessel callsign",
-      "patterns": ["{{callsign}}"],
+      "label": "Vessel callsign (twice)",
+      "patterns": ["{{callsign}}\\W+{{callsign}}"],
       "required": true
     },
     {

@@ -439,9 +439,10 @@ describe("resolveRubricTemplates", () => {
     expect(stationField.patterns[0]).toBe("RCC\\s*HAIFA");
   });
 
-  it("handles empty callsign gracefully", () => {
+  it("fails closed when callsign is empty", () => {
     const resolved = resolveRubricTemplates(TEMPLATE_RUBRIC, { callsign: "" });
     const callsignField = resolved.requiredFields.find((f) => f.id === "callsign")!;
-    expect(callsignField.patterns[0]).toBe("");
+    expect(callsignField.patterns[0]).toBe("(?!)");
+    expect(new RegExp(callsignField.patterns[0]!).test("anything")).toBe(false);
   });
 });

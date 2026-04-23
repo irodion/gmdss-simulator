@@ -61,8 +61,8 @@ export function DebriefPanel({
 
       {closingScore ? (
         <>
-          <ScoreSection title="Opening — Radio Check Request" breakdown={score} t={t} />
-          <ScoreSection title="Closing — Acknowledgment" breakdown={closingScore} t={t} />
+          <ScoreSection title={t("debrief.openingSection")} breakdown={score} t={t} />
+          <ScoreSection title={t("debrief.closingSection")} breakdown={closingScore} t={t} />
         </>
       ) : (
         <ScoreSection title="" breakdown={score} t={t} />
