@@ -365,6 +365,377 @@ describe("getNextScriptedResponse", () => {
     expect(resp!.id).toBe("on-72");
   });
 
+  describe("multi-step channel change flow", () => {
+    const CHANNEL_CHANGE_SCENARIO: ScenarioDefinition = {
+      ...MOCK_SCENARIO,
+      id: "1.2",
+      title: "Channel Change",
+      requiredChannel: 16,
+      allowedChannels: [16, 72],
+      scriptedResponses: [
+        {
+          id: "instruct-channel-change",
+          speaker: "COAST_STATION",
+          text: "ADVISE YOU SWITCH TO CHANNEL SEVEN TWO, OVER.",
+          triggerAfterTurnIndex: 0,
+          condition: { type: "always" },
+        },
+        {
+          id: "on-working-channel",
+          speaker: "COAST_STATION",
+          text: "ON CHANNEL SEVEN TWO, GO AHEAD, OVER.",
+          triggerAfterTurnIndex: 2,
+          condition: { type: "channel_is", channel: 72 },
+        },
+        {
+          id: "closing",
+          speaker: "COAST_STATION",
+          text: "ROGER, OUT.",
+          triggerAfterTurnIndex: 3,
+          condition: { type: "channel_is", channel: 72 },
+        },
+      ],
+    };
+
+    it("fires channel change instruction after first student turn", () => {
+      const state: SessionState = {
+        ...INITIAL_SESSION_STATE,
+        phase: "active",
+        scenario: CHANNEL_CHANGE_SCENARIO,
+        currentTurnIndex: 1,
+        turns: [
+          {
+            index: 0,
+            speaker: "student",
+            text: "RCC HAIFA THIS IS BLUE DUCK OVER",
+            timestamp: 1000,
+            channel: 16,
+            durationMs: 3000,
+          },
+        ],
+      };
+      const resp = getNextScriptedResponse(state);
+      expect(resp).not.toBeNull();
+      expect(resp!.id).toBe("instruct-channel-change");
+    });
+
+    it("does not fire after acknowledgment on Ch.16 — student must switch channel", () => {
+      const state: SessionState = {
+        ...INITIAL_SESSION_STATE,
+        phase: "active",
+        scenario: CHANNEL_CHANGE_SCENARIO,
+        currentTurnIndex: 3,
+        turns: [
+          {
+            index: 0,
+            speaker: "student",
+            text: "RCC HAIFA THIS IS BLUE DUCK OVER",
+            timestamp: 1000,
+            channel: 16,
+            durationMs: 3000,
+          },
+          {
+            index: 1,
+            speaker: "station",
+            text: "ADVISE YOU SWITCH TO CHANNEL SEVEN TWO, OVER.",
+            timestamp: 2000,
+            channel: 16,
+            durationMs: 0,
+          },
+          {
+            index: 2,
+            speaker: "student",
+            text: "RECEIVED SWITCHING TO CHANNEL SEVEN TWO OUT",
+            timestamp: 3000,
+            channel: 16,
+            durationMs: 3000,
+          },
+        ],
+      };
+      expect(getNextScriptedResponse(state)).toBeNull();
+    });
+
+    it("does not fire working-channel response if student re-hails on wrong channel", () => {
+      const state: SessionState = {
+        ...INITIAL_SESSION_STATE,
+        phase: "active",
+        scenario: CHANNEL_CHANGE_SCENARIO,
+        currentTurnIndex: 5,
+        turns: [
+          {
+            index: 0,
+            speaker: "student",
+            text: "RCC HAIFA THIS IS BLUE DUCK OVER",
+            timestamp: 1000,
+            channel: 16,
+            durationMs: 3000,
+          },
+          {
+            index: 1,
+            speaker: "station",
+            text: "ADVISE YOU SWITCH TO CHANNEL SEVEN TWO, OVER.",
+            timestamp: 2000,
+            channel: 16,
+            durationMs: 0,
+          },
+          {
+            index: 2,
+            speaker: "student",
+            text: "RECEIVED OUT",
+            timestamp: 3000,
+            channel: 16,
+            durationMs: 2000,
+          },
+          {
+            index: 3,
+            speaker: "student",
+            text: "RCC HAIFA THIS IS BLUE DUCK ON CHANNEL SEVEN TWO OVER",
+            timestamp: 4000,
+            channel: 16,
+            durationMs: 3000,
+          },
+        ],
+      };
+      expect(getNextScriptedResponse(state)).toBeNull();
+    });
+
+    it("fires working-channel response after student re-hails on Ch.72", () => {
+      const state: SessionState = {
+        ...INITIAL_SESSION_STATE,
+        phase: "active",
+        scenario: CHANNEL_CHANGE_SCENARIO,
+        currentTurnIndex: 5,
+        turns: [
+          {
+            index: 0,
+            speaker: "student",
+            text: "RCC HAIFA THIS IS BLUE DUCK OVER",
+            timestamp: 1000,
+            channel: 16,
+            durationMs: 3000,
+          },
+          {
+            index: 1,
+            speaker: "station",
+            text: "ADVISE YOU SWITCH TO CHANNEL SEVEN TWO, OVER.",
+            timestamp: 2000,
+            channel: 16,
+            durationMs: 0,
+          },
+          {
+            index: 2,
+            speaker: "student",
+            text: "RECEIVED OUT",
+            timestamp: 3000,
+            channel: 16,
+            durationMs: 2000,
+          },
+          {
+            index: 3,
+            speaker: "student",
+            text: "RCC HAIFA THIS IS BLUE DUCK ON CHANNEL SEVEN TWO OVER",
+            timestamp: 4000,
+            channel: 72,
+            durationMs: 3000,
+          },
+        ],
+      };
+      const resp = getNextScriptedResponse(state);
+      expect(resp).not.toBeNull();
+      expect(resp!.id).toBe("on-working-channel");
+    });
+
+    it("fires closing response after routine message on Ch.72", () => {
+      const state: SessionState = {
+        ...INITIAL_SESSION_STATE,
+        phase: "active",
+        scenario: CHANNEL_CHANGE_SCENARIO,
+        currentTurnIndex: 7,
+        turns: [
+          {
+            index: 0,
+            speaker: "student",
+            text: "RCC HAIFA THIS IS BLUE DUCK OVER",
+            timestamp: 1000,
+            channel: 16,
+            durationMs: 3000,
+          },
+          {
+            index: 1,
+            speaker: "station",
+            text: "ADVISE YOU SWITCH TO CHANNEL SEVEN TWO, OVER.",
+            timestamp: 2000,
+            channel: 16,
+            durationMs: 0,
+          },
+          {
+            index: 2,
+            speaker: "student",
+            text: "RECEIVED OUT",
+            timestamp: 3000,
+            channel: 16,
+            durationMs: 2000,
+          },
+          {
+            index: 3,
+            speaker: "student",
+            text: "RCC HAIFA THIS IS BLUE DUCK ON CHANNEL SEVEN TWO OVER",
+            timestamp: 4000,
+            channel: 72,
+            durationMs: 3000,
+          },
+          {
+            index: 4,
+            speaker: "station",
+            text: "ON CHANNEL SEVEN TWO, GO AHEAD, OVER.",
+            timestamp: 5000,
+            channel: 72,
+            durationMs: 0,
+          },
+          {
+            index: 5,
+            speaker: "student",
+            text: "RCC HAIFA THIS IS BLUE DUCK REQUEST WEATHER OVER",
+            timestamp: 6000,
+            channel: 72,
+            durationMs: 3000,
+          },
+        ],
+      };
+      const resp = getNextScriptedResponse(state);
+      expect(resp).not.toBeNull();
+      expect(resp!.id).toBe("closing");
+    });
+
+    it("does not fire closing response if student's routine message is on wrong channel", () => {
+      const state: SessionState = {
+        ...INITIAL_SESSION_STATE,
+        phase: "active",
+        scenario: CHANNEL_CHANGE_SCENARIO,
+        currentTurnIndex: 7,
+        turns: [
+          {
+            index: 0,
+            speaker: "student",
+            text: "RCC HAIFA THIS IS BLUE DUCK OVER",
+            timestamp: 1000,
+            channel: 16,
+            durationMs: 3000,
+          },
+          {
+            index: 1,
+            speaker: "station",
+            text: "ADVISE YOU SWITCH TO CHANNEL SEVEN TWO, OVER.",
+            timestamp: 2000,
+            channel: 16,
+            durationMs: 0,
+          },
+          {
+            index: 2,
+            speaker: "student",
+            text: "RECEIVED OUT",
+            timestamp: 3000,
+            channel: 16,
+            durationMs: 2000,
+          },
+          {
+            index: 3,
+            speaker: "student",
+            text: "RCC HAIFA THIS IS BLUE DUCK ON CHANNEL SEVEN TWO OVER",
+            timestamp: 4000,
+            channel: 72,
+            durationMs: 3000,
+          },
+          {
+            index: 4,
+            speaker: "station",
+            text: "ON CHANNEL SEVEN TWO, GO AHEAD, OVER.",
+            timestamp: 5000,
+            channel: 72,
+            durationMs: 0,
+          },
+          {
+            index: 5,
+            speaker: "student",
+            text: "RCC HAIFA THIS IS BLUE DUCK REQUEST WEATHER OVER",
+            timestamp: 6000,
+            channel: 16,
+            durationMs: 3000,
+          },
+        ],
+      };
+      expect(getNextScriptedResponse(state)).toBeNull();
+    });
+
+    it("returns null after all responses have been played", () => {
+      const state: SessionState = {
+        ...INITIAL_SESSION_STATE,
+        phase: "active",
+        scenario: CHANNEL_CHANGE_SCENARIO,
+        currentTurnIndex: 8,
+        turns: [
+          {
+            index: 0,
+            speaker: "student",
+            text: "RCC HAIFA THIS IS BLUE DUCK OVER",
+            timestamp: 1000,
+            channel: 16,
+            durationMs: 3000,
+          },
+          {
+            index: 1,
+            speaker: "station",
+            text: "ADVISE YOU SWITCH TO CHANNEL SEVEN TWO, OVER.",
+            timestamp: 2000,
+            channel: 16,
+            durationMs: 0,
+          },
+          {
+            index: 2,
+            speaker: "student",
+            text: "RECEIVED OUT",
+            timestamp: 3000,
+            channel: 16,
+            durationMs: 2000,
+          },
+          {
+            index: 3,
+            speaker: "student",
+            text: "RCC HAIFA THIS IS BLUE DUCK ON CHANNEL SEVEN TWO OVER",
+            timestamp: 4000,
+            channel: 72,
+            durationMs: 3000,
+          },
+          {
+            index: 4,
+            speaker: "station",
+            text: "ON CHANNEL SEVEN TWO, GO AHEAD, OVER.",
+            timestamp: 5000,
+            channel: 72,
+            durationMs: 0,
+          },
+          {
+            index: 5,
+            speaker: "student",
+            text: "RCC HAIFA THIS IS BLUE DUCK REQUEST WEATHER OVER",
+            timestamp: 6000,
+            channel: 72,
+            durationMs: 3000,
+          },
+          {
+            index: 6,
+            speaker: "station",
+            text: "ROGER, OUT.",
+            timestamp: 7000,
+            channel: 72,
+            durationMs: 0,
+          },
+        ],
+      };
+      expect(getNextScriptedResponse(state)).toBeNull();
+    });
+  });
+
   it("respects transcript_contains condition", () => {
     const scenario: ScenarioDefinition = {
       ...MOCK_SCENARIO,

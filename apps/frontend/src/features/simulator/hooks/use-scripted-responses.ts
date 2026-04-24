@@ -51,7 +51,7 @@ export function useScriptedResponses({ session, radio, audio, disabled }: Option
       sessionRef.current.dispatch({
         type: "ADD_STATION_TURN",
         text: resp.text,
-        channel: sessionRef.current.state.scenario?.requiredChannel ?? 16,
+        channel: radioRef.current.state.channel,
       });
       void audioRef.current
         .speak(resp.text)

@@ -6,7 +6,6 @@ import {
   type ScoreBreakdown,
   scoreTranscript,
   resolveRubricTemplates,
-  getNextScriptedResponse,
   squelchToPercent,
   isDscMenuOpen,
 } from "@gmdss-simulator/utils";
@@ -304,30 +303,61 @@ export function SimulatorPage() {
     audio.destroy();
   }, [session, rubric, closingRubric, audio, aiSession]);
 
-  // Auto-complete after the station's final scripted response plays
+  // Auto-complete after the terminal scripted response plays.
+  // The terminal response is the last entry in scenario.scriptedResponses.
+  // Checking "no pending response" alone is unreliable for multi-phase scenarios
+  // (e.g. Channel Change) where a later response has a higher triggerAfterTurnIndex
+  // and so is briefly not returned between intermediate station turns.
   const autoCompleteRef = useRef(false);
+  const autoCompleteTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const handleEndScenarioRef = useRef(handleEndScenario);
   useEffect(() => {
+    handleEndScenarioRef.current = handleEndScenario;
+  });
+  useEffect(() => {
+    return () => {
+      if (autoCompleteTimerRef.current) {
+        clearTimeout(autoCompleteTimerRef.current);
+        autoCompleteTimerRef.current = null;
+      }
+    };
+  }, []);
+  useEffect(() => {
+    const cancelTimer = () => {
+      if (autoCompleteTimerRef.current) {
+        clearTimeout(autoCompleteTimerRef.current);
+        autoCompleteTimerRef.current = null;
+      }
+    };
+
     if (session.state.phase !== "active") {
       autoCompleteRef.current = false;
+      cancelTimer();
       return;
     }
-    if (!session.state.scenario?.closingRubricId) return;
-    if (autoCompleteRef.current) return;
-
-    const studentTurns = session.state.turns.filter((t) => t.speaker === "student");
-    if (studentTurns.length < 2) return;
+    const sc = session.state.scenario;
+    if (!sc?.closingRubricId) return;
 
     const lastTurn = session.state.turns[session.state.turns.length - 1];
-    if (!lastTurn || lastTurn.speaker !== "station") return;
+    const terminalResponse = sc.scriptedResponses[sc.scriptedResponses.length - 1];
+    const terminalPlayed =
+      !!terminalResponse &&
+      session.state.turns.some((t) => t.speaker === "station" && t.text === terminalResponse.text);
+    const done = terminalPlayed && lastTurn?.speaker === "station";
 
-    if (getNextScriptedResponse(session.state) !== null) return;
+    if (!done) {
+      autoCompleteRef.current = false;
+      cancelTimer();
+      return;
+    }
 
+    if (autoCompleteRef.current) return;
     autoCompleteRef.current = true;
-    const timer = setTimeout(() => {
-      handleEndScenario();
+    autoCompleteTimerRef.current = setTimeout(() => {
+      autoCompleteTimerRef.current = null;
+      handleEndScenarioRef.current();
     }, 1500);
-    return () => clearTimeout(timer);
-  }, [session.state, handleEndScenario]);
+  }, [session.state]);
 
   const handleRetry = useCallback(() => {
     const scenario = session.state.scenario;

@@ -3,7 +3,7 @@
   "tier": 1,
   "category": "routine",
   "title": "Channel Change",
-  "description": "Initiate contact on Channel 16 and agree to move to a working channel.",
+  "description": "Initiate contact on Channel 16, receive a channel change instruction from the coast station, acknowledge, switch to the working channel, and re-establish contact.",
   "stationPersona": "COAST_STATION",
   "stationName": "RCC HAIFA",
   "vessel": {
@@ -13,14 +13,15 @@
   },
   "requiredChannel": 16,
   "allowedChannels": [16, 72],
-  "task": "Call RCC Haifa on Channel 16 and request to move to Channel 72 for a routine message.",
-  "stationPrompt": "A student vessel is calling you on Channel 16 to request a channel change.\n\nNAME REPETITION RULES (abbreviated format — used for ALL station responses):\n- Called vessel name: 1 time.\n- Your station name after THIS IS: 2 times.\n\nTurn 1 — Student calls on Ch.16 and requests to move to a working channel.\nYour reply: <vessel name>, THIS IS RCC HAIFA RCC HAIFA, AGREE CHANNEL <channel number in words>, OVER.\n\nTurn 2 — Student calls again on the new working channel.\nYour reply: <vessel name>, THIS IS RCC HAIFA RCC HAIFA ON CHANNEL <channel number in words>, GO AHEAD, OVER.\n\nTurn 3 — Student delivers their routine message.\nYour reply: <vessel name>, THIS IS RCC HAIFA RCC HAIFA, ROGER, OUT.\n\nIf the student's call is unclear:\nSTATION CALLING RCC HAIFA, SAY AGAIN, OVER.\n\nDo not initiate the call. Do not add any words beyond the formats above.",
-  "scriptReference": "{{stationName}}, THIS IS {{vesselName}}, REQUEST CHANNEL SEVEN TWO, OVER",
+  "task": "Call RCC Haifa on Channel 16. When instructed to switch to Channel 72, acknowledge with RECEIVED before switching your radio. After switching, re-hail the station on the new channel and deliver your routine message.",
+  "stationPrompt": "A student vessel is calling you on Channel 16. You will instruct them to switch to a working channel (Channel 72).\n\nNAME REPETITION RULES (abbreviated format — used for ALL station responses):\n- Called vessel name: 1 time.\n- Your station name after THIS IS: 2 times.\n\nTurn 1 — Student calls on Ch.16 with a standard hail.\nYour reply: <vessel name>, THIS IS RCC HAIFA RCC HAIFA, ADVISE YOU SWITCH TO CHANNEL SEVEN TWO, OVER.\n\nTurn 2 — Student acknowledges the channel change on Ch.16 (e.g., RECEIVED, SWITCHING TO CHANNEL SEVEN TWO, OUT).\nDO NOT REPLY. The student must now switch their radio to Channel 72 and call you again.\n\nTurn 3 — Student re-hails you on Channel 72 to confirm they are on the new frequency.\nYour reply: <vessel name>, THIS IS RCC HAIFA RCC HAIFA ON CHANNEL SEVEN TWO, GO AHEAD, OVER.\n\nTurn 4 — Student delivers their routine message on Channel 72.\nYour reply: <vessel name>, THIS IS RCC HAIFA RCC HAIFA, ROGER, OUT.\n\nIf the student's call is unclear:\nSTATION CALLING RCC HAIFA, SAY AGAIN, OVER.\n\nDo not initiate the call. Do not add any words beyond the formats above.",
+  "scriptReference": "{{stationName}} {{stationName}} {{stationName}}, THIS IS {{vesselName}} {{vesselName}} {{vesselName}}, OVER",
+  "closingScriptReference": "{{stationName}}, THIS IS {{vesselName}}, [YOUR ROUTINE MESSAGE], OVER",
   "scriptedResponses": [
     {
-      "id": "ack-call",
+      "id": "instruct-channel-change",
       "speaker": "COAST_STATION",
-      "text": "BLUE DUCK, THIS IS RCC HAIFA RCC HAIFA, AGREE CHANNEL SEVEN TWO, OVER.",
+      "text": "BLUE DUCK, THIS IS RCC HAIFA RCC HAIFA, ADVISE YOU SWITCH TO CHANNEL SEVEN TWO, OVER.",
       "triggerAfterTurnIndex": 0,
       "condition": { "type": "always" }
     },
@@ -28,15 +29,25 @@
       "id": "on-working-channel",
       "speaker": "COAST_STATION",
       "text": "BLUE DUCK, THIS IS RCC HAIFA RCC HAIFA ON CHANNEL SEVEN TWO, GO AHEAD, OVER.",
-      "triggerAfterTurnIndex": 1,
+      "triggerAfterTurnIndex": 2,
+      "condition": { "type": "channel_is", "channel": 72 }
+    },
+    {
+      "id": "closing",
+      "speaker": "COAST_STATION",
+      "text": "BLUE DUCK, THIS IS RCC HAIFA RCC HAIFA, ROGER, OUT.",
+      "triggerAfterTurnIndex": 3,
       "condition": { "type": "channel_is", "channel": 72 }
     }
   ],
   "rubricId": "v1/routine",
+  "closingRubricId": "v1/routine",
   "hints": [
-    "Start on Channel 16 with a standard call",
-    "Request to move to the working channel",
-    "Switch your radio to the agreed channel",
-    "Call again on the working channel to confirm"
+    "Start on Channel 16 with a standard call: station name three times, THIS IS, your vessel name three times, OVER",
+    "Wait for the station to instruct you to switch to a working channel",
+    "Acknowledge on Channel 16: say RECEIVED and the channel you are switching to, then OUT",
+    "Switch your radio to Channel 72 using the radio panel",
+    "Re-hail the station on the new channel: station name, THIS IS, vessel name, ON CHANNEL SEVEN TWO, OVER",
+    "Deliver your routine message when the station says GO AHEAD"
   ]
 }
