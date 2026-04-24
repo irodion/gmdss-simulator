@@ -34,7 +34,7 @@ test.describe.serial("Phase 3: Radio Simulator", () => {
       page.locator(".sim-scenario-card__title", { hasText: "Channel Change" }),
     ).toBeVisible();
     await expect(
-      page.locator(".sim-scenario-card__title", { hasText: "Port Entry Call" }),
+      page.locator(".sim-scenario-card__title", { hasText: "Marina Entry Call" }),
     ).toBeVisible();
     await expect(
       page.locator(".sim-scenario-card__title", { hasText: "Position Report" }),
