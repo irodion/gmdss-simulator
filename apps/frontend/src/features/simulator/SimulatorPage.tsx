@@ -309,35 +309,54 @@ export function SimulatorPage() {
   // (e.g. Channel Change) where a later response has a higher triggerAfterTurnIndex
   // and so is briefly not returned between intermediate station turns.
   const autoCompleteRef = useRef(false);
+  const autoCompleteTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const handleEndScenarioRef = useRef(handleEndScenario);
-  handleEndScenarioRef.current = handleEndScenario;
   useEffect(() => {
+    handleEndScenarioRef.current = handleEndScenario;
+  });
+  useEffect(() => {
+    return () => {
+      if (autoCompleteTimerRef.current) {
+        clearTimeout(autoCompleteTimerRef.current);
+        autoCompleteTimerRef.current = null;
+      }
+    };
+  }, []);
+  useEffect(() => {
+    const cancelTimer = () => {
+      if (autoCompleteTimerRef.current) {
+        clearTimeout(autoCompleteTimerRef.current);
+        autoCompleteTimerRef.current = null;
+      }
+    };
+
     if (session.state.phase !== "active") {
       autoCompleteRef.current = false;
+      cancelTimer();
       return;
     }
     const sc = session.state.scenario;
     if (!sc?.closingRubricId) return;
 
-    const studentTurns = session.state.turns.filter((t) => t.speaker === "student");
     const lastTurn = session.state.turns[session.state.turns.length - 1];
     const terminalResponse = sc.scriptedResponses[sc.scriptedResponses.length - 1];
     const terminalPlayed =
       !!terminalResponse &&
       session.state.turns.some((t) => t.speaker === "station" && t.text === terminalResponse.text);
-    const done = studentTurns.length >= 2 && lastTurn?.speaker === "station" && terminalPlayed;
+    const done = terminalPlayed && lastTurn?.speaker === "station";
 
     if (!done) {
       autoCompleteRef.current = false;
+      cancelTimer();
       return;
     }
 
     if (autoCompleteRef.current) return;
     autoCompleteRef.current = true;
-    const timer = setTimeout(() => {
+    autoCompleteTimerRef.current = setTimeout(() => {
+      autoCompleteTimerRef.current = null;
       handleEndScenarioRef.current();
     }, 1500);
-    return () => clearTimeout(timer);
   }, [session.state]);
 
   const handleRetry = useCallback(() => {

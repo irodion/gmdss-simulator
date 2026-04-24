@@ -392,7 +392,7 @@ describe("getNextScriptedResponse", () => {
           speaker: "COAST_STATION",
           text: "ROGER, OUT.",
           triggerAfterTurnIndex: 3,
-          condition: { type: "always" },
+          condition: { type: "channel_is", channel: 72 },
         },
       ],
     };
@@ -605,6 +605,66 @@ describe("getNextScriptedResponse", () => {
       const resp = getNextScriptedResponse(state);
       expect(resp).not.toBeNull();
       expect(resp!.id).toBe("closing");
+    });
+
+    it("does not fire closing response if student's routine message is on wrong channel", () => {
+      const state: SessionState = {
+        ...INITIAL_SESSION_STATE,
+        phase: "active",
+        scenario: CHANNEL_CHANGE_SCENARIO,
+        currentTurnIndex: 7,
+        turns: [
+          {
+            index: 0,
+            speaker: "student",
+            text: "RCC HAIFA THIS IS BLUE DUCK OVER",
+            timestamp: 1000,
+            channel: 16,
+            durationMs: 3000,
+          },
+          {
+            index: 1,
+            speaker: "station",
+            text: "ADVISE YOU SWITCH TO CHANNEL SEVEN TWO, OVER.",
+            timestamp: 2000,
+            channel: 16,
+            durationMs: 0,
+          },
+          {
+            index: 2,
+            speaker: "student",
+            text: "RECEIVED OUT",
+            timestamp: 3000,
+            channel: 16,
+            durationMs: 2000,
+          },
+          {
+            index: 3,
+            speaker: "student",
+            text: "RCC HAIFA THIS IS BLUE DUCK ON CHANNEL SEVEN TWO OVER",
+            timestamp: 4000,
+            channel: 72,
+            durationMs: 3000,
+          },
+          {
+            index: 4,
+            speaker: "station",
+            text: "ON CHANNEL SEVEN TWO, GO AHEAD, OVER.",
+            timestamp: 5000,
+            channel: 72,
+            durationMs: 0,
+          },
+          {
+            index: 5,
+            speaker: "student",
+            text: "RCC HAIFA THIS IS BLUE DUCK REQUEST WEATHER OVER",
+            timestamp: 6000,
+            channel: 16,
+            durationMs: 3000,
+          },
+        ],
+      };
+      expect(getNextScriptedResponse(state)).toBeNull();
     });
 
     it("returns null after all responses have been played", () => {

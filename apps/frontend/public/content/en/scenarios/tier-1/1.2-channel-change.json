@@ -37,7 +37,7 @@
       "speaker": "COAST_STATION",
       "text": "BLUE DUCK, THIS IS RCC HAIFA RCC HAIFA, ROGER, OUT.",
       "triggerAfterTurnIndex": 3,
-      "condition": { "type": "always" }
+      "condition": { "type": "channel_is", "channel": 72 }
     }
   ],
   "rubricId": "v1/routine",
