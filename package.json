@@ -6,7 +6,7 @@
   "scripts": {
     "ready": "vp check && vp run -r test && vp run -r build",
     "e2e": "playwright test",
-    "dev": "vp run frontend#dev",
+    "dev": "node scripts/dev.ts",
     "qa": "node scripts/qa.ts",
     "prepare": "vp config"
   },

@@ -16,6 +16,7 @@ import { resolve } from "node:path";
 const ROOT = resolve(import.meta.dirname, "..");
 const DOCKER_COMPOSE = resolve(ROOT, "docker-compose.dev.yml");
 const DB_DIR = resolve(ROOT, "packages/db");
+const UTILS_DIR = resolve(ROOT, "packages/utils");
 const API_ENTRY = resolve(ROOT, "apps/api/src/index.ts");
 const ENV_FILE = resolve(ROOT, ".env");
 const ENV_EXAMPLE = resolve(ROOT, ".env.example");
@@ -329,6 +330,34 @@ async function createTestUser() {
   }
 }
 
+function startUtilsWatch(): ChildProcess {
+  info("Starting utils watch…");
+  const vpBin = resolve(ROOT, "node_modules/.bin/vp");
+  return spawnPrefixed("utils", vpBin, ["pack", "--watch"], { cwd: UTILS_DIR });
+}
+
+function waitForUtilsInitialBuild(child: ChildProcess): Promise<void> {
+  // The frontend imports @gmdss-simulator/utils via its dist/ build, so we
+  // must wait for the first pack to land before starting Vite — otherwise the
+  // browser can load a stale dist and throw on missing exports.
+  return new Promise((resolveWait, rejectWait) => {
+    const start = Date.now();
+    const onData = (data: Buffer) => {
+      if (data.toString().includes("Build complete")) {
+        child.stdout?.off("data", onData);
+        ok("Utils initial build complete");
+        resolveWait();
+      }
+    };
+    child.stdout?.on("data", onData);
+    child.once("exit", (code) => {
+      if (code !== 0 && Date.now() - start < HEALTH_TIMEOUT_MS) {
+        rejectWait(new Error(`utils watch exited with code ${code} before first build`));
+      }
+    });
+  });
+}
+
 function startFrontend(): ChildProcess {
   info("Starting frontend dev server…");
   const vpBin = resolve(ROOT, "node_modules/.bin/vp");
@@ -379,6 +408,9 @@ async function main() {
   const api = startApi();
   await waitForApi(api);
   await createTestUser();
+
+  const utils = startUtilsWatch();
+  await waitForUtilsInitialBuild(utils);
 
   const fe = startFrontend();
   await waitForFrontend(fe);
