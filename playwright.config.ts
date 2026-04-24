@@ -25,7 +25,10 @@ export default defineConfig({
       timeout: 30000,
     },
     {
-      command: "VITE_API_URL=http://localhost:3001 vp run frontend#dev -- --port 4173",
+      // Build @gmdss-simulator/utils first so the frontend loads a fresh dist;
+      // otherwise e2e can fail on missing exports when utils source has drifted.
+      command:
+        "vp run --filter @gmdss-simulator/utils build && VITE_API_URL=http://localhost:3001 vp run frontend#dev -- --port 4173",
       url: "http://localhost:4173",
       reuseExistingServer: !process.env["CI"],
     },

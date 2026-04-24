@@ -341,20 +341,41 @@ function waitForUtilsInitialBuild(child: ChildProcess): Promise<void> {
   // must wait for the first pack to land before starting Vite — otherwise the
   // browser can load a stale dist and throw on missing exports.
   return new Promise((resolveWait, rejectWait) => {
-    const start = Date.now();
+    let buffer = "";
+    let settled = false;
+
+    const cleanup = () => {
+      settled = true;
+      child.stdout?.off("data", onData);
+      child.off("exit", onExit);
+      clearTimeout(timer);
+    };
     const onData = (data: Buffer) => {
-      if (data.toString().includes("Build complete")) {
-        child.stdout?.off("data", onData);
+      if (settled) return;
+      buffer += data.toString();
+      if (buffer.includes("Build complete")) {
+        cleanup();
         ok("Utils initial build complete");
         resolveWait();
+        return;
       }
+      if (buffer.length > 8192) buffer = buffer.slice(-1024);
     };
+    const onExit = (code: number | null) => {
+      if (settled) return;
+      cleanup();
+      rejectWait(new Error(`utils watch exited (code ${code}) before first build`));
+    };
+    const timer = setTimeout(() => {
+      if (settled) return;
+      cleanup();
+      rejectWait(
+        new Error(`utils watch did not emit "Build complete" within ${HEALTH_TIMEOUT_MS}ms`),
+      );
+    }, HEALTH_TIMEOUT_MS);
+
     child.stdout?.on("data", onData);
-    child.once("exit", (code) => {
-      if (code !== 0 && Date.now() - start < HEALTH_TIMEOUT_MS) {
-        rejectWait(new Error(`utils watch exited with code ${code} before first build`));
-      }
-    });
+    child.once("exit", onExit);
   });
 }
 

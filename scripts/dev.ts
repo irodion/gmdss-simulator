@@ -47,42 +47,71 @@ function spawnPrefixed(label: string, args: string[], cwd: string): ChildProcess
   return child;
 }
 
-function waitForInitialBuild(child: ChildProcess, label: string): Promise<void> {
+const INITIAL_BUILD_TIMEOUT_MS = 60_000;
+
+function waitForInitialBuild(child: ChildProcess, label: string, timeoutMs: number): Promise<void> {
   return new Promise((resolveWait, rejectWait) => {
-    const onData = (data: Buffer) => {
-      if (data.toString().includes("Build complete")) {
-        child.stdout?.off("data", onData);
-        resolveWait();
-      }
+    let buffer = "";
+    let settled = false;
+
+    const cleanup = () => {
+      settled = true;
+      child.stdout?.off("data", onData);
+      child.off("exit", onExit);
+      clearTimeout(timer);
     };
+    const onData = (data: Buffer) => {
+      if (settled) return;
+      buffer += data.toString();
+      if (buffer.includes("Build complete")) {
+        cleanup();
+        resolveWait();
+        return;
+      }
+      // Bound buffer growth; keep the tail so a split marker across chunks still matches.
+      if (buffer.length > 8192) buffer = buffer.slice(-1024);
+    };
+    const onExit = (code: number | null) => {
+      if (settled) return;
+      cleanup();
+      rejectWait(new Error(`${label} exited (code ${code}) before first build`));
+    };
+    const timer = setTimeout(() => {
+      if (settled) return;
+      cleanup();
+      rejectWait(new Error(`${label} did not emit "Build complete" within ${timeoutMs}ms`));
+    }, timeoutMs);
+
     child.stdout?.on("data", onData);
-    child.once("exit", (code) => {
-      if (code !== 0) rejectWait(new Error(`${label} exited with code ${code} before first build`));
-    });
+    child.once("exit", onExit);
   });
 }
 
 let shuttingDown = false;
-function shutdown() {
-  if (shuttingDown) return;
-  shuttingDown = true;
-  for (const child of children) {
-    if (child.exitCode === null) child.kill("SIGTERM");
+function shutdown(exitCode = 0): never {
+  if (!shuttingDown) {
+    shuttingDown = true;
+    for (const child of children) {
+      if (child.exitCode === null) child.kill("SIGTERM");
+    }
   }
-  process.exit(0);
+  process.exit(exitCode);
 }
 
-process.on("SIGINT", shutdown);
-process.on("SIGTERM", shutdown);
+process.on("SIGINT", () => shutdown(0));
+process.on("SIGTERM", () => shutdown(0));
 
 const utils = spawnPrefixed("utils", ["pack", "--watch"], UTILS_DIR);
 
 try {
-  await waitForInitialBuild(utils, "utils");
+  await waitForInitialBuild(utils, "utils", INITIAL_BUILD_TIMEOUT_MS);
 } catch (err) {
   console.error(`${RED}  ✗${RESET} ${String(err)}`);
-  shutdown();
-  process.exit(1);
+  shutdown(1);
 }
 
-spawnPrefixed("fe", ["dev"], FRONTEND_DIR);
+const fe = spawnPrefixed("fe", ["dev"], FRONTEND_DIR);
+fe.once("exit", (code) => {
+  // Frontend dev server is the foreground task — if it exits, tear down utils too.
+  if (!shuttingDown) shutdown(code ?? 1);
+});
