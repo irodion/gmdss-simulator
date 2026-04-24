@@ -277,6 +277,50 @@ function scoreChannel(
   };
 }
 
+// ── Template Resolution ──
+
+function escapeRegExp(s: string): string {
+  return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+function callsignToSpacedRegex(value: string): string {
+  return value.split("").map(escapeRegExp).join("\\s*");
+}
+
+/**
+ * Replace `{{key}}` placeholders in rubric patterns with regex-safe values.
+ * For `callsign` keys, inserts `\s*` between characters to tolerate STT spacing.
+ */
+export function resolveRubricTemplates(
+  rubric: RubricDefinition,
+  variables: Record<string, string>,
+): RubricDefinition {
+  const templateRe = /\{\{(\w+)\}\}/g;
+
+  function resolvePattern(pattern: string): string {
+    return pattern.replace(templateRe, (_, key: string) => {
+      const value = variables[key];
+      // Fail closed: an empty/missing value becomes a never-matching fragment
+      // instead of "", which would make the surrounding regex match anything.
+      if (value == null || value === "") return "(?!)";
+      if (key === "callsign") return callsignToSpacedRegex(value);
+      return escapeRegExp(value);
+    });
+  }
+
+  return {
+    ...rubric,
+    requiredFields: rubric.requiredFields.map((field) => ({
+      ...field,
+      patterns: field.patterns.map(resolvePattern),
+    })),
+    prowordRules: rubric.prowordRules.map((rule) => ({
+      ...rule,
+      pattern: resolvePattern(rule.pattern),
+    })),
+  };
+}
+
 // ── Public API ──
 
 /**

@@ -153,7 +153,7 @@ export type {
   ChannelRules,
   RubricDefinition,
 } from "./rubric-types.ts";
-export { scoreTranscript } from "./rubric-engine.ts";
+export { scoreTranscript, resolveRubricTemplates } from "./rubric-engine.ts";
 export {
   getCallingChannel,
   isChannelValidForVoice,

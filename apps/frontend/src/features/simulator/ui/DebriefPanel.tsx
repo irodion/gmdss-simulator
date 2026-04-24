@@ -5,22 +5,27 @@ import { ChatBubble } from "./ChatBubble.tsx";
 interface DebriefPanelProps {
   turns: readonly Turn[];
   score: ScoreBreakdown;
+  closingScore?: ScoreBreakdown;
   stationPersona: string;
   onRetry: () => void;
   onBack: () => void;
 }
 
-export function DebriefPanel({ turns, score, stationPersona, onRetry, onBack }: DebriefPanelProps) {
-  const { t } = useTranslation("simulator");
-
+function ScoreSection({
+  title,
+  breakdown,
+  t,
+}: {
+  title: string;
+  breakdown: ScoreBreakdown;
+  t: (key: string) => string;
+}) {
   return (
-    <div className="sim-debrief">
-      <h2 className="sim-debrief__title">{t("debrief.title")}</h2>
-
-      <div className="sim-debrief__score">{score.overall}%</div>
-
+    <>
+      {title && <h3 style={{ fontSize: 16, margin: "16px 0 8px", color: "#e9edf1" }}>{title}</h3>}
+      <div className="sim-debrief__score">{breakdown.overall}%</div>
       <div className="sim-debrief__dimensions">
-        {score.dimensions.map((dim) => (
+        {breakdown.dimensions.map((dim) => (
           <div key={dim.id} className="sim-debrief__dim">
             <div className="sim-debrief__dim-label">{t(`scoring.${dim.id}`)}</div>
             <div className="sim-debrief__dim-score">{dim.score}%</div>
@@ -36,6 +41,32 @@ export function DebriefPanel({ turns, score, stationPersona, onRetry, onBack }: 
           </div>
         ))}
       </div>
+    </>
+  );
+}
+
+export function DebriefPanel({
+  turns,
+  score,
+  closingScore,
+  stationPersona,
+  onRetry,
+  onBack,
+}: DebriefPanelProps) {
+  const { t } = useTranslation("simulator");
+
+  return (
+    <div className="sim-debrief">
+      <h2 className="sim-debrief__title">{t("debrief.title")}</h2>
+
+      {closingScore ? (
+        <>
+          <ScoreSection title={t("debrief.openingSection")} breakdown={score} t={t} />
+          <ScoreSection title={t("debrief.closingSection")} breakdown={closingScore} t={t} />
+        </>
+      ) : (
+        <ScoreSection title="" breakdown={score} t={t} />
+      )}
 
       <h3 style={{ fontSize: 18, marginBottom: 12, color: "#e9edf1" }}>
         {t("debrief.transcript")}

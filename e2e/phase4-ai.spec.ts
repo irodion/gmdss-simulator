@@ -32,16 +32,24 @@ test.describe.serial("Phase 4: AI Integration", () => {
     await page.goto("/sim");
 
     // Tier 1 scenarios
-    await expect(page.locator("text=Radio Check")).toBeVisible({ timeout: 5000 });
+    await expect(page.locator(".sim-scenario-card__title", { hasText: "Radio Check" })).toBeVisible(
+      { timeout: 5000 },
+    );
 
     // Tier 2 scenario
-    await expect(page.locator("text=MAYDAY — Fire on Board")).toBeVisible();
+    await expect(
+      page.locator(".sim-scenario-card__title", { hasText: "MAYDAY — Fire on Board" }),
+    ).toBeVisible();
 
     // Tier 3 scenario
-    await expect(page.locator("text=Deteriorating Situation")).toBeVisible();
+    await expect(
+      page.locator(".sim-scenario-card__title", { hasText: "Deteriorating Situation" }),
+    ).toBeVisible();
 
     // Tier 4 scenario
-    await expect(page.locator("text=Exam: Random Distress")).toBeVisible();
+    await expect(
+      page.locator(".sim-scenario-card__title", { hasText: "Exam: Random Distress" }),
+    ).toBeVisible();
   });
 
   test("Tier 2 MAYDAY scenario with scripted responses", async ({ page }) => {

@@ -1,0 +1,48 @@
+{
+  "id": "v1/routine-closing",
+  "version": "1.0.0",
+  "category": "routine",
+  "requiredFields": [
+    {
+      "id": "station_name",
+      "label": "Station name (called)",
+      "patterns": ["RCC\\s*HAIFA"],
+      "required": true
+    },
+    {
+      "id": "this_is",
+      "label": "THIS IS",
+      "patterns": ["THIS\\s+IS"],
+      "required": true
+    },
+    {
+      "id": "callsign",
+      "label": "Vessel callsign (twice)",
+      "patterns": ["{{callsign}}\\W+{{callsign}}"],
+      "required": true
+    },
+    {
+      "id": "roger",
+      "label": "ROGER",
+      "patterns": ["\\bROGER\\b"],
+      "required": true
+    },
+    {
+      "id": "nothing_else",
+      "label": "NOTHING ELSE FOR YOU",
+      "patterns": ["NOTHING\\s+ELSE\\s+FOR\\s+YOU"],
+      "required": true
+    }
+  ],
+  "prowordRules": [
+    { "id": "this_is", "label": "THIS IS", "pattern": "THIS\\s+IS" },
+    { "id": "out", "label": "OUT", "pattern": "\\bOUT\\b" }
+  ],
+  "sequenceRules": {
+    "fieldOrder": ["station_name", "this_is", "callsign", "roger", "nothing_else", "out"]
+  },
+  "channelRules": {
+    "requiredChannel": 6,
+    "blockChannel70Voice": true
+  }
+}

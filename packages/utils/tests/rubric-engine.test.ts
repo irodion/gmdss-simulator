@@ -1,5 +1,5 @@
 import { describe, expect, it, vi, afterEach } from "vite-plus/test";
-import { scoreTranscript } from "../src/rubric-engine.ts";
+import { scoreTranscript, resolveRubricTemplates } from "../src/rubric-engine.ts";
 import type { RubricDefinition } from "../src/rubric-types.ts";
 import type { Turn } from "../src/scenario-types.ts";
 
@@ -324,5 +324,125 @@ describe("scoreTranscript — channel 06 scenario", () => {
     const score = scoreTranscript(turns, CH06_RUBRIC, 6);
     const channel = score.dimensions.find((d) => d.id === "channel")!;
     expect(channel.score).toBe(0);
+  });
+});
+
+describe("scoreTranscript — closing reply rubric", () => {
+  const CLOSING_RUBRIC: RubricDefinition = {
+    id: "v1/routine-closing",
+    version: "1.0.0",
+    category: "routine",
+    requiredFields: [
+      {
+        id: "station_name",
+        label: "Station name (called)",
+        patterns: ["RCC\\s*HAIFA"],
+        required: true,
+      },
+      { id: "this_is", label: "THIS IS", patterns: ["THIS\\s+IS"], required: true },
+      {
+        id: "callsign",
+        label: "Vessel callsign",
+        patterns: ["5\\s*B\\s*C\\s*D\\s*2"],
+        required: true,
+      },
+      { id: "roger", label: "ROGER", patterns: ["\\bROGER\\b"], required: true },
+      {
+        id: "nothing_else",
+        label: "NOTHING ELSE FOR YOU",
+        patterns: ["NOTHING\\s+ELSE\\s+FOR\\s+YOU"],
+        required: true,
+      },
+    ],
+    prowordRules: [
+      { id: "this_is", label: "THIS IS", pattern: "THIS\\s+IS" },
+      { id: "out", label: "OUT", pattern: "\\bOUT\\b" },
+    ],
+    sequenceRules: {
+      fieldOrder: ["station_name", "this_is", "callsign", "roger", "nothing_else", "out"],
+    },
+    channelRules: { requiredChannel: 6, blockChannel70Voice: true },
+  };
+
+  it("scores a perfect closing reply at 100%", () => {
+    vi.spyOn(Date, "now").mockReturnValue(10000);
+    const turns = [makeTurn("RCC HAIFA THIS IS 5BCD2 5BCD2 ROGER NOTHING ELSE FOR YOU OUT", 6)];
+    const score = scoreTranscript(turns, CLOSING_RUBRIC, 6);
+    expect(score.overall).toBe(100);
+  });
+
+  it("penalizes missing ROGER", () => {
+    vi.spyOn(Date, "now").mockReturnValue(10000);
+    const turns = [makeTurn("RCC HAIFA THIS IS 5BCD2 NOTHING ELSE FOR YOU OUT", 6)];
+    const score = scoreTranscript(turns, CLOSING_RUBRIC, 6);
+    expect(score.overall).toBeLessThan(100);
+    const fields = score.dimensions.find((d) => d.id === "required_fields")!;
+    expect(fields.missingItems).toContain("ROGER");
+  });
+
+  it("penalizes missing callsign", () => {
+    vi.spyOn(Date, "now").mockReturnValue(10000);
+    const turns = [makeTurn("RCC HAIFA THIS IS ROGER NOTHING ELSE FOR YOU OUT", 6)];
+    const score = scoreTranscript(turns, CLOSING_RUBRIC, 6);
+    const fields = score.dimensions.find((d) => d.id === "required_fields")!;
+    expect(fields.missingItems).toContain("Vessel callsign");
+  });
+
+  it("penalizes missing NOTHING ELSE FOR YOU", () => {
+    vi.spyOn(Date, "now").mockReturnValue(10000);
+    const turns = [makeTurn("RCC HAIFA THIS IS 5BCD2 ROGER OUT", 6)];
+    const score = scoreTranscript(turns, CLOSING_RUBRIC, 6);
+    const fields = score.dimensions.find((d) => d.id === "required_fields")!;
+    expect(fields.missingItems).toContain("NOTHING ELSE FOR YOU");
+  });
+
+  it("penalizes missing OUT proword", () => {
+    vi.spyOn(Date, "now").mockReturnValue(10000);
+    const turns = [makeTurn("RCC HAIFA THIS IS 5BCD2 ROGER NOTHING ELSE FOR YOU", 6)];
+    const score = scoreTranscript(turns, CLOSING_RUBRIC, 6);
+    const prowords = score.dimensions.find((d) => d.id === "prowords")!;
+    expect(prowords.missingItems).toContain("OUT");
+  });
+
+  it("tolerates spacing in callsign from STT", () => {
+    vi.spyOn(Date, "now").mockReturnValue(10000);
+    const turns = [makeTurn("RCC HAIFA THIS IS 5 B C D 2 ROGER NOTHING ELSE FOR YOU OUT", 6)];
+    const score = scoreTranscript(turns, CLOSING_RUBRIC, 6);
+    const fields = score.dimensions.find((d) => d.id === "required_fields")!;
+    expect(fields.missingItems).not.toContain("Vessel callsign");
+  });
+});
+
+describe("resolveRubricTemplates", () => {
+  const TEMPLATE_RUBRIC: RubricDefinition = {
+    id: "v1/routine-closing",
+    version: "1.0.0",
+    category: "routine",
+    requiredFields: [
+      { id: "callsign", label: "Vessel callsign", patterns: ["{{callsign}}"], required: true },
+      { id: "station", label: "Station", patterns: ["RCC\\s*HAIFA"], required: true },
+    ],
+    prowordRules: [{ id: "out", label: "OUT", pattern: "\\bOUT\\b" }],
+    sequenceRules: { fieldOrder: ["callsign", "station"] },
+    channelRules: { requiredChannel: 6, blockChannel70Voice: true },
+  };
+
+  it("substitutes {{callsign}} with spaced regex", () => {
+    const resolved = resolveRubricTemplates(TEMPLATE_RUBRIC, { callsign: "5BCD2" });
+    const callsignField = resolved.requiredFields.find((f) => f.id === "callsign")!;
+    expect(callsignField.patterns[0]).toBe("5\\s*B\\s*C\\s*D\\s*2");
+  });
+
+  it("leaves patterns without templates unchanged", () => {
+    const resolved = resolveRubricTemplates(TEMPLATE_RUBRIC, { callsign: "5BCD2" });
+    const stationField = resolved.requiredFields.find((f) => f.id === "station")!;
+    expect(stationField.patterns[0]).toBe("RCC\\s*HAIFA");
+  });
+
+  it("fails closed when callsign is empty", () => {
+    const resolved = resolveRubricTemplates(TEMPLATE_RUBRIC, { callsign: "" });
+    const callsignField = resolved.requiredFields.find((f) => f.id === "callsign")!;
+    expect(callsignField.patterns[0]).toBe("(?!)");
+    expect(new RegExp(callsignField.patterns[0]!).test("anything")).toBe(false);
   });
 });

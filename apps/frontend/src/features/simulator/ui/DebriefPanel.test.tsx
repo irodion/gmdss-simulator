@@ -151,4 +151,64 @@ describe("DebriefPanel", () => {
     fireEvent.click(screen.getByText("Back to Scenarios"));
     expect(onBack).toHaveBeenCalledOnce();
   });
+
+  test("renders both sections when closingScore is provided", () => {
+    const closingScore: ScoreBreakdown = {
+      overall: 90,
+      rubricVersion: "1.0.0",
+      timestamp: 20000,
+      dimensions: [
+        {
+          id: "required_fields",
+          label: "Required Fields",
+          weight: 0.5,
+          score: 90,
+          maxScore: 100,
+          matchedItems: ["RECEIVED"],
+          missingItems: [],
+        },
+        {
+          id: "prowords",
+          label: "Prowords",
+          weight: 0.5,
+          score: 80,
+          maxScore: 100,
+          matchedItems: ["OUT"],
+          missingItems: [],
+        },
+      ],
+    };
+
+    render(
+      <DebriefPanel
+        turns={MOCK_TURNS}
+        score={MOCK_SCORE}
+        closingScore={closingScore}
+        stationPersona="COAST_STATION"
+        onRetry={vi.fn()}
+        onBack={vi.fn()}
+      />,
+    );
+
+    expect(screen.getByText("Opening — Radio Check Request")).not.toBeNull();
+    expect(screen.getByText("Closing — Acknowledgment")).not.toBeNull();
+    expect(screen.getByText("82%")).not.toBeNull();
+    expect(screen.getAllByText("90%").length).toBeGreaterThanOrEqual(1);
+  });
+
+  test("does not render section titles when closingScore is absent", () => {
+    render(
+      <DebriefPanel
+        turns={MOCK_TURNS}
+        score={MOCK_SCORE}
+        stationPersona="COAST_STATION"
+        onRetry={vi.fn()}
+        onBack={vi.fn()}
+      />,
+    );
+
+    expect(screen.queryByText("Opening — Radio Check Request")).toBeNull();
+    expect(screen.queryByText("Closing — Acknowledgment")).toBeNull();
+    expect(screen.getByText("82%")).not.toBeNull();
+  });
 });
