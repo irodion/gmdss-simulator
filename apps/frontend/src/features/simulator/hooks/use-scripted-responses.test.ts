@@ -94,7 +94,12 @@ describe("useScriptedResponses", () => {
     renderHook(() =>
       useScriptedResponses({
         session: { state, dispatch },
-        radio: { state: { txRx: "idle" } as any, send, reset: vi.fn(), events: [] },
+        radio: {
+          state: { txRx: "idle", channel: 16 } as any,
+          send,
+          reset: vi.fn(),
+          events: [],
+        },
         audio: {
           init: vi.fn(),
           speak,
@@ -123,6 +128,55 @@ describe("useScriptedResponses", () => {
       channel: 16,
     });
     expect(speak).toHaveBeenCalledWith("RECEIVED");
+  });
+
+  test("records station turn on current radio channel, not scenario.requiredChannel", () => {
+    const dispatch = vi.fn();
+    const send = vi.fn();
+
+    // Scenario requires Ch.16, but student has switched radio to Ch.72
+    const state = makeActiveState([
+      {
+        index: 0,
+        speaker: "student",
+        text: "HAIL ON 72",
+        timestamp: 1000,
+        channel: 72,
+        durationMs: 3000,
+      },
+    ]);
+
+    renderHook(() =>
+      useScriptedResponses({
+        session: { state, dispatch },
+        radio: {
+          state: { txRx: "idle", channel: 72 } as any,
+          send,
+          reset: vi.fn(),
+          events: [],
+        },
+        audio: {
+          init: vi.fn(),
+          speak: vi.fn().mockResolvedValue(undefined),
+          playAudioBuffer: vi.fn(),
+          startCapture: vi.fn(),
+          stopCapture: vi.fn().mockResolvedValue({ cleanBlob: new Blob(), durationMs: 0 }),
+          setSquelch: vi.fn(),
+          setVolume: vi.fn(),
+          setNoiseMuted: vi.fn(),
+          destroy: vi.fn(),
+        },
+      }),
+    );
+
+    act(() => {
+      vi.advanceTimersByTime(800);
+    });
+    expect(dispatch).toHaveBeenCalledWith({
+      type: "ADD_STATION_TURN",
+      text: "RECEIVED",
+      channel: 72,
+    });
   });
 
   test("does not fire when no scripted response matches", () => {

@@ -84,6 +84,59 @@ test.describe.serial("Phase 3: Radio Simulator", () => {
     await expect(page.locator("text=Closing")).toBeVisible();
   });
 
+  test("channel change flow: call, acknowledge, switch channel, re-hail, auto-complete", async ({
+    page,
+  }) => {
+    await login(page);
+    await page.goto("/sim");
+
+    await page.locator(".sim-scenario-card__title", { hasText: "Channel Change" }).click();
+
+    await expect(page.locator("text=Scenario Briefing")).toBeVisible({ timeout: 5000 });
+    await expect(page.locator("text=BLUE DUCK")).toBeVisible();
+
+    await page.click("text=Start Scenario");
+
+    const input = page.locator('input[aria-label="Radio transmission text"]');
+    await expect(input).toBeVisible();
+
+    // Step 1: initial call on Ch.16
+    await input.fill("RCC HAIFA RCC HAIFA RCC HAIFA THIS IS BLUE DUCK BLUE DUCK BLUE DUCK OVER");
+    await page.click("text=Transmit");
+
+    // Station instructs channel change
+    await expect(page.locator("text=ADVISE YOU SWITCH TO CHANNEL SEVEN TWO")).toBeVisible({
+      timeout: 5000,
+    });
+
+    // Step 2: acknowledge on Ch.16 (no station reply — student must switch)
+    await input.fill("RCC HAIFA THIS IS BLUE DUCK RECEIVED SWITCHING TO CHANNEL SEVEN TWO OUT");
+    await page.click("text=Transmit");
+
+    // Step 3: switch to Ch.72 via accessible mode (reliable channel selection)
+    await page.click("text=Accessible");
+    await page.locator("select#a11y-channel").selectOption("72");
+    await page.click("text=Standard");
+
+    // Step 4: re-hail on Ch.72
+    await input.fill("RCC HAIFA THIS IS BLUE DUCK ON CHANNEL SEVEN TWO OVER");
+    await page.click("text=Transmit");
+
+    await expect(page.locator("text=ON CHANNEL SEVEN TWO, GO AHEAD")).toBeVisible({
+      timeout: 5000,
+    });
+
+    // Step 5: routine message
+    await input.fill("RCC HAIFA THIS IS BLUE DUCK REQUEST INFORMATION ON WEATHER CONDITIONS OVER");
+    await page.click("text=Transmit");
+
+    await expect(page.locator("text=ROGER, OUT")).toBeVisible({ timeout: 5000 });
+
+    // Auto-complete: debrief should appear (1500ms auto-complete delay after final station turn)
+    await expect(page.locator("text=After-Action Review")).toBeVisible({ timeout: 15000 });
+    await expect(page.locator("text=Retry Scenario")).toBeVisible();
+  });
+
   test("drill page loads with all drill type tabs", async ({ page }) => {
     await login(page);
     await page.goto("/drill");
