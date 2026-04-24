@@ -179,7 +179,7 @@ export function SimulatorPage() {
             resolveRubricTemplates(cr, { callsign: scenario.vessel.callsign ?? "" }),
           );
         } catch (err) {
-          console.error(`Failed to load closing rubric "${scenario.closingRubricId}":`, err);
+          console.error("Failed to load closing rubric:", scenario.closingRubricId, err);
           setClosingRubric(null);
         }
       } else {
