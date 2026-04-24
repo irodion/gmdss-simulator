@@ -16,6 +16,7 @@ import { resolve } from "node:path";
 const ROOT = resolve(import.meta.dirname, "..");
 const DOCKER_COMPOSE = resolve(ROOT, "docker-compose.dev.yml");
 const DB_DIR = resolve(ROOT, "packages/db");
+const UTILS_DIR = resolve(ROOT, "packages/utils");
 const API_ENTRY = resolve(ROOT, "apps/api/src/index.ts");
 const ENV_FILE = resolve(ROOT, ".env");
 const ENV_EXAMPLE = resolve(ROOT, ".env.example");
@@ -329,6 +330,55 @@ async function createTestUser() {
   }
 }
 
+function startUtilsWatch(): ChildProcess {
+  info("Starting utils watch…");
+  const vpBin = resolve(ROOT, "node_modules/.bin/vp");
+  return spawnPrefixed("utils", vpBin, ["pack", "--watch"], { cwd: UTILS_DIR });
+}
+
+function waitForUtilsInitialBuild(child: ChildProcess): Promise<void> {
+  // The frontend imports @gmdss-simulator/utils via its dist/ build, so we
+  // must wait for the first pack to land before starting Vite — otherwise the
+  // browser can load a stale dist and throw on missing exports.
+  return new Promise((resolveWait, rejectWait) => {
+    let buffer = "";
+    let settled = false;
+
+    const cleanup = () => {
+      settled = true;
+      child.stdout?.off("data", onData);
+      child.off("exit", onExit);
+      clearTimeout(timer);
+    };
+    const onData = (data: Buffer) => {
+      if (settled) return;
+      buffer += data.toString();
+      if (buffer.includes("Build complete")) {
+        cleanup();
+        ok("Utils initial build complete");
+        resolveWait();
+        return;
+      }
+      if (buffer.length > 8192) buffer = buffer.slice(-1024);
+    };
+    const onExit = (code: number | null) => {
+      if (settled) return;
+      cleanup();
+      rejectWait(new Error(`utils watch exited (code ${code}) before first build`));
+    };
+    const timer = setTimeout(() => {
+      if (settled) return;
+      cleanup();
+      rejectWait(
+        new Error(`utils watch did not emit "Build complete" within ${HEALTH_TIMEOUT_MS}ms`),
+      );
+    }, HEALTH_TIMEOUT_MS);
+
+    child.stdout?.on("data", onData);
+    child.once("exit", onExit);
+  });
+}
+
 function startFrontend(): ChildProcess {
   info("Starting frontend dev server…");
   const vpBin = resolve(ROOT, "node_modules/.bin/vp");
@@ -379,6 +429,9 @@ async function main() {
   const api = startApi();
   await waitForApi(api);
   await createTestUser();
+
+  const utils = startUtilsWatch();
+  await waitForUtilsInitialBuild(utils);
 
   const fe = startFrontend();
   await waitForFrontend(fe);
