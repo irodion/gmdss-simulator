@@ -338,7 +338,7 @@ describe("DrillCard", () => {
     expect(input.value).toBe("ALFA BRAVO CHARLIE");
   });
 
-  test("interim transcript renders the live ghost line", () => {
+  test("interim transcript streams into the answer field while listening", () => {
     render(
       <DrillCard
         challenge={phoneticChallenge}
@@ -357,8 +357,57 @@ describe("DrillCard", () => {
       });
     });
 
-    expect(screen.getByText(/ALFA BRA/)).toBeTruthy();
     const input = screen.getByLabelText(/your answer/i) as HTMLTextAreaElement;
-    expect(input.value).toBe("");
+    expect(input.value).toBe("ALFA BRA");
+  });
+
+  test("cumulative final transcripts replace rather than duplicate", () => {
+    render(
+      <DrillCard
+        challenge={phoneticChallenge}
+        index={0}
+        total={3}
+        score={scoreDrill}
+        onSubmit={() => {}}
+        onNext={() => {}}
+      />,
+    );
+    fireEvent.click(screen.getByRole("button", { name: /start voice dictation/i }));
+
+    act(() => {
+      lastRecognition!.onresult!({
+        results: makeResultList(makeResult("alfa bravo", true)),
+      });
+    });
+    const input = screen.getByLabelText(/your answer/i) as HTMLTextAreaElement;
+    expect(input.value).toBe("ALFA BRAVO");
+
+    act(() => {
+      lastRecognition!.onresult!({
+        results: makeResultList(makeResult("alfa bravo", true), makeResult("charlie delta", true)),
+      });
+    });
+    expect(input.value).toBe("ALFA BRAVO CHARLIE DELTA");
+  });
+
+  test("textarea becomes readOnly while dictating and unlocks after stop", () => {
+    render(
+      <DrillCard
+        challenge={phoneticChallenge}
+        index={0}
+        total={3}
+        score={scoreDrill}
+        onSubmit={() => {}}
+        onNext={() => {}}
+      />,
+    );
+    const input = screen.getByLabelText(/your answer/i) as HTMLTextAreaElement;
+    expect(input.readOnly).toBe(false);
+
+    fireEvent.click(screen.getByRole("button", { name: /start voice dictation/i }));
+    expect(input.readOnly).toBe(true);
+
+    act(() => lastRecognition!.onend!());
+    expect(input.readOnly).toBe(false);
   });
 });

@@ -98,7 +98,7 @@ describe("useSpeechRecognition", () => {
     expect(lastInstance).not.toBeNull();
     expect(lastInstance!.start).toHaveBeenCalled();
     expect(lastInstance!.interimResults).toBe(true);
-    expect(lastInstance!.continuous).toBe(false);
+    expect(lastInstance!.continuous).toBe(true);
     expect(lastInstance!.lang).toBe("en-US");
     expect(result.current.listening).toBe(true);
 

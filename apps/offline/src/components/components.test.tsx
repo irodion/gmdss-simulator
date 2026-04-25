@@ -190,7 +190,7 @@ describe("MicButton", () => {
       });
     });
 
-    expect(onTranscript).toHaveBeenCalledWith("EIGHT NINE", true);
+    expect(onTranscript).toHaveBeenCalledWith("EIGHT NINE");
   });
 
   test("permission-denied error transitions the button to a blocked state", () => {

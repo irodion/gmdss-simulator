@@ -3,7 +3,9 @@ import { applyNormalization } from "../drills/stt-normalize.ts";
 import { useSpeechRecognition } from "../lib/stt.ts";
 
 interface MicButtonProps {
-  readonly onTranscript: (text: string, isFinal: boolean) => void;
+  readonly onTranscript: (text: string) => void;
+  readonly onDictationStart?: () => void;
+  readonly onDictationEnd?: () => void;
   readonly disabled?: boolean;
 }
 
@@ -11,24 +13,44 @@ interface MicButtonProps {
 // (DrillCard remounts MicButton on every challenge via key={challenge.id}).
 let DISCLOSURE_SHOWN = false;
 
-export function MicButton({ onTranscript, disabled = false }: MicButtonProps) {
+export function MicButton({
+  onTranscript,
+  onDictationStart,
+  onDictationEnd,
+  disabled = false,
+}: MicButtonProps) {
   const stt = useSpeechRecognition();
   const onTranscriptRef = useRef(onTranscript);
   onTranscriptRef.current = onTranscript;
+  const onStartRef = useRef(onDictationStart);
+  onStartRef.current = onDictationStart;
+  const onEndRef = useRef(onDictationEnd);
+  onEndRef.current = onDictationEnd;
+  const prevListeningRef = useRef(false);
 
   const [showDisclosure, setShowDisclosure] = useState(false);
 
-  useEffect(() => {
-    if (stt.interimTranscript !== "") {
-      onTranscriptRef.current(applyNormalization(stt.interimTranscript), false);
-    }
-  }, [stt.interimTranscript]);
+  // Combine final + interim into a single live cumulative transcript.
+  const live =
+    stt.finalTranscript === ""
+      ? stt.interimTranscript
+      : stt.interimTranscript === ""
+        ? stt.finalTranscript
+        : `${stt.finalTranscript} ${stt.interimTranscript}`;
 
   useEffect(() => {
-    if (stt.finalTranscript !== "") {
-      onTranscriptRef.current(applyNormalization(stt.finalTranscript), true);
+    if (live !== "") {
+      onTranscriptRef.current(applyNormalization(live));
     }
-  }, [stt.finalTranscript]);
+  }, [live]);
+
+  useEffect(() => {
+    if (stt.listening !== prevListeningRef.current) {
+      prevListeningRef.current = stt.listening;
+      if (stt.listening) onStartRef.current?.();
+      else onEndRef.current?.();
+    }
+  }, [stt.listening]);
 
   useEffect(() => {
     if (!showDisclosure) return;
@@ -72,8 +94,17 @@ export function MicButton({ onTranscript, disabled = false }: MicButtonProps) {
         aria-label={title}
         aria-pressed={stt.listening}
       >
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-          <rect x="9" y="3" width="6" height="12" rx="3" stroke="currentColor" strokeWidth="1.6" />
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <rect
+            className="mic-body"
+            x="9"
+            y="3"
+            width="6"
+            height="12"
+            rx="3"
+            stroke="currentColor"
+            strokeWidth="1.6"
+          />
           <path
             d="M5 12a7 7 0 0 0 14 0"
             stroke="currentColor"

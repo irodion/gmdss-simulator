@@ -426,50 +426,46 @@
   position: relative;
 }
 .answer-shell.has-mic .answer-input {
-  padding-right: 3rem;
+  padding-right: 2.75rem;
 }
 .mic-floater {
   position: absolute;
   bottom: 8px;
   right: 8px;
-  width: 36px;
-  height: 36px;
+  width: 32px;
+  height: 32px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background: var(--paper);
-  border: 1px solid var(--brass);
-  color: var(--brass-deep);
+  background: transparent;
+  border: none;
+  padding: 0;
+  color: var(--ink-faint);
   cursor: pointer;
-  transition:
-    color 180ms ease,
-    border-color 180ms ease,
-    background 180ms ease,
-    box-shadow 180ms ease;
+  transition: color 200ms ease;
 }
 .mic-floater:hover:not(:disabled) {
-  background: var(--brass);
-  color: var(--paper);
+  color: var(--brass-deep);
 }
 .mic-floater[data-state="listening"] {
-  border-color: var(--coral);
   color: var(--coral);
-  background: var(--paper);
-  animation: mic-pulse 1.4s ease-in-out infinite;
+  animation: mic-pulse 1.6s ease-in-out infinite;
+}
+.mic-floater[data-state="listening"] .mic-body {
+  fill: currentColor;
 }
 .mic-floater:disabled {
-  border-color: var(--ink-line);
   color: var(--ink-faint);
+  opacity: 0.5;
   cursor: not-allowed;
-  background: transparent;
 }
 @keyframes mic-pulse {
   0%,
   100% {
-    box-shadow: 0 0 0 0 rgba(196, 92, 58, 0.45);
+    opacity: 1;
   }
   50% {
-    box-shadow: 0 0 0 8px rgba(196, 92, 58, 0);
+    opacity: 0.55;
   }
 }
 
@@ -494,17 +490,6 @@
   100% {
     opacity: 0;
   }
-}
-
-.interim-ghost {
-  font-family: var(--mono);
-  font-size: 0.85rem;
-  font-style: italic;
-  color: var(--ink-soft);
-  opacity: 0.75;
-  padding: 4px 16px 0;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
 }
 
 .hint-row {
@@ -830,8 +815,8 @@
     gap: 6px;
   }
   .mic-floater {
-    width: 32px;
-    height: 32px;
+    width: 30px;
+    height: 30px;
     bottom: 6px;
     right: 6px;
   }

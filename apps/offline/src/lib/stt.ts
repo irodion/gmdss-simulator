@@ -85,7 +85,9 @@ export function useSpeechRecognition(): SpeechRecognitionState {
     setFinal("");
 
     const recognition = new Ctor();
-    recognition.continuous = false;
+    // Continuous: stay open until the user manually stops, so multi-word
+    // dictation isn't cut off after the first phrase.
+    recognition.continuous = true;
     recognition.interimResults = true;
     recognition.lang = "en-US";
 
