@@ -1422,7 +1422,7 @@ The MVP is successful when a maritime training school can deploy the application
 | ---- | --- | ---------------------------------------------- | ------------------- |
 | 1    | 1.1 | Radio Check (jurisdiction-appropriate channel) | Routine             |
 | 1    | 1.2 | Channel Change                                 | Routine             |
-| 1    | 1.3 | Port Entry Call                                | Routine             |
+| 1    | 1.3 | Marina Entry Call                              | Routine             |
 | 1    | 1.4 | Position Report                                | Routine             |
 | 1    | 1.5 | Navigational Warning Reception                 | Safety              |
 | 2    | 2.1 | MAYDAY — Fire on Board                         | Distress            |
