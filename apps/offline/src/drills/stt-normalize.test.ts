@@ -8,6 +8,18 @@ describe("applyNormalization", () => {
     expect(applyNormalization("alpha bravo")).toBe("ALFA BRAVO");
   });
 
+  test("corrects common homophone misrecognitions", () => {
+    expect(applyNormalization("for won")).toBe("FOUR ONE");
+    expect(applyNormalization("juliett")).toBe("JULIET");
+    expect(applyNormalization("oh seven")).toBe("ZERO SEVEN");
+  });
+
+  test("expands digit-only tokens into per-digit words", () => {
+    expect(applyNormalization("123")).toBe("ONE TWO THREE");
+    expect(applyNormalization("alfa 47 bravo")).toBe("ALFA FOUR SEVEN BRAVO");
+    expect(applyNormalization("0")).toBe("ZERO");
+  });
+
   test("passes unknown words through, uppercased", () => {
     expect(applyNormalization("hello world")).toBe("HELLO WORLD");
     expect(applyNormalization("BRAVO charlie")).toBe("BRAVO CHARLIE");

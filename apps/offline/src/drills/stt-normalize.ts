@@ -5,6 +5,7 @@
  * accepts both forms via MARITIME_EQUIVALENTS, so this is purely cosmetic.
  */
 const STT_NORMALIZATIONS: Record<string, string> = {
+  // Maritime number forms → standard English (cosmetic; scorer accepts both).
   ATE: "EIGHT",
   TREE: "THREE",
   FIFE: "FIVE",
@@ -13,8 +14,27 @@ const STT_NORMALIZATIONS: Record<string, string> = {
   TOO: "TWO",
   FOWER: "FOUR",
   "FOW-ER": "FOUR",
+  // Common STT homophone misrecognitions.
+  WON: "ONE",
+  FOR: "FOUR",
+  OH: "ZERO",
+  // Phonetic alphabet variants STT engines emit.
   ALPHA: "ALFA",
+  JULIETT: "JULIET",
   "X-RAY": "XRAY",
+};
+
+const DIGIT_WORDS: Record<string, string> = {
+  "0": "ZERO",
+  "1": "ONE",
+  "2": "TWO",
+  "3": "THREE",
+  "4": "FOUR",
+  "5": "FIVE",
+  "6": "SIX",
+  "7": "SEVEN",
+  "8": "EIGHT",
+  "9": "NINE",
 };
 
 export function applyNormalization(transcript: string): string {
@@ -23,6 +43,11 @@ export function applyNormalization(transcript: string): string {
     .toUpperCase()
     .split(/\s+/)
     .filter(Boolean)
-    .map((w) => STT_NORMALIZATIONS[w] ?? w)
+    .flatMap((token) => {
+      if (/^\d+$/.test(token)) {
+        return token.split("").map((d) => DIGIT_WORDS[d] ?? d);
+      }
+      return [STT_NORMALIZATIONS[token] ?? token];
+    })
     .join(" ");
 }
