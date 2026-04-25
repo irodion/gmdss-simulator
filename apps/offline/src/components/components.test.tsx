@@ -2,6 +2,7 @@ import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, test, vi } from "vite-plus/test";
 import type { DrillResult } from "../drills/drill-types.ts";
 import { ModeTabs } from "./ModeTabs.tsx";
+import { PhoneticCheatsheet } from "./PhoneticCheatsheet.tsx";
 import { ResultBadge } from "./ResultBadge.tsx";
 import { SessionConfig } from "./SessionConfig.tsx";
 import { SessionResults } from "./SessionResults.tsx";
@@ -103,5 +104,17 @@ describe("SessionResults", () => {
     render(<SessionResults results={[]} onRestart={onRestart} />);
     fireEvent.click(screen.getByRole("button", { name: /start a new session/i }));
     expect(onRestart).toHaveBeenCalled();
+  });
+});
+
+describe("PhoneticCheatsheet", () => {
+  test("renders all 26 letters and 10 digits with their phonetic words", () => {
+    render(<PhoneticCheatsheet />);
+    expect(screen.getByText(/phonetic alphabet reference/i)).toBeTruthy();
+    expect(screen.getByText("ALFA")).toBeTruthy();
+    expect(screen.getByText("ZULU")).toBeTruthy();
+    expect(screen.getByText("NIN-ER")).toBeTruthy();
+    expect(screen.getByText("FIFE")).toBeTruthy();
+    expect(screen.getByText("AIT")).toBeTruthy();
   });
 });

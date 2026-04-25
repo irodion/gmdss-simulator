@@ -168,6 +168,11 @@
   font-family: inherit;
   resize: vertical;
   min-height: 80px;
+  text-transform: uppercase;
+}
+
+.answer-input::placeholder {
+  text-transform: none;
 }
 
 .answer-input:focus {
@@ -254,4 +259,60 @@
   border-top: 1px solid var(--line-soft);
   padding-top: 16px;
   margin-top: 16px;
+}
+
+.cheatsheet {
+  margin-top: 20px;
+  font-size: 0.85rem;
+}
+
+.cheatsheet-summary {
+  cursor: pointer;
+  color: var(--text-soft);
+  padding: 8px 0;
+  user-select: none;
+}
+
+.cheatsheet-summary:hover {
+  color: var(--text);
+}
+
+.cheatsheet-body {
+  margin-top: 8px;
+  padding: 14px;
+  background: var(--surface-card-2);
+  border: 1px solid var(--line-soft);
+  border-radius: var(--radius-md);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.cheatsheet-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+  gap: 4px 12px;
+}
+
+.cheatsheet-grid-digits {
+  border-top: 1px solid var(--line-soft);
+  padding-top: 12px;
+}
+
+.cheatsheet-row {
+  display: flex;
+  gap: 8px;
+  align-items: baseline;
+}
+
+.cheatsheet-key {
+  font-family: "SF Mono", "JetBrains Mono", "Menlo", monospace;
+  color: var(--orange-0);
+  font-weight: 600;
+  min-width: 1.2em;
+}
+
+.cheatsheet-val {
+  color: var(--text-soft);
+  font-size: 0.85rem;
 }

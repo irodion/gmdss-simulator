@@ -1,3 +1,5 @@
+import { PhoneticCheatsheet } from "./PhoneticCheatsheet.tsx";
+
 interface SessionConfigProps {
   readonly count: number;
   readonly onCountChange: (count: number) => void;
@@ -26,6 +28,7 @@ export function SessionConfig({ count, onCountChange, onStart }: SessionConfigPr
       <button type="button" className="btn-primary btn-block" onClick={onStart}>
         Start session
       </button>
+      <PhoneticCheatsheet />
     </div>
   );
 }
