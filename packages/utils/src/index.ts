@@ -151,8 +151,10 @@ export type {
   ProwordRule,
   SequenceRules,
   ChannelRules,
+  DscRules,
   RubricDefinition,
 } from "./rubric-types.ts";
+export type { DscScoringContext } from "./rubric-engine.ts";
 export { scoreTranscript, resolveRubricTemplates } from "./rubric-engine.ts";
 export {
   getCallingChannel,

@@ -1,3 +1,5 @@
+import type { DscRules } from "./rubric-types.ts";
+
 export type ScenarioTier = 1 | 2 | 3 | 4;
 
 export type ScenarioCategory = "routine" | "safety" | "urgency" | "distress";
@@ -48,6 +50,8 @@ export interface ScenarioDefinition {
   readonly closingRubricId?: string;
   readonly closingScriptReference?: string;
   readonly hints?: readonly string[];
+  /** When set, requires a DSC distress alert to have been sent (graded). */
+  readonly dscRequirement?: DscRules;
 }
 
 export interface Turn {

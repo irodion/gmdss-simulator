@@ -4,6 +4,7 @@ import {
   type ScenarioDefinition,
   type RubricDefinition,
   type ScoreBreakdown,
+  type DscScoringContext,
   scoreTranscript,
   resolveRubricTemplates,
   squelchToPercent,
@@ -273,7 +274,19 @@ export function SimulatorPage() {
             (t) => t.speaker !== "student" || t.index === firstStudentTurn.index,
           )
         : [];
-      setScore(scoreTranscript(openingTurns, rubric, sc.requiredChannel, sc.allowedChannels));
+
+      const dscContext: DscScoringContext | undefined = sc.dscRequirement
+        ? {
+            distressAlertSentAt: radio.state.distressAlertSentAt,
+            distressAlertNature: radio.state.distressAlertNature,
+            firstStudentTurnAt: firstStudentTurn?.timestamp ?? null,
+            expectedNature: sc.dscRequirement.expectedNature,
+          }
+        : undefined;
+
+      setScore(
+        scoreTranscript(openingTurns, rubric, sc.requiredChannel, sc.allowedChannels, dscContext),
+      );
 
       // Score closing turn(s) if a closing rubric exists
       if (closingRubric && studentTurns.length > 1) {
@@ -286,6 +299,7 @@ export function SimulatorPage() {
             closingRubric,
             sc.requiredChannel,
             sc.allowedChannels,
+            dscContext,
           ),
         );
       } else {
@@ -301,7 +315,15 @@ export function SimulatorPage() {
       aiSession.endAiSession();
     }
     audio.destroy();
-  }, [session, rubric, closingRubric, audio, aiSession]);
+  }, [
+    session,
+    rubric,
+    closingRubric,
+    audio,
+    aiSession,
+    radio.state.distressAlertSentAt,
+    radio.state.distressAlertNature,
+  ]);
 
   // Auto-complete after the terminal scripted response plays.
   // The terminal response is the last entry in scenario.scriptedResponses.

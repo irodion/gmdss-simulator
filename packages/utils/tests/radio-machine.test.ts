@@ -23,6 +23,11 @@ describe("radioReducer", () => {
     it("starts with GPS lock", () => {
       expect(INITIAL_RADIO_STATE.gpsLock).toBe(true);
     });
+
+    it("starts with no DSC distress alert recorded", () => {
+      expect(INITIAL_RADIO_STATE.distressAlertSentAt).toBeNull();
+      expect(INITIAL_RADIO_STATE.distressAlertNature).toBeNull();
+    });
   });
 
   describe("SET_CHANNEL", () => {
@@ -321,6 +326,7 @@ describe("radioReducer", () => {
         ...INITIAL_RADIO_STATE,
         channel: 12,
         flipCover: "open",
+        selectedNature: "fire",
         dscMenu: { screen: "confirming" },
         distressHoldStartMs: 0,
       };
@@ -331,6 +337,26 @@ describe("radioReducer", () => {
       expect(state.txRx).toBe("idle");
       expect(state.distressHoldStartMs).toBeNull();
       expect(state.distressRepeatTimerMs).toBeGreaterThan(5000);
+      expect(state.distressAlertSentAt).toBe(5000);
+      expect(state.distressAlertNature).toBe("fire");
+
+      vi.spyOn(Math, "random").mockRestore();
+    });
+
+    it("captures null nature when COMPLETE_DISTRESS_HOLD fires without selection", () => {
+      vi.spyOn(Math, "random").mockReturnValue(0.5);
+      dateNowSpy.mockReturnValue(7000);
+
+      const confirming: RadioState = {
+        ...INITIAL_RADIO_STATE,
+        flipCover: "open",
+        dscMenu: { screen: "confirming" },
+        distressHoldStartMs: 0,
+      };
+      const state = radioReducer(confirming, { type: "COMPLETE_DISTRESS_HOLD" });
+
+      expect(state.distressAlertSentAt).toBe(7000);
+      expect(state.distressAlertNature).toBeNull();
 
       vi.spyOn(Math, "random").mockRestore();
     });

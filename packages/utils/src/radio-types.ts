@@ -68,6 +68,8 @@ export interface RadioState {
   readonly selectedNature: NatureOfDistress | null;
   readonly distressHoldStartMs: number | null;
   readonly distressRepeatTimerMs: number | null;
+  readonly distressAlertSentAt: number | null;
+  readonly distressAlertNature: NatureOfDistress | null;
   readonly gpsLock: boolean;
   readonly channelInput: string;
   readonly manualPosition: {
