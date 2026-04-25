@@ -1,6 +1,7 @@
+import type { NatureOfDistress } from "./dsc-types.ts";
 import type { ScenarioCategory } from "./scenario-types.ts";
 
-export type ScoringDimensionId = "required_fields" | "prowords" | "sequence" | "channel";
+export type ScoringDimensionId = "required_fields" | "prowords" | "sequence" | "channel" | "dsc";
 
 export interface ScoringDimension {
   readonly id: ScoringDimensionId;
@@ -42,6 +43,12 @@ export interface ChannelRules {
   readonly blockChannel70Voice: boolean;
 }
 
+export interface DscRules {
+  readonly required: boolean;
+  readonly beforeFirstVoiceTurn: boolean;
+  readonly expectedNature?: NatureOfDistress;
+}
+
 export interface RubricDefinition {
   readonly id: string;
   readonly version: string;
@@ -50,4 +57,6 @@ export interface RubricDefinition {
   readonly prowordRules: readonly ProwordRule[];
   readonly sequenceRules: SequenceRules;
   readonly channelRules: ChannelRules;
+  /** When present, scoring includes a DSC dimension and uses alternate weights. */
+  readonly dscRules?: DscRules;
 }

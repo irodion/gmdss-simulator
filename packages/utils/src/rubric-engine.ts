@@ -1,6 +1,9 @@
+import type { NatureOfDistress } from "./dsc-types.ts";
+import { natureOfDistressLabels } from "./dsc-types.ts";
 import type { Turn } from "./scenario-types.ts";
 import type {
   ChannelRules,
+  DscRules,
   FieldRule,
   ProwordRule,
   RubricDefinition,
@@ -10,18 +13,31 @@ import type {
   SequenceRules,
 } from "./rubric-types.ts";
 
-const WEIGHTS = {
+/** Legacy 4-dimension weights (used when rubric has no dscRules). */
+const WEIGHTS_NO_DSC = {
   required_fields: 0.35,
   prowords: 0.25,
   sequence: 0.25,
   channel: 0.15,
+  dsc: 0,
 } as const;
 
-function emptyDimension(id: ScoringDimensionId, label: string): ScoringDimension {
+/** 5-dimension weights when DSC is graded. */
+const WEIGHTS_WITH_DSC = {
+  required_fields: 0.3,
+  prowords: 0.2,
+  sequence: 0.2,
+  channel: 0.1,
+  dsc: 0.2,
+} as const;
+
+type Weights = Readonly<Record<ScoringDimensionId, number>>;
+
+function emptyDimension(id: ScoringDimensionId, label: string, weights: Weights): ScoringDimension {
   return {
     id,
     label,
-    weight: WEIGHTS[id],
+    weight: weights[id],
     score: 100,
     maxScore: 100,
     matchedItems: [],
@@ -29,10 +45,22 @@ function emptyDimension(id: ScoringDimensionId, label: string): ScoringDimension
   };
 }
 
-function scoreRequiredFields(transcript: string, rules: readonly FieldRule[]): ScoringDimension {
+export interface DscScoringContext {
+  readonly distressAlertSentAt: number | null;
+  readonly distressAlertNature: NatureOfDistress | null;
+  readonly firstStudentTurnAt: number | null;
+  /** Per-scenario override for nature; takes precedence over rubric.dscRules.expectedNature. */
+  readonly expectedNature?: NatureOfDistress;
+}
+
+function scoreRequiredFields(
+  transcript: string,
+  rules: readonly FieldRule[],
+  weights: Weights,
+): ScoringDimension {
   const required = rules.filter((r) => r.required);
   if (required.length === 0) {
-    return emptyDimension("required_fields", "Required Fields");
+    return emptyDimension("required_fields", "Required Fields", weights);
   }
 
   const matched: string[] = [];
@@ -53,7 +81,7 @@ function scoreRequiredFields(transcript: string, rules: readonly FieldRule[]): S
   return {
     id: "required_fields",
     label: "Required Fields",
-    weight: WEIGHTS.required_fields,
+    weight: weights.required_fields,
     score,
     maxScore: 100,
     matchedItems: matched,
@@ -63,9 +91,13 @@ function scoreRequiredFields(transcript: string, rules: readonly FieldRule[]): S
 
 // ── Prowords ──
 
-function scoreProwords(transcript: string, rules: readonly ProwordRule[]): ScoringDimension {
+function scoreProwords(
+  transcript: string,
+  rules: readonly ProwordRule[],
+  weights: Weights,
+): ScoringDimension {
   if (rules.length === 0) {
-    return emptyDimension("prowords", "Prowords");
+    return emptyDimension("prowords", "Prowords", weights);
   }
 
   const matched: string[] = [];
@@ -106,7 +138,7 @@ function scoreProwords(transcript: string, rules: readonly ProwordRule[]): Scori
   return {
     id: "prowords",
     label: "Prowords",
-    weight: WEIGHTS.prowords,
+    weight: weights.prowords,
     score,
     maxScore: 100,
     matchedItems: matched,
@@ -142,10 +174,11 @@ function scoreSequence(
   rules: SequenceRules,
   fieldRules: readonly FieldRule[],
   prowordRules: readonly ProwordRule[],
+  weights: Weights,
 ): ScoringDimension {
   const order = rules.fieldOrder;
   if (order.length === 0) {
-    return emptyDimension("sequence", "Sequence");
+    return emptyDimension("sequence", "Sequence", weights);
   }
 
   // Look up patterns from either requiredFields or prowordRules
@@ -181,7 +214,7 @@ function scoreSequence(
     return {
       id: "sequence",
       label: "Sequence",
-      weight: WEIGHTS.sequence,
+      weight: weights.sequence,
       score: 0,
       maxScore: 100,
       matchedItems: [],
@@ -209,7 +242,7 @@ function scoreSequence(
   return {
     id: "sequence",
     label: "Sequence",
-    weight: WEIGHTS.sequence,
+    weight: weights.sequence,
     score,
     maxScore: 100,
     matchedItems: matched,
@@ -223,13 +256,14 @@ function scoreChannel(
   studentTurns: readonly Turn[],
   rules: ChannelRules,
   scenarioChannel: number,
-  allowedChannels?: readonly number[],
+  allowedChannels: readonly number[] | undefined,
+  weights: Weights,
 ): ScoringDimension {
   if (studentTurns.length === 0) {
     return {
       id: "channel",
       label: "Channel",
-      weight: WEIGHTS.channel,
+      weight: weights.channel,
       score: 0,
       maxScore: 100,
       matchedItems: [],
@@ -269,8 +303,79 @@ function scoreChannel(
   return {
     id: "channel",
     label: "Channel",
-    weight: WEIGHTS.channel,
+    weight: weights.channel,
     score,
+    maxScore: 100,
+    matchedItems: matched,
+    missingItems: missing,
+  };
+}
+
+// ── DSC alert ──
+
+function scoreDsc(rules: DscRules, ctx: DscScoringContext, weights: Weights): ScoringDimension {
+  const matched: string[] = [];
+  const missing: string[] = [];
+
+  if (!rules.required) {
+    return {
+      id: "dsc",
+      label: "DSC Alert",
+      weight: weights.dsc,
+      score: 100,
+      maxScore: 100,
+      matchedItems: ["DSC alert not required"],
+      missingItems: [],
+    };
+  }
+
+  // Half-credit thresholds: alert sent (+50), correct ordering vs voice (+25),
+  // correct nature when expected (+25). When ordering or nature isn't enforced,
+  // missing-eligible points are awarded automatically.
+  let earned = 0;
+
+  if (ctx.distressAlertSentAt != null) {
+    earned += 50;
+    matched.push("DSC distress alert sent");
+  } else {
+    missing.push("DSC distress alert sent");
+  }
+
+  if (ctx.distressAlertSentAt != null && rules.beforeFirstVoiceTurn) {
+    if (ctx.firstStudentTurnAt == null || ctx.distressAlertSentAt <= ctx.firstStudentTurnAt) {
+      earned += 25;
+      matched.push("Sent before voice");
+    } else {
+      missing.push("Sent before voice");
+    }
+  } else if (!rules.beforeFirstVoiceTurn) {
+    earned += 25;
+  } else {
+    // alert never sent — ordering check moot, surfaced via main missing item
+    earned += 0;
+  }
+
+  const expectedNature = ctx.expectedNature ?? rules.expectedNature;
+  if (ctx.distressAlertSentAt != null && expectedNature) {
+    if (ctx.distressAlertNature === expectedNature) {
+      earned += 25;
+      matched.push(`Nature: ${natureOfDistressLabels[expectedNature]}`);
+    } else if (ctx.distressAlertNature == null) {
+      missing.push(`Nature: ${natureOfDistressLabels[expectedNature]} (none selected)`);
+    } else {
+      missing.push(
+        `Nature: expected ${natureOfDistressLabels[expectedNature]}, got ${natureOfDistressLabels[ctx.distressAlertNature]}`,
+      );
+    }
+  } else if (!expectedNature) {
+    earned += 25;
+  }
+
+  return {
+    id: "dsc",
+    label: "DSC Alert",
+    weight: weights.dsc,
+    score: Math.round(earned),
     maxScore: 100,
     matchedItems: matched,
     missingItems: missing,
@@ -325,23 +430,41 @@ export function resolveRubricTemplates(
 
 /**
  * Score a transcript against a rubric definition.
- * Deterministic: same turns + same rubric = same score.
+ * Deterministic: same turns + same rubric + same dscContext = same score.
+ *
+ * When `rubric.dscRules` is set AND a `dscContext` is provided, scoring includes
+ * a fifth `dsc` dimension and uses the alternate weight table. Otherwise the
+ * legacy 4-dimension weights apply (backward compatible).
  */
 export function scoreTranscript(
   turns: readonly Turn[],
   rubric: RubricDefinition,
   scenarioChannel: number,
   allowedChannels?: readonly number[],
+  dscContext?: DscScoringContext,
 ): ScoreBreakdown {
   const studentTurns = turns.filter((t) => t.speaker === "student");
   const transcript = studentTurns.map((t) => t.text).join(" ");
 
+  const dscRules = rubric.dscRules && dscContext ? rubric.dscRules : null;
+  const weights: Weights = dscRules ? WEIGHTS_WITH_DSC : WEIGHTS_NO_DSC;
+
   const dimensions: ScoringDimension[] = [
-    scoreRequiredFields(transcript, rubric.requiredFields),
-    scoreProwords(transcript, rubric.prowordRules),
-    scoreSequence(transcript, rubric.sequenceRules, rubric.requiredFields, rubric.prowordRules),
-    scoreChannel(studentTurns, rubric.channelRules, scenarioChannel, allowedChannels),
+    scoreRequiredFields(transcript, rubric.requiredFields, weights),
+    scoreProwords(transcript, rubric.prowordRules, weights),
+    scoreSequence(
+      transcript,
+      rubric.sequenceRules,
+      rubric.requiredFields,
+      rubric.prowordRules,
+      weights,
+    ),
+    scoreChannel(studentTurns, rubric.channelRules, scenarioChannel, allowedChannels, weights),
   ];
+
+  if (dscRules && dscContext) {
+    dimensions.push(scoreDsc(dscRules, dscContext, weights));
+  }
 
   const overall = Math.round(dimensions.reduce((sum, d) => sum + d.score * d.weight, 0));
 

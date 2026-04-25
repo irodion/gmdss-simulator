@@ -58,6 +58,8 @@ export const INITIAL_RADIO_STATE: RadioState = {
   selectedNature: null,
   distressHoldStartMs: null,
   distressRepeatTimerMs: null,
+  distressAlertSentAt: null,
+  distressAlertNature: null,
   gpsLock: true,
   channelInput: "",
   manualPosition: null,
@@ -466,13 +468,16 @@ export function radioReducer(state: RadioState, command: RadioCommand): RadioSta
 
     case "COMPLETE_DISTRESS_HOLD": {
       if (state.dscMenu.screen !== "confirming") return state;
+      const now = Date.now();
       return {
         ...state,
         dscMenu: { screen: "sent", callType: "distress" },
         distressHoldStartMs: null,
         channel: 16,
         txRx: "idle",
-        distressRepeatTimerMs: Date.now() + randomRepeatInterval(),
+        distressRepeatTimerMs: now + randomRepeatInterval(),
+        distressAlertSentAt: now,
+        distressAlertNature: state.selectedNature,
       };
     }
 

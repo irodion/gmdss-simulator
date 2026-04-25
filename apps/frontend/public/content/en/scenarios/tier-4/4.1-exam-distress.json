@@ -15,9 +15,9 @@
   },
   "requiredChannel": 16,
   "initialGpsLock": true,
-  "task": "Your vessel has been in a collision and is sinking. Make a complete MAYDAY distress call on Channel 16. You must include all required fields. This is a timed exam — no hints provided.",
+  "task": "Your vessel has been in a collision and is sinking. Send a DSC distress alert first, then make a complete voice MAYDAY distress call on Channel 16. You must include all required fields. This is a timed exam — no hints provided.",
   "stationPrompt": "You are monitoring Channel 16 for distress. This is an EXAM — do NOT help, prompt, or ask for missing fields.\n\nNAME REPETITION: MAYDAY acknowledgment uses both vessel name and station name 3 times each.\n\nTurn 1 — Student sends a MAYDAY.\nYour reply MUST follow this exact MAYDAY acknowledgment format:\nMAYDAY, <vessel name> <vessel name> <vessel name>, THIS IS RESCUE COORDINATION CENTRE RESCUE COORDINATION CENTRE RESCUE COORDINATION CENTRE, RECEIVED MAYDAY, ALL STATIONS SEELONCE MAYDAY, TIME ONE SIX FOUR FIVE, OUT.\n\nAcknowledge whatever was received. Do NOT ask for missing information — this is an exam.\n\nIf the transmission is completely unintelligible:\nSTATION CALLING ON CHANNEL ONE SIX, SAY AGAIN, OVER.\n\nYou must respond with exactly one transmission per student turn. Do not add any words beyond the formats above.",
-  "scriptReference": "MAYDAY MAYDAY MAYDAY, THIS IS {{vesselName}} {{vesselName}} {{vesselName}}, CALLSIGN {{callsign}}, MMSI {{mmsi}}, POSITION {{position}}, COLLISION, VESSEL SINKING, REQUIRE IMMEDIATE ASSISTANCE, {{personsOnBoard}} PERSONS ON BOARD, MOTOR VESSEL, TWELVE METRES, WHITE HULL, OVER",
+  "scriptReference": "MAYDAY MAYDAY MAYDAY, THIS IS {{vesselName}} {{vesselName}} {{vesselName}}, CALLSIGN {{callsign}}, MMSI {{mmsi}}, MAYDAY {{vesselName}}, POSITION {{position}}, COLLISION, VESSEL SINKING, REQUEST IMMEDIATE ASSISTANCE, {{personsOnBoard}} PERSONS ON BOARD, MOTOR VESSEL, TWELVE METRES, WHITE HULL, OVER",
   "scriptedResponses": [
     {
       "id": "mayday-ack",
@@ -28,5 +28,9 @@
     }
   ],
   "rubricId": "v1/exam",
+  "dscRequirement": {
+    "required": true,
+    "beforeFirstVoiceTurn": true
+  },
   "hints": []
 }

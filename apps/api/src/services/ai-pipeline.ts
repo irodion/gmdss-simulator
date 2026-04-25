@@ -91,6 +91,10 @@ export async function processTurn(
       durationMs: 0,
     },
   ];
+  // TODO: plumb DSC context (radio.distressAlertSentAt + nature) through the WS
+  // protocol so server-side scoring can include the DSC dimension. Until then,
+  // server scoring falls back to legacy 4-dimension weights; the frontend's
+  // debrief score is authoritative.
   const score = scoreTranscript(
     allTurns,
     context.rubric,

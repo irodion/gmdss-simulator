@@ -446,3 +446,181 @@ describe("resolveRubricTemplates", () => {
     expect(new RegExp(callsignField.patterns[0]!).test("anything")).toBe(false);
   });
 });
+
+describe("scoreTranscript — DSC dimension", () => {
+  const DISTRESS_RUBRIC: RubricDefinition = {
+    id: "v1/distress",
+    version: "1.1.0",
+    category: "distress",
+    requiredFields: [
+      { id: "mayday", label: "MAYDAY", patterns: ["MAYDAY"], required: true },
+      { id: "this_is", label: "THIS IS", patterns: ["THIS\\s+IS"], required: true },
+      { id: "vessel_name", label: "Vessel name", patterns: ["BLUE\\s*DUCK"], required: true },
+      {
+        id: "position",
+        label: "Position",
+        patterns: [
+          "\\d+.{0,80}?(?:NORTH|SOUTH|EAST|WEST|\\b[NSEW]\\b)",
+          "\\b(?:ZERO|ONE|TWO|THREE|FOUR|FIVE|SIX|SEVEN|EIGHT|NINE)\\b.{0,80}?(?:NORTH|SOUTH|EAST|WEST|\\b[NSEW]\\b)",
+        ],
+        required: true,
+      },
+      { id: "nature", label: "Nature", patterns: ["FIRE|FLOODING|SINKING"], required: true },
+      {
+        id: "assistance",
+        label: "Assistance",
+        patterns: ["REQUIRE|REQUEST|ASSISTANCE"],
+        required: true,
+      },
+      { id: "persons", label: "Persons", patterns: ["PERSON|POB"], required: true },
+    ],
+    prowordRules: [
+      { id: "mayday", label: "MAYDAY (×4)", pattern: "MAYDAY", expectedCount: 4 },
+      { id: "this_is", label: "THIS IS", pattern: "THIS\\s+IS" },
+      { id: "over", label: "OVER", pattern: "\\bOVER\\b" },
+    ],
+    sequenceRules: {
+      fieldOrder: [
+        "mayday",
+        "this_is",
+        "vessel_name",
+        "position",
+        "nature",
+        "assistance",
+        "persons",
+        "over",
+      ],
+    },
+    channelRules: { requiredChannel: 16, blockChannel70Voice: true },
+    dscRules: { required: true, beforeFirstVoiceTurn: true },
+  };
+
+  const PERFECT_MAYDAY =
+    "MAYDAY MAYDAY MAYDAY THIS IS BLUE DUCK BLUE DUCK BLUE DUCK MAYDAY BLUE DUCK POSITION FIVE ZERO DEGREES ZERO SIX MINUTES NORTH ZERO ZERO ONE DEGREES ONE TWO MINUTES WEST FIRE REQUEST IMMEDIATE ASSISTANCE EIGHT PERSONS ON BOARD OVER";
+
+  it("falls back to legacy 4-dimension weights without dscContext", () => {
+    vi.spyOn(Date, "now").mockReturnValue(10000);
+    const turns = [makeTurn(PERFECT_MAYDAY, 16)];
+    const score = scoreTranscript(turns, DISTRESS_RUBRIC, 16);
+    expect(score.dimensions).toHaveLength(4);
+    expect(score.dimensions.find((d) => d.id === "dsc")).toBeUndefined();
+  });
+
+  it("adds DSC dimension when context is provided", () => {
+    vi.spyOn(Date, "now").mockReturnValue(10000);
+    const turns = [makeTurn(PERFECT_MAYDAY, 16)];
+    const score = scoreTranscript(turns, DISTRESS_RUBRIC, 16, undefined, {
+      distressAlertSentAt: 500,
+      distressAlertNature: "fire",
+      firstStudentTurnAt: 1000,
+      expectedNature: "fire",
+    });
+    expect(score.dimensions).toHaveLength(5);
+    const dsc = score.dimensions.find((d) => d.id === "dsc")!;
+    expect(dsc.score).toBe(100);
+    expect(dsc.matchedItems).toContain("DSC distress alert sent");
+    expect(dsc.matchedItems).toContain("Sent before voice");
+    expect(score.overall).toBe(100);
+  });
+
+  it("scores 0 when no DSC alert was sent", () => {
+    vi.spyOn(Date, "now").mockReturnValue(10000);
+    const turns = [makeTurn(PERFECT_MAYDAY, 16)];
+    const score = scoreTranscript(turns, DISTRESS_RUBRIC, 16, undefined, {
+      distressAlertSentAt: null,
+      distressAlertNature: null,
+      firstStudentTurnAt: 1000,
+      expectedNature: "fire",
+    });
+    const dsc = score.dimensions.find((d) => d.id === "dsc")!;
+    expect(dsc.score).toBe(0);
+    expect(dsc.missingItems).toContain("DSC distress alert sent");
+    // overall ≤ 80 because dsc dimension is 20% weight
+    expect(score.overall).toBeLessThanOrEqual(80);
+  });
+
+  it("penalizes DSC alert sent after the first voice turn", () => {
+    vi.spyOn(Date, "now").mockReturnValue(10000);
+    const turns = [makeTurn(PERFECT_MAYDAY, 16)];
+    const score = scoreTranscript(turns, DISTRESS_RUBRIC, 16, undefined, {
+      distressAlertSentAt: 2000,
+      distressAlertNature: "fire",
+      firstStudentTurnAt: 1000,
+      expectedNature: "fire",
+    });
+    const dsc = score.dimensions.find((d) => d.id === "dsc")!;
+    // 50 (sent) + 0 (out of order) + 25 (nature) = 75
+    expect(dsc.score).toBe(75);
+    expect(dsc.missingItems).toContain("Sent before voice");
+  });
+
+  it("penalizes wrong nature", () => {
+    vi.spyOn(Date, "now").mockReturnValue(10000);
+    const turns = [makeTurn(PERFECT_MAYDAY, 16)];
+    const score = scoreTranscript(turns, DISTRESS_RUBRIC, 16, undefined, {
+      distressAlertSentAt: 500,
+      distressAlertNature: "flooding",
+      firstStudentTurnAt: 1000,
+      expectedNature: "fire",
+    });
+    const dsc = score.dimensions.find((d) => d.id === "dsc")!;
+    // 50 (sent) + 25 (before voice) + 0 (wrong nature) = 75
+    expect(dsc.score).toBe(75);
+    expect(dsc.missingItems.some((m) => m.includes("expected"))).toBe(true);
+  });
+
+  it("scores 100 when no expected nature is set in context", () => {
+    vi.spyOn(Date, "now").mockReturnValue(10000);
+    const turns = [makeTurn(PERFECT_MAYDAY, 16)];
+    const score = scoreTranscript(turns, DISTRESS_RUBRIC, 16, undefined, {
+      distressAlertSentAt: 500,
+      distressAlertNature: null,
+      firstStudentTurnAt: 1000,
+    });
+    const dsc = score.dimensions.find((d) => d.id === "dsc")!;
+    expect(dsc.score).toBe(100);
+  });
+
+  it("counts MAYDAY ×4 (call ×3 + message header ×1)", () => {
+    vi.spyOn(Date, "now").mockReturnValue(10000);
+    const turns = [makeTurn(PERFECT_MAYDAY, 16)];
+    const score = scoreTranscript(turns, DISTRESS_RUBRIC, 16);
+    const prowords = score.dimensions.find((d) => d.id === "prowords")!;
+    expect(prowords.score).toBe(100);
+  });
+
+  it("gives partial credit when only the call MAYDAY ×3 is said", () => {
+    vi.spyOn(Date, "now").mockReturnValue(10000);
+    const callOnly =
+      "MAYDAY MAYDAY MAYDAY THIS IS BLUE DUCK BLUE DUCK BLUE DUCK POSITION FIVE ZERO DEGREES NORTH ZERO ZERO ONE DEGREES WEST FIRE REQUEST ASSISTANCE EIGHT PERSONS ON BOARD OVER";
+    const turns = [makeTurn(callOnly, 16)];
+    const score = scoreTranscript(turns, DISTRESS_RUBRIC, 16);
+    const prowords = score.dimensions.find((d) => d.id === "prowords")!;
+    // (3/4 + 1 + 1) / 3 = ~91.67 → 92
+    expect(prowords.score).toBeLessThan(100);
+    expect(prowords.score).toBeGreaterThan(75);
+  });
+
+  it("rejects bare 'POSITION' keyword without coordinates", () => {
+    vi.spyOn(Date, "now").mockReturnValue(10000);
+    const turns = [
+      makeTurn("MAYDAY MAYDAY MAYDAY THIS IS BLUE DUCK POSITION FIRE REQUEST EIGHT PERSONS", 16),
+    ];
+    const score = scoreTranscript(turns, DISTRESS_RUBRIC, 16);
+    const fields = score.dimensions.find((d) => d.id === "required_fields")!;
+    expect(fields.missingItems).toContain("Position");
+  });
+
+  it("accepts numeric coordinates with cardinal direction", () => {
+    vi.spyOn(Date, "now").mockReturnValue(10000);
+    const turns = [
+      makeTurn(
+        "MAYDAY POSITION 50 DEGREES 06 MINUTES NORTH 001 DEGREES 12 MINUTES WEST FIRE REQUEST EIGHT PERSONS",
+        16,
+      ),
+    ];
+    const score = scoreTranscript(turns, DISTRESS_RUBRIC, 16);
+    const fields = score.dimensions.find((d) => d.id === "required_fields")!;
+    expect(fields.missingItems).not.toContain("Position");
+  });
+});
