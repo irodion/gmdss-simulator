@@ -35,7 +35,7 @@ describe("SessionConfig", () => {
     expect(screen.getByRole("button", { name: "10" }).getAttribute("aria-pressed")).toBe("true");
     fireEvent.click(screen.getByRole("button", { name: "20" }));
     expect(onCountChange).toHaveBeenCalledWith(20);
-    fireEvent.click(screen.getByRole("button", { name: /start session/i }));
+    fireEvent.click(screen.getByRole("button", { name: /^begin/i }));
     expect(onStart).toHaveBeenCalled();
   });
 });
@@ -89,20 +89,23 @@ describe("SessionResults", () => {
         missedWords: ["BRAVO"],
       },
     ];
-    render(<SessionResults results={results} onRestart={() => {}} />);
-    expect(screen.getByText(/1 of 2 perfect/i)).toBeTruthy();
-    expect(screen.getByText("50")).toBeTruthy();
+    const { container } = render(<SessionResults results={results} onRestart={() => {}} />);
+    expect(screen.getByText(/logbook entry/i)).toBeTruthy();
+    expect(screen.getByLabelText(/average score 50/i)).toBeTruthy();
+    const detail = container.querySelector(".summary-detail");
+    expect(detail?.textContent).toMatch(/1\s+perfect/);
+    expect(detail?.textContent).toMatch(/over\s+2/);
   });
 
   test("handles an empty result list", () => {
     render(<SessionResults results={[]} onRestart={() => {}} />);
-    expect(screen.getByText("0")).toBeTruthy();
+    expect(screen.getByLabelText(/average score 0/i)).toBeTruthy();
   });
 
   test("calls onRestart when the button is clicked", () => {
     const onRestart = vi.fn();
     render(<SessionResults results={[]} onRestart={onRestart} />);
-    fireEvent.click(screen.getByRole("button", { name: /start a new session/i }));
+    fireEvent.click(screen.getByRole("button", { name: /begin a new watch/i }));
     expect(onRestart).toHaveBeenCalled();
   });
 });
@@ -110,7 +113,7 @@ describe("SessionResults", () => {
 describe("PhoneticCheatsheet", () => {
   test("renders all 26 letters and 10 digits with their phonetic words", () => {
     render(<PhoneticCheatsheet />);
-    expect(screen.getByText(/phonetic alphabet reference/i)).toBeTruthy();
+    expect(screen.getByText(/phonetic alphabet/i)).toBeTruthy();
     expect(screen.getByText("ALFA")).toBeTruthy();
     expect(screen.getByText("ZULU")).toBeTruthy();
     expect(screen.getByText("NIN-ER")).toBeTruthy();

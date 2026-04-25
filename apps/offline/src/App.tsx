@@ -63,50 +63,93 @@ export function App() {
   }, []);
 
   return (
-    <main className="app">
-      <header className="app-header">
-        <div>
-          <div className="app-title">ROC Phonetics</div>
-          <div className="app-subtitle">Offline NATO alphabet & maritime number trainer</div>
-        </div>
-      </header>
+    <>
+      <CompassRose />
+      <main className="app">
+        <header className="masthead">
+          <div className="masthead-eyebrow">A trainer for radio operators</div>
+          <h1 className="masthead-title">
+            R.O.C. <em>Phonetics</em>
+          </h1>
+          <p className="masthead-tagline">
+            Drills for the NATO phonetic alphabet, maritime numbers, and a careful ear — offline,
+            standalone, no logbook required.
+          </p>
+        </header>
 
-      <div className="card">
-        <ModeTabs
-          mode={mode}
-          onChange={(next) => {
-            setMode(next);
-            handleRestart();
-          }}
-        />
+        <article className="card">
+          <span className="card-corner-tr" aria-hidden="true" />
+          <span className="card-corner-bl" aria-hidden="true" />
 
-        <div className="screen-area">
-          {screen === "config" ? (
-            <SessionConfig count={count} onCountChange={setCount} onStart={handleStart} />
-          ) : null}
+          <ModeTabs
+            mode={mode}
+            onChange={(next) => {
+              setMode(next);
+              handleRestart();
+            }}
+          />
 
-          {screen === "drill" && challenges[index] ? (
-            <DrillCard
-              key={challenges[index]!.id}
-              challenge={challenges[index]!}
-              index={index}
-              total={challenges.length}
-              score={score}
-              onSubmit={handleSubmit}
-              onNext={handleNext}
-            />
-          ) : null}
+          <div className="screen-area">
+            {screen === "config" ? (
+              <SessionConfig count={count} onCountChange={setCount} onStart={handleStart} />
+            ) : null}
 
-          {screen === "summary" ? (
-            <SessionResults results={results} onRestart={handleRestart} />
-          ) : null}
-        </div>
+            {screen === "drill" && challenges[index] ? (
+              <DrillCard
+                key={challenges[index]!.id}
+                challenge={challenges[index]!}
+                index={index}
+                total={challenges.length}
+                score={score}
+                onSubmit={handleSubmit}
+                onNext={handleNext}
+              />
+            ) : null}
 
-        <p className="help">
-          Type your answer and press Submit. Both standard ("THREE") and maritime ("TREE") forms are
-          accepted. Voice quality for "Hear correct" depends on your device.
+            {screen === "summary" ? (
+              <SessionResults results={results} onRestart={handleRestart} />
+            ) : null}
+          </div>
+
+          <p className="help">
+            Both standard ("THREE") and maritime ("TREE") forms are accepted. Voice quality for
+            "Hear correct" depends on your device.
+          </p>
+        </article>
+
+        <p className="app-footer">
+          Marconi · Morse · Maritime · &nbsp;built for the half-deafened bridge wing
         </p>
-      </div>
-    </main>
+      </main>
+    </>
+  );
+}
+
+function CompassRose() {
+  return (
+    <div className="compass" aria-hidden="true">
+      <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        <g fill="none" stroke="currentColor" strokeWidth="0.6">
+          <circle cx="50" cy="50" r="44" />
+          <circle cx="50" cy="50" r="34" strokeDasharray="1 3" />
+          <line x1="50" y1="6" x2="50" y2="94" />
+          <line x1="6" y1="50" x2="94" y2="50" />
+          <line x1="20" y1="20" x2="80" y2="80" strokeDasharray="1 2" />
+          <line x1="80" y1="20" x2="20" y2="80" strokeDasharray="1 2" />
+        </g>
+        <polygon points="50,12 54,50 50,46 46,50" fill="var(--brass)" />
+        <polygon points="50,88 54,50 50,54 46,50" fill="currentColor" />
+        <text
+          x="50"
+          y="20"
+          fill="currentColor"
+          fontFamily="DM Mono"
+          fontSize="6"
+          textAnchor="middle"
+        >
+          N
+        </text>
+      </svg>
+    </div>
   );
 }

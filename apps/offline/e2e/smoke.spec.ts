@@ -5,25 +5,25 @@ test("config screen renders the three drill modes", async ({ page }) => {
   await expect(page.getByRole("tab", { name: "Callsigns" })).toBeVisible();
   await expect(page.getByRole("tab", { name: "Numbers" })).toBeVisible();
   await expect(page.getByRole("tab", { name: "Listen" })).toBeVisible();
-  await expect(page.getByRole("button", { name: /start session/i })).toBeVisible();
+  await expect(page.getByRole("button", { name: /^begin/i })).toBeVisible();
 });
 
 test("running a callsign session through to the summary works", async ({ page }) => {
   await page.goto("/");
 
   await page.getByRole("button", { name: "5" }).click();
-  await page.getByRole("button", { name: /start session/i }).click();
+  await page.getByRole("button", { name: /^begin/i }).click();
 
   for (let i = 1; i <= 5; i++) {
-    await expect(page.getByText(new RegExp(`challenge ${i} of 5`, "i"))).toBeVisible();
+    await expect(page.getByText(new RegExp(`transmission ${i} of 5`, "i"))).toBeVisible();
     await page.getByLabel(/your answer/i).fill("ALFA BRAVO CHARLIE");
     await page.getByRole("button", { name: "Submit" }).click();
     const next = page.getByRole("button", { name: i === 5 ? /see results/i : /next →/i });
     await next.click();
   }
 
-  await expect(page.getByText(/average score/i)).toBeVisible();
-  await expect(page.getByRole("button", { name: /start a new session/i })).toBeVisible();
+  await expect(page.getByText(/logbook entry/i)).toBeVisible();
+  await expect(page.getByRole("button", { name: /begin a new watch/i })).toBeVisible();
 });
 
 test("PWA manifest is reachable", async ({ request }) => {

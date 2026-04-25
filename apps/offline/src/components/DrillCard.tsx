@@ -39,14 +39,26 @@ export function DrillCard({ challenge, index, total, score, onSubmit, onNext }: 
   }
 
   const isReverse = challenge.type === "reverse";
+  const promptEyebrow = isReverse ? "transmission" : "spell";
 
   return (
     <div>
       <div className="progress" aria-live="polite">
-        Challenge {index + 1} of {total}
+        <span>
+          Transmission {index + 1} of {total}
+        </span>
+        <span className="progress-dots" aria-hidden="true">
+          {Array.from({ length: total }, (_, i) => {
+            const state = i < index ? "done" : i === index ? "active" : "pending";
+            const cls = state === "pending" ? "progress-dot" : `progress-dot ${state}`;
+            return <span key={i} className={cls} />;
+          })}
+        </span>
       </div>
-      <div className={`prompt ${isReverse ? "" : "prompt-numeric"}`}>
-        {isReverse ? "🔊  Listen" : challenge.prompt}
+
+      <div className="prompt">
+        <span className="prompt-eyebrow">{promptEyebrow}</span>
+        {isReverse ? <span className="prompt-listen">Listen and type</span> : challenge.prompt}
       </div>
 
       {isReverse && ttsAvailable ? (
@@ -79,11 +91,25 @@ export function DrillCard({ challenge, index, total, score, onSubmit, onNext }: 
         aria-label="Your answer"
       />
 
+      <div className="hint-row">
+        {isReverse ? (
+          <span>
+            <span className="kbd">↵</span> to submit
+          </span>
+        ) : (
+          <span>
+            <span className="kbd">⌘</span>
+            <span className="kbd">↵</span> to submit
+          </span>
+        )}
+        <span>Both ALFA and ALPHA accepted</span>
+      </div>
+
       <div className="actions">
         {result === null ? (
           <button
             type="button"
-            className="btn-primary"
+            className="btn-primary btn-grow"
             onClick={handleSubmit}
             disabled={answer.trim() === ""}
           >
@@ -96,7 +122,7 @@ export function DrillCard({ challenge, index, total, score, onSubmit, onNext }: 
                 🔊 Hear correct
               </button>
             ) : null}
-            <button type="button" className="btn-primary" onClick={onNext}>
+            <button type="button" className="btn-primary btn-grow" onClick={onNext}>
               {index + 1 < total ? "Next →" : "See results"}
             </button>
           </>

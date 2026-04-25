@@ -5,15 +5,15 @@ interface ModeTabsProps {
   readonly onChange: (mode: DrillType) => void;
 }
 
-const TABS: ReadonlyArray<{ value: DrillType; label: string }> = [
-  { value: "phonetic", label: "Callsigns" },
-  { value: "number-pronunciation", label: "Numbers" },
-  { value: "reverse", label: "Listen" },
+const TABS: ReadonlyArray<{ value: DrillType; label: string; numeral: string }> = [
+  { value: "phonetic", label: "Callsigns", numeral: "I" },
+  { value: "number-pronunciation", label: "Numbers", numeral: "II" },
+  { value: "reverse", label: "Listen", numeral: "III" },
 ];
 
 export function ModeTabs({ mode, onChange }: ModeTabsProps) {
   return (
-    <div className="mode-tabs" role="tablist">
+    <div className="mode-tabs" role="tablist" aria-label="Drill mode">
       {TABS.map((tab) => (
         <button
           key={tab.value}
@@ -23,7 +23,10 @@ export function ModeTabs({ mode, onChange }: ModeTabsProps) {
           className="mode-tab"
           onClick={() => onChange(tab.value)}
         >
-          {tab.label}
+          <span className="mode-numeral" aria-hidden="true">
+            {tab.numeral}
+          </span>
+          <span className="mode-label">{tab.label}</span>
         </button>
       ))}
     </div>

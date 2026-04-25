@@ -11,7 +11,8 @@ const COUNTS = [5, 10, 20] as const;
 export function SessionConfig({ count, onCountChange, onStart }: SessionConfigProps) {
   return (
     <div>
-      <p className="app-subtitle">How many challenges?</p>
+      <div className="section-eyebrow">Set your watch</div>
+      <p className="section-prompt">How many transmissions this session?</p>
       <div className="count-row">
         {COUNTS.map((c) => (
           <button
@@ -26,7 +27,10 @@ export function SessionConfig({ count, onCountChange, onStart }: SessionConfigPr
         ))}
       </div>
       <button type="button" className="btn-primary btn-block" onClick={onStart}>
-        Start session
+        Begin
+        <span className="btn-shortcut" aria-hidden="true">
+          ⌘↵
+        </span>
       </button>
       <PhoneticCheatsheet />
     </div>

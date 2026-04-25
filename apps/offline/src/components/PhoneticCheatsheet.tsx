@@ -5,8 +5,8 @@ const DIGIT_KEYS = "0123456789".split("");
 
 export function PhoneticCheatsheet() {
   return (
-    <details className="cheatsheet">
-      <summary className="cheatsheet-summary">Phonetic alphabet reference</summary>
+    <details className="cheatsheet" open>
+      <summary className="cheatsheet-summary">Phonetic alphabet</summary>
       <div className="cheatsheet-body">
         <div className="cheatsheet-grid">
           {LETTER_KEYS.map((k) => (

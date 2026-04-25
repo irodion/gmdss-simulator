@@ -9,30 +9,53 @@
 }
 
 html {
-  color-scheme: dark;
+  color-scheme: light;
   scrollbar-width: thin;
-  scrollbar-color: var(--steel-2) var(--bg-0);
+  scrollbar-color: var(--ink-line) var(--paper);
 }
 
 body {
-  font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
-  background:
-    linear-gradient(180deg, rgba(17, 41, 64, 0.28), transparent 18%),
-    linear-gradient(135deg, var(--bg-0), var(--bg-2));
-  color: var(--text);
+  font-family: var(--body);
+  color: var(--ink);
+  background-color: var(--paper);
+  background-image:
+    linear-gradient(var(--ink-hair) 1px, transparent 1px),
+    linear-gradient(90deg, var(--ink-hair) 1px, transparent 1px),
+    radial-gradient(ellipse at 50% 0%, rgba(168, 123, 60, 0.08), transparent 60%);
+  background-size:
+    40px 40px,
+    40px 40px,
+    100% 100%;
+  background-attachment: fixed;
   min-height: 100vh;
   min-height: 100dvh;
+  line-height: 1.55;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  position: relative;
+}
+
+/* Faint paper noise overlay — inline SVG so it scales without an external asset. */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.45;
+  mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.082  0 0 0 0 0.141  0 0 0 0 0.239  0 0 0 0.04 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
 }
 
 a {
-  color: var(--orange-0);
+  color: var(--brass-deep);
   text-decoration: none;
+  border-bottom: 1px solid var(--brass-glow);
+  transition: border-color 200ms ease;
 }
 
 a:hover {
-  text-decoration: underline;
+  border-bottom-color: var(--brass-deep);
 }
 
 button {
@@ -40,27 +63,21 @@ button {
   cursor: pointer;
 }
 
-/* Scrollbar styling for dark theme */
 ::-webkit-scrollbar {
   width: 8px;
 }
-
 ::-webkit-scrollbar-track {
-  background: var(--bg-0);
+  background: var(--paper);
 }
-
 ::-webkit-scrollbar-thumb {
-  background: var(--steel-2);
-  border-radius: 4px;
+  background: var(--ink-line);
 }
 
-/* Selection */
 ::selection {
-  background: var(--orange-0);
-  color: var(--bg-0);
+  background: var(--brass);
+  color: var(--paper);
 }
 
-/* Screen-reader only */
 .sr-only {
   position: absolute;
   width: 1px;

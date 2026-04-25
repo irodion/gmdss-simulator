@@ -43,7 +43,7 @@ describe("App", () => {
     expect(screen.getByRole("tab", { name: "Callsigns" })).toBeTruthy();
     expect(screen.getByRole("tab", { name: "Numbers" })).toBeTruthy();
     expect(screen.getByRole("tab", { name: "Listen" })).toBeTruthy();
-    expect(screen.getByRole("button", { name: /start session/i })).toBeTruthy();
+    expect(screen.getByRole("button", { name: /^begin/i })).toBeTruthy();
   });
 
   test("switches modes when a tab is clicked", () => {
@@ -55,13 +55,11 @@ describe("App", () => {
   test("runs a session: start → submit → next → summary", () => {
     render(<App />);
 
-    // Start with 5 challenges
     fireEvent.click(screen.getByRole("button", { name: "5" }));
-    fireEvent.click(screen.getByRole("button", { name: /start session/i }));
+    fireEvent.click(screen.getByRole("button", { name: /^begin/i }));
 
-    expect(screen.getByText(/challenge 1 of 5/i)).toBeTruthy();
+    expect(screen.getByText(/transmission 1 of 5/i)).toBeTruthy();
 
-    // Run all 5 with empty/wrong answers
     for (let i = 0; i < 5; i++) {
       const input = screen.getByLabelText(/your answer/i) as HTMLTextAreaElement;
       fireEvent.change(input, { target: { value: "ALFA" } });
@@ -70,15 +68,14 @@ describe("App", () => {
       if (nextBtn) fireEvent.click(nextBtn);
     }
 
-    // Summary screen
-    expect(screen.getByText(/average score/i)).toBeTruthy();
-    expect(screen.getByRole("button", { name: /start a new session/i })).toBeTruthy();
+    expect(screen.getByText(/logbook entry/i)).toBeTruthy();
+    expect(screen.getByRole("button", { name: /begin a new watch/i })).toBeTruthy();
   });
 
   test("Restart from summary returns to config", () => {
     render(<App />);
     fireEvent.click(screen.getByRole("button", { name: "5" }));
-    fireEvent.click(screen.getByRole("button", { name: /start session/i }));
+    fireEvent.click(screen.getByRole("button", { name: /^begin/i }));
 
     for (let i = 0; i < 5; i++) {
       const input = screen.getByLabelText(/your answer/i);
@@ -88,14 +85,14 @@ describe("App", () => {
       if (nextBtn) fireEvent.click(nextBtn);
     }
 
-    fireEvent.click(screen.getByRole("button", { name: /start a new session/i }));
-    expect(screen.getByRole("button", { name: /start session/i })).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: /begin a new watch/i }));
+    expect(screen.getByRole("button", { name: /^begin/i })).toBeTruthy();
   });
 
   test("Listen mode has a Play prompt button", () => {
     render(<App />);
     fireEvent.click(screen.getByRole("tab", { name: "Listen" }));
-    fireEvent.click(screen.getByRole("button", { name: /start session/i }));
+    fireEvent.click(screen.getByRole("button", { name: /^begin/i }));
 
     expect(within(document.body).getByRole("button", { name: /play prompt/i })).toBeTruthy();
   });

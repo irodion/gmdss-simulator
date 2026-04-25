@@ -13,18 +13,28 @@ function stateOf(score: number): "correct" | "partial" | "wrong" {
 
 export function ResultBadge({ result, correctAnswer }: ResultBadgeProps) {
   const state = stateOf(result.score);
-  const icon = state === "correct" ? "✓" : state === "partial" ? "≈" : "✗";
+  const mark = state === "correct" ? "✓" : state === "partial" ? "≈" : "✗";
+  const note =
+    state === "correct"
+      ? "Logged. Move on when ready."
+      : state === "partial"
+        ? "Close. Note the marks below."
+        : "Try again on the next call.";
 
   return (
-    <div className="result-row" data-state={state} role="status">
-      <div className="result-icon" aria-hidden="true">
-        {icon}
+    <div className="stamp" data-state={state} role="status">
+      <span className="stamp-mark" aria-hidden="true">
+        {mark}
+      </span>
+      <div className="stamp-meta">
+        <span className="stamp-meta-key">{correctAnswer}</span>
+        {result.missedWords.length > 0 ? (
+          <span>Missed: {result.missedWords.join(" ")}</span>
+        ) : (
+          <span>{note}</span>
+        )}
       </div>
-      <div className="result-meta">
-        <div>Correct answer: {correctAnswer}</div>
-        {result.missedWords.length > 0 ? <div>Missed: {result.missedWords.join(" ")}</div> : null}
-      </div>
-      <div className="result-score">{result.score}</div>
+      <span className="stamp-score">{result.score}</span>
     </div>
   );
 }
