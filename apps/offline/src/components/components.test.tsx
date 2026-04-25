@@ -1,6 +1,7 @@
 import { act, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, test, vi } from "vite-plus/test";
 import type { DrillResult } from "../drills/drill-types.ts";
+import { setMatchMedia, setUserAgent } from "../test-utils.ts";
 import { InstallChip } from "./InstallChip.tsx";
 import { MicButton } from "./MicButton.tsx";
 import { ModeTabs } from "./ModeTabs.tsx";
@@ -209,21 +210,6 @@ describe("MicButton", () => {
 });
 
 describe("InstallChip", () => {
-  function setUserAgent(value: string): void {
-    Object.defineProperty(navigator, "userAgent", { configurable: true, get: () => value });
-  }
-  function setMatchMedia(matches: boolean): void {
-    Object.defineProperty(window, "matchMedia", {
-      configurable: true,
-      value: () => ({
-        matches,
-        media: "",
-        addEventListener: () => {},
-        removeEventListener: () => {},
-      }),
-    });
-  }
-
   beforeEach(() => {
     setUserAgent("Mozilla/5.0 (X11; Linux x86_64) Chrome/120");
     setMatchMedia(false);

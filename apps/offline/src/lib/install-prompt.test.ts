@@ -1,5 +1,6 @@
 import { act, renderHook } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, test, vi } from "vite-plus/test";
+import { setMatchMedia, setUserAgent } from "../test-utils.ts";
 import { usePwaInstall } from "./install-prompt.ts";
 
 interface FakePromptEvent extends Event {
@@ -12,22 +13,6 @@ function makePromptEvent(outcome: "accepted" | "dismissed" = "accepted"): FakePr
   ev.prompt = vi.fn(() => Promise.resolve());
   ev.userChoice = Promise.resolve({ outcome, platform: "web" });
   return ev;
-}
-
-function setUserAgent(value: string): void {
-  Object.defineProperty(navigator, "userAgent", { configurable: true, get: () => value });
-}
-
-function setMatchMedia(matches: boolean): void {
-  Object.defineProperty(window, "matchMedia", {
-    configurable: true,
-    value: () => ({
-      matches,
-      media: "",
-      addEventListener: () => {},
-      removeEventListener: () => {},
-    }),
-  });
 }
 
 beforeEach(() => {
