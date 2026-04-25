@@ -28,17 +28,21 @@ function ensureVoiceReady(): Promise<void> {
     return Promise.resolve();
   }
 
+  // Clear voicesReadyPromise on a no-voice resolve so the next call retries
+  // instead of replaying a stale empty result.
+  const finalize = (resolve: () => void) => {
+    cachedVoice = pickEnglishVoice();
+    if (!cachedVoice) voicesReadyPromise = null;
+    resolve();
+  };
+
   voicesReadyPromise = new Promise<void>((resolve) => {
-    const timer = setTimeout(() => {
-      cachedVoice = pickEnglishVoice();
-      resolve();
-    }, 1000);
+    const timer = setTimeout(() => finalize(resolve), 1000);
     synth.addEventListener(
       "voiceschanged",
       () => {
         clearTimeout(timer);
-        cachedVoice = pickEnglishVoice();
-        resolve();
+        finalize(resolve);
       },
       { once: true },
     );

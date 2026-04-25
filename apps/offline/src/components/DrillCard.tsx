@@ -50,7 +50,7 @@ export function DrillCard({ challenge, index, total, score, onSubmit, onNext }: 
       </div>
 
       {isReverse && ttsAvailable ? (
-        <div className="actions" style={{ marginBottom: 12 }}>
+        <div className="actions actions-spaced">
           <button
             type="button"
             className="btn-secondary"
@@ -68,10 +68,10 @@ export function DrillCard({ challenge, index, total, score, onSubmit, onNext }: 
         value={answer}
         onChange={(e) => setAnswer(e.target.value)}
         onKeyDown={(e) => {
+          // Disabled textarea doesn't fire keydown; only the unsubmitted state reaches here.
           if (e.key === "Enter" && (isReverse || e.ctrlKey || e.metaKey)) {
             e.preventDefault();
-            if (result === null) handleSubmit();
-            else onNext();
+            handleSubmit();
           }
         }}
         placeholder={isReverse ? "Type the letters/digits…" : "Type the maritime spelling…"}

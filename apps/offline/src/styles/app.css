@@ -105,6 +105,14 @@
   width: 100%;
 }
 
+.screen-area {
+  margin-top: 20px;
+}
+
+.actions-spaced {
+  margin-bottom: 12px;
+}
+
 .btn-primary:hover {
   filter: brightness(1.05);
 }

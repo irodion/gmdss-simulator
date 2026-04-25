@@ -80,7 +80,7 @@ export function App() {
           }}
         />
 
-        <div style={{ marginTop: 20 }}>
+        <div className="screen-area">
           {screen === "config" ? (
             <SessionConfig count={count} onCountChange={setCount} onStart={handleStart} />
           ) : null}

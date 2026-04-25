@@ -19,19 +19,25 @@ const reverseChallenge: DrillChallenge = {
   spoken: "ALFA BRAVO",
 };
 
+interface FakeSynth {
+  cancel: ReturnType<typeof vi.fn>;
+  getVoices: () => SpeechSynthesisVoice[];
+  speak: ReturnType<typeof vi.fn>;
+  addEventListener: ReturnType<typeof vi.fn>;
+}
+
+let fakeSynth: FakeSynth;
+
 beforeEach(() => {
-  const fakeSynth = {
+  fakeSynth = {
     cancel: vi.fn(),
     getVoices: () => [{ lang: "en-US" } as SpeechSynthesisVoice],
-    speak: (u: SpeechSynthesisUtterance) =>
-      queueMicrotask(() => u.onend?.(new Event("end") as SpeechSynthesisEvent)),
+    speak: vi.fn((u: SpeechSynthesisUtterance) => {
+      queueMicrotask(() => u.onend?.(new Event("end") as SpeechSynthesisEvent));
+    }),
     addEventListener: vi.fn(),
   };
-  Object.defineProperty(window, "speechSynthesis", {
-    value: fakeSynth,
-    configurable: true,
-    writable: true,
-  });
+  vi.stubGlobal("speechSynthesis", fakeSynth);
   vi.stubGlobal(
     "SpeechSynthesisUtterance",
     class {
@@ -159,11 +165,7 @@ describe("DrillCard", () => {
     expect(screen.getByRole("button", { name: /see results/i })).toBeTruthy();
   });
 
-  test("Play prompt and Hear correct buttons trigger TTS in reverse mode", () => {
-    const synth = window.speechSynthesis as unknown as { speak: ReturnType<typeof vi.fn> };
-    const speakSpy = vi.fn();
-    synth.speak = speakSpy;
-
+  test("Play prompt button triggers TTS in reverse mode", async () => {
     render(
       <DrillCard
         challenge={reverseChallenge}
@@ -175,7 +177,29 @@ describe("DrillCard", () => {
       />,
     );
     fireEvent.click(screen.getByRole("button", { name: /play prompt/i }));
-    // speak is async, but we just need to confirm the button rendered and click handled
-    expect(screen.getByRole("button", { name: /play prompt/i })).toBeTruthy();
+    // speak() awaits ensureVoiceReady() before invoking synth.speak; flush microtasks.
+    await Promise.resolve();
+    await Promise.resolve();
+    expect(fakeSynth.speak).toHaveBeenCalled();
+  });
+
+  test("Hear correct button triggers TTS after submission", async () => {
+    render(
+      <DrillCard
+        challenge={reverseChallenge}
+        index={0}
+        total={1}
+        score={scoreDrill}
+        onSubmit={() => {}}
+        onNext={() => {}}
+      />,
+    );
+    fireEvent.change(screen.getByLabelText(/your answer/i), { target: { value: "AB" } });
+    fireEvent.click(screen.getByRole("button", { name: "Submit" }));
+    fakeSynth.speak.mockClear();
+    fireEvent.click(screen.getByRole("button", { name: /hear correct/i }));
+    await Promise.resolve();
+    await Promise.resolve();
+    expect(fakeSynth.speak).toHaveBeenCalled();
   });
 });

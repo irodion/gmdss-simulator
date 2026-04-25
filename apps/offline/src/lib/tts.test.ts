@@ -98,6 +98,14 @@ describe("speakSequence", () => {
     await speakSequence(["ALFA", "", "BRAVO"], 0);
     expect(fakeSynth.spoken).toEqual(["ALFA", "BRAVO"]);
   });
+
+  test("schedules the inter-word gap via setTimeout", async () => {
+    const setTimeoutSpy = vi.spyOn(globalThis, "setTimeout");
+    await speakSequence(["A", "B"], 250);
+    const gaps = setTimeoutSpy.mock.calls.filter(([, ms]) => ms === 250);
+    expect(gaps.length).toBeGreaterThanOrEqual(1);
+    setTimeoutSpy.mockRestore();
+  });
 });
 
 describe("cancel", () => {
@@ -126,12 +134,5 @@ describe("when speechSynthesis is unavailable", () => {
     expect(isSupported()).toBe(false);
     await speak("anything");
     await speakSequence(["A", "B"]);
-  });
-});
-
-describe("speakSequence", () => {
-  test("waits between words when gapMs > 0", async () => {
-    await speakSequence(["A", "B"], 1);
-    expect(fakeSynth.spoken).toEqual(["A", "B"]);
   });
 });
