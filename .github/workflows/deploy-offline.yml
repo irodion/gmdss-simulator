@@ -41,6 +41,9 @@ jobs:
         run: vp build
         working-directory: apps/offline
 
+      - name: Enable pnpm via corepack (wrangler-action installs wrangler with it)
+        run: corepack enable
+
       - name: Deploy to Cloudflare Pages
         uses: cloudflare/wrangler-action@v3
         with:
