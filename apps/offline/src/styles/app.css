@@ -421,6 +421,92 @@
   box-shadow: 0 0 0 3px var(--brass-glow);
 }
 
+/* ── Voice-to-text mic ── */
+.answer-shell {
+  position: relative;
+}
+.answer-shell.has-mic .answer-input {
+  padding-right: 3rem;
+}
+.mic-floater {
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+  width: 36px;
+  height: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--paper);
+  border: 1px solid var(--brass);
+  color: var(--brass-deep);
+  cursor: pointer;
+  transition:
+    color 180ms ease,
+    border-color 180ms ease,
+    background 180ms ease,
+    box-shadow 180ms ease;
+}
+.mic-floater:hover:not(:disabled) {
+  background: var(--brass);
+  color: var(--paper);
+}
+.mic-floater[data-state="listening"] {
+  border-color: var(--coral);
+  color: var(--coral);
+  background: var(--paper);
+  animation: mic-pulse 1.4s ease-in-out infinite;
+}
+.mic-floater:disabled {
+  border-color: var(--ink-line);
+  color: var(--ink-faint);
+  cursor: not-allowed;
+  background: transparent;
+}
+@keyframes mic-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(196, 92, 58, 0.45);
+  }
+  50% {
+    box-shadow: 0 0 0 8px rgba(196, 92, 58, 0);
+  }
+}
+
+.mic-disclosure {
+  font-family: var(--mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.12em;
+  color: var(--ink-faint);
+  text-transform: uppercase;
+  margin: 6px 2px 0;
+  text-align: right;
+  animation: disclosure-fade 6s ease forwards;
+}
+@keyframes disclosure-fade {
+  0% {
+    opacity: 0;
+  }
+  10%,
+  85% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+.interim-ghost {
+  font-family: var(--mono);
+  font-size: 0.85rem;
+  font-style: italic;
+  color: var(--ink-soft);
+  opacity: 0.75;
+  padding: 4px 16px 0;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
 .hint-row {
   display: flex;
   align-items: center;
@@ -742,6 +828,19 @@
     flex-direction: column;
     align-items: flex-start;
     gap: 6px;
+  }
+  .mic-floater {
+    width: 32px;
+    height: 32px;
+    bottom: 6px;
+    right: 6px;
+  }
+  .answer-shell.has-mic .answer-input {
+    padding-right: 2.5rem;
+  }
+  .mic-disclosure {
+    font-size: 0.6rem;
+    letter-spacing: 0.1em;
   }
   .mode-tab {
     padding: 14px 8px 12px;

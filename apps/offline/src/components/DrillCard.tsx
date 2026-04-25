@@ -1,6 +1,7 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import type { DrillChallenge, DrillResult } from "../drills/drill-types.ts";
 import { isSupported, speak, speakSequence } from "../lib/tts.ts";
+import { MicButton } from "./MicButton.tsx";
 import { ResultBadge } from "./ResultBadge.tsx";
 
 interface DrillCardProps {
@@ -14,12 +15,14 @@ interface DrillCardProps {
 
 export function DrillCard({ challenge, index, total, score, onSubmit, onNext }: DrillCardProps) {
   const [answer, setAnswer] = useState("");
+  const [interim, setInterim] = useState("");
   const [result, setResult] = useState<DrillResult | null>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const ttsAvailable = isSupported();
 
   useEffect(() => {
     setAnswer("");
+    setInterim("");
     setResult(null);
     inputRef.current?.focus();
   }, [challenge.id]);
@@ -38,8 +41,18 @@ export function DrillCard({ challenge, index, total, score, onSubmit, onNext }: 
     }
   }
 
+  const handleTranscript = useCallback((text: string, isFinal: boolean) => {
+    if (!isFinal) {
+      setInterim(text);
+      return;
+    }
+    setInterim("");
+    setAnswer((prev) => (prev.trim() === "" ? text : `${prev} ${text}`));
+  }, []);
+
   const isReverse = challenge.type === "reverse";
   const promptEyebrow = isReverse ? "transmission" : "spell";
+  const showMic = !isReverse;
 
   return (
     <div>
@@ -74,22 +87,30 @@ export function DrillCard({ challenge, index, total, score, onSubmit, onNext }: 
         </div>
       ) : null}
 
-      <textarea
-        ref={inputRef}
-        className="answer-input"
-        value={answer}
-        onChange={(e) => setAnswer(e.target.value)}
-        onKeyDown={(e) => {
-          // Disabled textarea doesn't fire keydown; only the unsubmitted state reaches here.
-          if (e.key === "Enter" && (isReverse || e.ctrlKey || e.metaKey)) {
-            e.preventDefault();
-            handleSubmit();
-          }
-        }}
-        placeholder={isReverse ? "Type the letters/digits…" : "Type the maritime spelling…"}
-        disabled={result !== null}
-        aria-label="Your answer"
-      />
+      <div className={showMic ? "answer-shell has-mic" : "answer-shell"}>
+        <textarea
+          ref={inputRef}
+          className="answer-input"
+          value={answer}
+          onChange={(e) => setAnswer(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" && (isReverse || e.ctrlKey || e.metaKey)) {
+              e.preventDefault();
+              handleSubmit();
+            }
+          }}
+          placeholder={isReverse ? "Type the letters/digits…" : "Type the maritime spelling…"}
+          disabled={result !== null}
+          aria-label="Your answer"
+        />
+        {showMic ? <MicButton onTranscript={handleTranscript} disabled={result !== null} /> : null}
+      </div>
+
+      {interim !== "" ? (
+        <div className="interim-ghost" aria-live="polite">
+          {interim}
+        </div>
+      ) : null}
 
       <div className="hint-row">
         {isReverse ? (

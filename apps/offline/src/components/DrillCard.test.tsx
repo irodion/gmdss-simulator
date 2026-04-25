@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { act, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, test, vi } from "vite-plus/test";
 import type { DrillChallenge, DrillResult } from "../drills/drill-types.ts";
 import { scoreDrill } from "../drills/drill-types.ts";
@@ -26,7 +26,63 @@ interface FakeSynth {
   addEventListener: ReturnType<typeof vi.fn>;
 }
 
+interface FakeRecognition {
+  continuous: boolean;
+  interimResults: boolean;
+  lang: string;
+  onresult: ((e: { results: FakeResultList }) => void) | null;
+  onerror: ((e: { error: string }) => void) | null;
+  onend: (() => void) | null;
+  start: ReturnType<typeof vi.fn>;
+  stop: ReturnType<typeof vi.fn>;
+  abort: ReturnType<typeof vi.fn>;
+}
+
+interface FakeResult {
+  readonly isFinal: boolean;
+  readonly length: number;
+  item: (i: number) => { readonly transcript: string };
+}
+interface FakeResultList {
+  readonly length: number;
+  item: (i: number) => FakeResult;
+}
+
 let fakeSynth: FakeSynth;
+let lastRecognition: FakeRecognition | null = null;
+const captureRecognition = (inst: FakeRecognition) => {
+  lastRecognition = inst;
+};
+
+class FakeRecognitionCtor implements FakeRecognition {
+  continuous = false;
+  interimResults = false;
+  lang = "";
+  onresult: FakeRecognition["onresult"] = null;
+  onerror: FakeRecognition["onerror"] = null;
+  onend: FakeRecognition["onend"] = null;
+  start = vi.fn();
+  stop = vi.fn();
+  abort = vi.fn();
+  constructor() {
+    captureRecognition(this);
+  }
+}
+
+function makeResult(transcript: string, isFinal: boolean): FakeResult {
+  return {
+    isFinal,
+    length: 1,
+    item: () => ({ transcript }),
+  };
+}
+
+function makeResultList(...results: FakeResult[]): FakeResultList {
+  return {
+    length: results.length,
+    item: (i: number) => results[i]!,
+  };
+}
 
 beforeEach(() => {
   fakeSynth = {
@@ -52,6 +108,9 @@ beforeEach(() => {
       }
     },
   );
+  lastRecognition = null;
+  vi.stubGlobal("SpeechRecognition", FakeRecognitionCtor);
+  Object.defineProperty(navigator, "onLine", { configurable: true, get: () => true });
 });
 
 afterEach(() => {
@@ -201,5 +260,105 @@ describe("DrillCard", () => {
     await Promise.resolve();
     await Promise.resolve();
     expect(fakeSynth.speak).toHaveBeenCalled();
+  });
+
+  test("mic button is rendered for phonetic challenges", () => {
+    render(
+      <DrillCard
+        challenge={phoneticChallenge}
+        index={0}
+        total={3}
+        score={scoreDrill}
+        onSubmit={() => {}}
+        onNext={() => {}}
+      />,
+    );
+    expect(screen.getByRole("button", { name: /start voice dictation/i })).toBeTruthy();
+  });
+
+  test("mic button is NOT rendered for reverse challenges", () => {
+    render(
+      <DrillCard
+        challenge={reverseChallenge}
+        index={0}
+        total={1}
+        score={scoreDrill}
+        onSubmit={() => {}}
+        onNext={() => {}}
+      />,
+    );
+    expect(screen.queryByRole("button", { name: /start voice dictation/i })).toBeNull();
+  });
+
+  test("final transcript fills the empty answer field, normalised", () => {
+    render(
+      <DrillCard
+        challenge={phoneticChallenge}
+        index={0}
+        total={3}
+        score={scoreDrill}
+        onSubmit={() => {}}
+        onNext={() => {}}
+      />,
+    );
+    fireEvent.click(screen.getByRole("button", { name: /start voice dictation/i }));
+    expect(lastRecognition).not.toBeNull();
+
+    act(() => {
+      lastRecognition!.onresult!({
+        results: makeResultList(makeResult("alpha bravo", true)),
+      });
+    });
+
+    const input = screen.getByLabelText(/your answer/i) as HTMLTextAreaElement;
+    expect(input.value).toBe("ALFA BRAVO");
+  });
+
+  test("final transcript appends with a space when the field is non-empty", () => {
+    render(
+      <DrillCard
+        challenge={phoneticChallenge}
+        index={0}
+        total={3}
+        score={scoreDrill}
+        onSubmit={() => {}}
+        onNext={() => {}}
+      />,
+    );
+    const input = screen.getByLabelText(/your answer/i) as HTMLTextAreaElement;
+    fireEvent.change(input, { target: { value: "ALFA" } });
+
+    fireEvent.click(screen.getByRole("button", { name: /start voice dictation/i }));
+    act(() => {
+      lastRecognition!.onresult!({
+        results: makeResultList(makeResult("bravo charlie", true)),
+      });
+    });
+
+    expect(input.value).toBe("ALFA BRAVO CHARLIE");
+  });
+
+  test("interim transcript renders the live ghost line", () => {
+    render(
+      <DrillCard
+        challenge={phoneticChallenge}
+        index={0}
+        total={3}
+        score={scoreDrill}
+        onSubmit={() => {}}
+        onNext={() => {}}
+      />,
+    );
+    fireEvent.click(screen.getByRole("button", { name: /start voice dictation/i }));
+
+    act(() => {
+      lastRecognition!.onresult!({
+        results: makeResultList(makeResult("alfa bra", false)),
+      });
+    });
+
+    expect(screen.getByText(/ALFA BRA/)).toBeTruthy();
+    const input = screen.getByLabelText(/your answer/i) as HTMLTextAreaElement;
+    expect(input.value).toBe("");
   });
 });

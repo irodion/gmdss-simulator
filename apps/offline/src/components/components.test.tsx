@@ -1,6 +1,7 @@
-import { fireEvent, render, screen } from "@testing-library/react";
-import { describe, expect, test, vi } from "vite-plus/test";
+import { act, fireEvent, render, screen } from "@testing-library/react";
+import { afterEach, beforeEach, describe, expect, test, vi } from "vite-plus/test";
 import type { DrillResult } from "../drills/drill-types.ts";
+import { MicButton } from "./MicButton.tsx";
 import { ModeTabs } from "./ModeTabs.tsx";
 import { PhoneticCheatsheet } from "./PhoneticCheatsheet.tsx";
 import { ResultBadge } from "./ResultBadge.tsx";
@@ -107,6 +108,102 @@ describe("SessionResults", () => {
     render(<SessionResults results={[]} onRestart={onRestart} />);
     fireEvent.click(screen.getByRole("button", { name: /begin a new watch/i }));
     expect(onRestart).toHaveBeenCalled();
+  });
+});
+
+describe("MicButton", () => {
+  interface FakeRecognition {
+    continuous: boolean;
+    interimResults: boolean;
+    lang: string;
+    onresult: ((e: { results: { length: number; item: (i: number) => unknown } }) => void) | null;
+    onerror: ((e: { error: string }) => void) | null;
+    onend: (() => void) | null;
+    start: ReturnType<typeof vi.fn>;
+    stop: ReturnType<typeof vi.fn>;
+    abort: ReturnType<typeof vi.fn>;
+  }
+
+  let lastInstance: FakeRecognition | null = null;
+  const captureInstance = (inst: FakeRecognition) => {
+    lastInstance = inst;
+  };
+
+  class FakeRecognitionCtor implements FakeRecognition {
+    continuous = false;
+    interimResults = false;
+    lang = "";
+    onresult: FakeRecognition["onresult"] = null;
+    onerror: FakeRecognition["onerror"] = null;
+    onend: FakeRecognition["onend"] = null;
+    start = vi.fn();
+    stop = vi.fn();
+    abort = vi.fn();
+    constructor() {
+      captureInstance(this);
+    }
+  }
+
+  beforeEach(() => {
+    lastInstance = null;
+    Object.defineProperty(navigator, "onLine", { configurable: true, get: () => true });
+  });
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  test("renders nothing when SpeechRecognition is unavailable", () => {
+    const { container } = render(<MicButton onTranscript={() => {}} />);
+    expect(container.firstChild).toBeNull();
+  });
+
+  test("renders disabled with the offline tooltip when navigator is offline", () => {
+    vi.stubGlobal("SpeechRecognition", FakeRecognitionCtor);
+    Object.defineProperty(navigator, "onLine", { configurable: true, get: () => false });
+    render(<MicButton onTranscript={() => {}} />);
+    const btn = screen.getByRole("button", {
+      name: /voice input needs an internet connection/i,
+    }) as HTMLButtonElement;
+    expect(btn.disabled).toBe(true);
+  });
+
+  test("clicking starts recognition; result event triggers normalised onTranscript", () => {
+    vi.stubGlobal("SpeechRecognition", FakeRecognitionCtor);
+    const onTranscript = vi.fn();
+    render(<MicButton onTranscript={onTranscript} />);
+
+    fireEvent.click(screen.getByRole("button", { name: /start voice dictation/i }));
+    expect(lastInstance).not.toBeNull();
+    expect(lastInstance!.start).toHaveBeenCalled();
+
+    act(() => {
+      lastInstance!.onresult!({
+        results: {
+          length: 1,
+          item: () => ({
+            isFinal: true,
+            length: 1,
+            item: () => ({ transcript: "ate niner" }),
+          }),
+        },
+      });
+    });
+
+    expect(onTranscript).toHaveBeenCalledWith("EIGHT NINE", true);
+  });
+
+  test("permission-denied error transitions the button to a blocked state", () => {
+    vi.stubGlobal("SpeechRecognition", FakeRecognitionCtor);
+    render(<MicButton onTranscript={() => {}} />);
+
+    fireEvent.click(screen.getByRole("button", { name: /start voice dictation/i }));
+    act(() => lastInstance!.onerror!({ error: "not-allowed" }));
+
+    const blocked = screen.getByRole("button", {
+      name: /microphone access blocked/i,
+    }) as HTMLButtonElement;
+    expect(blocked.disabled).toBe(true);
   });
 });
 
