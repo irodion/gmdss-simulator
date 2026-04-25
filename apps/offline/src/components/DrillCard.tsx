@@ -45,14 +45,9 @@ export function DrillCard({ challenge, index, total, score, onSubmit, onNext }: 
     }
   }
 
-  const handleDictationStart = useCallback(() => {
-    dictationAnchorRef.current = answerRef.current;
-    setDictating(true);
-  }, []);
-
-  const handleDictationEnd = useCallback(() => {
-    dictationAnchorRef.current = null;
-    setDictating(false);
+  const handleListeningChange = useCallback((listening: boolean) => {
+    dictationAnchorRef.current = listening ? answerRef.current : null;
+    setDictating(listening);
   }, []);
 
   const handleTranscript = useCallback((text: string) => {
@@ -105,6 +100,7 @@ export function DrillCard({ challenge, index, total, score, onSubmit, onNext }: 
           value={answer}
           onChange={(e) => setAnswer(e.target.value)}
           onKeyDown={(e) => {
+            // Disabled textarea doesn't fire keydown; only the unsubmitted state reaches here.
             if (e.key === "Enter" && (isReverse || e.ctrlKey || e.metaKey)) {
               e.preventDefault();
               handleSubmit();
@@ -118,8 +114,7 @@ export function DrillCard({ challenge, index, total, score, onSubmit, onNext }: 
         {showMic ? (
           <MicButton
             onTranscript={handleTranscript}
-            onDictationStart={handleDictationStart}
-            onDictationEnd={handleDictationEnd}
+            onListeningChange={handleListeningChange}
             disabled={result !== null}
           />
         ) : null}

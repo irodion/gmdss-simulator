@@ -47,8 +47,7 @@ export interface SpeechRecognitionState {
   readonly supported: boolean;
   readonly available: boolean;
   readonly listening: boolean;
-  readonly interimTranscript: string;
-  readonly finalTranscript: string;
+  readonly transcript: string;
   readonly permissionDenied: boolean;
   readonly start: () => void;
   readonly stop: () => void;
@@ -60,8 +59,7 @@ export function useSpeechRecognition(): SpeechRecognitionState {
     typeof navigator === "undefined" ? true : navigator.onLine,
   );
   const [listening, setListening] = useState(false);
-  const [interimTranscript, setInterim] = useState("");
-  const [finalTranscript, setFinal] = useState("");
+  const [transcript, setTranscript] = useState("");
   const [permissionDenied, setPermissionDenied] = useState(false);
   const recognitionRef = useRef<SpeechRecognitionInstance | null>(null);
 
@@ -81,8 +79,7 @@ export function useSpeechRecognition(): SpeechRecognitionState {
 
   const start = useCallback(() => {
     if (!Ctor || recognitionRef.current) return;
-    setInterim("");
-    setFinal("");
+    setTranscript("");
 
     const recognition = new Ctor();
     // Continuous: stay open until the user manually stops, so multi-word
@@ -100,10 +97,9 @@ export function useSpeechRecognition(): SpeechRecognitionState {
         if (result.isFinal) finalChunk += `${text} `;
         else interim += text;
       }
-      setInterim(interim.trim());
-      if (finalChunk.trim() !== "") {
-        setFinal(finalChunk.trim());
-      }
+      const final = finalChunk.trim();
+      const inter = interim.trim();
+      setTranscript([final, inter].filter(Boolean).join(" "));
     };
 
     recognition.onerror = (event) => {
@@ -143,8 +139,7 @@ export function useSpeechRecognition(): SpeechRecognitionState {
     supported,
     available,
     listening,
-    interimTranscript,
-    finalTranscript,
+    transcript,
     permissionDenied,
     start,
     stop,

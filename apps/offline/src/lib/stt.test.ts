@@ -90,7 +90,7 @@ describe("useSpeechRecognition", () => {
     expect(result.current.available).toBe(false);
   });
 
-  test("start() configures recognition and emits interim then final transcripts", () => {
+  test("start() configures recognition and emits transcripts as interim then final", () => {
     const { result } = renderHook(() => useSpeechRecognition());
 
     act(() => result.current.start());
@@ -105,13 +105,19 @@ describe("useSpeechRecognition", () => {
     act(() => {
       lastInstance!.onresult!({ results: makeResultList(makeResult("alfa bra", false)) });
     });
-    expect(result.current.interimTranscript).toBe("alfa bra");
-    expect(result.current.finalTranscript).toBe("");
+    expect(result.current.transcript).toBe("alfa bra");
 
     act(() => {
       lastInstance!.onresult!({ results: makeResultList(makeResult("alfa bravo", true)) });
     });
-    expect(result.current.finalTranscript).toBe("alfa bravo");
+    expect(result.current.transcript).toBe("alfa bravo");
+
+    act(() => {
+      lastInstance!.onresult!({
+        results: makeResultList(makeResult("alfa bravo", true), makeResult("char", false)),
+      });
+    });
+    expect(result.current.transcript).toBe("alfa bravo char");
   });
 
   test("onerror with 'not-allowed' sets permissionDenied and stops listening", () => {

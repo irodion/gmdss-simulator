@@ -4,8 +4,7 @@ import { useSpeechRecognition } from "../lib/stt.ts";
 
 interface MicButtonProps {
   readonly onTranscript: (text: string) => void;
-  readonly onDictationStart?: () => void;
-  readonly onDictationEnd?: () => void;
+  readonly onListeningChange?: (listening: boolean) => void;
   readonly disabled?: boolean;
 }
 
@@ -13,43 +12,23 @@ interface MicButtonProps {
 // (DrillCard remounts MicButton on every challenge via key={challenge.id}).
 let DISCLOSURE_SHOWN = false;
 
-export function MicButton({
-  onTranscript,
-  onDictationStart,
-  onDictationEnd,
-  disabled = false,
-}: MicButtonProps) {
+export function MicButton({ onTranscript, onListeningChange, disabled = false }: MicButtonProps) {
   const stt = useSpeechRecognition();
   const onTranscriptRef = useRef(onTranscript);
   onTranscriptRef.current = onTranscript;
-  const onStartRef = useRef(onDictationStart);
-  onStartRef.current = onDictationStart;
-  const onEndRef = useRef(onDictationEnd);
-  onEndRef.current = onDictationEnd;
-  const prevListeningRef = useRef(false);
+  const onListeningChangeRef = useRef(onListeningChange);
+  onListeningChangeRef.current = onListeningChange;
 
   const [showDisclosure, setShowDisclosure] = useState(false);
 
-  // Combine final + interim into a single live cumulative transcript.
-  const live =
-    stt.finalTranscript === ""
-      ? stt.interimTranscript
-      : stt.interimTranscript === ""
-        ? stt.finalTranscript
-        : `${stt.finalTranscript} ${stt.interimTranscript}`;
+  useEffect(() => {
+    if (stt.transcript !== "") {
+      onTranscriptRef.current(applyNormalization(stt.transcript));
+    }
+  }, [stt.transcript]);
 
   useEffect(() => {
-    if (live !== "") {
-      onTranscriptRef.current(applyNormalization(live));
-    }
-  }, [live]);
-
-  useEffect(() => {
-    if (stt.listening !== prevListeningRef.current) {
-      prevListeningRef.current = stt.listening;
-      if (stt.listening) onStartRef.current?.();
-      else onEndRef.current?.();
-    }
+    onListeningChangeRef.current?.(stt.listening);
   }, [stt.listening]);
 
   useEffect(() => {
