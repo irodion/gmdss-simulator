@@ -1,6 +1,7 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import type { DrillChallenge, DrillResult } from "../drills/drill-types.ts";
 import { isSupported, speak, speakSequence } from "../lib/tts.ts";
+import { MicButton } from "./MicButton.tsx";
 import { ResultBadge } from "./ResultBadge.tsx";
 
 interface DrillCardProps {
@@ -14,13 +15,19 @@ interface DrillCardProps {
 
 export function DrillCard({ challenge, index, total, score, onSubmit, onNext }: DrillCardProps) {
   const [answer, setAnswer] = useState("");
+  const [dictating, setDictating] = useState(false);
   const [result, setResult] = useState<DrillResult | null>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
+  const answerRef = useRef("");
+  answerRef.current = answer;
+  const dictationAnchorRef = useRef<string | null>(null);
   const ttsAvailable = isSupported();
 
   useEffect(() => {
     setAnswer("");
+    setDictating(false);
     setResult(null);
+    dictationAnchorRef.current = null;
     inputRef.current?.focus();
   }, [challenge.id]);
 
@@ -38,8 +45,20 @@ export function DrillCard({ challenge, index, total, score, onSubmit, onNext }: 
     }
   }
 
+  const handleListeningChange = useCallback((listening: boolean) => {
+    dictationAnchorRef.current = listening ? answerRef.current : null;
+    setDictating(listening);
+  }, []);
+
+  const handleTranscript = useCallback((text: string) => {
+    if (text === "") return;
+    const anchor = dictationAnchorRef.current ?? "";
+    setAnswer(anchor.trim() === "" ? text : `${anchor} ${text}`);
+  }, []);
+
   const isReverse = challenge.type === "reverse";
   const promptEyebrow = isReverse ? "transmission" : "spell";
+  const showMic = !isReverse;
 
   return (
     <div>
@@ -74,22 +93,32 @@ export function DrillCard({ challenge, index, total, score, onSubmit, onNext }: 
         </div>
       ) : null}
 
-      <textarea
-        ref={inputRef}
-        className="answer-input"
-        value={answer}
-        onChange={(e) => setAnswer(e.target.value)}
-        onKeyDown={(e) => {
-          // Disabled textarea doesn't fire keydown; only the unsubmitted state reaches here.
-          if (e.key === "Enter" && (isReverse || e.ctrlKey || e.metaKey)) {
-            e.preventDefault();
-            handleSubmit();
-          }
-        }}
-        placeholder={isReverse ? "Type the letters/digits…" : "Type the maritime spelling…"}
-        disabled={result !== null}
-        aria-label="Your answer"
-      />
+      <div className={showMic ? "answer-shell has-mic" : "answer-shell"}>
+        <textarea
+          ref={inputRef}
+          className="answer-input"
+          value={answer}
+          onChange={(e) => setAnswer(e.target.value)}
+          onKeyDown={(e) => {
+            // Disabled textarea doesn't fire keydown; only the unsubmitted state reaches here.
+            if (e.key === "Enter" && (isReverse || e.ctrlKey || e.metaKey)) {
+              e.preventDefault();
+              handleSubmit();
+            }
+          }}
+          placeholder={isReverse ? "Type the letters/digits…" : "Type the maritime spelling…"}
+          disabled={result !== null}
+          readOnly={dictating}
+          aria-label="Your answer"
+        />
+        {showMic ? (
+          <MicButton
+            onTranscript={handleTranscript}
+            onListeningChange={handleListeningChange}
+            disabled={result !== null}
+          />
+        ) : null}
+      </div>
 
       <div className="hint-row">
         {isReverse ? (

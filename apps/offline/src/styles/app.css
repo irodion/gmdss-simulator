@@ -421,6 +421,77 @@
   box-shadow: 0 0 0 3px var(--brass-glow);
 }
 
+/* ── Voice-to-text mic ── */
+.answer-shell {
+  position: relative;
+}
+.answer-shell.has-mic .answer-input {
+  padding-right: 2.75rem;
+}
+.mic-floater {
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+  width: 32px;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  padding: 0;
+  color: var(--ink-faint);
+  cursor: pointer;
+  transition: color 200ms ease;
+}
+.mic-floater:hover:not(:disabled) {
+  color: var(--brass-deep);
+}
+.mic-floater[data-state="listening"] {
+  color: var(--coral);
+  animation: mic-pulse 1.6s ease-in-out infinite;
+}
+.mic-floater[data-state="listening"] .mic-body {
+  fill: currentColor;
+}
+.mic-floater:disabled {
+  color: var(--ink-faint);
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+@keyframes mic-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.55;
+  }
+}
+
+.mic-disclosure {
+  font-family: var(--mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.12em;
+  color: var(--ink-faint);
+  text-transform: uppercase;
+  margin: 6px 2px 0;
+  text-align: right;
+  animation: disclosure-fade 6s ease forwards;
+}
+@keyframes disclosure-fade {
+  0% {
+    opacity: 0;
+  }
+  10%,
+  85% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
 .hint-row {
   display: flex;
   align-items: center;
@@ -700,7 +771,9 @@
 @media (prefers-reduced-motion: reduce) {
   .masthead,
   .card,
-  .stamp {
+  .stamp,
+  .mic-floater[data-state="listening"],
+  .mic-disclosure {
     animation: none;
   }
 }
@@ -742,6 +815,19 @@
     flex-direction: column;
     align-items: flex-start;
     gap: 6px;
+  }
+  .mic-floater {
+    width: 30px;
+    height: 30px;
+    bottom: 6px;
+    right: 6px;
+  }
+  .answer-shell.has-mic .answer-input {
+    padding-right: 2.5rem;
+  }
+  .mic-disclosure {
+    font-size: 0.6rem;
+    letter-spacing: 0.1em;
   }
   .mode-tab {
     padding: 14px 8px 12px;

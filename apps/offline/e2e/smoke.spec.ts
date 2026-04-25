@@ -34,6 +34,22 @@ test("PWA manifest is reachable", async ({ request }) => {
   expect(body.display).toBe("standalone");
 });
 
+test("voice dictation button appears during a callsign drill on supported browsers", async ({
+  page,
+}) => {
+  await page.goto("/");
+
+  const supported = await page.evaluate(
+    () => "SpeechRecognition" in window || "webkitSpeechRecognition" in window,
+  );
+  test.skip(!supported, "Browser does not expose SpeechRecognition");
+
+  await page.getByRole("button", { name: "5" }).click();
+  await page.getByRole("button", { name: /^begin/i }).click();
+
+  await expect(page.getByRole("button", { name: /start voice dictation/i })).toBeVisible();
+});
+
 test("service worker is registered after first load", async ({ page }) => {
   await page.goto("/");
   // Service worker registration is async; wait for the SW controller to take over.
