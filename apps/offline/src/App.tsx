@@ -1,6 +1,7 @@
 import "./styles/app.css";
 import { useCallback, useMemo, useState } from "react";
 import { DrillCard } from "./components/DrillCard.tsx";
+import { InstallChip } from "./components/InstallChip.tsx";
 import { ModeTabs } from "./components/ModeTabs.tsx";
 import { SessionConfig } from "./components/SessionConfig.tsx";
 import { SessionResults } from "./components/SessionResults.tsx";
@@ -75,6 +76,7 @@ export function App() {
             Drills for the NATO phonetic alphabet, maritime numbers, and a careful ear — offline,
             standalone, no logbook required.
           </p>
+          <InstallChip />
         </header>
 
         <article className="card">

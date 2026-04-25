@@ -768,12 +768,133 @@
   }
 }
 
+/* ── Install affordance ── */
+.install-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 16px;
+  padding: 4px 4px 4px 12px;
+  border: 1px solid var(--brass);
+  border-radius: var(--radius-pill);
+  background: var(--paper);
+  color: var(--brass-deep);
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  animation: rise 0.8s 0.32s both ease-out;
+  box-shadow: 0 1px 0 var(--brass-glow);
+}
+.install-chip-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 4px;
+  background: transparent;
+  border: none;
+  color: inherit;
+  font: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+  cursor: pointer;
+}
+.install-chip-button:hover {
+  color: var(--ink);
+}
+.install-chip-dismiss {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  margin-left: 2px;
+  background: transparent;
+  border: none;
+  border-radius: 999px;
+  color: var(--ink-faint);
+  cursor: pointer;
+  transition: color 200ms ease;
+}
+.install-chip-dismiss:hover {
+  color: var(--coral);
+}
+
+.install-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(21, 36, 61, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  z-index: 50;
+  animation: fade-in 200ms ease forwards;
+}
+.install-modal {
+  background: var(--paper);
+  border: 1px solid var(--ink);
+  padding: 24px 28px;
+  max-width: 360px;
+  width: 100%;
+  font-family: var(--body);
+  color: var(--ink);
+  box-shadow: 0 12px 40px rgba(21, 36, 61, 0.35);
+}
+.install-modal-title {
+  font-family: var(--display);
+  font-weight: 400;
+  font-size: 1.4rem;
+  margin: 0 0 12px;
+  color: var(--brass-deep);
+}
+.install-modal-steps {
+  margin: 0 0 18px;
+  padding-left: 1.2em;
+  line-height: 1.6;
+  font-size: 0.95rem;
+}
+.install-modal-steps li + li {
+  margin-top: 8px;
+}
+.install-modal-icon {
+  display: inline-block;
+  vertical-align: -3px;
+  margin: 0 4px;
+  color: var(--sea);
+}
+.install-modal-close {
+  display: inline-block;
+  padding: 8px 18px;
+  background: var(--ink);
+  color: var(--paper);
+  border: none;
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+.install-modal-close:hover {
+  background: var(--brass-deep);
+}
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .masthead,
   .card,
   .stamp,
   .mic-floater[data-state="listening"],
-  .mic-disclosure {
+  .mic-disclosure,
+  .install-chip,
+  .install-modal-backdrop {
     animation: none;
   }
 }
@@ -828,6 +949,11 @@
   .mic-disclosure {
     font-size: 0.6rem;
     letter-spacing: 0.1em;
+  }
+  .install-chip {
+    margin-top: 12px;
+    font-size: 0.66rem;
+    letter-spacing: 0.14em;
   }
   .mode-tab {
     padding: 14px 8px 12px;

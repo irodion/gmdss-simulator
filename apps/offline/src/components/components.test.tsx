@@ -1,6 +1,7 @@
 import { act, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, test, vi } from "vite-plus/test";
 import type { DrillResult } from "../drills/drill-types.ts";
+import { InstallChip } from "./InstallChip.tsx";
 import { MicButton } from "./MicButton.tsx";
 import { ModeTabs } from "./ModeTabs.tsx";
 import { PhoneticCheatsheet } from "./PhoneticCheatsheet.tsx";
@@ -204,6 +205,78 @@ describe("MicButton", () => {
       name: /microphone access blocked/i,
     }) as HTMLButtonElement;
     expect(blocked.disabled).toBe(true);
+  });
+});
+
+describe("InstallChip", () => {
+  function setUserAgent(value: string): void {
+    Object.defineProperty(navigator, "userAgent", { configurable: true, get: () => value });
+  }
+  function setMatchMedia(matches: boolean): void {
+    Object.defineProperty(window, "matchMedia", {
+      configurable: true,
+      value: () => ({
+        matches,
+        media: "",
+        addEventListener: () => {},
+        removeEventListener: () => {},
+      }),
+    });
+  }
+
+  beforeEach(() => {
+    setUserAgent("Mozilla/5.0 (X11; Linux x86_64) Chrome/120");
+    setMatchMedia(false);
+    window.localStorage.removeItem("roc-trainer:install-dismissed");
+  });
+
+  test("renders nothing when no install path is available", () => {
+    const { container } = render(<InstallChip />);
+    expect(container.firstChild).toBeNull();
+  });
+
+  test("renders chip and triggers the prompt on click when the event has fired", async () => {
+    const promptFn = vi.fn(() => Promise.resolve());
+    const ev = new Event("beforeinstallprompt") as Event & {
+      prompt: typeof promptFn;
+      userChoice: Promise<{ outcome: "accepted" | "dismissed"; platform: string }>;
+    };
+    ev.prompt = promptFn;
+    ev.userChoice = Promise.resolve({ outcome: "accepted", platform: "web" });
+
+    render(<InstallChip />);
+    act(() => {
+      window.dispatchEvent(ev);
+    });
+
+    const button = screen.getByRole("button", { name: /install app/i });
+    await act(async () => {
+      fireEvent.click(button);
+    });
+    expect(promptFn).toHaveBeenCalled();
+  });
+
+  test("dismiss button hides the chip and persists the choice", () => {
+    setUserAgent(
+      "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit Version/17.0 Mobile/15E148 Safari",
+    );
+    const { container, rerender } = render(<InstallChip />);
+    expect(container.firstChild).not.toBeNull();
+
+    fireEvent.click(screen.getByRole("button", { name: /dismiss/i }));
+    expect(container.firstChild).toBeNull();
+
+    rerender(<InstallChip />);
+    expect(container.firstChild).toBeNull();
+  });
+
+  test("iOS path opens an instruction dialog instead of calling prompt()", () => {
+    setUserAgent(
+      "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit Version/17.0 Mobile/15E148 Safari",
+    );
+    render(<InstallChip />);
+    fireEvent.click(screen.getByRole("button", { name: /install app/i }));
+    expect(screen.getByRole("dialog", { name: /add to home screen/i })).toBeTruthy();
   });
 });
 
