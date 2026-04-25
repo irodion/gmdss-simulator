@@ -1,0 +1,30 @@
+:root {
+  /* Parchment */
+  --paper: #f4ede0;
+  --paper-deep: #e9dfc9;
+  --paper-dark: #d8c8a4;
+
+  /* Ink */
+  --ink: #15243d;
+  --ink-soft: #4a5a72;
+  --ink-faint: #8a96a7;
+  --ink-line: rgba(21, 36, 61, 0.18);
+  --ink-hair: rgba(21, 36, 61, 0.08);
+
+  /* Accents */
+  --brass: #a87b3c;
+  --brass-deep: #7a4f1a;
+  --brass-glow: rgba(168, 123, 60, 0.18);
+  --sea: #2d6873;
+  --sea-soft: rgba(45, 104, 115, 0.12);
+  --coral: #c45c3a;
+  --coral-soft: rgba(196, 92, 58, 0.12);
+
+  /* Type */
+  --display: "Fraunces", Georgia, serif;
+  --body: "Lora", Georgia, serif;
+  --mono: "DM Mono", "JetBrains Mono", ui-monospace, monospace;
+
+  /* Sharp corners are part of the aesthetic; pill stays for niche use. */
+  --radius-pill: 999px;
+}
