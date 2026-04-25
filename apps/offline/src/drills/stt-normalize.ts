@@ -43,7 +43,11 @@ export function applyNormalization(transcript: string): string {
     .toUpperCase()
     .split(/\s+/)
     .filter(Boolean)
-    .flatMap((token) => {
+    .flatMap((raw) => {
+      // Strip surrounding punctuation Chrome STT can emit (".", ",", "!"),
+      // preserving hyphens so keys like "X-RAY" / "FOW-ER" still match.
+      const token = raw.replace(/^[^A-Z0-9-]+|[^A-Z0-9-]+$/g, "");
+      if (token === "") return [];
       if (/^\d+$/.test(token)) {
         return token.split("").map((d) => DIGIT_WORDS[d] ?? d);
       }

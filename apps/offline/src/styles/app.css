@@ -771,7 +771,9 @@
 @media (prefers-reduced-motion: reduce) {
   .masthead,
   .card,
-  .stamp {
+  .stamp,
+  .mic-floater[data-state="listening"],
+  .mic-disclosure {
     animation: none;
   }
 }

@@ -33,4 +33,11 @@ describe("applyNormalization", () => {
     expect(applyNormalization("")).toBe("");
     expect(applyNormalization("   ")).toBe("");
   });
+
+  test("strips surrounding punctuation but preserves internal hyphens", () => {
+    expect(applyNormalization("ate.")).toBe("EIGHT");
+    expect(applyNormalization("niner,")).toBe("NINE");
+    expect(applyNormalization("X-RAY")).toBe("XRAY");
+    expect(applyNormalization("(alfa) bravo!")).toBe("ALFA BRAVO");
+  });
 });
