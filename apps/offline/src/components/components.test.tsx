@@ -525,4 +525,25 @@ describe("SituationalCard", () => {
     fireEvent.click(screen.getByRole("button", { name: "Submit" }));
     expect(onComplete).not.toHaveBeenCalled();
   });
+
+  test("revealing then hiding the canonical still suppresses recording (latched)", () => {
+    const onComplete = vi.fn();
+    render(
+      <SituationalCard
+        prompt={SAMPLE_PROMPT}
+        rubric={SAMPLE_RUBRIC}
+        onComplete={onComplete}
+        onRestart={() => {}}
+        onBack={() => {}}
+      />,
+    );
+    fireEvent.click(screen.getByRole("button", { name: /reveal canonical/i }));
+    fireEvent.click(screen.getByRole("button", { name: /hide canonical/i }));
+    expect(screen.getByText(/won't be recorded/i)).toBeTruthy();
+    fireEvent.change(screen.getByLabelText(/your transmission/i), {
+      target: { value: SAMPLE_PROMPT.canonical },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Submit" }));
+    expect(onComplete).not.toHaveBeenCalled();
+  });
 });

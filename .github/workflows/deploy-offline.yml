@@ -37,6 +37,9 @@ jobs:
         with:
           cache: true
 
+      - name: Build shared utils package
+        run: vp run --filter @gmdss-simulator/utils build
+
       - name: Build offline PWA
         run: vp build
         working-directory: apps/offline

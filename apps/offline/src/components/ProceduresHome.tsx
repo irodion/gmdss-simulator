@@ -51,8 +51,8 @@ export function ProceduresHome({
           <span className="proc-tile-eyebrow">Structural</span>
           <span className="proc-tile-title">Order of fields</span>
           <span className="proc-tile-detail">
-            What comes after each element? · {content.structuralRubric.requiredFields.length + 1}{" "}
-            fields, multiple-choice.
+            What comes after each element? ·{" "}
+            {content.structuralRubric.sequenceRules.fieldOrder.length} fields, multiple-choice.
           </span>
           <span className="proc-tile-stat">{pct(structuralStats)}</span>
         </button>

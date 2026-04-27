@@ -22,19 +22,28 @@ export function SituationalCard({
   const [text, setText] = useState("");
   const [grade, setGrade] = useState<SituationalGrade | null>(null);
   const [revealed, setRevealed] = useState(false);
+  // Latched: once the canonical has been seen this attempt is no longer
+  // recorded, even if the student hides it again before submitting.
+  const [canonicalSeen, setCanonicalSeen] = useState(false);
   const [hintsOpen, setHintsOpen] = useState(false);
 
   function handleSubmit() {
     if (text.trim() === "") return;
     const result = gradeAgainst(prompt, rubric, text);
     setGrade(result);
-    if (!revealed) onComplete(result);
+    if (!canonicalSeen) onComplete(result);
+  }
+
+  function handleReveal() {
+    setRevealed((v) => !v);
+    setCanonicalSeen(true);
   }
 
   function handleRestart() {
     setText("");
     setGrade(null);
     setRevealed(false);
+    setCanonicalSeen(false);
     setHintsOpen(false);
     onRestart();
   }
@@ -95,13 +104,13 @@ export function SituationalCard({
           <span className="kbd">⌘</span>
           <span className="kbd">↵</span> to submit
         </span>
-        {revealed ? <span className="reveal-warn">attempt won't be recorded</span> : null}
+        {canonicalSeen ? <span className="reveal-warn">attempt won't be recorded</span> : null}
       </div>
 
       <div className="actions">
         {grade === null ? (
           <>
-            <button type="button" className="btn-secondary" onClick={() => setRevealed((v) => !v)}>
+            <button type="button" className="btn-secondary" onClick={handleReveal}>
               {revealed ? "Hide canonical" : "Reveal canonical"}
             </button>
             <button

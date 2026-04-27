@@ -84,9 +84,11 @@ export function ProceduresPanel() {
 
   const handleSituationalComplete = useCallback(
     (grade: SituationalGrade) => {
-      if (view.kind !== "situational") return;
+      if (view.kind !== "situational" || !content) return;
+      const rubric = content.rubricsByScenario.get(view.scenarioId);
+      if (!rubric) return;
       recordAttempt({
-        rubricId: view.scenarioId,
+        rubricId: rubric.id,
         mode: "situational",
         key: view.scenarioId,
         ts: Date.now(),
@@ -94,7 +96,7 @@ export function ProceduresPanel() {
       });
       setStatsToken((t) => t + 1);
     },
-    [view],
+    [view, content],
   );
 
   const handleHome = useCallback(() => {

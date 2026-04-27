@@ -52,20 +52,20 @@ function buildOptions(
 }
 
 export function generateNextAfterQuestions(rubric: RubricDefinition): MCQuestion[] {
-  const order = rubric.sequenceRules.fieldOrder;
-  const labels = order
-    .map((id) => labelForFieldId(rubric, id))
-    .filter((l): l is string => l != null);
-  if (labels.length < 2) return [];
+  const ordered = rubric.sequenceRules.fieldOrder
+    .map((id) => ({ id, label: labelForFieldId(rubric, id) }))
+    .filter((entry): entry is { id: string; label: string } => entry.label != null);
+  if (ordered.length < 2) return [];
 
   const callLabel = callLabelForCategory(rubric.category);
+  const labels = ordered.map((e) => e.label);
   const out: MCQuestion[] = [];
 
-  for (let i = 0; i < labels.length - 1; i++) {
-    const current = labels[i]!;
-    const correct = labels[i + 1]!;
+  for (let i = 0; i < ordered.length - 1; i++) {
+    const current = ordered[i]!.label;
+    const correct = ordered[i + 1]!.label;
     const distractorPool = labels.filter((l) => l !== current && l !== correct);
-    const id = `${rubric.id}:next-after:${order[i]}`;
+    const id = `${rubric.id}:next-after:${ordered[i]!.id}`;
     const { options, correctIndex } = buildOptions(correct, distractorPool, hash(id));
     out.push({
       id,

@@ -11,12 +11,24 @@ export interface StatsAggregate {
   readonly pctCorrect: number;
 }
 
+function isGradeEvent(value: unknown): value is GradeEvent {
+  if (value === null || typeof value !== "object") return false;
+  const ev = value as Record<string, unknown>;
+  return (
+    typeof ev["rubricId"] === "string" &&
+    (ev["mode"] === "structural" || ev["mode"] === "situational") &&
+    typeof ev["key"] === "string" &&
+    typeof ev["ts"] === "number" &&
+    typeof ev["correct"] === "boolean"
+  );
+}
+
 function safeRead(): GradeEvent[] {
   try {
     const raw = window.localStorage.getItem(STORAGE_KEY);
     if (!raw) return [];
     const parsed = JSON.parse(raw) as unknown;
-    return Array.isArray(parsed) ? (parsed as GradeEvent[]) : [];
+    return Array.isArray(parsed) ? parsed.filter(isGradeEvent) : [];
   } catch {
     return [];
   }

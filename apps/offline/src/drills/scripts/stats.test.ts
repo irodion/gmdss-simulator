@@ -62,6 +62,17 @@ describe("recordAttempt + getAggregates", () => {
     expect(getAggregates()).toHaveLength(1);
   });
 
+  test("filters out malformed entries instead of crashing", () => {
+    const valid = ev();
+    window.localStorage.setItem(
+      "roc-trainer:procedure-stats",
+      JSON.stringify([valid, null, "string", 42, { rubricId: "x" }, { ...valid, mode: "bogus" }]),
+    );
+    const aggs = getAggregates();
+    expect(aggs).toHaveLength(1);
+    expect(aggs[0]!.attempts).toBe(1);
+  });
+
   test("survives a localStorage that throws on write (Safari private mode)", () => {
     const setItem = vi.spyOn(window.localStorage.__proto__, "setItem").mockImplementation(() => {
       throw new Error("QuotaExceededError");
