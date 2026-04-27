@@ -22,6 +22,28 @@ const RUBRIC: RubricDefinition = {
     fieldOrder: ["mayday", "this_is", "vessel_name", "position", "nature", "over"],
   },
   channelRules: { requiredChannel: 16, blockChannel70Voice: true },
+  sequenceParts: [
+    {
+      id: "call",
+      label: "MAYDAY Call",
+      items: [
+        { id: "call.mayday", label: "MAYDAY MAYDAY MAYDAY" },
+        { id: "call.vessel", label: "Vessel name × 3" },
+        { id: "call.id", label: "Callsign / MMSI" },
+      ],
+    },
+    {
+      id: "message",
+      label: "MAYDAY Message",
+      items: [
+        { id: "msg.mayday", label: "MAYDAY" },
+        { id: "msg.vessel", label: "Vessel name" },
+        { id: "msg.position", label: "Position" },
+        { id: "msg.nature", label: "Nature of distress" },
+        { id: "msg.over", label: "OVER" },
+      ],
+    },
+  ],
 };
 
 const SCENARIO: ScenarioDefinition = {
@@ -48,66 +70,65 @@ const SCENARIO: ScenarioDefinition = {
 };
 
 describe("materializeStructural", () => {
-  test("returns a template whose correctOrder matches sequenceRules.fieldOrder", () => {
+  test("mirrors rubric.sequenceParts into the template", () => {
     const template = materializeStructural(RUBRIC);
     expect(template.rubricId).toBe("v1/distress");
     expect(template.callLabel).toBe("MAYDAY call");
-    expect(template.correctOrder.map((s) => s.id)).toEqual([
-      "mayday",
-      "this_is",
-      "vessel_name",
-      "position",
-      "nature",
-      "over",
+    expect(template.parts.map((p) => p.id)).toEqual(["call", "message"]);
+    expect(template.parts[0]!.items.map((i) => i.id)).toEqual([
+      "call.mayday",
+      "call.vessel",
+      "call.id",
     ]);
-    expect(template.correctOrder[0]!.label).toBe("MAYDAY signal word");
-    expect(template.correctOrder.at(-1)!.label).toBe("OVER");
+    expect(template.parts[1]!.items.at(-1)!.label).toBe("OVER");
   });
 
-  test("skips fieldOrder ids that have no matching label", () => {
-    const orphan: RubricDefinition = {
-      ...RUBRIC,
-      sequenceRules: { fieldOrder: ["mayday", "ghost", "over"] },
-    };
-    const template = materializeStructural(orphan);
-    expect(template.correctOrder.map((s) => s.id)).toEqual(["mayday", "over"]);
+  test("throws when sequenceParts is missing", () => {
+    const noParts: RubricDefinition = { ...RUBRIC, sequenceParts: undefined };
+    expect(() => materializeStructural(noParts)).toThrow(/sequenceParts/);
   });
 });
 
 describe("gradeSequence", () => {
   const TEMPLATE = materializeStructural(RUBRIC);
-  const correct = TEMPLATE.correctOrder;
+  const callItems = TEMPLATE.parts[0]!.items;
+  const msgItems = TEMPLATE.parts[1]!.items;
+  const correctMap = (): Map<string, SequenceItem[]> =>
+    new Map([
+      ["call", [...callItems]],
+      ["message", [...msgItems]],
+    ]);
 
-  test("all-correct order passes with full count", () => {
-    const grade = gradeSequence(TEMPLATE, correct);
+  test("all-correct placements pass with full count", () => {
+    const grade = gradeSequence(TEMPLATE, correctMap());
     expect(grade.passed).toBe(true);
-    expect(grade.correctCount).toBe(correct.length);
-    expect(grade.total).toBe(correct.length);
-    expect(grade.placements.every((p) => p.correct)).toBe(true);
+    expect(grade.correctCount).toBe(callItems.length + msgItems.length);
+    expect(grade.total).toBe(callItems.length + msgItems.length);
+    expect(grade.parts).toHaveLength(2);
+    expect(grade.parts[0]!.placements.every((p) => p.correct)).toBe(true);
   });
 
-  test("swapping two adjacent items drops correctCount by exactly 2", () => {
-    const swapped: SequenceItem[] = [...correct];
-    [swapped[1], swapped[2]] = [swapped[2]!, swapped[1]!];
-    const grade = gradeSequence(TEMPLATE, swapped);
-    expect(grade.passed).toBe(false);
-    expect(grade.correctCount).toBe(correct.length - 2);
-  });
-
-  test("each wrong placement carries the expected item alongside what was placed", () => {
-    const swapped: SequenceItem[] = [...correct];
+  test("a swap inside one part drops correctCount by 2 and leaves the other part intact", () => {
+    const placements = correctMap();
+    const swapped = [...callItems];
     [swapped[0], swapped[1]] = [swapped[1]!, swapped[0]!];
-    const grade = gradeSequence(TEMPLATE, swapped);
-    expect(grade.placements[0]!.correct).toBe(false);
-    expect(grade.placements[0]!.placed.id).toBe("this_is");
-    expect(grade.placements[0]!.expected.id).toBe("mayday");
+    placements.set("call", swapped);
+    const grade = gradeSequence(TEMPLATE, placements);
+    expect(grade.passed).toBe(false);
+    expect(grade.correctCount).toBe(callItems.length + msgItems.length - 2);
+    expect(grade.parts[1]!.placements.every((p) => p.correct)).toBe(true);
   });
 
-  test("rotation by one yields zero correct placements", () => {
-    const rotated = [...correct.slice(1), correct[0]!];
-    const grade = gradeSequence(TEMPLATE, rotated);
-    expect(grade.correctCount).toBe(0);
-    expect(grade.passed).toBe(false);
+  test("each wrong placement carries the expected item", () => {
+    const placements = correctMap();
+    const swapped = [...callItems];
+    [swapped[0], swapped[1]] = [swapped[1]!, swapped[0]!];
+    placements.set("call", swapped);
+    const grade = gradeSequence(TEMPLATE, placements);
+    const slot0 = grade.parts[0]!.placements[0]!;
+    expect(slot0.correct).toBe(false);
+    expect(slot0.placed.id).toBe("call.vessel");
+    expect(slot0.expected.id).toBe("call.mayday");
   });
 });
 

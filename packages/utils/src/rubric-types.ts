@@ -38,6 +38,17 @@ export interface SequenceRules {
   readonly fieldOrder: readonly string[];
 }
 
+export interface SequencePartItem {
+  readonly id: string;
+  readonly label: string;
+}
+
+export interface SequencePart {
+  readonly id: string;
+  readonly label: string;
+  readonly items: readonly SequencePartItem[];
+}
+
 export interface ChannelRules {
   readonly requiredChannel: number;
   readonly blockChannel70Voice: boolean;
@@ -59,4 +70,11 @@ export interface RubricDefinition {
   readonly channelRules: ChannelRules;
   /** When present, scoring includes a DSC dimension and uses alternate weights. */
   readonly dscRules?: DscRules;
+  /**
+   * Optional procedure-shape metadata for sequencing drills. Independent of
+   * `sequenceRules.fieldOrder` (which is for grading) — `sequenceParts`
+   * carries the canonical multi-part structure (e.g. MAYDAY Call vs.
+   * MAYDAY Message) with its own labels and ids, intended for UI use.
+   */
+  readonly sequenceParts?: readonly SequencePart[];
 }

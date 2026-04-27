@@ -62,20 +62,22 @@ test("Procedures tab loads the home tiles and grades a structural sequence", asy
 
   await page.getByRole("button", { name: /structural drill/i }).click();
   await expect(page.getByText(/place each element in the correct order/i)).toBeVisible();
+  await expect(page.getByRole("heading", { name: /MAYDAY Call/i })).toBeVisible();
+  await expect(page.getByRole("heading", { name: /MAYDAY Message/i })).toBeVisible();
 
-  // Place every pool item in canonical order. Pool labels match rubric labels.
-  const order = [
-    "MAYDAY signal word",
-    "THIS IS",
-    "Own vessel name",
-    "Callsign or MMSI",
+  // Place each part's pool items in canonical order. Pool labels match the
+  // distress rubric's `sequenceParts` labels exactly.
+  const callPart = ["MAYDAY MAYDAY MAYDAY", "Vessel name × 3", "Callsign / MMSI"];
+  const messagePart = [
+    "MAYDAY",
+    "Vessel name",
     "Position",
     "Nature of distress",
-    "Assistance required",
-    "Persons on board",
+    "Request immediate assistance",
+    "N persons on board",
     "OVER",
   ];
-  for (const label of order) {
+  for (const label of [...callPart, ...messagePart]) {
     await page.getByRole("button", { name: label, exact: true }).click();
   }
 

@@ -150,6 +150,8 @@ export type {
   FieldRule,
   ProwordRule,
   SequenceRules,
+  SequencePart,
+  SequencePartItem,
   ChannelRules,
   DscRules,
   RubricDefinition,
