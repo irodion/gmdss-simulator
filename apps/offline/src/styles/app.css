@@ -951,48 +951,160 @@
   color: var(--ink-soft);
 }
 
-/* ── MC question (Structural drill) ── */
-.mc-options {
+/* ── Structural sequencing drill ── */
+.seq-stage {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 10px;
+  gap: 18px;
   margin: 8px 0 18px;
 }
-.mc-option {
-  padding: 14px 18px;
+
+.seq-slots {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+}
+.seq-slot {
+  display: block;
+}
+.seq-slot-btn {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 36px 1fr;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
   text-align: left;
   background: var(--paper);
   border: 1px solid var(--ink-line);
   font-family: var(--body);
-  font-size: 1rem;
+  font-size: 0.95rem;
   color: var(--ink);
   cursor: pointer;
   transition:
     background 120ms ease,
     border-color 120ms ease,
     color 120ms ease;
+  min-height: 48px;
 }
-.mc-option:hover:not(:disabled) {
-  background: var(--paper-deep);
-  border-color: var(--brass);
-}
-.mc-option:disabled {
+.seq-slot-btn:disabled {
   cursor: default;
 }
-.mc-option[data-state="correct"] {
-  background: var(--sea-soft);
+.seq-slot[data-state="empty"] .seq-slot-btn {
+  border-style: dashed;
+  border-color: var(--ink-line);
+  background: transparent;
+}
+.seq-slot[data-state="filled"] .seq-slot-btn {
+  border-color: var(--brass);
+  background: var(--paper-deep);
+}
+.seq-slot[data-state="filled"] .seq-slot-btn:hover:not(:disabled) {
+  border-color: var(--brass-deep);
+}
+.seq-slot[data-state="correct"] .seq-slot-btn {
   border-color: var(--sea);
+  background: var(--sea-soft);
   color: var(--sea);
   font-weight: 600;
 }
-.mc-option[data-state="wrong"] {
-  background: var(--coral-soft);
+.seq-slot[data-state="wrong"] .seq-slot-btn {
   border-color: var(--coral);
+  background: var(--coral-soft);
   color: var(--coral);
-  text-decoration: line-through;
 }
-.mc-option[data-state="miss"] {
+.seq-slot-num {
+  font-family: var(--mono);
+  font-size: 0.8rem;
+  color: var(--ink-faint);
+  letter-spacing: 0.06em;
+  text-align: right;
+}
+.seq-slot-content {
+  font-family: var(--body);
+}
+.seq-slot-placeholder {
+  color: var(--ink-faint);
+  font-style: italic;
+}
+.seq-slot-expected {
+  margin: 4px 0 0 46px;
+  font-size: 0.8rem;
+  font-style: italic;
+  color: var(--coral);
+}
+
+.seq-pool {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 12px;
+  background: var(--paper-deep);
+  border: 1px dashed var(--ink-line);
+  min-height: 56px;
+  align-items: flex-start;
+  align-content: flex-start;
+}
+.seq-pool-item {
+  padding: 10px 14px;
+  background: var(--paper);
+  border: 1px solid var(--brass);
+  font-family: var(--body);
+  font-size: 0.92rem;
+  color: var(--ink);
+  cursor: pointer;
+  transition:
+    background 120ms ease,
+    border-color 120ms ease;
+  min-height: 44px;
+}
+.seq-pool-item:hover:not(:disabled) {
+  background: var(--paper-deep);
+  border-color: var(--brass-deep);
+}
+.seq-pool-item:disabled {
+  cursor: default;
   opacity: 0.5;
+}
+.seq-pool-empty {
+  margin: 0;
+  font-family: var(--mono);
+  font-size: 0.74rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  padding: 6px 4px;
+}
+
+.seq-summary {
+  margin-top: 18px;
+  padding: 16px 20px;
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  border-top: 1px solid var(--ink-line);
+  font-family: var(--body);
+}
+.seq-summary[data-state="pass"] {
+  color: var(--sea);
+}
+.seq-summary[data-state="partial"] {
+  color: var(--coral);
+}
+.seq-summary-score {
+  font-family: var(--display);
+  font-size: 2.4rem;
+  line-height: 1;
+}
+.seq-summary-score small {
+  font-size: 1rem;
+  color: var(--ink-soft);
+  margin-left: 2px;
+}
+.seq-summary-label {
+  font-style: italic;
 }
 
 /* ── Situational card ── */
@@ -1233,11 +1345,20 @@
   .proc-tile-title {
     font-size: 1rem;
   }
-  .mc-option {
-    font-size: 0.92rem;
-    padding: 12px 14px;
+  .seq-slot-btn {
+    font-size: 0.9rem;
+    padding: 10px 12px;
+    grid-template-columns: 28px 1fr;
   }
-  .grade-overall {
-    font-size: 2.4rem;
+  .seq-pool-item {
+    font-size: 0.86rem;
+    padding: 9px 12px;
+  }
+  .seq-slot-expected {
+    margin-left: 38px;
+  }
+  .grade-overall,
+  .seq-summary-score {
+    font-size: 2rem;
   }
 }

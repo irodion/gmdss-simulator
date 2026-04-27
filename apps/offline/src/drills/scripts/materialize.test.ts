@@ -1,6 +1,7 @@
 import type { RubricDefinition, ScenarioDefinition } from "@gmdss-simulator/utils";
 import { describe, expect, test } from "vite-plus/test";
-import { materializeSituational, materializeStructural } from "./materialize.ts";
+import { gradeSequence, materializeSituational, materializeStructural } from "./materialize.ts";
+import type { SequenceItem } from "./types.ts";
 
 const RUBRIC: RubricDefinition = {
   id: "v1/distress",
@@ -47,9 +48,66 @@ const SCENARIO: ScenarioDefinition = {
 };
 
 describe("materializeStructural", () => {
-  test("returns one MC question per fieldOrder transition", () => {
-    const qs = materializeStructural(RUBRIC);
-    expect(qs).toHaveLength(RUBRIC.sequenceRules.fieldOrder.length - 1);
+  test("returns a template whose correctOrder matches sequenceRules.fieldOrder", () => {
+    const template = materializeStructural(RUBRIC);
+    expect(template.rubricId).toBe("v1/distress");
+    expect(template.callLabel).toBe("MAYDAY call");
+    expect(template.correctOrder.map((s) => s.id)).toEqual([
+      "mayday",
+      "this_is",
+      "vessel_name",
+      "position",
+      "nature",
+      "over",
+    ]);
+    expect(template.correctOrder[0]!.label).toBe("MAYDAY signal word");
+    expect(template.correctOrder.at(-1)!.label).toBe("OVER");
+  });
+
+  test("skips fieldOrder ids that have no matching label", () => {
+    const orphan: RubricDefinition = {
+      ...RUBRIC,
+      sequenceRules: { fieldOrder: ["mayday", "ghost", "over"] },
+    };
+    const template = materializeStructural(orphan);
+    expect(template.correctOrder.map((s) => s.id)).toEqual(["mayday", "over"]);
+  });
+});
+
+describe("gradeSequence", () => {
+  const TEMPLATE = materializeStructural(RUBRIC);
+  const correct = TEMPLATE.correctOrder;
+
+  test("all-correct order passes with full count", () => {
+    const grade = gradeSequence(TEMPLATE, correct);
+    expect(grade.passed).toBe(true);
+    expect(grade.correctCount).toBe(correct.length);
+    expect(grade.total).toBe(correct.length);
+    expect(grade.placements.every((p) => p.correct)).toBe(true);
+  });
+
+  test("swapping two adjacent items drops correctCount by exactly 2", () => {
+    const swapped: SequenceItem[] = [...correct];
+    [swapped[1], swapped[2]] = [swapped[2]!, swapped[1]!];
+    const grade = gradeSequence(TEMPLATE, swapped);
+    expect(grade.passed).toBe(false);
+    expect(grade.correctCount).toBe(correct.length - 2);
+  });
+
+  test("each wrong placement carries the expected item alongside what was placed", () => {
+    const swapped: SequenceItem[] = [...correct];
+    [swapped[0], swapped[1]] = [swapped[1]!, swapped[0]!];
+    const grade = gradeSequence(TEMPLATE, swapped);
+    expect(grade.placements[0]!.correct).toBe(false);
+    expect(grade.placements[0]!.placed.id).toBe("this_is");
+    expect(grade.placements[0]!.expected.id).toBe("mayday");
+  });
+
+  test("rotation by one yields zero correct placements", () => {
+    const rotated = [...correct.slice(1), correct[0]!];
+    const grade = gradeSequence(TEMPLATE, rotated);
+    expect(grade.correctCount).toBe(0);
+    expect(grade.passed).toBe(false);
   });
 });
 
