@@ -12,10 +12,16 @@ export interface SequenceItem {
   readonly label: string;
 }
 
+export interface SequenceTemplatePart {
+  readonly id: string;
+  readonly label: string;
+  readonly items: readonly SequenceItem[];
+}
+
 export interface SequenceTemplate {
   readonly rubricId: string;
   readonly callLabel: string;
-  readonly correctOrder: readonly SequenceItem[];
+  readonly parts: readonly SequenceTemplatePart[];
 }
 
 export interface SequencePlacementResult {
@@ -24,8 +30,14 @@ export interface SequencePlacementResult {
   readonly correct: boolean;
 }
 
-export interface SequenceGrade {
+/** One graded result per part, plus an aggregate. */
+export interface SequencePartGrade {
+  readonly partId: string;
   readonly placements: readonly SequencePlacementResult[];
+}
+
+export interface SequenceGrade {
+  readonly parts: readonly SequencePartGrade[];
   readonly correctCount: number;
   readonly total: number;
   readonly passed: boolean;

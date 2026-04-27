@@ -326,15 +326,32 @@ const SAMPLE_PROMPT: SituationalPrompt = {
 const SAMPLE_TEMPLATE: SequenceTemplate = {
   rubricId: "v1/distress",
   callLabel: "MAYDAY call",
-  correctOrder: [
-    { id: "mayday", label: "MAYDAY signal word" },
-    { id: "this_is", label: "THIS IS" },
-    { id: "vessel_name", label: "Own vessel name" },
-    { id: "position", label: "Position" },
-    { id: "nature", label: "Nature of distress" },
-    { id: "over", label: "OVER" },
+  parts: [
+    {
+      id: "call",
+      label: "MAYDAY Call",
+      items: [
+        { id: "call.mayday", label: "MAYDAY MAYDAY MAYDAY" },
+        { id: "call.vessel", label: "Vessel name × 3" },
+        { id: "call.id", label: "Callsign / MMSI" },
+      ],
+    },
+    {
+      id: "message",
+      label: "MAYDAY Message",
+      items: [
+        { id: "msg.mayday", label: "MAYDAY" },
+        { id: "msg.vessel", label: "Vessel name" },
+        { id: "msg.position", label: "Position" },
+        { id: "msg.over", label: "OVER" },
+      ],
+    },
   ],
 };
+
+const ALL_ITEMS = SAMPLE_TEMPLATE.parts.flatMap((part) =>
+  part.items.map((item) => ({ partLabel: part.label, item })),
+);
 
 const SAMPLE_CONTENT: ScriptDrillContent = {
   structuralRubric: SAMPLE_RUBRIC,
@@ -390,23 +407,26 @@ describe("ProceduresHome", () => {
 });
 
 describe("SequenceCard", () => {
+  const TOTAL = ALL_ITEMS.length;
+
   function poolItem(label: string): HTMLButtonElement {
     return screen.getByRole("button", { name: label }) as HTMLButtonElement;
   }
-  function slot(index: number): HTMLButtonElement {
-    const prefix = `Slot ${index},`;
+  function partSlot(partLabel: string, index: number): HTMLButtonElement {
+    const prefix = `${partLabel} slot ${index},`;
     return screen.getByRole("button", {
       name: (accessible) => accessible.startsWith(prefix),
     }) as HTMLButtonElement;
   }
-  function placeAll(template: SequenceTemplate, order: readonly string[]) {
-    for (const id of order) {
-      const item = template.correctOrder.find((c) => c.id === id)!;
-      fireEvent.click(poolItem(item.label));
+  function placeInPartOrder(template: SequenceTemplate) {
+    for (const part of template.parts) {
+      for (const item of part.items) {
+        fireEvent.click(poolItem(item.label));
+      }
     }
   }
 
-  test("tapping a pool item fills the first empty slot and removes it from the pool", () => {
+  test("tapping a pool item fills the first empty slot of its part", () => {
     render(
       <SequenceCard
         template={SAMPLE_TEMPLATE}
@@ -416,11 +436,12 @@ describe("SequenceCard", () => {
       />,
     );
     fireEvent.click(poolItem("Position"));
-    expect(slot(1).textContent).toMatch(/Position/);
+    // Position belongs to the message part; first empty slot is slot 1 of that part.
+    expect(partSlot("MAYDAY Message", 1).textContent).toMatch(/Position/);
     expect(screen.queryByRole("button", { name: "Position" })).toBeNull();
   });
 
-  test("tapping a filled slot returns the item to the pool", () => {
+  test("tapping a filled slot returns the item to its part's pool", () => {
     render(
       <SequenceCard
         template={SAMPLE_TEMPLATE}
@@ -430,12 +451,12 @@ describe("SequenceCard", () => {
       />,
     );
     fireEvent.click(poolItem("Position"));
-    fireEvent.click(slot(1));
+    fireEvent.click(partSlot("MAYDAY Message", 1));
     expect(poolItem("Position")).toBeTruthy();
-    expect(slot(1).textContent).not.toMatch(/Position/);
+    expect(partSlot("MAYDAY Message", 1).textContent).not.toMatch(/Position/);
   });
 
-  test("Submit is disabled until every slot has a placement", () => {
+  test("Submit is disabled until every slot in every part has a placement", () => {
     render(
       <SequenceCard
         template={SAMPLE_TEMPLATE}
@@ -446,12 +467,13 @@ describe("SequenceCard", () => {
     );
     const submit = screen.getByRole("button", { name: /^Submit$/ }) as HTMLButtonElement;
     expect(submit.disabled).toBe(true);
-    placeAll(
-      SAMPLE_TEMPLATE,
-      SAMPLE_TEMPLATE.correctOrder.slice(0, -1).map((c) => c.id),
-    );
+    // Fill all but the last item across all parts
+    for (let i = 0; i < TOTAL - 1; i++) {
+      const entry = ALL_ITEMS[i]!;
+      fireEvent.click(poolItem(entry.item.label));
+    }
     expect(submit.disabled).toBe(true);
-    fireEvent.click(poolItem("OVER"));
+    fireEvent.click(poolItem(ALL_ITEMS.at(-1)!.item.label));
     expect(submit.disabled).toBe(false);
   });
 
@@ -465,20 +487,18 @@ describe("SequenceCard", () => {
         onBack={() => {}}
       />,
     );
-    placeAll(
-      SAMPLE_TEMPLATE,
-      SAMPLE_TEMPLATE.correctOrder.map((c) => c.id),
-    );
+    placeInPartOrder(SAMPLE_TEMPLATE);
     fireEvent.click(screen.getByRole("button", { name: /^Submit$/ }));
     expect(onComplete).toHaveBeenCalledTimes(1);
     expect(onComplete.mock.calls[0]![0]).toMatchObject({
       passed: true,
-      correctCount: SAMPLE_TEMPLATE.correctOrder.length,
+      correctCount: TOTAL,
+      total: TOTAL,
     });
     expect(screen.getByText(/perfect order/i)).toBeTruthy();
   });
 
-  test("submitting a wrong order surfaces 'should be:' for each misplaced slot", () => {
+  test("a swap inside the message part surfaces 'should be:' for each misplaced slot", () => {
     const onComplete = vi.fn();
     render(
       <SequenceCard
@@ -488,16 +508,23 @@ describe("SequenceCard", () => {
         onBack={() => {}}
       />,
     );
-    // Swap slots 1 and 2: place THIS IS first, then MAYDAY, then the rest in order.
-    const swapped = ["this_is", "mayday", "vessel_name", "position", "nature", "over"];
-    placeAll(SAMPLE_TEMPLATE, swapped);
+    // Place call part correctly
+    for (const item of SAMPLE_TEMPLATE.parts[0]!.items) {
+      fireEvent.click(poolItem(item.label));
+    }
+    // Place message part with slot 0 and slot 1 swapped
+    const msg = SAMPLE_TEMPLATE.parts[1]!.items;
+    const swapped = [msg[1]!, msg[0]!, ...msg.slice(2)];
+    for (const item of swapped) {
+      fireEvent.click(poolItem(item.label));
+    }
     fireEvent.click(screen.getByRole("button", { name: /^Submit$/ }));
     expect(onComplete.mock.calls[0]![0]).toMatchObject({
       passed: false,
-      correctCount: SAMPLE_TEMPLATE.correctOrder.length - 2,
+      correctCount: TOTAL - 2,
     });
     expect(screen.getAllByText(/should be:/i).length).toBeGreaterThanOrEqual(2);
-    expect(screen.getByText(/should be: MAYDAY signal word/i)).toBeTruthy();
+    expect(screen.getByText(/should be: MAYDAY/i)).toBeTruthy();
   });
 
   test("Try again calls onRestart so the parent can remount with a fresh shuffle", () => {
@@ -510,10 +537,7 @@ describe("SequenceCard", () => {
         onBack={() => {}}
       />,
     );
-    placeAll(
-      SAMPLE_TEMPLATE,
-      SAMPLE_TEMPLATE.correctOrder.map((c) => c.id),
-    );
+    placeInPartOrder(SAMPLE_TEMPLATE);
     fireEvent.click(screen.getByRole("button", { name: /^Submit$/ }));
     fireEvent.click(screen.getByRole("button", { name: /drill again|try again/i }));
     expect(onRestart).toHaveBeenCalled();

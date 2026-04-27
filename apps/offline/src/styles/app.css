@@ -952,11 +952,21 @@
 }
 
 /* ── Structural sequencing drill ── */
-.seq-stage {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 18px;
+.seq-part {
   margin: 8px 0 18px;
+}
+.seq-part + .seq-part {
+  margin-top: 24px;
+  padding-top: 18px;
+  border-top: 1px solid var(--ink-line);
+}
+.seq-part-header {
+  margin: 0 0 10px;
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--brass-deep);
 }
 
 .seq-slots {

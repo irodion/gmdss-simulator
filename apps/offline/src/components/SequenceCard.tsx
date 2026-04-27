@@ -1,12 +1,23 @@
 import { useState } from "react";
 import { gradeSequence } from "../drills/scripts/materialize.ts";
-import type { SequenceGrade, SequenceItem, SequenceTemplate } from "../drills/scripts/types.ts";
+import type {
+  SequenceGrade,
+  SequenceItem,
+  SequenceTemplate,
+  SequenceTemplatePart,
+} from "../drills/scripts/types.ts";
 
 interface SequenceCardProps {
   readonly template: SequenceTemplate;
   readonly onComplete: (grade: SequenceGrade) => void;
   readonly onRestart: () => void;
   readonly onBack: () => void;
+}
+
+interface PartState {
+  readonly part: SequenceTemplatePart;
+  readonly pool: SequenceItem[];
+  readonly placements: (SequenceItem | null)[];
 }
 
 function shuffle<T>(arr: readonly T[]): T[] {
@@ -18,49 +29,75 @@ function shuffle<T>(arr: readonly T[]): T[] {
   return out;
 }
 
+function initParts(template: SequenceTemplate): PartState[] {
+  return template.parts.map((part) => ({
+    part,
+    pool: shuffle(part.items),
+    placements: Array(part.items.length).fill(null),
+  }));
+}
+
 export function SequenceCard({ template, onComplete, onRestart, onBack }: SequenceCardProps) {
-  const total = template.correctOrder.length;
-  const [pool, setPool] = useState<SequenceItem[]>(() => shuffle(template.correctOrder));
-  const [placements, setPlacements] = useState<(SequenceItem | null)[]>(() =>
-    Array(total).fill(null),
-  );
+  const [parts, setParts] = useState<PartState[]>(() => initParts(template));
   const [grade, setGrade] = useState<SequenceGrade | null>(null);
 
-  const filledCount = placements.filter((p) => p !== null).length;
-  const ready = filledCount === total;
+  const ready = parts.every((p) => p.placements.every((slot) => slot !== null));
 
-  function handlePoolPick(item: SequenceItem) {
-    if (grade !== null) return;
-    const nextEmpty = placements.findIndex((p) => p === null);
-    if (nextEmpty === -1) return;
-    const next = [...placements];
-    next[nextEmpty] = item;
-    setPlacements(next);
-    setPool((p) => p.filter((x) => x.id !== item.id));
+  function updatePart(partId: string, updater: (state: PartState) => PartState) {
+    setParts((prev) => prev.map((p) => (p.part.id === partId ? updater(p) : p)));
   }
 
-  function handleSlotReturn(slotIndex: number) {
+  function handlePoolPick(partId: string, item: SequenceItem) {
     if (grade !== null) return;
-    const item = placements[slotIndex];
-    if (!item) return;
-    const next = [...placements];
-    next[slotIndex] = null;
-    setPlacements(next);
-    setPool((p) => [...p, item]);
+    updatePart(partId, (state) => {
+      const nextEmpty = state.placements.findIndex((p) => p === null);
+      if (nextEmpty === -1) return state;
+      const placements = [...state.placements];
+      placements[nextEmpty] = item;
+      return {
+        ...state,
+        placements,
+        pool: state.pool.filter((x) => x.id !== item.id),
+      };
+    });
+  }
+
+  function handleSlotReturn(partId: string, slotIndex: number) {
+    if (grade !== null) return;
+    updatePart(partId, (state) => {
+      const item = state.placements[slotIndex];
+      if (!item) return state;
+      const placements = [...state.placements];
+      placements[slotIndex] = null;
+      return {
+        ...state,
+        placements,
+        pool: [...state.pool, item],
+      };
+    });
   }
 
   function handleSubmit() {
     if (!ready || grade !== null) return;
-    const result = gradeSequence(template, placements as SequenceItem[]);
+    const placementsByPart = new Map<string, SequenceItem[]>(
+      parts.map((p) => [p.part.id, p.placements as SequenceItem[]]),
+    );
+    const result = gradeSequence(template, placementsByPart);
     setGrade(result);
     onComplete(result);
   }
 
-  function slotState(i: number): "empty" | "filled" | "correct" | "wrong" {
+  function slotState(
+    partId: string,
+    slotIndex: number,
+    placed: SequenceItem | null,
+  ): "empty" | "filled" | "correct" | "wrong" {
     if (grade) {
-      return grade.placements[i]!.correct ? "correct" : "wrong";
+      const partGrade = grade.parts.find((p) => p.partId === partId);
+      const cell = partGrade?.placements[slotIndex];
+      return cell?.correct ? "correct" : "wrong";
     }
-    return placements[i] === null ? "empty" : "filled";
+    return placed === null ? "empty" : "filled";
   }
 
   return (
@@ -70,54 +107,66 @@ export function SequenceCard({ template, onComplete, onRestart, onBack }: Sequen
         Place each element in the correct order
       </div>
 
-      <div className="seq-stage">
-        <ol className="seq-slots">
-          {placements.map((placed, i) => {
-            const state = slotState(i);
-            const expected = grade ? grade.placements[i]!.expected : null;
-            return (
-              <li key={i} className="seq-slot" data-state={state}>
-                <button
-                  type="button"
-                  className="seq-slot-btn"
-                  onClick={() => handleSlotReturn(i)}
-                  disabled={placed === null || grade !== null}
-                  aria-label={
-                    placed === null ? `Slot ${i + 1}, empty` : `Slot ${i + 1}, ${placed.label}`
-                  }
-                >
-                  <span className="seq-slot-num" aria-hidden="true">
-                    {i + 1}.
-                  </span>
-                  <span className="seq-slot-content">
-                    {placed === null ? <em className="seq-slot-placeholder">—</em> : placed.label}
-                  </span>
-                </button>
-                {state === "wrong" && expected ? (
-                  <div className="seq-slot-expected">should be: {expected.label}</div>
-                ) : null}
-              </li>
-            );
-          })}
-        </ol>
+      {parts.map((state) => {
+        const partGrade = grade?.parts.find((p) => p.partId === state.part.id);
+        return (
+          <section key={state.part.id} className="seq-part">
+            <h3 className="seq-part-header">{state.part.label}</h3>
+            <ol className="seq-slots">
+              {state.placements.map((placed, i) => {
+                const status = slotState(state.part.id, i, placed);
+                const expected = partGrade?.placements[i]?.expected ?? null;
+                return (
+                  <li key={i} className="seq-slot" data-state={status}>
+                    <button
+                      type="button"
+                      className="seq-slot-btn"
+                      onClick={() => handleSlotReturn(state.part.id, i)}
+                      disabled={placed === null || grade !== null}
+                      aria-label={
+                        placed === null
+                          ? `${state.part.label} slot ${i + 1}, empty`
+                          : `${state.part.label} slot ${i + 1}, ${placed.label}`
+                      }
+                    >
+                      <span className="seq-slot-num" aria-hidden="true">
+                        {i + 1}.
+                      </span>
+                      <span className="seq-slot-content">
+                        {placed === null ? (
+                          <em className="seq-slot-placeholder">—</em>
+                        ) : (
+                          placed.label
+                        )}
+                      </span>
+                    </button>
+                    {status === "wrong" && expected ? (
+                      <div className="seq-slot-expected">should be: {expected.label}</div>
+                    ) : null}
+                  </li>
+                );
+              })}
+            </ol>
 
-        <div className="seq-pool" aria-label="Pool of phrases">
-          {pool.map((item) => (
-            <button
-              key={item.id}
-              type="button"
-              className="seq-pool-item"
-              onClick={() => handlePoolPick(item)}
-              disabled={grade !== null}
-            >
-              {item.label}
-            </button>
-          ))}
-          {pool.length === 0 && grade === null ? (
-            <p className="seq-pool-empty">All elements placed — review and Submit.</p>
-          ) : null}
-        </div>
-      </div>
+            <div className="seq-pool" aria-label={`${state.part.label} pool`}>
+              {state.pool.map((item) => (
+                <button
+                  key={item.id}
+                  type="button"
+                  className="seq-pool-item"
+                  onClick={() => handlePoolPick(state.part.id, item)}
+                  disabled={grade !== null}
+                >
+                  {item.label}
+                </button>
+              ))}
+              {state.pool.length === 0 && grade === null ? (
+                <p className="seq-pool-empty">All elements placed.</p>
+              ) : null}
+            </div>
+          </section>
+        );
+      })}
 
       <div className="actions">
         {grade === null ? (

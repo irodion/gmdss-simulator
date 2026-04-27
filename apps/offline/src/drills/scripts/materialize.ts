@@ -3,45 +3,53 @@ import {
   callLabelForCategory,
   type SequenceGrade,
   type SequenceItem,
+  type SequencePartGrade,
   type SequencePlacementResult,
   type SequenceTemplate,
+  type SequenceTemplatePart,
   type SituationalPrompt,
 } from "./types.ts";
 
-function labelForFieldId(rubric: RubricDefinition, id: string): string | null {
-  const field = rubric.requiredFields.find((f) => f.id === id);
-  if (field) return field.label;
-  const proword = rubric.prowordRules.find((p) => p.id === id);
-  return proword ? proword.label : null;
-}
-
 export function materializeStructural(rubric: RubricDefinition): SequenceTemplate {
-  const correctOrder: SequenceItem[] = rubric.sequenceRules.fieldOrder
-    .map((id) => ({ id, label: labelForFieldId(rubric, id) }))
-    .filter((entry): entry is SequenceItem => entry.label != null);
+  if (!rubric.sequenceParts || rubric.sequenceParts.length === 0) {
+    throw new Error(`Rubric ${rubric.id} has no sequenceParts; sequencing drill requires them`);
+  }
+  const parts: SequenceTemplatePart[] = rubric.sequenceParts.map((part) => ({
+    id: part.id,
+    label: part.label,
+    items: part.items.map((item) => ({ id: item.id, label: item.label })),
+  }));
   return {
     rubricId: rubric.id,
     callLabel: callLabelForCategory(rubric.category),
-    correctOrder,
+    parts,
   };
 }
 
 export function gradeSequence(
   template: SequenceTemplate,
-  placements: readonly SequenceItem[],
+  placementsByPart: ReadonlyMap<string, readonly SequenceItem[]>,
 ): SequenceGrade {
-  const total = template.correctOrder.length;
-  const results: SequencePlacementResult[] = [];
+  const parts: SequencePartGrade[] = [];
   let correctCount = 0;
-  for (let i = 0; i < total; i++) {
-    const expected = template.correctOrder[i]!;
-    const placed = placements[i]!;
-    const correct = placed.id === expected.id;
-    if (correct) correctCount++;
-    results.push({ placed, expected, correct });
+  let total = 0;
+
+  for (const part of template.parts) {
+    const placements = placementsByPart.get(part.id) ?? [];
+    const partResults: SequencePlacementResult[] = [];
+    for (let i = 0; i < part.items.length; i++) {
+      const expected = part.items[i]!;
+      const placed = placements[i]!;
+      const correct = placed.id === expected.id;
+      if (correct) correctCount++;
+      total++;
+      partResults.push({ placed, expected, correct });
+    }
+    parts.push({ partId: part.id, placements: partResults });
   }
+
   return {
-    placements: results,
+    parts,
     correctCount,
     total,
     passed: correctCount === total,
