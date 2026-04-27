@@ -1,9 +1,42 @@
+import { cpSync, existsSync, mkdirSync, rmSync } from "node:fs";
+import { dirname, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
 import react from "@vitejs/plugin-react";
-import { defineConfig } from "vite-plus";
+import { defineConfig, type Plugin } from "vite-plus";
 import { VitePWA } from "vite-plugin-pwa";
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const FRONTEND_CONTENT = resolve(__dirname, "../frontend/public/content/en");
+const OFFLINE_CONTENT = resolve(__dirname, "public/content/en");
+
+/**
+ * Mirrors apps/frontend's `public/content/en/{rubrics,scenarios}` into this
+ * app's `public/` so the rubric+scenario JSON ships with the static bundle and
+ * gets registered by the service-worker precache. The mirrored tree is
+ * gitignored — the frontend tree remains the single source of truth.
+ */
+function copyFrontendContent(): Plugin {
+  return {
+    name: "offline-copy-frontend-content",
+    enforce: "pre",
+    buildStart() {
+      if (!existsSync(FRONTEND_CONTENT)) {
+        throw new Error(`Frontend content not found at ${FRONTEND_CONTENT}`);
+      }
+      rmSync(OFFLINE_CONTENT, { recursive: true, force: true });
+      mkdirSync(OFFLINE_CONTENT, { recursive: true });
+      for (const sub of ["rubrics", "scenarios"]) {
+        cpSync(resolve(FRONTEND_CONTENT, sub), resolve(OFFLINE_CONTENT, sub), {
+          recursive: true,
+        });
+      }
+    },
+  };
+}
 
 export default defineConfig({
   plugins: [
+    copyFrontendContent(),
     react(),
     VitePWA({
       registerType: "autoUpdate",
@@ -27,7 +60,7 @@ export default defineConfig({
         ],
       },
       workbox: {
-        globPatterns: ["**/*.{js,css,html,svg,png,woff2}"],
+        globPatterns: ["**/*.{js,css,html,svg,png,woff2,json}"],
         runtimeCaching: [
           {
             urlPattern: /^https:\/\/fonts\.googleapis\.com\//,

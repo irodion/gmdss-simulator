@@ -1,10 +1,11 @@
 import { expect, test } from "@playwright/test";
 
-test("config screen renders the three drill modes", async ({ page }) => {
+test("config screen renders the four drill modes", async ({ page }) => {
   await page.goto("/");
   await expect(page.getByRole("tab", { name: "Callsigns" })).toBeVisible();
   await expect(page.getByRole("tab", { name: "Numbers" })).toBeVisible();
   await expect(page.getByRole("tab", { name: "Listen" })).toBeVisible();
+  await expect(page.getByRole("tab", { name: "Procedures" })).toBeVisible();
   await expect(page.getByRole("button", { name: /^begin/i })).toBeVisible();
 });
 
@@ -48,6 +49,38 @@ test("voice dictation button appears during a callsign drill on supported browse
   await page.getByRole("button", { name: /^begin/i }).click();
 
   await expect(page.getByRole("button", { name: /start voice dictation/i })).toBeVisible();
+});
+
+test("Procedures tab loads the home tiles and a structural drill", async ({ page }) => {
+  await page.goto("/");
+  await page.getByRole("tab", { name: "Procedures" }).click();
+
+  await expect(page.getByRole("button", { name: /structural drill/i })).toBeVisible();
+  await expect(
+    page.getByRole("button", { name: /situational drill: mayday — fire/i }),
+  ).toBeVisible();
+
+  await page.getByRole("button", { name: /structural drill/i }).click();
+  await expect(page.getByText(/question 1 of/i)).toBeVisible();
+  // Pick whichever option happens to be first; we only verify the UI advances.
+  await page.getByRole("radio").first().click();
+  await expect(page.getByRole("button", { name: /next →|see results/i })).toBeEnabled();
+});
+
+test("Procedures situational drill grades a transcript and shows the breakdown", async ({
+  page,
+}) => {
+  await page.goto("/");
+  await page.getByRole("tab", { name: "Procedures" }).click();
+  await page.getByRole("button", { name: /situational drill: mayday — fire/i }).click();
+
+  await page
+    .getByLabel(/your transmission/i)
+    .fill(
+      "MAYDAY MAYDAY MAYDAY THIS IS BLUE DUCK BLUE DUCK BLUE DUCK CALLSIGN 5BCD2 POSITION 50 NORTH FIRE REQUEST IMMEDIATE ASSISTANCE 8 PERSONS ON BOARD OVER",
+    );
+  await page.getByRole("button", { name: "Submit" }).click();
+  await expect(page.getByText(/required fields/i)).toBeVisible();
 });
 
 test("service worker is registered after first load", async ({ page }) => {

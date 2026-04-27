@@ -887,6 +887,241 @@
   }
 }
 
+/* ── Procedures (drill IV) ── */
+.proc-tiles {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 14px;
+  margin: 18px 0 20px;
+}
+
+.proc-tile {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  grid-template-rows: auto auto auto;
+  gap: 4px 12px;
+  padding: 16px 18px;
+  text-align: left;
+  background: var(--paper-deep);
+  border: 1px solid var(--ink-line);
+  border-left: 3px solid var(--brass);
+  font-family: var(--body);
+  color: var(--ink);
+  cursor: pointer;
+  transition:
+    background 120ms ease,
+    border-color 120ms ease;
+}
+.proc-tile:hover {
+  background: var(--paper-dark);
+  border-left-color: var(--brass-deep);
+}
+.proc-tile-eyebrow {
+  grid-column: 1 / -1;
+  font-family: var(--mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+.proc-tile-title {
+  font-family: var(--display);
+  font-size: 1.15rem;
+  color: var(--brass-deep);
+}
+.proc-tile-stat {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.16em;
+  color: var(--sea);
+  align-self: center;
+  white-space: nowrap;
+}
+.proc-tile-detail {
+  grid-column: 1 / -1;
+  font-size: 0.88rem;
+  line-height: 1.45;
+  color: var(--ink-soft);
+}
+
+.proc-loading,
+.proc-error {
+  padding: 24px 6px;
+  font-family: var(--body);
+  color: var(--ink-soft);
+}
+
+/* ── MC question (Structural drill) ── */
+.mc-options {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+  margin: 8px 0 18px;
+}
+.mc-option {
+  padding: 14px 18px;
+  text-align: left;
+  background: var(--paper);
+  border: 1px solid var(--ink-line);
+  font-family: var(--body);
+  font-size: 1rem;
+  color: var(--ink);
+  cursor: pointer;
+  transition:
+    background 120ms ease,
+    border-color 120ms ease,
+    color 120ms ease;
+}
+.mc-option:hover:not(:disabled) {
+  background: var(--paper-deep);
+  border-color: var(--brass);
+}
+.mc-option:disabled {
+  cursor: default;
+}
+.mc-option[data-state="correct"] {
+  background: var(--sea-soft);
+  border-color: var(--sea);
+  color: var(--sea);
+  font-weight: 600;
+}
+.mc-option[data-state="wrong"] {
+  background: var(--coral-soft);
+  border-color: var(--coral);
+  color: var(--coral);
+  text-decoration: line-through;
+}
+.mc-option[data-state="miss"] {
+  opacity: 0.5;
+}
+
+/* ── Situational card ── */
+.scenario-brief {
+  background: var(--paper-deep);
+  border-left: 3px solid var(--sea);
+  padding: 12px 14px;
+  margin: 10px 0 14px;
+  font-family: var(--body);
+}
+.scenario-brief-line {
+  margin: 0 0 4px;
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  letter-spacing: 0.06em;
+  color: var(--ink-soft);
+}
+.scenario-brief-task {
+  margin: 8px 0 0;
+  font-size: 0.92rem;
+  line-height: 1.5;
+  color: var(--ink);
+}
+.scenario-hints {
+  margin: 0 0 14px;
+  font-family: var(--body);
+  font-size: 0.9rem;
+  color: var(--ink-soft);
+}
+.scenario-hints summary {
+  cursor: pointer;
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  padding: 4px 0;
+}
+.scenario-hints-list {
+  margin: 6px 0 0;
+  padding-left: 1.4em;
+  line-height: 1.55;
+}
+.scenario-hints-list li + li {
+  margin-top: 4px;
+}
+
+.answer-input-tall {
+  min-height: 160px;
+}
+
+.canonical-reveal {
+  background: var(--paper-deep);
+  border-left: 3px solid var(--brass);
+  padding: 12px 14px;
+  margin: 12px 0 0;
+  font-family: var(--mono);
+  font-size: 0.85rem;
+  line-height: 1.55;
+  white-space: pre-wrap;
+  color: var(--ink);
+}
+
+.reveal-warn {
+  font-style: italic;
+  color: var(--coral);
+}
+
+/* ── Grade breakdown ── */
+.grade-breakdown {
+  margin-top: 18px;
+  padding: 16px 0 0;
+  border-top: 1px solid var(--ink-line);
+}
+.grade-overall {
+  font-family: var(--display);
+  font-size: 3rem;
+  text-align: center;
+  color: var(--brass-deep);
+  line-height: 1;
+}
+.grade-overall sup {
+  font-size: 1rem;
+  color: var(--ink-soft);
+  margin-left: 2px;
+}
+.grade-dimensions {
+  list-style: none;
+  margin: 14px 0 0;
+  padding: 0;
+}
+.grade-dim {
+  padding: 10px 0;
+  border-bottom: 1px solid var(--ink-hair);
+}
+.grade-dim:last-child {
+  border-bottom: none;
+}
+.grade-dim-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-family: var(--body);
+  font-size: 0.95rem;
+}
+.grade-dim-label {
+  color: var(--ink);
+}
+.grade-dim-score {
+  font-family: var(--mono);
+  font-size: 0.85rem;
+  color: var(--ink-soft);
+}
+.grade-dim-score small {
+  font-size: 0.7em;
+  color: var(--ink-faint);
+}
+.grade-dim[data-state="pass"] .grade-dim-score {
+  color: var(--sea);
+}
+.grade-dim[data-state="fail"] .grade-dim-score {
+  color: var(--coral);
+}
+.grade-dim-missed {
+  margin-top: 4px;
+  font-size: 0.82rem;
+  color: var(--coral);
+  font-style: italic;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .masthead,
   .card,
@@ -991,5 +1226,18 @@
   .count-btn {
     font-size: 1.2rem;
     padding: 12px 4px;
+  }
+  .proc-tile {
+    padding: 14px 14px;
+  }
+  .proc-tile-title {
+    font-size: 1rem;
+  }
+  .mc-option {
+    font-size: 0.92rem;
+    padding: 12px 14px;
+  }
+  .grade-overall {
+    font-size: 2.4rem;
   }
 }

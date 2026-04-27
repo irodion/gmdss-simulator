@@ -1,14 +1,20 @@
 import { act, fireEvent, render, screen } from "@testing-library/react";
+import type { RubricDefinition, ScoreBreakdown } from "@gmdss-simulator/utils";
 import { afterEach, beforeEach, describe, expect, test, vi } from "vite-plus/test";
 import type { DrillResult } from "../drills/drill-types.ts";
+import type { MCQuestion, ScriptDrillContent, SituationalPrompt } from "../drills/scripts/types.ts";
 import { setMatchMedia, setUserAgent } from "../test-utils.ts";
+import { GradeBreakdown } from "./GradeBreakdown.tsx";
 import { InstallChip } from "./InstallChip.tsx";
 import { MicButton } from "./MicButton.tsx";
 import { ModeTabs } from "./ModeTabs.tsx";
 import { PhoneticCheatsheet } from "./PhoneticCheatsheet.tsx";
+import { ProceduresHome } from "./ProceduresHome.tsx";
 import { ResultBadge } from "./ResultBadge.tsx";
 import { SessionConfig } from "./SessionConfig.tsx";
 import { SessionResults } from "./SessionResults.tsx";
+import { SituationalCard } from "./SituationalCard.tsx";
+import { StructuralCard } from "./StructuralCard.tsx";
 
 describe("ModeTabs", () => {
   test("marks the active mode as selected", () => {
@@ -275,5 +281,248 @@ describe("PhoneticCheatsheet", () => {
     expect(screen.getByText("NIN-ER")).toBeTruthy();
     expect(screen.getByText("FIFE")).toBeTruthy();
     expect(screen.getByText("AIT")).toBeTruthy();
+  });
+});
+
+const SAMPLE_RUBRIC: RubricDefinition = {
+  id: "v1/distress",
+  version: "1.0.0",
+  category: "distress",
+  requiredFields: [
+    { id: "mayday", label: "MAYDAY signal word", patterns: ["MAYDAY"], required: true },
+    { id: "this_is", label: "THIS IS", patterns: ["THIS\\s+IS"], required: true },
+    { id: "vessel_name", label: "Own vessel name", patterns: ["BLUE\\s*DUCK"], required: true },
+    { id: "position", label: "Position", patterns: ["POSITION"], required: true },
+    { id: "nature", label: "Nature of distress", patterns: ["FIRE"], required: true },
+  ],
+  prowordRules: [
+    { id: "mayday", label: "MAYDAY x4", pattern: "MAYDAY", expectedCount: 4 },
+    { id: "over", label: "OVER", pattern: "\\bOVER\\b" },
+  ],
+  sequenceRules: {
+    fieldOrder: ["mayday", "this_is", "vessel_name", "position", "nature", "over"],
+  },
+  channelRules: { requiredChannel: 16, blockChannel70Voice: true },
+};
+
+const SAMPLE_PROMPT: SituationalPrompt = {
+  scenarioId: "2.1",
+  rubricId: "v1/distress",
+  title: "MAYDAY — Fire on Board",
+  description: "Engine room fire.",
+  task: "Send a DSC alert then voice MAYDAY.",
+  vessel: { name: "BLUE DUCK", callsign: "5BCD2", personsOnBoard: 8 },
+  hints: ["Press distress 5s", "Say MAYDAY 3 times"],
+  canonical:
+    "MAYDAY MAYDAY MAYDAY, THIS IS BLUE DUCK BLUE DUCK BLUE DUCK, POSITION 50N, FIRE, 8 PERSONS ON BOARD, OVER",
+  requiredChannel: 16,
+  category: "distress",
+};
+
+const SAMPLE_QUESTION: MCQuestion = {
+  id: "q1",
+  kind: "next-after",
+  rubricId: "v1/distress",
+  callLabel: "MAYDAY call",
+  prompt: "In a MAYDAY call, what comes immediately after “MAYDAY signal word”?",
+  options: ["THIS IS", "Position", "Nature of distress", "OVER"],
+  correctIndex: 0,
+};
+
+const SAMPLE_CONTENT: ScriptDrillContent = {
+  structuralRubric: SAMPLE_RUBRIC,
+  scenarios: [SAMPLE_PROMPT],
+  rubricsByScenario: new Map([[SAMPLE_PROMPT.scenarioId, SAMPLE_RUBRIC]]),
+};
+
+describe("ProceduresHome", () => {
+  beforeEach(() => {
+    window.localStorage.clear();
+  });
+
+  test("renders a tile for the structural drill and one per scenario", () => {
+    render(
+      <ProceduresHome
+        content={SAMPLE_CONTENT}
+        statsToken={0}
+        onStartStructural={() => {}}
+        onStartSituational={() => {}}
+      />,
+    );
+    expect(screen.getByText(/order of fields/i)).toBeTruthy();
+    expect(screen.getByText(SAMPLE_PROMPT.title)).toBeTruthy();
+  });
+
+  test("calls onStartStructural when the structural tile is clicked", () => {
+    const onStart = vi.fn();
+    render(
+      <ProceduresHome
+        content={SAMPLE_CONTENT}
+        statsToken={0}
+        onStartStructural={onStart}
+        onStartSituational={() => {}}
+      />,
+    );
+    fireEvent.click(screen.getByRole("button", { name: /structural drill/i }));
+    expect(onStart).toHaveBeenCalled();
+  });
+
+  test("calls onStartSituational with the scenario id when the scenario tile is clicked", () => {
+    const onStart = vi.fn();
+    render(
+      <ProceduresHome
+        content={SAMPLE_CONTENT}
+        statsToken={0}
+        onStartStructural={() => {}}
+        onStartSituational={onStart}
+      />,
+    );
+    fireEvent.click(screen.getByRole("button", { name: /situational drill: mayday/i }));
+    expect(onStart).toHaveBeenCalledWith("2.1");
+  });
+});
+
+describe("StructuralCard", () => {
+  test("clicking the correct option marks it correct and unlocks Next", () => {
+    const onAnswer = vi.fn();
+    render(
+      <StructuralCard
+        question={SAMPLE_QUESTION}
+        index={0}
+        total={3}
+        onAnswer={onAnswer}
+        onNext={() => {}}
+      />,
+    );
+    const correctBtn = screen.getByRole("radio", { name: "THIS IS" });
+    fireEvent.click(correctBtn);
+    expect(onAnswer).toHaveBeenCalledWith(true);
+    expect(correctBtn.getAttribute("data-state")).toBe("correct");
+    const nextBtn = screen.getByRole("button", { name: /next/i }) as HTMLButtonElement;
+    expect(nextBtn.disabled).toBe(false);
+  });
+
+  test("clicking a wrong option marks both wrong and the correct one revealed", () => {
+    const onAnswer = vi.fn();
+    render(
+      <StructuralCard
+        question={SAMPLE_QUESTION}
+        index={0}
+        total={3}
+        onAnswer={onAnswer}
+        onNext={() => {}}
+      />,
+    );
+    const wrongBtn = screen.getByRole("radio", { name: "OVER" });
+    fireEvent.click(wrongBtn);
+    expect(onAnswer).toHaveBeenCalledWith(false);
+    expect(wrongBtn.getAttribute("data-state")).toBe("wrong");
+    expect(screen.getByRole("radio", { name: "THIS IS" }).getAttribute("data-state")).toBe(
+      "correct",
+    );
+  });
+
+  test("on the last question Next reads 'See results'", () => {
+    render(
+      <StructuralCard
+        question={SAMPLE_QUESTION}
+        index={2}
+        total={3}
+        onAnswer={() => {}}
+        onNext={() => {}}
+      />,
+    );
+    expect(screen.getByRole("button", { name: /see results/i })).toBeTruthy();
+  });
+});
+
+describe("GradeBreakdown", () => {
+  test("renders the overall score and one row per dimension", () => {
+    const breakdown: ScoreBreakdown = {
+      overall: 73,
+      rubricVersion: "1.0.0",
+      timestamp: 0,
+      dimensions: [
+        {
+          id: "required_fields",
+          label: "Required Fields",
+          weight: 0.35,
+          score: 80,
+          maxScore: 100,
+          matchedItems: ["MAYDAY"],
+          missingItems: ["Position"],
+        },
+        {
+          id: "sequence",
+          label: "Sequence",
+          weight: 0.25,
+          score: 100,
+          maxScore: 100,
+          matchedItems: [],
+          missingItems: [],
+        },
+      ],
+    };
+    render(<GradeBreakdown breakdown={breakdown} />);
+    expect(screen.getByLabelText(/overall score 73/i)).toBeTruthy();
+    expect(screen.getByText(/required fields/i)).toBeTruthy();
+    expect(screen.getByText(/missed: position/i)).toBeTruthy();
+  });
+});
+
+describe("SituationalCard", () => {
+  test("disables Submit until text is entered, then grades and shows the breakdown", () => {
+    render(
+      <SituationalCard
+        prompt={SAMPLE_PROMPT}
+        rubric={SAMPLE_RUBRIC}
+        onComplete={() => {}}
+        onRestart={() => {}}
+        onBack={() => {}}
+      />,
+    );
+    const submit = screen.getByRole("button", { name: "Submit" }) as HTMLButtonElement;
+    expect(submit.disabled).toBe(true);
+
+    const textarea = screen.getByLabelText(/your transmission/i);
+    fireEvent.change(textarea, { target: { value: SAMPLE_PROMPT.canonical } });
+    expect(submit.disabled).toBe(false);
+
+    fireEvent.click(submit);
+    expect(screen.getByText(/required fields/i)).toBeTruthy();
+  });
+
+  test("Reveal canonical shows the canonical script and warns the attempt won't be recorded", () => {
+    render(
+      <SituationalCard
+        prompt={SAMPLE_PROMPT}
+        rubric={SAMPLE_RUBRIC}
+        onComplete={() => {}}
+        onRestart={() => {}}
+        onBack={() => {}}
+      />,
+    );
+    fireEvent.click(screen.getByRole("button", { name: /reveal canonical/i }));
+    expect(screen.getByLabelText(/canonical script/i)).toBeTruthy();
+    expect(screen.getByText(/won't be recorded/i)).toBeTruthy();
+  });
+
+  test("does not call onComplete when grading after reveal", () => {
+    const onComplete = vi.fn();
+    render(
+      <SituationalCard
+        prompt={SAMPLE_PROMPT}
+        rubric={SAMPLE_RUBRIC}
+        onComplete={onComplete}
+        onRestart={() => {}}
+        onBack={() => {}}
+      />,
+    );
+    fireEvent.click(screen.getByRole("button", { name: /reveal canonical/i }));
+    fireEvent.change(screen.getByLabelText(/your transmission/i), {
+      target: { value: "MAYDAY" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Submit" }));
+    expect(onComplete).not.toHaveBeenCalled();
   });
 });

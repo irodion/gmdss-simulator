@@ -11,6 +11,7 @@
     "test:coverage": "vp test --coverage"
   },
   "dependencies": {
+    "@gmdss-simulator/utils": "workspace:*",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "vite-plugin-pwa": "catalog:"

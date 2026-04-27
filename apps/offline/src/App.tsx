@@ -2,7 +2,8 @@ import "./styles/app.css";
 import { useCallback, useMemo, useState } from "react";
 import { DrillCard } from "./components/DrillCard.tsx";
 import { InstallChip } from "./components/InstallChip.tsx";
-import { ModeTabs } from "./components/ModeTabs.tsx";
+import { ModeTabs, type AppMode } from "./components/ModeTabs.tsx";
+import { ProceduresPanel } from "./components/ProceduresPanel.tsx";
 import { SessionConfig } from "./components/SessionConfig.tsx";
 import { SessionResults } from "./components/SessionResults.tsx";
 import {
@@ -28,21 +29,23 @@ function scorerFor(mode: DrillType): (c: DrillChallenge, a: string) => DrillResu
 }
 
 export function App() {
-  const [mode, setMode] = useState<DrillType>("phonetic");
+  const [mode, setMode] = useState<AppMode>("phonetic");
   const [count, setCount] = useState<number>(5);
   const [screen, setScreen] = useState<Screen>("config");
   const [challenges, setChallenges] = useState<DrillChallenge[]>([]);
   const [index, setIndex] = useState(0);
   const [results, setResults] = useState<DrillResult[]>([]);
 
-  const score = useMemo(() => scorerFor(mode), [mode]);
+  const drillMode: DrillType | null = mode === "procedures" ? null : mode;
+  const score = useMemo(() => (drillMode ? scorerFor(drillMode) : scoreDrill), [drillMode]);
 
   const handleStart = useCallback(() => {
-    setChallenges(generateChallenges(mode, count));
+    if (!drillMode) return;
+    setChallenges(generateChallenges(drillMode, count));
     setIndex(0);
     setResults([]);
     setScreen("drill");
-  }, [mode, count]);
+  }, [drillMode, count]);
 
   const handleSubmit = useCallback((result: DrillResult) => {
     setResults((prev) => [...prev, result]);
@@ -92,11 +95,13 @@ export function App() {
           />
 
           <div className="screen-area">
-            {screen === "config" ? (
+            {mode === "procedures" ? <ProceduresPanel /> : null}
+
+            {mode !== "procedures" && screen === "config" ? (
               <SessionConfig count={count} onCountChange={setCount} onStart={handleStart} />
             ) : null}
 
-            {screen === "drill" && challenges[index] ? (
+            {mode !== "procedures" && screen === "drill" && challenges[index] ? (
               <DrillCard
                 key={challenges[index]!.id}
                 challenge={challenges[index]!}
@@ -108,15 +113,17 @@ export function App() {
               />
             ) : null}
 
-            {screen === "summary" ? (
+            {mode !== "procedures" && screen === "summary" ? (
               <SessionResults results={results} onRestart={handleRestart} />
             ) : null}
           </div>
 
-          <p className="help">
-            Both standard ("THREE") and maritime ("TREE") forms are accepted. Voice quality for
-            "Hear correct" depends on your device.
-          </p>
+          {mode !== "procedures" ? (
+            <p className="help">
+              Both standard ("THREE") and maritime ("TREE") forms are accepted. Voice quality for
+              "Hear correct" depends on your device.
+            </p>
+          ) : null}
         </article>
 
         <p className="app-footer">
