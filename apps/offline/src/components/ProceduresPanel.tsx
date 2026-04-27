@@ -2,25 +2,20 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { loadScriptDrillContent } from "../drills/scripts/content-loader.ts";
 import { materializeStructural } from "../drills/scripts/materialize.ts";
 import { recordAttempt } from "../drills/scripts/stats.ts";
-import type { MCQuestion, ScriptDrillContent, SituationalGrade } from "../drills/scripts/types.ts";
+import type {
+  ScriptDrillContent,
+  SequenceGrade,
+  SequenceTemplate,
+  SituationalGrade,
+} from "../drills/scripts/types.ts";
 import { ProceduresHome } from "./ProceduresHome.tsx";
+import { SequenceCard } from "./SequenceCard.tsx";
 import { SituationalCard } from "./SituationalCard.tsx";
-import { StructuralCard } from "./StructuralCard.tsx";
 
 type View =
   | { kind: "home" }
-  | { kind: "structural"; questions: readonly MCQuestion[]; index: number; correct: number }
-  | { kind: "structural-summary"; total: number; correct: number }
+  | { kind: "structural"; template: SequenceTemplate; round: number }
   | { kind: "situational"; scenarioId: string };
-
-function shuffle<T>(arr: readonly T[]): T[] {
-  const out = [...arr];
-  for (let i = out.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [out[i], out[j]] = [out[j]!, out[i]!];
-  }
-  return out;
-}
 
 export function ProceduresPanel() {
   const [content, setContent] = useState<ScriptDrillContent | null>(null);
@@ -44,43 +39,32 @@ export function ProceduresPanel() {
 
   const handleStartStructural = useCallback(() => {
     if (!content) return;
-    const all = materializeStructural(content.structuralRubric);
-    const questions = shuffle(all);
-    setView({ kind: "structural", questions, index: 0, correct: 0 });
+    const template = materializeStructural(content.structuralRubric);
+    setView({ kind: "structural", template, round: 0 });
   }, [content]);
 
   const handleStartSituational = useCallback((scenarioId: string) => {
     setView({ kind: "situational", scenarioId });
   }, []);
 
-  const handleStructuralAnswer = useCallback(
-    (correct: boolean) => {
+  const handleStructuralComplete = useCallback(
+    (grade: SequenceGrade) => {
       if (view.kind !== "structural" || !content) return;
-      const q = view.questions[view.index]!;
       recordAttempt({
-        rubricId: q.rubricId,
+        rubricId: content.structuralRubric.id,
         mode: "structural",
         key: content.structuralRubric.id,
         ts: Date.now(),
-        correct,
+        correct: grade.passed,
       });
-      setView((v) =>
-        v.kind === "structural" ? { ...v, correct: v.correct + (correct ? 1 : 0) } : v,
-      );
       setStatsToken((t) => t + 1);
     },
     [view, content],
   );
 
-  const handleStructuralNext = useCallback(() => {
-    if (view.kind !== "structural") return;
-    const next = view.index + 1;
-    if (next >= view.questions.length) {
-      setView({ kind: "structural-summary", total: view.questions.length, correct: view.correct });
-    } else {
-      setView({ ...view, index: next });
-    }
-  }, [view]);
+  const handleStructuralRestart = useCallback(() => {
+    setView((v) => (v.kind === "structural" ? { ...v, round: v.round + 1 } : v));
+  }, []);
 
   const handleSituationalComplete = useCallback(
     (grade: SituationalGrade) => {
@@ -127,38 +111,13 @@ export function ProceduresPanel() {
 
   if (view.kind === "structural") {
     return (
-      <StructuralCard
-        question={view.questions[view.index]!}
-        index={view.index}
-        total={view.questions.length}
-        onAnswer={handleStructuralAnswer}
-        onNext={handleStructuralNext}
+      <SequenceCard
+        key={view.round}
+        template={view.template}
+        onComplete={handleStructuralComplete}
+        onRestart={handleStructuralRestart}
+        onBack={handleHome}
       />
-    );
-  }
-
-  if (view.kind === "structural-summary") {
-    const pct = Math.round((view.correct / view.total) * 100);
-    return (
-      <div>
-        <div className="summary-eyebrow">— Structural drill —</div>
-        <h2 className="summary-heading">
-          {view.correct} of {view.total} correct
-        </h2>
-        <div className="summary-score" aria-label={`Score ${pct} out of 100`}>
-          {pct}
-          <sup>/100</sup>
-        </div>
-        <span className="summary-rule" aria-hidden="true" />
-        <div className="actions">
-          <button type="button" className="btn-secondary" onClick={handleHome}>
-            ← Procedures
-          </button>
-          <button type="button" className="btn-primary btn-grow" onClick={handleStartStructural}>
-            Drill again
-          </button>
-        </div>
-      </div>
     );
   }
 

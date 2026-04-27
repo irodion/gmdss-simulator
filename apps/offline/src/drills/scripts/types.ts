@@ -7,16 +7,28 @@ import type {
 
 export type ScriptDrillMode = "structural" | "situational";
 
-export type StructuralKind = "next-after";
-
-export interface MCQuestion {
+export interface SequenceItem {
   readonly id: string;
-  readonly kind: StructuralKind;
+  readonly label: string;
+}
+
+export interface SequenceTemplate {
   readonly rubricId: string;
   readonly callLabel: string;
-  readonly prompt: string;
-  readonly options: readonly string[];
-  readonly correctIndex: number;
+  readonly correctOrder: readonly SequenceItem[];
+}
+
+export interface SequencePlacementResult {
+  readonly placed: SequenceItem;
+  readonly expected: SequenceItem;
+  readonly correct: boolean;
+}
+
+export interface SequenceGrade {
+  readonly placements: readonly SequencePlacementResult[];
+  readonly correctCount: number;
+  readonly total: number;
+  readonly passed: boolean;
 }
 
 export interface SituationalPrompt {

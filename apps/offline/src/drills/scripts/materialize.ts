@@ -1,9 +1,51 @@
 import type { RubricDefinition, ScenarioDefinition } from "@gmdss-simulator/utils";
-import { generateNextAfterQuestions } from "./checkpoint-gen.ts";
-import type { MCQuestion, SituationalPrompt } from "./types.ts";
+import {
+  callLabelForCategory,
+  type SequenceGrade,
+  type SequenceItem,
+  type SequencePlacementResult,
+  type SequenceTemplate,
+  type SituationalPrompt,
+} from "./types.ts";
 
-export function materializeStructural(rubric: RubricDefinition): MCQuestion[] {
-  return generateNextAfterQuestions(rubric);
+function labelForFieldId(rubric: RubricDefinition, id: string): string | null {
+  const field = rubric.requiredFields.find((f) => f.id === id);
+  if (field) return field.label;
+  const proword = rubric.prowordRules.find((p) => p.id === id);
+  return proword ? proword.label : null;
+}
+
+export function materializeStructural(rubric: RubricDefinition): SequenceTemplate {
+  const correctOrder: SequenceItem[] = rubric.sequenceRules.fieldOrder
+    .map((id) => ({ id, label: labelForFieldId(rubric, id) }))
+    .filter((entry): entry is SequenceItem => entry.label != null);
+  return {
+    rubricId: rubric.id,
+    callLabel: callLabelForCategory(rubric.category),
+    correctOrder,
+  };
+}
+
+export function gradeSequence(
+  template: SequenceTemplate,
+  placements: readonly SequenceItem[],
+): SequenceGrade {
+  const total = template.correctOrder.length;
+  const results: SequencePlacementResult[] = [];
+  let correctCount = 0;
+  for (let i = 0; i < total; i++) {
+    const expected = template.correctOrder[i]!;
+    const placed = placements[i]!;
+    const correct = placed.id === expected.id;
+    if (correct) correctCount++;
+    results.push({ placed, expected, correct });
+  }
+  return {
+    placements: results,
+    correctCount,
+    total,
+    passed: correctCount === total,
+  };
 }
 
 function renderTemplate(template: string, vessel: ScenarioDefinition["vessel"]): string {

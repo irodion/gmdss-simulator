@@ -2,7 +2,11 @@ import { act, fireEvent, render, screen } from "@testing-library/react";
 import type { RubricDefinition, ScoreBreakdown } from "@gmdss-simulator/utils";
 import { afterEach, beforeEach, describe, expect, test, vi } from "vite-plus/test";
 import type { DrillResult } from "../drills/drill-types.ts";
-import type { MCQuestion, ScriptDrillContent, SituationalPrompt } from "../drills/scripts/types.ts";
+import type {
+  ScriptDrillContent,
+  SequenceTemplate,
+  SituationalPrompt,
+} from "../drills/scripts/types.ts";
 import { setMatchMedia, setUserAgent } from "../test-utils.ts";
 import { GradeBreakdown } from "./GradeBreakdown.tsx";
 import { InstallChip } from "./InstallChip.tsx";
@@ -11,10 +15,10 @@ import { ModeTabs } from "./ModeTabs.tsx";
 import { PhoneticCheatsheet } from "./PhoneticCheatsheet.tsx";
 import { ProceduresHome } from "./ProceduresHome.tsx";
 import { ResultBadge } from "./ResultBadge.tsx";
+import { SequenceCard } from "./SequenceCard.tsx";
 import { SessionConfig } from "./SessionConfig.tsx";
 import { SessionResults } from "./SessionResults.tsx";
 import { SituationalCard } from "./SituationalCard.tsx";
-import { StructuralCard } from "./StructuralCard.tsx";
 
 describe("ModeTabs", () => {
   test("marks the active mode as selected", () => {
@@ -319,14 +323,17 @@ const SAMPLE_PROMPT: SituationalPrompt = {
   category: "distress",
 };
 
-const SAMPLE_QUESTION: MCQuestion = {
-  id: "q1",
-  kind: "next-after",
+const SAMPLE_TEMPLATE: SequenceTemplate = {
   rubricId: "v1/distress",
   callLabel: "MAYDAY call",
-  prompt: "In a MAYDAY call, what comes immediately after “MAYDAY signal word”?",
-  options: ["THIS IS", "Position", "Nature of distress", "OVER"],
-  correctIndex: 0,
+  correctOrder: [
+    { id: "mayday", label: "MAYDAY signal word" },
+    { id: "this_is", label: "THIS IS" },
+    { id: "vessel_name", label: "Own vessel name" },
+    { id: "position", label: "Position" },
+    { id: "nature", label: "Nature of distress" },
+    { id: "over", label: "OVER" },
+  ],
 };
 
 const SAMPLE_CONTENT: ScriptDrillContent = {
@@ -382,57 +389,134 @@ describe("ProceduresHome", () => {
   });
 });
 
-describe("StructuralCard", () => {
-  test("clicking the correct option marks it correct and unlocks Next", () => {
-    const onAnswer = vi.fn();
+describe("SequenceCard", () => {
+  function poolItem(label: string): HTMLButtonElement {
+    return screen.getByRole("button", { name: label }) as HTMLButtonElement;
+  }
+  function slot(index: number): HTMLButtonElement {
+    const prefix = `Slot ${index},`;
+    return screen.getByRole("button", {
+      name: (accessible) => accessible.startsWith(prefix),
+    }) as HTMLButtonElement;
+  }
+  function placeAll(template: SequenceTemplate, order: readonly string[]) {
+    for (const id of order) {
+      const item = template.correctOrder.find((c) => c.id === id)!;
+      fireEvent.click(poolItem(item.label));
+    }
+  }
+
+  test("tapping a pool item fills the first empty slot and removes it from the pool", () => {
     render(
-      <StructuralCard
-        question={SAMPLE_QUESTION}
-        index={0}
-        total={3}
-        onAnswer={onAnswer}
-        onNext={() => {}}
+      <SequenceCard
+        template={SAMPLE_TEMPLATE}
+        onComplete={() => {}}
+        onRestart={() => {}}
+        onBack={() => {}}
       />,
     );
-    const correctBtn = screen.getByRole("radio", { name: "THIS IS" });
-    fireEvent.click(correctBtn);
-    expect(onAnswer).toHaveBeenCalledWith(true);
-    expect(correctBtn.getAttribute("data-state")).toBe("correct");
-    const nextBtn = screen.getByRole("button", { name: /next/i }) as HTMLButtonElement;
-    expect(nextBtn.disabled).toBe(false);
+    fireEvent.click(poolItem("Position"));
+    expect(slot(1).textContent).toMatch(/Position/);
+    expect(screen.queryByRole("button", { name: "Position" })).toBeNull();
   });
 
-  test("clicking a wrong option marks both wrong and the correct one revealed", () => {
-    const onAnswer = vi.fn();
+  test("tapping a filled slot returns the item to the pool", () => {
     render(
-      <StructuralCard
-        question={SAMPLE_QUESTION}
-        index={0}
-        total={3}
-        onAnswer={onAnswer}
-        onNext={() => {}}
+      <SequenceCard
+        template={SAMPLE_TEMPLATE}
+        onComplete={() => {}}
+        onRestart={() => {}}
+        onBack={() => {}}
       />,
     );
-    const wrongBtn = screen.getByRole("radio", { name: "OVER" });
-    fireEvent.click(wrongBtn);
-    expect(onAnswer).toHaveBeenCalledWith(false);
-    expect(wrongBtn.getAttribute("data-state")).toBe("wrong");
-    expect(screen.getByRole("radio", { name: "THIS IS" }).getAttribute("data-state")).toBe(
-      "correct",
-    );
+    fireEvent.click(poolItem("Position"));
+    fireEvent.click(slot(1));
+    expect(poolItem("Position")).toBeTruthy();
+    expect(slot(1).textContent).not.toMatch(/Position/);
   });
 
-  test("on the last question Next reads 'See results'", () => {
+  test("Submit is disabled until every slot has a placement", () => {
     render(
-      <StructuralCard
-        question={SAMPLE_QUESTION}
-        index={2}
-        total={3}
-        onAnswer={() => {}}
-        onNext={() => {}}
+      <SequenceCard
+        template={SAMPLE_TEMPLATE}
+        onComplete={() => {}}
+        onRestart={() => {}}
+        onBack={() => {}}
       />,
     );
-    expect(screen.getByRole("button", { name: /see results/i })).toBeTruthy();
+    const submit = screen.getByRole("button", { name: /^Submit$/ }) as HTMLButtonElement;
+    expect(submit.disabled).toBe(true);
+    placeAll(
+      SAMPLE_TEMPLATE,
+      SAMPLE_TEMPLATE.correctOrder.slice(0, -1).map((c) => c.id),
+    );
+    expect(submit.disabled).toBe(true);
+    fireEvent.click(poolItem("OVER"));
+    expect(submit.disabled).toBe(false);
+  });
+
+  test("submitting in correct order grades pass and paints all slots correct", () => {
+    const onComplete = vi.fn();
+    render(
+      <SequenceCard
+        template={SAMPLE_TEMPLATE}
+        onComplete={onComplete}
+        onRestart={() => {}}
+        onBack={() => {}}
+      />,
+    );
+    placeAll(
+      SAMPLE_TEMPLATE,
+      SAMPLE_TEMPLATE.correctOrder.map((c) => c.id),
+    );
+    fireEvent.click(screen.getByRole("button", { name: /^Submit$/ }));
+    expect(onComplete).toHaveBeenCalledTimes(1);
+    expect(onComplete.mock.calls[0]![0]).toMatchObject({
+      passed: true,
+      correctCount: SAMPLE_TEMPLATE.correctOrder.length,
+    });
+    expect(screen.getByText(/perfect order/i)).toBeTruthy();
+  });
+
+  test("submitting a wrong order surfaces 'should be:' for each misplaced slot", () => {
+    const onComplete = vi.fn();
+    render(
+      <SequenceCard
+        template={SAMPLE_TEMPLATE}
+        onComplete={onComplete}
+        onRestart={() => {}}
+        onBack={() => {}}
+      />,
+    );
+    // Swap slots 1 and 2: place THIS IS first, then MAYDAY, then the rest in order.
+    const swapped = ["this_is", "mayday", "vessel_name", "position", "nature", "over"];
+    placeAll(SAMPLE_TEMPLATE, swapped);
+    fireEvent.click(screen.getByRole("button", { name: /^Submit$/ }));
+    expect(onComplete.mock.calls[0]![0]).toMatchObject({
+      passed: false,
+      correctCount: SAMPLE_TEMPLATE.correctOrder.length - 2,
+    });
+    expect(screen.getAllByText(/should be:/i).length).toBeGreaterThanOrEqual(2);
+    expect(screen.getByText(/should be: MAYDAY signal word/i)).toBeTruthy();
+  });
+
+  test("Try again calls onRestart so the parent can remount with a fresh shuffle", () => {
+    const onRestart = vi.fn();
+    render(
+      <SequenceCard
+        template={SAMPLE_TEMPLATE}
+        onComplete={() => {}}
+        onRestart={onRestart}
+        onBack={() => {}}
+      />,
+    );
+    placeAll(
+      SAMPLE_TEMPLATE,
+      SAMPLE_TEMPLATE.correctOrder.map((c) => c.id),
+    );
+    fireEvent.click(screen.getByRole("button", { name: /^Submit$/ }));
+    fireEvent.click(screen.getByRole("button", { name: /drill again|try again/i }));
+    expect(onRestart).toHaveBeenCalled();
   });
 });
 

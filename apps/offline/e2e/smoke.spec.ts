@@ -51,7 +51,7 @@ test("voice dictation button appears during a callsign drill on supported browse
   await expect(page.getByRole("button", { name: /start voice dictation/i })).toBeVisible();
 });
 
-test("Procedures tab loads the home tiles and a structural drill", async ({ page }) => {
+test("Procedures tab loads the home tiles and grades a structural sequence", async ({ page }) => {
   await page.goto("/");
   await page.getByRole("tab", { name: "Procedures" }).click();
 
@@ -61,10 +61,28 @@ test("Procedures tab loads the home tiles and a structural drill", async ({ page
   ).toBeVisible();
 
   await page.getByRole("button", { name: /structural drill/i }).click();
-  await expect(page.getByText(/question 1 of/i)).toBeVisible();
-  // Pick whichever option happens to be first; we only verify the UI advances.
-  await page.getByRole("radio").first().click();
-  await expect(page.getByRole("button", { name: /next →|see results/i })).toBeEnabled();
+  await expect(page.getByText(/place each element in the correct order/i)).toBeVisible();
+
+  // Place every pool item in canonical order. Pool labels match rubric labels.
+  const order = [
+    "MAYDAY signal word",
+    "THIS IS",
+    "Own vessel name",
+    "Callsign or MMSI",
+    "Position",
+    "Nature of distress",
+    "Assistance required",
+    "Persons on board",
+    "OVER",
+  ];
+  for (const label of order) {
+    await page.getByRole("button", { name: label, exact: true }).click();
+  }
+
+  const submit = page.getByRole("button", { name: /^Submit$/ });
+  await expect(submit).toBeEnabled();
+  await submit.click();
+  await expect(page.getByText(/perfect order/i)).toBeVisible();
 });
 
 test("Procedures situational drill grades a transcript and shows the breakdown", async ({
