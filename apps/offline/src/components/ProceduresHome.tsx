@@ -57,7 +57,11 @@ export function ProceduresHome({
           <span className="proc-tile-title">Order of fields</span>
           <span className="proc-tile-detail">
             Place each element in the correct order ·{" "}
-            {content.structuralRubric.sequenceRules.fieldOrder.length} elements.
+            {(content.structuralRubric.sequenceParts ?? []).reduce(
+              (n, part) => n + part.items.length,
+              0,
+            )}{" "}
+            elements.
           </span>
           <span className="proc-tile-stat">{pct(structuralStats)}</span>
         </button>
