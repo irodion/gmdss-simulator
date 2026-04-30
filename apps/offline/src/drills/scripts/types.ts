@@ -1,11 +1,6 @@
-import type {
-  RubricDefinition,
-  ScenarioCategory,
-  ScenarioVessel,
-  ScoreBreakdown,
-} from "@gmdss-simulator/utils";
+import type { RubricDefinition } from "@gmdss-simulator/utils";
 
-export type ScriptDrillMode = "structural" | "situational";
+export type ScriptDrillMode = "structural";
 
 export interface SequenceItem {
   readonly id: string;
@@ -43,24 +38,6 @@ export interface SequenceGrade {
   readonly passed: boolean;
 }
 
-export interface SituationalPrompt {
-  readonly scenarioId: string;
-  readonly rubricId: string;
-  readonly title: string;
-  readonly description: string;
-  readonly task: string;
-  readonly vessel: ScenarioVessel;
-  readonly hints: readonly string[];
-  readonly canonical: string;
-  readonly requiredChannel: number;
-  readonly category: ScenarioCategory;
-}
-
-export interface SituationalGrade {
-  readonly breakdown: ScoreBreakdown;
-  readonly passed: boolean;
-}
-
 export interface GradeEvent {
   readonly rubricId: string;
   readonly mode: ScriptDrillMode;
@@ -71,19 +48,6 @@ export interface GradeEvent {
 
 export interface ScriptDrillContent {
   readonly structuralRubric: RubricDefinition;
-  readonly scenarios: readonly SituationalPrompt[];
-  readonly rubricsByScenario: ReadonlyMap<string, RubricDefinition>;
 }
 
 export const PASS_THRESHOLD = 80;
-
-const CATEGORY_CALL_LABEL: Readonly<Record<ScenarioCategory, string>> = {
-  distress: "MAYDAY call",
-  urgency: "PAN-PAN call",
-  safety: "SECURITE call",
-  routine: "routine call",
-};
-
-export function callLabelForCategory(category: ScenarioCategory): string {
-  return CATEGORY_CALL_LABEL[category];
-}

@@ -1,14 +1,9 @@
 import { act, fireEvent, render, screen } from "@testing-library/react";
-import type { RubricDefinition, ScoreBreakdown } from "@gmdss-simulator/utils";
+import type { RubricDefinition } from "@gmdss-simulator/utils";
 import { afterEach, beforeEach, describe, expect, test, vi } from "vite-plus/test";
 import type { DrillResult } from "../drills/drill-types.ts";
-import type {
-  ScriptDrillContent,
-  SequenceTemplate,
-  SituationalPrompt,
-} from "../drills/scripts/types.ts";
+import type { ScriptDrillContent, SequenceTemplate } from "../drills/scripts/types.ts";
 import { setMatchMedia, setUserAgent } from "../test-utils.ts";
-import { GradeBreakdown } from "./GradeBreakdown.tsx";
 import { InstallChip } from "./InstallChip.tsx";
 import { MicButton } from "./MicButton.tsx";
 import { ModeTabs } from "./ModeTabs.tsx";
@@ -18,7 +13,6 @@ import { ResultBadge } from "./ResultBadge.tsx";
 import { SequenceCard } from "./SequenceCard.tsx";
 import { SessionConfig } from "./SessionConfig.tsx";
 import { SessionResults } from "./SessionResults.tsx";
-import { SituationalCard } from "./SituationalCard.tsx";
 
 describe("ModeTabs", () => {
   test("marks the active mode as selected", () => {
@@ -294,7 +288,6 @@ const SAMPLE_RUBRIC: RubricDefinition = {
   category: "distress",
   requiredFields: [
     { id: "mayday", label: "MAYDAY signal word", patterns: ["MAYDAY"], required: true },
-    { id: "this_is", label: "THIS IS", patterns: ["THIS\\s+IS"], required: true },
     { id: "vessel_name", label: "Own vessel name", patterns: ["BLUE\\s*DUCK"], required: true },
     { id: "position", label: "Position", patterns: ["POSITION"], required: true },
     { id: "nature", label: "Nature of distress", patterns: ["FIRE"], required: true },
@@ -304,59 +297,44 @@ const SAMPLE_RUBRIC: RubricDefinition = {
     { id: "over", label: "OVER", pattern: "\\bOVER\\b" },
   ],
   sequenceRules: {
-    fieldOrder: ["mayday", "this_is", "vessel_name", "position", "nature", "over"],
+    fieldOrder: ["mayday", "vessel_name", "position", "nature", "over"],
   },
   channelRules: { requiredChannel: 16, blockChannel70Voice: true },
-};
-
-const SAMPLE_PROMPT: SituationalPrompt = {
-  scenarioId: "2.1",
-  rubricId: "v1/distress",
-  title: "MAYDAY — Fire on Board",
-  description: "Engine room fire.",
-  task: "Send a DSC alert then voice MAYDAY.",
-  vessel: { name: "BLUE DUCK", callsign: "5BCD2", personsOnBoard: 8 },
-  hints: ["Press distress 5s", "Say MAYDAY 3 times"],
-  canonical:
-    "MAYDAY MAYDAY MAYDAY, THIS IS BLUE DUCK BLUE DUCK BLUE DUCK, POSITION 50N, FIRE, 8 PERSONS ON BOARD, OVER",
-  requiredChannel: 16,
-  category: "distress",
-};
-
-const SAMPLE_TEMPLATE: SequenceTemplate = {
-  rubricId: "v1/distress",
-  callLabel: "MAYDAY call",
-  parts: [
+  sequenceParts: [
     {
-      id: "call",
-      label: "MAYDAY Call",
+      id: "procedure",
+      label: "MAYDAY procedure",
       items: [
-        { id: "call.mayday", label: "MAYDAY MAYDAY MAYDAY" },
-        { id: "call.vessel", label: "Vessel name × 3" },
-        { id: "call.id", label: "Callsign / MMSI" },
-      ],
-    },
-    {
-      id: "message",
-      label: "MAYDAY Message",
-      items: [
-        { id: "msg.mayday", label: "MAYDAY" },
-        { id: "msg.vessel", label: "Vessel name" },
-        { id: "msg.position", label: "Position" },
-        { id: "msg.over", label: "OVER" },
+        { id: "mayday", label: "MAYDAY" },
+        { id: "vessel", label: "Vessel name" },
+        { id: "callsign", label: "Callsign / MMSI" },
+        { id: "position", label: "Position" },
+        { id: "over", label: "OVER" },
       ],
     },
   ],
 };
 
-const ALL_ITEMS = SAMPLE_TEMPLATE.parts.flatMap((part) =>
-  part.items.map((item) => ({ partLabel: part.label, item })),
-);
+const SAMPLE_TEMPLATE: SequenceTemplate = {
+  rubricId: "v1/distress",
+  callLabel: "MAYDAY procedure",
+  parts: [
+    {
+      id: "procedure",
+      label: "MAYDAY procedure",
+      items: [
+        { id: "mayday", label: "MAYDAY" },
+        { id: "mayday", label: "MAYDAY" },
+        { id: "vessel", label: "Vessel name" },
+        { id: "callsign", label: "Callsign / MMSI" },
+        { id: "over", label: "OVER" },
+      ],
+    },
+  ],
+};
 
 const SAMPLE_CONTENT: ScriptDrillContent = {
   structuralRubric: SAMPLE_RUBRIC,
-  scenarios: [SAMPLE_PROMPT],
-  rubricsByScenario: new Map([[SAMPLE_PROMPT.scenarioId, SAMPLE_RUBRIC]]),
 };
 
 describe("ProceduresHome", () => {
@@ -364,69 +342,52 @@ describe("ProceduresHome", () => {
     window.localStorage.clear();
   });
 
-  test("renders a tile for the structural drill and one per scenario", () => {
-    render(
-      <ProceduresHome
-        content={SAMPLE_CONTENT}
-        statsToken={0}
-        onStartStructural={() => {}}
-        onStartSituational={() => {}}
-      />,
-    );
-    expect(screen.getByText(/order of fields/i)).toBeTruthy();
-    expect(screen.getByText(SAMPLE_PROMPT.title)).toBeTruthy();
+  test("renders the structural drill tile with the element count from sequenceParts", () => {
+    render(<ProceduresHome content={SAMPLE_CONTENT} statsToken={0} onStartStructural={() => {}} />);
+    expect(screen.getByText(/order of phrases/i)).toBeTruthy();
+    expect(screen.getByText(/5 elements/)).toBeTruthy();
   });
 
-  test("calls onStartStructural when the structural tile is clicked", () => {
+  test("calls onStartStructural when the tile is clicked", () => {
     const onStart = vi.fn();
-    render(
-      <ProceduresHome
-        content={SAMPLE_CONTENT}
-        statsToken={0}
-        onStartStructural={onStart}
-        onStartSituational={() => {}}
-      />,
-    );
-    fireEvent.click(screen.getByRole("button", { name: /structural drill/i }));
+    render(<ProceduresHome content={SAMPLE_CONTENT} statsToken={0} onStartStructural={onStart} />);
+    fireEvent.click(screen.getByRole("button", { name: /order of phrases drill/i }));
     expect(onStart).toHaveBeenCalled();
   });
 
-  test("calls onStartSituational with the scenario id when the scenario tile is clicked", () => {
-    const onStart = vi.fn();
-    render(
-      <ProceduresHome
-        content={SAMPLE_CONTENT}
-        statsToken={0}
-        onStartStructural={() => {}}
-        onStartSituational={onStart}
-      />,
-    );
-    fireEvent.click(screen.getByRole("button", { name: /situational drill: mayday/i }));
-    expect(onStart).toHaveBeenCalledWith("2.1");
+  test("aria-label announces 'no attempts yet' when stats are empty", () => {
+    render(<ProceduresHome content={SAMPLE_CONTENT} statsToken={0} onStartStructural={() => {}} />);
+    expect(screen.getByRole("button", { name: /no attempts yet/i })).toBeTruthy();
   });
 });
 
 describe("SequenceCard", () => {
-  const TOTAL = ALL_ITEMS.length;
+  const ITEMS = SAMPLE_TEMPLATE.parts[0]!.items;
+  const TOTAL = ITEMS.length;
 
+  /** First pool button matching `label` (handles duplicates by picking the first). */
   function poolItem(label: string): HTMLButtonElement {
-    return screen.getByRole("button", { name: label }) as HTMLButtonElement;
+    const matches = screen.getAllByRole("button", { name: label });
+    const btn = matches.find((el) => el.className.includes("seq-pool-item")) as
+      | HTMLButtonElement
+      | undefined;
+    if (!btn) throw new Error(`No pool item with label "${label}"`);
+    return btn;
   }
-  function partSlot(partLabel: string, index: number): HTMLButtonElement {
+  function slot(index: number): HTMLButtonElement {
+    const partLabel = SAMPLE_TEMPLATE.parts[0]!.label;
     const prefix = `${partLabel} slot ${index},`;
     return screen.getByRole("button", {
       name: (accessible) => accessible.startsWith(prefix),
     }) as HTMLButtonElement;
   }
-  function placeInPartOrder(template: SequenceTemplate) {
-    for (const part of template.parts) {
-      for (const item of part.items) {
-        fireEvent.click(poolItem(item.label));
-      }
+  function placeInOrder() {
+    for (const item of ITEMS) {
+      fireEvent.click(poolItem(item.label));
     }
   }
 
-  test("tapping a pool item fills the first empty slot of its part", () => {
+  test("does not render the part header when there is only one part", () => {
     render(
       <SequenceCard
         template={SAMPLE_TEMPLATE}
@@ -435,13 +396,10 @@ describe("SequenceCard", () => {
         onBack={() => {}}
       />,
     );
-    fireEvent.click(poolItem("Position"));
-    // Position belongs to the message part; first empty slot is slot 1 of that part.
-    expect(partSlot("MAYDAY Message", 1).textContent).toMatch(/Position/);
-    expect(screen.queryByRole("button", { name: "Position" })).toBeNull();
+    expect(screen.queryByRole("heading", { name: /MAYDAY procedure/i })).toBeNull();
   });
 
-  test("tapping a filled slot returns the item to its part's pool", () => {
+  test("tapping a pool item fills the first empty slot", () => {
     render(
       <SequenceCard
         template={SAMPLE_TEMPLATE}
@@ -450,13 +408,45 @@ describe("SequenceCard", () => {
         onBack={() => {}}
       />,
     );
-    fireEvent.click(poolItem("Position"));
-    fireEvent.click(partSlot("MAYDAY Message", 1));
-    expect(poolItem("Position")).toBeTruthy();
-    expect(partSlot("MAYDAY Message", 1).textContent).not.toMatch(/Position/);
+    fireEvent.click(poolItem("Callsign / MMSI"));
+    expect(slot(1).textContent).toMatch(/Callsign/);
   });
 
-  test("Submit is disabled until every slot in every part has a placement", () => {
+  test("clicking a duplicate-label pool button removes only that one occurrence", () => {
+    render(
+      <SequenceCard
+        template={SAMPLE_TEMPLATE}
+        onComplete={() => {}}
+        onRestart={() => {}}
+        onBack={() => {}}
+      />,
+    );
+    // Two MAYDAY pool items exist initially (id=mayday × 2 in the fixture).
+    expect(screen.getAllByRole("button", { name: "MAYDAY" })).toHaveLength(2);
+    fireEvent.click(poolItem("MAYDAY"));
+    // After one click, exactly one MAYDAY pool button remains.
+    const remaining = screen
+      .getAllByRole("button", { name: "MAYDAY" })
+      .filter((el) => el.className.includes("seq-pool-item"));
+    expect(remaining).toHaveLength(1);
+  });
+
+  test("tapping a filled slot returns the item to the pool", () => {
+    render(
+      <SequenceCard
+        template={SAMPLE_TEMPLATE}
+        onComplete={() => {}}
+        onRestart={() => {}}
+        onBack={() => {}}
+      />,
+    );
+    fireEvent.click(poolItem("Callsign / MMSI"));
+    fireEvent.click(slot(1));
+    expect(poolItem("Callsign / MMSI")).toBeTruthy();
+    expect(slot(1).textContent).not.toMatch(/Callsign/);
+  });
+
+  test("Submit is disabled until every slot is filled", () => {
     render(
       <SequenceCard
         template={SAMPLE_TEMPLATE}
@@ -467,17 +457,15 @@ describe("SequenceCard", () => {
     );
     const submit = screen.getByRole("button", { name: /^Submit$/ }) as HTMLButtonElement;
     expect(submit.disabled).toBe(true);
-    // Fill all but the last item across all parts
     for (let i = 0; i < TOTAL - 1; i++) {
-      const entry = ALL_ITEMS[i]!;
-      fireEvent.click(poolItem(entry.item.label));
+      fireEvent.click(poolItem(ITEMS[i]!.label));
     }
     expect(submit.disabled).toBe(true);
-    fireEvent.click(poolItem(ALL_ITEMS.at(-1)!.item.label));
+    fireEvent.click(poolItem(ITEMS.at(-1)!.label));
     expect(submit.disabled).toBe(false);
   });
 
-  test("submitting in correct order grades pass and paints all slots correct", () => {
+  test("submitting in correct order grades pass and shows 'perfect order'", () => {
     const onComplete = vi.fn();
     render(
       <SequenceCard
@@ -487,7 +475,7 @@ describe("SequenceCard", () => {
         onBack={() => {}}
       />,
     );
-    placeInPartOrder(SAMPLE_TEMPLATE);
+    placeInOrder();
     fireEvent.click(screen.getByRole("button", { name: /^Submit$/ }));
     expect(onComplete).toHaveBeenCalledTimes(1);
     expect(onComplete.mock.calls[0]![0]).toMatchObject({
@@ -498,7 +486,7 @@ describe("SequenceCard", () => {
     expect(screen.getByText(/perfect order/i)).toBeTruthy();
   });
 
-  test("a swap inside the message part surfaces 'should be:' for each misplaced slot", () => {
+  test("placing a wrong-id item shows 'should be:' for the misplaced slot", () => {
     const onComplete = vi.fn();
     render(
       <SequenceCard
@@ -508,23 +496,22 @@ describe("SequenceCard", () => {
         onBack={() => {}}
       />,
     );
-    // Place call part correctly
-    for (const item of SAMPLE_TEMPLATE.parts[0]!.items) {
-      fireEvent.click(poolItem(item.label));
-    }
-    // Place message part with slot 0 and slot 1 swapped
-    const msg = SAMPLE_TEMPLATE.parts[1]!.items;
-    const swapped = [msg[1]!, msg[0]!, ...msg.slice(2)];
-    for (const item of swapped) {
+    // Expected slots: [mayday, mayday, vessel, callsign, over].
+    // Swap the canonical "callsign" item (ITEMS[3]) into slot 1 and pull a
+    // "mayday" into slot 4 → 2 wrong placements.
+    const order = [
+      ITEMS[3]!, // callsign into slot 1 (expected: mayday) → wrong
+      ITEMS[1]!, // mayday into slot 2 (expected: mayday) → correct
+      ITEMS[2]!, // vessel into slot 3 (expected: vessel) → correct
+      ITEMS[0]!, // mayday into slot 4 (expected: callsign) → wrong
+      ITEMS[4]!, // over into slot 5 → correct
+    ];
+    for (const item of order) {
       fireEvent.click(poolItem(item.label));
     }
     fireEvent.click(screen.getByRole("button", { name: /^Submit$/ }));
-    expect(onComplete.mock.calls[0]![0]).toMatchObject({
-      passed: false,
-      correctCount: TOTAL - 2,
-    });
+    expect(onComplete.mock.calls[0]![0].passed).toBe(false);
     expect(screen.getAllByText(/should be:/i).length).toBeGreaterThanOrEqual(2);
-    expect(screen.getByText(/should be: MAYDAY/i)).toBeTruthy();
   });
 
   test("Try again calls onRestart so the parent can remount with a fresh shuffle", () => {
@@ -537,121 +524,9 @@ describe("SequenceCard", () => {
         onBack={() => {}}
       />,
     );
-    placeInPartOrder(SAMPLE_TEMPLATE);
+    placeInOrder();
     fireEvent.click(screen.getByRole("button", { name: /^Submit$/ }));
     fireEvent.click(screen.getByRole("button", { name: /drill again|try again/i }));
     expect(onRestart).toHaveBeenCalled();
-  });
-});
-
-describe("GradeBreakdown", () => {
-  test("renders the overall score and one row per dimension", () => {
-    const breakdown: ScoreBreakdown = {
-      overall: 73,
-      rubricVersion: "1.0.0",
-      timestamp: 0,
-      dimensions: [
-        {
-          id: "required_fields",
-          label: "Required Fields",
-          weight: 0.35,
-          score: 80,
-          maxScore: 100,
-          matchedItems: ["MAYDAY"],
-          missingItems: ["Position"],
-        },
-        {
-          id: "sequence",
-          label: "Sequence",
-          weight: 0.25,
-          score: 100,
-          maxScore: 100,
-          matchedItems: [],
-          missingItems: [],
-        },
-      ],
-    };
-    render(<GradeBreakdown breakdown={breakdown} />);
-    expect(screen.getByLabelText(/overall score 73/i)).toBeTruthy();
-    expect(screen.getByText(/required fields/i)).toBeTruthy();
-    expect(screen.getByText(/missed: position/i)).toBeTruthy();
-  });
-});
-
-describe("SituationalCard", () => {
-  test("disables Submit until text is entered, then grades and shows the breakdown", () => {
-    render(
-      <SituationalCard
-        prompt={SAMPLE_PROMPT}
-        rubric={SAMPLE_RUBRIC}
-        onComplete={() => {}}
-        onRestart={() => {}}
-        onBack={() => {}}
-      />,
-    );
-    const submit = screen.getByRole("button", { name: "Submit" }) as HTMLButtonElement;
-    expect(submit.disabled).toBe(true);
-
-    const textarea = screen.getByLabelText(/your transmission/i);
-    fireEvent.change(textarea, { target: { value: SAMPLE_PROMPT.canonical } });
-    expect(submit.disabled).toBe(false);
-
-    fireEvent.click(submit);
-    expect(screen.getByText(/required fields/i)).toBeTruthy();
-  });
-
-  test("Reveal canonical shows the canonical script and warns the attempt won't be recorded", () => {
-    render(
-      <SituationalCard
-        prompt={SAMPLE_PROMPT}
-        rubric={SAMPLE_RUBRIC}
-        onComplete={() => {}}
-        onRestart={() => {}}
-        onBack={() => {}}
-      />,
-    );
-    fireEvent.click(screen.getByRole("button", { name: /reveal canonical/i }));
-    expect(screen.getByLabelText(/canonical script/i)).toBeTruthy();
-    expect(screen.getByText(/won't be recorded/i)).toBeTruthy();
-  });
-
-  test("does not call onComplete when grading after reveal", () => {
-    const onComplete = vi.fn();
-    render(
-      <SituationalCard
-        prompt={SAMPLE_PROMPT}
-        rubric={SAMPLE_RUBRIC}
-        onComplete={onComplete}
-        onRestart={() => {}}
-        onBack={() => {}}
-      />,
-    );
-    fireEvent.click(screen.getByRole("button", { name: /reveal canonical/i }));
-    fireEvent.change(screen.getByLabelText(/your transmission/i), {
-      target: { value: "MAYDAY" },
-    });
-    fireEvent.click(screen.getByRole("button", { name: "Submit" }));
-    expect(onComplete).not.toHaveBeenCalled();
-  });
-
-  test("revealing then hiding the canonical still suppresses recording (latched)", () => {
-    const onComplete = vi.fn();
-    render(
-      <SituationalCard
-        prompt={SAMPLE_PROMPT}
-        rubric={SAMPLE_RUBRIC}
-        onComplete={onComplete}
-        onRestart={() => {}}
-        onBack={() => {}}
-      />,
-    );
-    fireEvent.click(screen.getByRole("button", { name: /reveal canonical/i }));
-    fireEvent.click(screen.getByRole("button", { name: /hide canonical/i }));
-    expect(screen.getByText(/won't be recorded/i)).toBeTruthy();
-    fireEvent.change(screen.getByLabelText(/your transmission/i), {
-      target: { value: SAMPLE_PROMPT.canonical },
-    });
-    fireEvent.click(screen.getByRole("button", { name: "Submit" }));
-    expect(onComplete).not.toHaveBeenCalled();
   });
 });

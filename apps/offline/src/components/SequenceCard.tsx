@@ -42,23 +42,23 @@ export function SequenceCard({ template, onComplete, onRestart, onBack }: Sequen
   const [grade, setGrade] = useState<SequenceGrade | null>(null);
 
   const ready = parts.every((p) => p.placements.every((slot) => slot !== null));
+  const showPartHeader = template.parts.length > 1;
 
   function updatePart(partId: string, updater: (state: PartState) => PartState) {
     setParts((prev) => prev.map((p) => (p.part.id === partId ? updater(p) : p)));
   }
 
-  function handlePoolPick(partId: string, item: SequenceItem) {
+  function handlePoolPick(partId: string, poolIndex: number) {
     if (grade !== null) return;
     updatePart(partId, (state) => {
+      const item = state.pool[poolIndex];
+      if (!item) return state;
       const nextEmpty = state.placements.findIndex((p) => p === null);
       if (nextEmpty === -1) return state;
       const placements = [...state.placements];
       placements[nextEmpty] = item;
-      return {
-        ...state,
-        placements,
-        pool: state.pool.filter((x) => x.id !== item.id),
-      };
+      const pool = state.pool.filter((_, i) => i !== poolIndex);
+      return { ...state, placements, pool };
     });
   }
 
@@ -111,7 +111,7 @@ export function SequenceCard({ template, onComplete, onRestart, onBack }: Sequen
         const partGrade = grade?.parts.find((p) => p.partId === state.part.id);
         return (
           <section key={state.part.id} className="seq-part">
-            <h3 className="seq-part-header">{state.part.label}</h3>
+            {showPartHeader ? <h3 className="seq-part-header">{state.part.label}</h3> : null}
             <ol className="seq-slots">
               {state.placements.map((placed, i) => {
                 const status = slotState(state.part.id, i, placed);
@@ -149,12 +149,12 @@ export function SequenceCard({ template, onComplete, onRestart, onBack }: Sequen
             </ol>
 
             <div className="seq-pool" aria-label={`${state.part.label} pool`}>
-              {state.pool.map((item) => (
+              {state.pool.map((item, idx) => (
                 <button
-                  key={item.id}
+                  key={idx}
                   type="button"
                   className="seq-pool-item"
-                  onClick={() => handlePoolPick(state.part.id, item)}
+                  onClick={() => handlePoolPick(state.part.id, idx)}
                   disabled={grade !== null}
                 >
                   {item.label}

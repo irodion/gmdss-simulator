@@ -1,13 +1,11 @@
-import type { RubricDefinition, ScenarioDefinition } from "@gmdss-simulator/utils";
-import {
-  callLabelForCategory,
-  type SequenceGrade,
-  type SequenceItem,
-  type SequencePartGrade,
-  type SequencePlacementResult,
-  type SequenceTemplate,
-  type SequenceTemplatePart,
-  type SituationalPrompt,
+import type { RubricDefinition } from "@gmdss-simulator/utils";
+import type {
+  SequenceGrade,
+  SequenceItem,
+  SequencePartGrade,
+  SequencePlacementResult,
+  SequenceTemplate,
+  SequenceTemplatePart,
 } from "./types.ts";
 
 export function materializeStructural(rubric: RubricDefinition): SequenceTemplate {
@@ -19,9 +17,10 @@ export function materializeStructural(rubric: RubricDefinition): SequenceTemplat
     label: part.label,
     items: part.items.map((item) => ({ id: item.id, label: item.label })),
   }));
+  const heading = parts[0]?.label ?? rubric.id;
   return {
     rubricId: rubric.id,
-    callLabel: callLabelForCategory(rubric.category),
+    callLabel: heading,
     parts,
   };
 }
@@ -53,36 +52,5 @@ export function gradeSequence(
     correctCount,
     total,
     passed: correctCount === total,
-  };
-}
-
-function renderTemplate(template: string, vessel: ScenarioDefinition["vessel"]): string {
-  const personsOnBoard =
-    vessel.personsOnBoard != null ? String(vessel.personsOnBoard) : "(personsOnBoard)";
-  const vars: Record<string, string> = {
-    vesselName: vessel.name,
-    callsign: vessel.callsign ?? "(callsign)",
-    mmsi: vessel.mmsi ?? "(mmsi)",
-    position: vessel.position ?? "(position)",
-    personsOnBoard,
-  };
-  return template.replace(/\{\{(\w+)\}\}/g, (_, key: string) => vars[key] ?? `{{${key}}}`);
-}
-
-export function materializeSituational(scenario: ScenarioDefinition): SituationalPrompt {
-  const canonical = scenario.scriptReference
-    ? renderTemplate(scenario.scriptReference, scenario.vessel)
-    : "";
-  return {
-    scenarioId: scenario.id,
-    rubricId: scenario.rubricId,
-    title: scenario.title,
-    description: scenario.description,
-    task: scenario.task,
-    vessel: scenario.vessel,
-    hints: scenario.hints ?? [],
-    canonical,
-    requiredChannel: scenario.requiredChannel,
-    category: scenario.category,
   };
 }
