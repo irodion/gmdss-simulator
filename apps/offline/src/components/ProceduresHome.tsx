@@ -14,6 +14,11 @@ function pct(agg: StatsAggregate | null): string {
   return `${agg.pctCorrect}% over ${agg.attempts}`;
 }
 
+function statLabel(agg: StatsAggregate | null): string {
+  if (agg == null) return "no attempts yet";
+  return `${agg.pctCorrect}% correct over ${agg.attempts} attempts`;
+}
+
 export function ProceduresHome({
   content,
   statsToken,
@@ -46,7 +51,7 @@ export function ProceduresHome({
           type="button"
           className="proc-tile"
           onClick={onStartStructural}
-          aria-label={`Structural drill, ${pct(structuralStats)} correct`}
+          aria-label={`Structural drill, ${statLabel(structuralStats)}`}
         >
           <span className="proc-tile-eyebrow">Structural</span>
           <span className="proc-tile-title">Order of fields</span>
@@ -63,7 +68,7 @@ export function ProceduresHome({
             type="button"
             className="proc-tile"
             onClick={() => onStartSituational(s.scenarioId)}
-            aria-label={`Situational drill: ${s.title}, ${pct(situationalStats.get(s.scenarioId) ?? null)} correct`}
+            aria-label={`Situational drill: ${s.title}, ${statLabel(situationalStats.get(s.scenarioId) ?? null)}`}
           >
             <span className="proc-tile-eyebrow">Situational · {s.scenarioId}</span>
             <span className="proc-tile-title">{s.title}</span>
