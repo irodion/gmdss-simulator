@@ -80,6 +80,28 @@
       "over"
     ]
   },
+  "sequenceParts": [
+    {
+      "id": "procedure",
+      "label": "MAYDAY procedure",
+      "items": [
+        { "id": "mayday", "label": "MAYDAY" },
+        { "id": "mayday", "label": "MAYDAY" },
+        { "id": "mayday", "label": "MAYDAY" },
+        { "id": "vessel", "label": "Vessel name" },
+        { "id": "vessel", "label": "Vessel name" },
+        { "id": "vessel", "label": "Vessel name" },
+        { "id": "callsign", "label": "Callsign / MMSI" },
+        { "id": "mayday", "label": "MAYDAY" },
+        { "id": "vessel", "label": "Vessel name" },
+        { "id": "position", "label": "Position" },
+        { "id": "nature", "label": "Nature of distress" },
+        { "id": "assistance", "label": "Request immediate assistance" },
+        { "id": "persons", "label": "Persons on board" },
+        { "id": "over", "label": "OVER" }
+      ]
+    }
+  ],
   "channelRules": {
     "requiredChannel": 16,
     "blockChannel70Voice": true

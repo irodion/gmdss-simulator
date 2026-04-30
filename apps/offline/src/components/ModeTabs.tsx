@@ -1,14 +1,17 @@
 import type { DrillType } from "../drills/drill-types.ts";
 
+export type AppMode = DrillType | "procedures";
+
 interface ModeTabsProps {
-  readonly mode: DrillType;
-  readonly onChange: (mode: DrillType) => void;
+  readonly mode: AppMode;
+  readonly onChange: (mode: AppMode) => void;
 }
 
-const TABS: ReadonlyArray<{ value: DrillType; label: string; numeral: string }> = [
+const TABS: ReadonlyArray<{ value: AppMode; label: string; numeral: string }> = [
   { value: "phonetic", label: "Callsigns", numeral: "I" },
   { value: "number-pronunciation", label: "Numbers", numeral: "II" },
   { value: "reverse", label: "Listen", numeral: "III" },
+  { value: "procedures", label: "Procedures", numeral: "IV" },
 ];
 
 export function ModeTabs({ mode, onChange }: ModeTabsProps) {

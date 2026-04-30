@@ -887,6 +887,236 @@
   }
 }
 
+/* ── Procedures (drill IV) ── */
+.proc-tiles {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 14px;
+  margin: 18px 0 20px;
+}
+
+.proc-tile {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  grid-template-rows: auto auto auto;
+  gap: 4px 12px;
+  padding: 16px 18px;
+  text-align: left;
+  background: var(--paper-deep);
+  border: 1px solid var(--ink-line);
+  border-left: 3px solid var(--brass);
+  font-family: var(--body);
+  color: var(--ink);
+  cursor: pointer;
+  transition:
+    background 120ms ease,
+    border-color 120ms ease;
+}
+.proc-tile:hover {
+  background: var(--paper-dark);
+  border-left-color: var(--brass-deep);
+}
+.proc-tile-eyebrow {
+  grid-column: 1 / -1;
+  font-family: var(--mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+.proc-tile-title {
+  font-family: var(--display);
+  font-size: 1.15rem;
+  color: var(--brass-deep);
+}
+.proc-tile-stat {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.16em;
+  color: var(--sea);
+  align-self: center;
+  white-space: nowrap;
+}
+.proc-tile-detail {
+  grid-column: 1 / -1;
+  font-size: 0.88rem;
+  line-height: 1.45;
+  color: var(--ink-soft);
+}
+
+.proc-loading,
+.proc-error {
+  padding: 24px 6px;
+  font-family: var(--body);
+  color: var(--ink-soft);
+}
+
+/* ── Structural sequencing drill ── */
+.seq-part {
+  margin: 8px 0 18px;
+}
+.seq-part + .seq-part {
+  margin-top: 24px;
+  padding-top: 18px;
+  border-top: 1px solid var(--ink-line);
+}
+.seq-part-header {
+  margin: 0 0 10px;
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--brass-deep);
+}
+
+.seq-slots {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+}
+.seq-slot {
+  display: block;
+}
+.seq-slot-btn {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 36px 1fr;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  text-align: left;
+  background: var(--paper);
+  border: 1px solid var(--ink-line);
+  font-family: var(--body);
+  font-size: 0.95rem;
+  color: var(--ink);
+  cursor: pointer;
+  transition:
+    background 120ms ease,
+    border-color 120ms ease,
+    color 120ms ease;
+  min-height: 48px;
+}
+.seq-slot-btn:disabled {
+  cursor: default;
+}
+.seq-slot[data-state="empty"] .seq-slot-btn {
+  border-style: dashed;
+  border-color: var(--ink-line);
+  background: transparent;
+}
+.seq-slot[data-state="filled"] .seq-slot-btn {
+  border-color: var(--brass);
+  background: var(--paper-deep);
+}
+.seq-slot[data-state="filled"] .seq-slot-btn:hover:not(:disabled) {
+  border-color: var(--brass-deep);
+}
+.seq-slot[data-state="correct"] .seq-slot-btn {
+  border-color: var(--sea);
+  background: var(--sea-soft);
+  color: var(--sea);
+  font-weight: 600;
+}
+.seq-slot[data-state="wrong"] .seq-slot-btn {
+  border-color: var(--coral);
+  background: var(--coral-soft);
+  color: var(--coral);
+}
+.seq-slot-num {
+  font-family: var(--mono);
+  font-size: 0.8rem;
+  color: var(--ink-faint);
+  letter-spacing: 0.06em;
+  text-align: right;
+}
+.seq-slot-content {
+  font-family: var(--body);
+}
+.seq-slot-placeholder {
+  color: var(--ink-faint);
+  font-style: italic;
+}
+.seq-slot-expected {
+  margin: 4px 0 0 46px;
+  font-size: 0.8rem;
+  font-style: italic;
+  color: var(--coral);
+}
+
+.seq-pool {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 12px;
+  background: var(--paper-deep);
+  border: 1px dashed var(--ink-line);
+  min-height: 56px;
+  align-items: flex-start;
+  align-content: flex-start;
+}
+.seq-pool-item {
+  padding: 10px 14px;
+  background: var(--paper);
+  border: 1px solid var(--brass);
+  font-family: var(--body);
+  font-size: 0.92rem;
+  color: var(--ink);
+  cursor: pointer;
+  transition:
+    background 120ms ease,
+    border-color 120ms ease;
+  min-height: 44px;
+}
+.seq-pool-item:hover:not(:disabled) {
+  background: var(--paper-deep);
+  border-color: var(--brass-deep);
+}
+.seq-pool-item:disabled {
+  cursor: default;
+  opacity: 0.5;
+}
+.seq-pool-empty {
+  margin: 0;
+  font-family: var(--mono);
+  font-size: 0.74rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  padding: 6px 4px;
+}
+
+.seq-summary {
+  margin-top: 18px;
+  padding: 16px 20px;
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  border-top: 1px solid var(--ink-line);
+  font-family: var(--body);
+}
+.seq-summary[data-state="pass"] {
+  color: var(--sea);
+}
+.seq-summary[data-state="partial"] {
+  color: var(--coral);
+}
+.seq-summary-score {
+  font-family: var(--display);
+  font-size: 2.4rem;
+  line-height: 1;
+}
+.seq-summary-score small {
+  font-size: 1rem;
+  color: var(--ink-soft);
+  margin-left: 2px;
+}
+.seq-summary-label {
+  font-style: italic;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .masthead,
   .card,
@@ -991,5 +1221,26 @@
   .count-btn {
     font-size: 1.2rem;
     padding: 12px 4px;
+  }
+  .proc-tile {
+    padding: 14px 14px;
+  }
+  .proc-tile-title {
+    font-size: 1rem;
+  }
+  .seq-slot-btn {
+    font-size: 0.9rem;
+    padding: 10px 12px;
+    grid-template-columns: 28px 1fr;
+  }
+  .seq-pool-item {
+    font-size: 0.86rem;
+    padding: 9px 12px;
+  }
+  .seq-slot-expected {
+    margin-left: 38px;
+  }
+  .seq-summary-score {
+    font-size: 2rem;
   }
 }

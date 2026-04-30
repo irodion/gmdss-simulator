@@ -1,10 +1,11 @@
 import { expect, test } from "@playwright/test";
 
-test("config screen renders the three drill modes", async ({ page }) => {
+test("config screen renders the four drill modes", async ({ page }) => {
   await page.goto("/");
   await expect(page.getByRole("tab", { name: "Callsigns" })).toBeVisible();
   await expect(page.getByRole("tab", { name: "Numbers" })).toBeVisible();
   await expect(page.getByRole("tab", { name: "Listen" })).toBeVisible();
+  await expect(page.getByRole("tab", { name: "Procedures" })).toBeVisible();
   await expect(page.getByRole("button", { name: /^begin/i })).toBeVisible();
 });
 
@@ -48,6 +49,44 @@ test("voice dictation button appears during a callsign drill on supported browse
   await page.getByRole("button", { name: /^begin/i }).click();
 
   await expect(page.getByRole("button", { name: /start voice dictation/i })).toBeVisible();
+});
+
+test("Procedures tab loads the home tile and grades the order-of-phrases drill", async ({
+  page,
+}) => {
+  await page.goto("/");
+  await page.getByRole("tab", { name: "Procedures" }).click();
+
+  await expect(page.getByRole("button", { name: /order of phrases drill/i })).toBeVisible();
+  await page.getByRole("button", { name: /order of phrases drill/i }).click();
+  await expect(page.getByText(/place each element in the correct order/i)).toBeVisible();
+
+  // Canonical order — duplicate labels (MAYDAY × 4, Vessel name × 4) are
+  // interchangeable, so always click the first remaining pool button by label.
+  const order = [
+    "MAYDAY",
+    "MAYDAY",
+    "MAYDAY",
+    "Vessel name",
+    "Vessel name",
+    "Vessel name",
+    "Callsign / MMSI",
+    "MAYDAY",
+    "Vessel name",
+    "Position",
+    "Nature of distress",
+    "Request immediate assistance",
+    "Persons on board",
+    "OVER",
+  ];
+  for (const label of order) {
+    await page.locator(".seq-pool-item").getByText(label, { exact: true }).first().click();
+  }
+
+  const submit = page.getByRole("button", { name: /^Submit$/ });
+  await expect(submit).toBeEnabled();
+  await submit.click();
+  await expect(page.getByText(/perfect order/i)).toBeVisible();
 });
 
 test("service worker is registered after first load", async ({ page }) => {
