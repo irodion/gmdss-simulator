@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 import { getAggregateFor, type StatsAggregate } from "../drills/scripts/stats.ts";
-import type { ScriptDrillContent } from "../drills/scripts/types.ts";
 
 interface ProceduresHomeProps {
-  readonly content: ScriptDrillContent;
+  readonly statsKey: string;
   readonly statsToken: number;
-  readonly onStartStructural: () => void;
+  readonly scenarioCount: number;
+  readonly onStart: () => void;
 }
 
 function pct(agg: StatsAggregate | null): string {
@@ -18,38 +18,36 @@ function statLabel(agg: StatsAggregate | null): string {
   return `${agg.pctCorrect}% correct over ${agg.attempts} attempts`;
 }
 
-export function ProceduresHome({ content, statsToken, onStartStructural }: ProceduresHomeProps) {
-  const [structuralStats, setStructuralStats] = useState<StatsAggregate | null>(null);
+export function ProceduresHome({
+  statsKey,
+  statsToken,
+  scenarioCount,
+  onStart,
+}: ProceduresHomeProps) {
+  const [stats, setStats] = useState<StatsAggregate | null>(null);
 
   useEffect(() => {
-    setStructuralStats(getAggregateFor("structural", content.structuralRubric.id));
-  }, [content, statsToken]);
-
-  const elementCount = (content.structuralRubric.sequenceParts ?? []).reduce(
-    (n, part) => n + part.items.length,
-    0,
-  );
+    setStats(getAggregateFor("scenario", statsKey));
+  }, [statsKey, statsToken]);
 
   return (
     <div>
       <div className="section-eyebrow">Procedures</div>
-      <p className="section-prompt">
-        Drill the order of a MAYDAY call. More scenarios coming soon.
-      </p>
+      <p className="section-prompt">Build the right radio call from a scenario.</p>
 
       <div className="proc-tiles">
         <button
           type="button"
           className="proc-tile"
-          onClick={onStartStructural}
-          aria-label={`Order of phrases drill, ${statLabel(structuralStats)}`}
+          onClick={onStart}
+          aria-label={`Scenario reconstruction drill, ${statLabel(stats)}`}
         >
-          <span className="proc-tile-eyebrow">Structural</span>
-          <span className="proc-tile-title">Order of phrases</span>
+          <span className="proc-tile-eyebrow">Scenario</span>
+          <span className="proc-tile-title">Scenario reconstruction</span>
           <span className="proc-tile-detail">
-            Place each element in the correct order · {elementCount} elements.
+            Pick the priority and order the phrases · {scenarioCount} scenarios.
           </span>
-          <span className="proc-tile-stat">{pct(structuralStats)}</span>
+          <span className="proc-tile-stat">{pct(stats)}</span>
         </button>
       </div>
     </div>

@@ -1,8 +1,11 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { loadScriptDrillContent } from "../drills/scripts/content-loader.ts";
-import { materializeStructural } from "../drills/scripts/materialize.ts";
+import { materializeScenario } from "../drills/scripts/materialize.ts";
 import { recordAttempt } from "../drills/scripts/stats.ts";
 import type {
+  DimensionId,
+  Scenario,
+  ScenarioBank,
   ScriptDrillContent,
   SequenceGrade,
   SequenceTemplate,
@@ -10,13 +13,23 @@ import type {
 import { ProceduresHome } from "./ProceduresHome.tsx";
 import { SequenceCard } from "./SequenceCard.tsx";
 
-type View = { kind: "home" } | { kind: "structural"; template: SequenceTemplate; round: number };
+type View =
+  | { kind: "home" }
+  | {
+      kind: "scenario";
+      scenario: Scenario;
+      template: SequenceTemplate;
+      round: number;
+    };
+
+const SCENARIO_STATS_KEY = "v1/scenarios";
 
 export function ProceduresPanel() {
   const [content, setContent] = useState<ScriptDrillContent | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [view, setView] = useState<View>({ kind: "home" });
   const [statsToken, setStatsToken] = useState(0);
+  const recentScenarioId = useRef<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -32,34 +45,63 @@ export function ProceduresPanel() {
     };
   }, []);
 
-  const handleStartStructural = useCallback(() => {
-    if (!content) return;
-    const template = materializeStructural(content.structuralRubric);
-    setView({ kind: "structural", template, round: 0 });
-  }, [content]);
+  const startScenario = useCallback((c: ScriptDrillContent) => {
+    const scenario = pickScenario(c.scenarios, recentScenarioId.current);
+    if (!scenario) return;
+    recentScenarioId.current = scenario.id;
+    const template = materializeScenario(scenario, c.rubrics);
+    setView((prev) => ({
+      kind: "scenario",
+      scenario,
+      template,
+      round: (prev.kind === "scenario" ? prev.round : 0) + 1,
+    }));
+  }, []);
 
-  const handleStructuralComplete = useCallback(
+  const handleStart = useCallback(() => {
+    if (!content) return;
+    startScenario(content);
+  }, [content, startScenario]);
+
+  const handleComplete = useCallback(
     (grade: SequenceGrade) => {
-      if (view.kind !== "structural" || !content) return;
+      if (view.kind !== "scenario") return;
+      const dimensionPasses = {} as Record<DimensionId, boolean>;
+      for (const d of grade.dimensions) {
+        dimensionPasses[d.id] = d.status === "pass";
+      }
       recordAttempt({
-        rubricId: content.structuralRubric.id,
-        mode: "structural",
-        key: content.structuralRubric.id,
+        rubricId: view.template.rubricId,
+        mode: "scenario",
+        key: SCENARIO_STATS_KEY,
         ts: Date.now(),
         correct: grade.passed,
+        scenarioId: view.scenario.id,
+        dimensionPasses,
       });
       setStatsToken((t) => t + 1);
     },
-    [view, content],
+    [view],
   );
 
-  const handleStructuralRestart = useCallback(() => {
-    setView((v) => (v.kind === "structural" ? { ...v, round: v.round + 1 } : v));
-  }, []);
+  const handleRetry = useCallback(() => {
+    setView((v) => {
+      if (v.kind !== "scenario" || !content) return v;
+      const template = materializeScenario(v.scenario, content.rubrics);
+      return { ...v, template, round: v.round + 1 };
+    });
+  }, [content]);
+
+  const handleNewScenario = useCallback(() => {
+    if (!content) return;
+    startScenario(content);
+  }, [content, startScenario]);
 
   const handleHome = useCallback(() => {
     setView({ kind: "home" });
   }, []);
+
+  const scenarioCount = useMemo(() => content?.scenarios.scenarios.length ?? 0, [content]);
 
   if (error) {
     return (
@@ -74,13 +116,15 @@ export function ProceduresPanel() {
     return <div className="proc-loading">Loading procedures…</div>;
   }
 
-  if (view.kind === "structural") {
+  if (view.kind === "scenario") {
     return (
       <SequenceCard
         key={view.round}
         template={view.template}
-        onComplete={handleStructuralComplete}
-        onRestart={handleStructuralRestart}
+        scenario={view.scenario}
+        onComplete={handleComplete}
+        onRetry={handleRetry}
+        onNewScenario={handleNewScenario}
         onBack={handleHome}
       />
     );
@@ -88,9 +132,20 @@ export function ProceduresPanel() {
 
   return (
     <ProceduresHome
-      content={content}
+      statsKey={SCENARIO_STATS_KEY}
       statsToken={statsToken}
-      onStartStructural={handleStartStructural}
+      scenarioCount={scenarioCount}
+      onStart={handleStart}
     />
   );
+}
+
+function pickScenario(bank: ScenarioBank, excludeId: string | null): Scenario | null {
+  const all = bank.scenarios;
+  if (all.length === 0) return null;
+  if (all.length === 1) return all[0]!;
+  const candidates = excludeId ? all.filter((s) => s.id !== excludeId) : all;
+  const pool = candidates.length > 0 ? candidates : all;
+  const idx = Math.floor(Math.random() * pool.length);
+  return pool[idx] ?? pool[0]!;
 }

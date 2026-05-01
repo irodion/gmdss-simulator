@@ -1,0 +1,118 @@
+{
+  "scenarios": [
+    {
+      "id": "distress-fire-blue-duck",
+      "priority": "mayday",
+      "rubricId": "v1/distress",
+      "brief": "You are MV Blue Duck. Engine room fire is out of control. 6 persons on board, position 32°05'N 034°45'E. Ship is in immediate danger.",
+      "facts": {
+        "vessel": "Blue Duck",
+        "callsign": "5BCD2",
+        "position": "32°05'N 034°45'E",
+        "nature": "On fire, fire spreading",
+        "assistance": "I require immediate assistance",
+        "persons": "6 persons on board"
+      }
+    },
+    {
+      "id": "distress-sinking-sea-otter",
+      "priority": "mayday",
+      "rubricId": "v1/distress",
+      "brief": "You are SY Sea Otter. Hit a submerged object, hull breached, taking water fast. 4 persons on board, position 31°50'N 034°30'E. Vessel will sink within minutes.",
+      "facts": {
+        "vessel": "Sea Otter",
+        "callsign": "MMSI 211 555 010",
+        "position": "31°50'N 034°30'E",
+        "nature": "Holed and sinking",
+        "assistance": "I require immediate assistance",
+        "persons": "4 persons on board"
+      }
+    },
+    {
+      "id": "distress-collision-northern-star",
+      "priority": "mayday",
+      "rubricId": "v1/distress",
+      "brief": "You are MV Northern Star. Collided with another vessel, severe damage to bow, taking water. 12 persons on board, position 33°10'N 035°02'E.",
+      "facts": {
+        "vessel": "Northern Star",
+        "callsign": "MMSI 211 333 222",
+        "position": "33°10'N 035°02'E",
+        "nature": "Collided with another vessel and taking water",
+        "assistance": "I require immediate assistance",
+        "persons": "12 persons on board"
+      }
+    },
+    {
+      "id": "urgency-engine-failure-red-fox",
+      "priority": "pan_pan",
+      "rubricId": "v1/urgency",
+      "brief": "You are SY Red Fox. Engine has failed, drifting toward a traffic separation scheme. Not in immediate danger, but need a tow. 3 persons on board, position 32°15'N 034°40'E.",
+      "facts": {
+        "vessel": "Red Fox",
+        "callsign": "5RFX1",
+        "position": "32°15'N 034°40'E",
+        "nature": "Engine failure, drifting toward TSS",
+        "assistance": "I require a tow"
+      }
+    },
+    {
+      "id": "urgency-medical-grey-whale",
+      "priority": "pan_pan",
+      "rubricId": "v1/urgency",
+      "brief": "You are MV Grey Whale. Crew member with serious chest pain, need medical advice and possible evacuation. 8 persons on board, position 31°45'N 034°20'E.",
+      "facts": {
+        "vessel": "Grey Whale",
+        "callsign": "5GWH3",
+        "position": "31°45'N 034°20'E",
+        "nature": "Medical emergency, suspected heart attack on board",
+        "assistance": "I require medical advice and possible evacuation"
+      }
+    },
+    {
+      "id": "urgency-steering-silver-arrow",
+      "priority": "pan_pan",
+      "rubricId": "v1/urgency",
+      "brief": "You are MV Silver Arrow. Lost steering, vessel manoeuvring with difficulty in busy shipping lane. Position 32°30'N 034°55'E.",
+      "facts": {
+        "vessel": "Silver Arrow",
+        "callsign": "5SVA2",
+        "position": "32°30'N 034°55'E",
+        "nature": "Lost steering, manoeuvring with difficulty",
+        "assistance": "Request other vessels to keep clear"
+      }
+    },
+    {
+      "id": "safety-container-cape-runner",
+      "priority": "securite",
+      "rubricId": "v1/safety",
+      "brief": "You are MV Cape Runner. Sighted a partly submerged shipping container drifting in a busy shipping lane, hazard to navigation. Position 32°20'N 034°50'E.",
+      "facts": {
+        "vessel": "Cape Runner",
+        "position": "32°20'N 034°50'E, drifting south",
+        "nature": "Floating container, hazard to navigation"
+      }
+    },
+    {
+      "id": "safety-buoy-out-osprey",
+      "priority": "securite",
+      "rubricId": "v1/safety",
+      "brief": "You are MV Osprey. Lateral buoy reported unlit at the harbour approach. Position 31°55'N 034°35'E.",
+      "facts": {
+        "vessel": "Osprey",
+        "position": "31°55'N 034°35'E, harbour approach",
+        "nature": "Unlit lateral buoy"
+      }
+    },
+    {
+      "id": "safety-weather-storm-petrel",
+      "priority": "securite",
+      "rubricId": "v1/safety",
+      "brief": "You are MV Storm Petrel. Observed sudden gale-force squalls in the area, hazard to small craft. Position 33°00'N 035°00'E.",
+      "facts": {
+        "vessel": "Storm Petrel",
+        "position": "33°00'N 035°00'E and surrounding 10 NM",
+        "nature": "Severe squalls observed, gale-force winds"
+      }
+    }
+  ]
+}

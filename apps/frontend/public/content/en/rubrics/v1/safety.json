@@ -44,6 +44,23 @@
   "sequenceRules": {
     "fieldOrder": ["securite", "this_is", "vessel_name", "nature", "position", "out"]
   },
+  "sequenceParts": [
+    {
+      "id": "procedure",
+      "label": "SECURITE procedure",
+      "items": [
+        { "id": "securite", "label": "SECURITE" },
+        { "id": "securite", "label": "SECURITE" },
+        { "id": "securite", "label": "SECURITE" },
+        { "id": "vessel", "label": "Vessel name" },
+        { "id": "vessel", "label": "Vessel name" },
+        { "id": "vessel", "label": "Vessel name" },
+        { "id": "nature", "label": "Nature of safety message" },
+        { "id": "position", "label": "Position / area" },
+        { "id": "out", "label": "OUT" }
+      ]
+    }
+  ],
   "channelRules": {
     "requiredChannel": 16,
     "blockChannel70Voice": true

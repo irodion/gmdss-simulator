@@ -1,25 +1,15 @@
 import type { RubricDefinition } from "@gmdss-simulator/utils";
 import { describe, expect, test } from "vite-plus/test";
-import { gradeSequence, materializeStructural } from "./materialize.ts";
-import type { SequenceItem } from "./types.ts";
+import { materializeScenario, materializeStructural } from "./materialize.ts";
+import type { RubricsByPriority, Scenario } from "./types.ts";
 
-const RUBRIC: RubricDefinition = {
+const DISTRESS: RubricDefinition = {
   id: "v1/distress",
   version: "1.0.0",
   category: "distress",
-  requiredFields: [
-    { id: "mayday", label: "MAYDAY signal word", patterns: ["MAYDAY"], required: true },
-    { id: "vessel_name", label: "Own vessel name", patterns: ["BLUE\\s*DUCK"], required: true },
-    { id: "position", label: "Position", patterns: ["POSITION"], required: true },
-    { id: "nature", label: "Nature of distress", patterns: ["FIRE"], required: true },
-  ],
-  prowordRules: [
-    { id: "mayday", label: "MAYDAY x4", pattern: "MAYDAY", expectedCount: 4 },
-    { id: "over", label: "OVER", pattern: "\\bOVER\\b" },
-  ],
-  sequenceRules: {
-    fieldOrder: ["mayday", "vessel_name", "position", "nature", "over"],
-  },
+  requiredFields: [],
+  prowordRules: [],
+  sequenceRules: { fieldOrder: ["mayday", "vessel_name", "position", "nature", "over"] },
   channelRules: { requiredChannel: 16, blockChannel70Voice: true },
   sequenceParts: [
     {
@@ -45,64 +35,157 @@ const RUBRIC: RubricDefinition = {
   ],
 };
 
-describe("materializeStructural", () => {
-  test("mirrors rubric.sequenceParts into the template", () => {
-    const template = materializeStructural(RUBRIC);
-    expect(template.rubricId).toBe("v1/distress");
-    expect(template.callLabel).toBe("MAYDAY procedure");
-    expect(template.parts.map((p) => p.id)).toEqual(["procedure"]);
-    expect(template.parts[0]!.items).toHaveLength(14);
-    expect(template.parts[0]!.items.at(0)!.id).toBe("mayday");
-    expect(template.parts[0]!.items.at(-1)!.id).toBe("over");
+const URGENCY: RubricDefinition = {
+  id: "v1/urgency",
+  version: "1.0.0",
+  category: "urgency",
+  requiredFields: [],
+  prowordRules: [],
+  sequenceRules: { fieldOrder: [] },
+  channelRules: { requiredChannel: 16, blockChannel70Voice: true },
+  sequenceParts: [
+    {
+      id: "procedure",
+      label: "PAN-PAN procedure",
+      items: [
+        { id: "pan_pan", label: "PAN-PAN" },
+        { id: "pan_pan", label: "PAN-PAN" },
+        { id: "pan_pan", label: "PAN-PAN" },
+        { id: "vessel", label: "Vessel name" },
+        { id: "callsign", label: "Callsign / MMSI" },
+        { id: "position", label: "Position" },
+        { id: "nature", label: "Nature of urgency" },
+        { id: "over", label: "OVER" },
+      ],
+    },
+  ],
+};
+
+const SAFETY: RubricDefinition = {
+  id: "v1/safety",
+  version: "1.0.0",
+  category: "safety",
+  requiredFields: [],
+  prowordRules: [],
+  sequenceRules: { fieldOrder: [] },
+  channelRules: { requiredChannel: 16, blockChannel70Voice: true },
+  sequenceParts: [
+    {
+      id: "procedure",
+      label: "SECURITE procedure",
+      items: [
+        { id: "securite", label: "SECURITE" },
+        { id: "securite", label: "SECURITE" },
+        { id: "securite", label: "SECURITE" },
+        { id: "vessel", label: "Vessel name" },
+        { id: "nature", label: "Nature of safety message" },
+        { id: "position", label: "Position / area" },
+        { id: "out", label: "OUT" },
+      ],
+    },
+  ],
+};
+
+const RUBRICS: RubricsByPriority = {
+  mayday: DISTRESS,
+  pan_pan: URGENCY,
+  securite: SAFETY,
+};
+
+const DISTRESS_SCENARIO: Scenario = {
+  id: "fire-blue-duck",
+  priority: "mayday",
+  rubricId: "v1/distress",
+  brief: "Engine room fire on MV Blue Duck.",
+  facts: {
+    vessel: "Blue Duck",
+    callsign: "5BCD2",
+    position: "32°05'N 034°45'E",
+    nature: "Engine room fire",
+    assistance: "I require immediate assistance",
+    persons: "6 persons on board",
+  },
+};
+
+describe("materializeScenario", () => {
+  test("substitutes scenario facts into the chip labels", () => {
+    const template = materializeScenario(DISTRESS_SCENARIO, RUBRICS);
+    const items = template.parts[0]!.items;
+    expect(items.find((i) => i.id === "vessel")!.label).toBe("Blue Duck");
+    expect(items.find((i) => i.id === "position")!.label).toBe("32°05'N 034°45'E");
+    expect(items.find((i) => i.id === "nature")!.label).toBe("Engine room fire");
+    expect(items.find((i) => i.id === "callsign")!.label).toBe("5BCD2");
+    expect(items.find((i) => i.id === "persons")!.label).toBe("6 persons on board");
+    // Fixed phrases retain their literal labels.
+    expect(items.find((i) => i.id === "mayday")!.label).toBe("MAYDAY");
+    expect(items.find((i) => i.id === "over")!.label).toBe("OVER");
   });
 
-  test("preserves duplicate ids for interchangeable items", () => {
-    const template = materializeStructural(RUBRIC);
-    const ids = template.parts[0]!.items.map((i) => i.id);
-    expect(ids.filter((id) => id === "mayday")).toHaveLength(4);
-    expect(ids.filter((id) => id === "vessel")).toHaveLength(4);
+  test("sets priorityId from the scenario", () => {
+    const template = materializeScenario(DISTRESS_SCENARIO, RUBRICS);
+    expect(template.priorityId).toBe("mayday");
   });
 
-  test("throws when sequenceParts is missing", () => {
-    const noParts: RubricDefinition = { ...RUBRIC, sequenceParts: undefined };
-    expect(() => materializeStructural(noParts)).toThrow(/sequenceParts/);
+  test("pool contains all correct items plus 3x of each wrong-priority opening", () => {
+    const template = materializeScenario(DISTRESS_SCENARIO, RUBRICS);
+    const correctCount = template.parts.flatMap((p) => p.items).length;
+    const panPanInPool = template.pool.filter((i) => i.id === "pan_pan").length;
+    const securiteInPool = template.pool.filter((i) => i.id === "securite").length;
+    expect(panPanInPool).toBe(3);
+    expect(securiteInPool).toBe(3);
+    expect(template.pool.length).toBe(correctCount + 6);
+  });
+
+  test("uses the correct rubric for each priority", () => {
+    const urgencyScenario: Scenario = {
+      id: "engine-failure",
+      priority: "pan_pan",
+      rubricId: "v1/urgency",
+      brief: "Engine failure.",
+      facts: {
+        vessel: "Red Fox",
+        callsign: "5RFX1",
+        position: "32°15'N 034°40'E",
+        nature: "Engine failure",
+      },
+    };
+    const template = materializeScenario(urgencyScenario, RUBRICS);
+    expect(template.rubricId).toBe("v1/urgency");
+    expect(template.parts[0]!.items.length).toBe(URGENCY.sequenceParts![0]!.items.length);
+    // Wrong-priority decoys should be MAYDAY and SECURITE, not PAN-PAN.
+    expect(template.pool.filter((i) => i.id === "mayday").length).toBe(3);
+    expect(template.pool.filter((i) => i.id === "securite").length).toBe(3);
+  });
+
+  test("safety scenario falls back to fixed labels when optional facts are absent", () => {
+    const safetyScenario: Scenario = {
+      id: "container",
+      priority: "securite",
+      rubricId: "v1/safety",
+      brief: "Floating container.",
+      facts: {
+        vessel: "Cape Runner",
+        position: "32°20'N 034°50'E",
+        nature: "Floating container",
+      },
+    };
+    const template = materializeScenario(safetyScenario, RUBRICS);
+    const items = template.parts[0]!.items;
+    expect(items.find((i) => i.id === "out")!.label).toBe("OUT");
+    expect(items.find((i) => i.id === "vessel")!.label).toBe("Cape Runner");
   });
 });
 
-describe("gradeSequence", () => {
-  const TEMPLATE = materializeStructural(RUBRIC);
-  const items = TEMPLATE.parts[0]!.items;
-  const correctMap = (placed: readonly SequenceItem[]): Map<string, SequenceItem[]> =>
-    new Map([["procedure", [...placed]]]);
-
-  test("all-correct placements pass with full count", () => {
-    const grade = gradeSequence(TEMPLATE, correctMap(items));
-    expect(grade.passed).toBe(true);
-    expect(grade.correctCount).toBe(items.length);
-    expect(grade.total).toBe(items.length);
-    expect(grade.parts).toHaveLength(1);
-    expect(grade.parts[0]!.placements.every((p) => p.correct)).toBe(true);
+describe("materializeStructural (legacy)", () => {
+  test("preserves rubric.sequenceParts in the template", () => {
+    const template = materializeStructural(DISTRESS);
+    expect(template.rubricId).toBe("v1/distress");
+    expect(template.parts[0]!.items).toHaveLength(14);
+    expect(template.priorityId).toBe("mayday");
   });
 
-  test("interchangeable duplicates: any 'mayday' in any 'mayday' slot is correct", () => {
-    // Swap the first two MAYDAY items (both id="mayday") — still all correct.
-    const swapped = [...items];
-    [swapped[0], swapped[1]] = [swapped[1]!, swapped[0]!];
-    const grade = gradeSequence(TEMPLATE, correctMap(swapped));
-    expect(grade.passed).toBe(true);
-    expect(grade.correctCount).toBe(items.length);
-  });
-
-  test("a wrong-id placement drops correctCount and surfaces the expected", () => {
-    // Swap slot 6 (callsign) with slot 9 (position) — different ids, so 2 wrong.
-    const swapped = [...items];
-    [swapped[6], swapped[9]] = [swapped[9]!, swapped[6]!];
-    const grade = gradeSequence(TEMPLATE, correctMap(swapped));
-    expect(grade.passed).toBe(false);
-    expect(grade.correctCount).toBe(items.length - 2);
-    const slot6 = grade.parts[0]!.placements[6]!;
-    expect(slot6.correct).toBe(false);
-    expect(slot6.placed.id).toBe("position");
-    expect(slot6.expected.id).toBe("callsign");
+  test("throws when sequenceParts is missing", () => {
+    const noParts: RubricDefinition = { ...DISTRESS, sequenceParts: undefined };
+    expect(() => materializeStructural(noParts)).toThrow(/sequenceParts/);
   });
 });
