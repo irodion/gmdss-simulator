@@ -1088,11 +1088,51 @@
   padding: 6px 4px;
 }
 
+.scenario-card {
+  display: block;
+  margin: 0 0 18px;
+  padding: 14px 16px;
+  border: 1px solid var(--brass);
+  background: var(--paper-deep);
+  font-family: var(--body);
+}
+.scenario-eyebrow {
+  display: block;
+  font-family: var(--mono);
+  font-size: 0.74rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  margin-bottom: 4px;
+}
+.scenario-brief {
+  margin: 0;
+  color: var(--ink);
+  line-height: 1.45;
+}
+
+.seq-pool-groups {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.seq-pool-priority {
+  border-style: solid;
+  border-color: var(--brass-deep);
+  background: var(--paper);
+}
+.seq-pool-item-priority {
+  background: var(--paper-deep);
+  border-color: var(--brass-deep);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+
 .seq-summary {
   margin-top: 18px;
   padding: 16px 20px;
   display: flex;
-  align-items: baseline;
+  flex-direction: column;
   gap: 14px;
   border-top: 1px solid var(--ink-line);
   font-family: var(--body);
@@ -1102,6 +1142,11 @@
 }
 .seq-summary[data-state="partial"] {
   color: var(--coral);
+}
+.seq-summary-header {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
 }
 .seq-summary-score {
   font-family: var(--display);
@@ -1115,6 +1160,51 @@
 }
 .seq-summary-label {
   font-style: italic;
+}
+
+.seq-breakdown {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  color: var(--ink);
+}
+.seq-breakdown-row {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  gap: 12px;
+  align-items: center;
+  padding: 6px 0;
+  border-bottom: 1px dashed var(--ink-line);
+  font-size: 0.92rem;
+}
+.seq-breakdown-row:last-child {
+  border-bottom: none;
+}
+.seq-breakdown-label {
+  font-family: var(--body);
+}
+.seq-breakdown-score {
+  font-family: var(--mono);
+  font-size: 0.86rem;
+  color: var(--ink-soft);
+}
+.seq-breakdown-status {
+  font-family: var(--display);
+  font-size: 1.1rem;
+  width: 1.4em;
+  text-align: center;
+}
+.seq-breakdown-row[data-status="pass"] .seq-breakdown-status {
+  color: var(--sea);
+}
+.seq-breakdown-row[data-status="partial"] .seq-breakdown-status {
+  color: var(--brass-deep);
+}
+.seq-breakdown-row[data-status="fail"] .seq-breakdown-status {
+  color: var(--coral);
 }
 
 @media (prefers-reduced-motion: reduce) {

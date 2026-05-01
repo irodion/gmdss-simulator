@@ -5,8 +5,8 @@ import type { GradeEvent } from "./types.ts";
 function ev(over: Partial<GradeEvent> = {}): GradeEvent {
   return {
     rubricId: "v1/distress",
-    mode: "structural",
-    key: "v1/distress:next-after:mayday",
+    mode: "scenario",
+    key: "v1/scenarios",
     ts: Date.now(),
     correct: true,
     ...over,
@@ -29,7 +29,7 @@ describe("recordAttempt + getAggregates", () => {
     const aggs = getAggregates();
     expect(aggs).toHaveLength(1);
     expect(aggs[0]).toMatchObject({
-      mode: "structural",
+      mode: "scenario",
       attempts: 3,
       correct: 2,
       pctCorrect: 67,
@@ -37,7 +37,7 @@ describe("recordAttempt + getAggregates", () => {
   });
 
   test("getAggregateFor returns null when no events match", () => {
-    expect(getAggregateFor("structural", "missing")).toBeNull();
+    expect(getAggregateFor("scenario", "missing")).toBeNull();
   });
 
   test("FIFO-caps at 200 events", () => {
@@ -57,7 +57,6 @@ describe("recordAttempt + getAggregates", () => {
   test("survives JSON corruption gracefully", () => {
     window.localStorage.setItem("roc-trainer:procedure-stats", "{not json");
     expect(getAggregates()).toEqual([]);
-    // and a write after corruption still works:
     recordAttempt(ev());
     expect(getAggregates()).toHaveLength(1);
   });
@@ -67,6 +66,27 @@ describe("recordAttempt + getAggregates", () => {
     window.localStorage.setItem(
       "roc-trainer:procedure-stats",
       JSON.stringify([valid, null, "string", 42, { rubricId: "x" }, { ...valid, mode: "bogus" }]),
+    );
+    const aggs = getAggregates();
+    expect(aggs).toHaveLength(1);
+    expect(aggs[0]!.attempts).toBe(1);
+  });
+
+  test("legacy 'structural' events are accepted in storage but excluded from scenario aggregates", () => {
+    const legacy = { ...ev(), mode: "structural" as const, key: "v1/distress" };
+    const current = ev();
+    window.localStorage.setItem("roc-trainer:procedure-stats", JSON.stringify([legacy, current]));
+    const aggs = getAggregates();
+    expect(aggs).toHaveLength(1);
+    expect(aggs[0]!.mode).toBe("scenario");
+  });
+
+  test("persists scenarioId and dimensionPasses when provided", () => {
+    recordAttempt(
+      ev({
+        scenarioId: "fire-blue-duck",
+        dimensionPasses: { priority: true, vessel: false, body: true, ending: true },
+      }),
     );
     const aggs = getAggregates();
     expect(aggs).toHaveLength(1);

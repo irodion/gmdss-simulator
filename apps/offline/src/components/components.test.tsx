@@ -1,8 +1,7 @@
 import { act, fireEvent, render, screen } from "@testing-library/react";
-import type { RubricDefinition } from "@gmdss-simulator/utils";
 import { afterEach, beforeEach, describe, expect, test, vi } from "vite-plus/test";
 import type { DrillResult } from "../drills/drill-types.ts";
-import type { ScriptDrillContent, SequenceTemplate } from "../drills/scripts/types.ts";
+import type { Scenario, SequenceTemplate } from "../drills/scripts/types.ts";
 import { setMatchMedia, setUserAgent } from "../test-utils.ts";
 import { InstallChip } from "./InstallChip.tsx";
 import { MicButton } from "./MicButton.tsx";
@@ -282,42 +281,10 @@ describe("PhoneticCheatsheet", () => {
   });
 });
 
-const SAMPLE_RUBRIC: RubricDefinition = {
-  id: "v1/distress",
-  version: "1.0.0",
-  category: "distress",
-  requiredFields: [
-    { id: "mayday", label: "MAYDAY signal word", patterns: ["MAYDAY"], required: true },
-    { id: "vessel_name", label: "Own vessel name", patterns: ["BLUE\\s*DUCK"], required: true },
-    { id: "position", label: "Position", patterns: ["POSITION"], required: true },
-    { id: "nature", label: "Nature of distress", patterns: ["FIRE"], required: true },
-  ],
-  prowordRules: [
-    { id: "mayday", label: "MAYDAY x4", pattern: "MAYDAY", expectedCount: 4 },
-    { id: "over", label: "OVER", pattern: "\\bOVER\\b" },
-  ],
-  sequenceRules: {
-    fieldOrder: ["mayday", "vessel_name", "position", "nature", "over"],
-  },
-  channelRules: { requiredChannel: 16, blockChannel70Voice: true },
-  sequenceParts: [
-    {
-      id: "procedure",
-      label: "MAYDAY procedure",
-      items: [
-        { id: "mayday", label: "MAYDAY" },
-        { id: "vessel", label: "Vessel name" },
-        { id: "callsign", label: "Callsign / MMSI" },
-        { id: "position", label: "Position" },
-        { id: "over", label: "OVER" },
-      ],
-    },
-  ],
-};
-
 const SAMPLE_TEMPLATE: SequenceTemplate = {
   rubricId: "v1/distress",
   callLabel: "MAYDAY procedure",
+  priorityId: "mayday",
   parts: [
     {
       id: "procedure",
@@ -325,16 +292,40 @@ const SAMPLE_TEMPLATE: SequenceTemplate = {
       items: [
         { id: "mayday", label: "MAYDAY" },
         { id: "mayday", label: "MAYDAY" },
-        { id: "vessel", label: "Vessel name" },
-        { id: "callsign", label: "Callsign / MMSI" },
+        { id: "vessel", label: "Blue Duck" },
+        { id: "callsign", label: "5BCD2" },
         { id: "over", label: "OVER" },
       ],
     },
   ],
+  pool: [
+    { id: "mayday", label: "MAYDAY" },
+    { id: "mayday", label: "MAYDAY" },
+    { id: "vessel", label: "Blue Duck" },
+    { id: "callsign", label: "5BCD2" },
+    { id: "over", label: "OVER" },
+    { id: "pan_pan", label: "PAN-PAN" },
+    { id: "pan_pan", label: "PAN-PAN" },
+    { id: "pan_pan", label: "PAN-PAN" },
+    { id: "securite", label: "SECURITE" },
+    { id: "securite", label: "SECURITE" },
+    { id: "securite", label: "SECURITE" },
+  ],
 };
 
-const SAMPLE_CONTENT: ScriptDrillContent = {
-  structuralRubric: SAMPLE_RUBRIC,
+const SAMPLE_SCENARIO: Scenario = {
+  id: "fire-blue-duck",
+  priority: "mayday",
+  rubricId: "v1/distress",
+  brief: "Engine room fire on MV Blue Duck. 6 persons on board.",
+  facts: {
+    vessel: "Blue Duck",
+    callsign: "5BCD2",
+    position: "32°05'N 034°45'E",
+    nature: "Engine room fire",
+    assistance: "I require immediate assistance",
+    persons: "6 persons on board",
+  },
 };
 
 describe("ProceduresHome", () => {
@@ -342,21 +333,37 @@ describe("ProceduresHome", () => {
     window.localStorage.clear();
   });
 
-  test("renders the structural drill tile with the element count from sequenceParts", () => {
-    render(<ProceduresHome content={SAMPLE_CONTENT} statsToken={0} onStartStructural={() => {}} />);
-    expect(screen.getByText(/order of phrases/i)).toBeTruthy();
-    expect(screen.getByText(/5 elements/)).toBeTruthy();
+  test("renders the scenario reconstruction tile with the scenario count", () => {
+    render(
+      <ProceduresHome
+        statsKey="v1/scenarios"
+        statsToken={0}
+        scenarioCount={9}
+        onStart={() => {}}
+      />,
+    );
+    expect(screen.getByText(/scenario reconstruction/i)).toBeTruthy();
+    expect(screen.getByText(/9 scenarios/)).toBeTruthy();
   });
 
-  test("calls onStartStructural when the tile is clicked", () => {
+  test("calls onStart when the tile is clicked", () => {
     const onStart = vi.fn();
-    render(<ProceduresHome content={SAMPLE_CONTENT} statsToken={0} onStartStructural={onStart} />);
-    fireEvent.click(screen.getByRole("button", { name: /order of phrases drill/i }));
+    render(
+      <ProceduresHome statsKey="v1/scenarios" statsToken={0} scenarioCount={9} onStart={onStart} />,
+    );
+    fireEvent.click(screen.getByRole("button", { name: /scenario reconstruction drill/i }));
     expect(onStart).toHaveBeenCalled();
   });
 
   test("aria-label announces 'no attempts yet' when stats are empty", () => {
-    render(<ProceduresHome content={SAMPLE_CONTENT} statsToken={0} onStartStructural={() => {}} />);
+    render(
+      <ProceduresHome
+        statsKey="v1/scenarios"
+        statsToken={0}
+        scenarioCount={9}
+        onStart={() => {}}
+      />,
+    );
     expect(screen.getByRole("button", { name: /no attempts yet/i })).toBeTruthy();
   });
 });
@@ -365,7 +372,7 @@ describe("SequenceCard", () => {
   const ITEMS = SAMPLE_TEMPLATE.parts[0]!.items;
   const TOTAL = ITEMS.length;
 
-  /** First pool button matching `label` (handles duplicates by picking the first). */
+  /** First pool button matching `label`. Throws if none. */
   function poolItem(label: string): HTMLButtonElement {
     const matches = screen.getAllByRole("button", { name: label });
     const btn = matches.find((el) => el.className.includes("seq-pool-item")) as
@@ -387,74 +394,66 @@ describe("SequenceCard", () => {
     }
   }
 
-  test("does not render the part header when there is only one part", () => {
-    render(
+  function renderCard(
+    over: Partial<{
+      onComplete: () => void;
+      onRetry: () => void;
+      onNewScenario: () => void;
+      onBack: () => void;
+    }> = {},
+  ) {
+    return render(
       <SequenceCard
         template={SAMPLE_TEMPLATE}
-        onComplete={() => {}}
-        onRestart={() => {}}
-        onBack={() => {}}
+        scenario={SAMPLE_SCENARIO}
+        onComplete={over.onComplete ?? (() => {})}
+        onRetry={over.onRetry ?? (() => {})}
+        onNewScenario={over.onNewScenario ?? (() => {})}
+        onBack={over.onBack ?? (() => {})}
       />,
     );
+  }
+
+  test("renders the scenario brief above the slots", () => {
+    renderCard();
+    expect(screen.getByText(/engine room fire on mv blue duck/i)).toBeTruthy();
+  });
+
+  test("does not render the part header when there is only one part", () => {
+    renderCard();
     expect(screen.queryByRole("heading", { name: /MAYDAY procedure/i })).toBeNull();
   });
 
-  test("tapping a pool item fills the first empty slot", () => {
-    render(
-      <SequenceCard
-        template={SAMPLE_TEMPLATE}
-        onComplete={() => {}}
-        onRestart={() => {}}
-        onBack={() => {}}
-      />,
-    );
-    fireEvent.click(poolItem("Callsign / MMSI"));
-    expect(slot(1).textContent).toMatch(/Callsign/);
+  test("pool contains priority decoys for the wrong priorities", () => {
+    renderCard();
+    expect(
+      screen
+        .getAllByRole("button", { name: "PAN-PAN" })
+        .filter((el) => el.className.includes("seq-pool-item")),
+    ).toHaveLength(3);
+    expect(
+      screen
+        .getAllByRole("button", { name: "SECURITE" })
+        .filter((el) => el.className.includes("seq-pool-item")),
+    ).toHaveLength(3);
   });
 
-  test("clicking a duplicate-label pool button removes only that one occurrence", () => {
-    render(
-      <SequenceCard
-        template={SAMPLE_TEMPLATE}
-        onComplete={() => {}}
-        onRestart={() => {}}
-        onBack={() => {}}
-      />,
-    );
-    // Two MAYDAY pool items exist initially (id=mayday × 2 in the fixture).
-    expect(screen.getAllByRole("button", { name: "MAYDAY" })).toHaveLength(2);
-    fireEvent.click(poolItem("MAYDAY"));
-    // After one click, exactly one MAYDAY pool button remains.
-    const remaining = screen
-      .getAllByRole("button", { name: "MAYDAY" })
-      .filter((el) => el.className.includes("seq-pool-item"));
-    expect(remaining).toHaveLength(1);
+  test("tapping a pool item fills the first empty slot", () => {
+    renderCard();
+    fireEvent.click(poolItem("5BCD2"));
+    expect(slot(1).textContent).toMatch(/5BCD2/);
   });
 
   test("tapping a filled slot returns the item to the pool", () => {
-    render(
-      <SequenceCard
-        template={SAMPLE_TEMPLATE}
-        onComplete={() => {}}
-        onRestart={() => {}}
-        onBack={() => {}}
-      />,
-    );
-    fireEvent.click(poolItem("Callsign / MMSI"));
+    renderCard();
+    fireEvent.click(poolItem("5BCD2"));
     fireEvent.click(slot(1));
-    expect(poolItem("Callsign / MMSI")).toBeTruthy();
-    expect(slot(1).textContent).not.toMatch(/Callsign/);
+    expect(poolItem("5BCD2")).toBeTruthy();
+    expect(slot(1).textContent).not.toMatch(/5BCD2/);
   });
 
   test("Submit is disabled until every slot is filled", () => {
-    render(
-      <SequenceCard
-        template={SAMPLE_TEMPLATE}
-        onComplete={() => {}}
-        onRestart={() => {}}
-        onBack={() => {}}
-      />,
-    );
+    renderCard();
     const submit = screen.getByRole("button", { name: /^Submit$/ }) as HTMLButtonElement;
     expect(submit.disabled).toBe(true);
     for (let i = 0; i < TOTAL - 1; i++) {
@@ -465,16 +464,9 @@ describe("SequenceCard", () => {
     expect(submit.disabled).toBe(false);
   });
 
-  test("submitting in correct order grades pass and shows 'perfect order'", () => {
+  test("submitting in correct order grades pass and shows the breakdown", () => {
     const onComplete = vi.fn();
-    render(
-      <SequenceCard
-        template={SAMPLE_TEMPLATE}
-        onComplete={onComplete}
-        onRestart={() => {}}
-        onBack={() => {}}
-      />,
-    );
+    renderCard({ onComplete });
     placeInOrder();
     fireEvent.click(screen.getByRole("button", { name: /^Submit$/ }));
     expect(onComplete).toHaveBeenCalledTimes(1);
@@ -483,50 +475,38 @@ describe("SequenceCard", () => {
       correctCount: TOTAL,
       total: TOTAL,
     });
-    expect(screen.getByText(/perfect order/i)).toBeTruthy();
+    expect(screen.getByText(/perfect call/i)).toBeTruthy();
+    // Breakdown rows for the four dimensions present in the sample template.
+    expect(screen.getByText(/^priority$/i)).toBeTruthy();
+    expect(screen.getByText(/vessel identification/i)).toBeTruthy();
+    expect(screen.getByText(/message body/i)).toBeTruthy();
+    expect(screen.getByText(/^ending$/i)).toBeTruthy();
   });
 
-  test("placing a wrong-id item shows 'should be:' for the misplaced slot", () => {
+  test("placing a wrong-priority chip in the opening slot triggers a partial score", () => {
     const onComplete = vi.fn();
-    render(
-      <SequenceCard
-        template={SAMPLE_TEMPLATE}
-        onComplete={onComplete}
-        onRestart={() => {}}
-        onBack={() => {}}
-      />,
-    );
-    // Expected slots: [mayday, mayday, vessel, callsign, over].
-    // Swap the canonical "callsign" item (ITEMS[3]) into slot 1 and pull a
-    // "mayday" into slot 4 → 2 wrong placements.
-    const order = [
-      ITEMS[3]!, // callsign into slot 1 (expected: mayday) → wrong
-      ITEMS[1]!, // mayday into slot 2 (expected: mayday) → correct
-      ITEMS[2]!, // vessel into slot 3 (expected: vessel) → correct
-      ITEMS[0]!, // mayday into slot 4 (expected: callsign) → wrong
-      ITEMS[4]!, // over into slot 5 → correct
-    ];
-    for (const item of order) {
-      fireEvent.click(poolItem(item.label));
-    }
+    renderCard({ onComplete });
+    // Expected: [mayday, mayday, vessel, callsign, over].
+    // Swap the first opening with a PAN-PAN decoy → priority dimension partial.
+    fireEvent.click(poolItem("PAN-PAN"));
+    fireEvent.click(poolItem("MAYDAY"));
+    fireEvent.click(poolItem("Blue Duck"));
+    fireEvent.click(poolItem("5BCD2"));
+    fireEvent.click(poolItem("OVER"));
     fireEvent.click(screen.getByRole("button", { name: /^Submit$/ }));
     expect(onComplete.mock.calls[0]![0].passed).toBe(false);
-    expect(screen.getAllByText(/should be:/i).length).toBeGreaterThanOrEqual(2);
+    expect(screen.getByText(/should be:/i)).toBeTruthy();
   });
 
-  test("Try again calls onRestart so the parent can remount with a fresh shuffle", () => {
-    const onRestart = vi.fn();
-    render(
-      <SequenceCard
-        template={SAMPLE_TEMPLATE}
-        onComplete={() => {}}
-        onRestart={onRestart}
-        onBack={() => {}}
-      />,
-    );
+  test("Try again calls onRetry; New scenario calls onNewScenario", () => {
+    const onRetry = vi.fn();
+    const onNewScenario = vi.fn();
+    renderCard({ onRetry, onNewScenario });
     placeInOrder();
     fireEvent.click(screen.getByRole("button", { name: /^Submit$/ }));
-    fireEvent.click(screen.getByRole("button", { name: /drill again|try again/i }));
-    expect(onRestart).toHaveBeenCalled();
+    fireEvent.click(screen.getByRole("button", { name: /^Try again$/ }));
+    expect(onRetry).toHaveBeenCalled();
+    fireEvent.click(screen.getByRole("button", { name: /^New scenario$/ }));
+    expect(onNewScenario).toHaveBeenCalled();
   });
 });

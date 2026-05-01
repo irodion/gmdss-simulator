@@ -67,6 +67,25 @@
       "over"
     ]
   },
+  "sequenceParts": [
+    {
+      "id": "procedure",
+      "label": "PAN-PAN procedure",
+      "items": [
+        { "id": "pan_pan", "label": "PAN-PAN" },
+        { "id": "pan_pan", "label": "PAN-PAN" },
+        { "id": "pan_pan", "label": "PAN-PAN" },
+        { "id": "vessel", "label": "Vessel name" },
+        { "id": "vessel", "label": "Vessel name" },
+        { "id": "vessel", "label": "Vessel name" },
+        { "id": "callsign", "label": "Callsign / MMSI" },
+        { "id": "position", "label": "Position" },
+        { "id": "nature", "label": "Nature of urgency" },
+        { "id": "assistance", "label": "Assistance / information needed" },
+        { "id": "over", "label": "OVER" }
+      ]
+    }
+  ],
   "channelRules": {
     "requiredChannel": 16,
     "blockChannel70Voice": true

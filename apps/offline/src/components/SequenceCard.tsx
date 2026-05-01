@@ -1,44 +1,53 @@
 import { useState } from "react";
-import { gradeSequence } from "../drills/scripts/materialize.ts";
-import type {
-  SequenceGrade,
-  SequenceItem,
-  SequenceTemplate,
-  SequenceTemplatePart,
+import { gradeScenario } from "../drills/scripts/grade.ts";
+import {
+  type DimensionStatus,
+  isPriorityItem,
+  type Scenario,
+  type SequenceGrade,
+  type SequenceItem,
+  type SequenceScoreDimension,
+  type SequenceTemplate,
+  type SequenceTemplatePart,
 } from "../drills/scripts/types.ts";
 
 interface SequenceCardProps {
   readonly template: SequenceTemplate;
+  readonly scenario: Scenario;
   readonly onComplete: (grade: SequenceGrade) => void;
-  readonly onRestart: () => void;
+  readonly onRetry: () => void;
+  readonly onNewScenario: () => void;
   readonly onBack: () => void;
 }
 
 interface PartState {
   readonly part: SequenceTemplatePart;
-  readonly pool: SequenceItem[];
   readonly placements: (SequenceItem | null)[];
 }
 
-function shuffle<T>(arr: readonly T[]): T[] {
-  const out = [...arr];
-  for (let i = out.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [out[i], out[j]] = [out[j]!, out[i]!];
-  }
-  return out;
-}
+const STATUS_ICONS: Readonly<Record<DimensionStatus, string>> = {
+  pass: "✓",
+  partial: "◐",
+  fail: "✗",
+};
 
 function initParts(template: SequenceTemplate): PartState[] {
   return template.parts.map((part) => ({
     part,
-    pool: shuffle(part.items),
     placements: Array(part.items.length).fill(null),
   }));
 }
 
-export function SequenceCard({ template, onComplete, onRestart, onBack }: SequenceCardProps) {
+export function SequenceCard({
+  template,
+  scenario,
+  onComplete,
+  onRetry,
+  onNewScenario,
+  onBack,
+}: SequenceCardProps) {
   const [parts, setParts] = useState<PartState[]>(() => initParts(template));
+  const [pool, setPool] = useState<readonly SequenceItem[]>(() => template.pool);
   const [grade, setGrade] = useState<SequenceGrade | null>(null);
 
   const ready = parts.every((p) => p.placements.every((slot) => slot !== null));
@@ -48,33 +57,33 @@ export function SequenceCard({ template, onComplete, onRestart, onBack }: Sequen
     setParts((prev) => prev.map((p) => (p.part.id === partId ? updater(p) : p)));
   }
 
-  function handlePoolPick(partId: string, poolIndex: number) {
+  function handlePoolPick(poolIndex: number) {
     if (grade !== null) return;
-    updatePart(partId, (state) => {
-      const item = state.pool[poolIndex];
-      if (!item) return state;
-      const nextEmpty = state.placements.findIndex((p) => p === null);
+    const item = pool[poolIndex];
+    if (!item) return;
+    const targetPart = parts.find((p) => p.placements.some((slot) => slot === null));
+    if (!targetPart) return;
+    updatePart(targetPart.part.id, (state) => {
+      const nextEmpty = state.placements.findIndex((slot) => slot === null);
       if (nextEmpty === -1) return state;
       const placements = [...state.placements];
       placements[nextEmpty] = item;
-      const pool = state.pool.filter((_, i) => i !== poolIndex);
-      return { ...state, placements, pool };
+      return { ...state, placements };
     });
+    setPool((prev) => prev.filter((_, i) => i !== poolIndex));
   }
 
   function handleSlotReturn(partId: string, slotIndex: number) {
     if (grade !== null) return;
+    const part = parts.find((p) => p.part.id === partId);
+    const item = part?.placements[slotIndex];
+    if (!item) return;
     updatePart(partId, (state) => {
-      const item = state.placements[slotIndex];
-      if (!item) return state;
       const placements = [...state.placements];
       placements[slotIndex] = null;
-      return {
-        ...state,
-        placements,
-        pool: [...state.pool, item],
-      };
+      return { ...state, placements };
     });
+    setPool((prev) => [...prev, item]);
   }
 
   function handleSubmit() {
@@ -82,7 +91,7 @@ export function SequenceCard({ template, onComplete, onRestart, onBack }: Sequen
     const placementsByPart = new Map<string, SequenceItem[]>(
       parts.map((p) => [p.part.id, p.placements as SequenceItem[]]),
     );
-    const result = gradeSequence(template, placementsByPart);
+    const result = gradeScenario(template, placementsByPart);
     setGrade(result);
     onComplete(result);
   }
@@ -92,19 +101,28 @@ export function SequenceCard({ template, onComplete, onRestart, onBack }: Sequen
     slotIndex: number,
     placed: SequenceItem | null,
   ): "empty" | "filled" | "correct" | "wrong" {
-    if (grade) {
-      const partGrade = grade.parts.find((p) => p.partId === partId);
-      const cell = partGrade?.placements[slotIndex];
-      return cell?.correct ? "correct" : "wrong";
-    }
-    return placed === null ? "empty" : "filled";
+    if (!grade) return placed === null ? "empty" : "filled";
+    const cell = grade.parts.find((p) => p.partId === partId)?.placements[slotIndex];
+    return cell?.correct ? "correct" : "wrong";
   }
+
+  const priorityPool = pool
+    .map((item, idx) => ({ item, idx }))
+    .filter(({ item }) => isPriorityItem(item.id));
+  const contentPool = pool
+    .map((item, idx) => ({ item, idx }))
+    .filter(({ item }) => !isPriorityItem(item.id));
 
   return (
     <div>
+      <section className="scenario-card" aria-label="Scenario">
+        <span className="scenario-eyebrow">Scenario</span>
+        <p className="scenario-brief">{scenario.brief}</p>
+      </section>
+
       <div className="prompt">
         <span className="prompt-eyebrow">{template.callLabel}</span>
-        Place each element in the correct order
+        Pick the right priority and order the phrases for this scenario
       </div>
 
       {parts.map((state) => {
@@ -147,26 +165,45 @@ export function SequenceCard({ template, onComplete, onRestart, onBack }: Sequen
                 );
               })}
             </ol>
-
-            <div className="seq-pool" aria-label={`${state.part.label} pool`}>
-              {state.pool.map((item, idx) => (
-                <button
-                  key={idx}
-                  type="button"
-                  className="seq-pool-item"
-                  onClick={() => handlePoolPick(state.part.id, idx)}
-                  disabled={grade !== null}
-                >
-                  {item.label}
-                </button>
-              ))}
-              {state.pool.length === 0 && grade === null ? (
-                <p className="seq-pool-empty">All elements placed.</p>
-              ) : null}
-            </div>
           </section>
         );
       })}
+
+      <div className="seq-pool-groups" aria-label="Phrase pool">
+        {priorityPool.length > 0 ? (
+          <div className="seq-pool seq-pool-priority" aria-label="Priority openings">
+            {priorityPool.map(({ item, idx }) => (
+              <button
+                key={`p-${idx}`}
+                type="button"
+                className="seq-pool-item seq-pool-item-priority"
+                onClick={() => handlePoolPick(idx)}
+                disabled={grade !== null}
+              >
+                {item.label}
+              </button>
+            ))}
+          </div>
+        ) : null}
+        {contentPool.length > 0 ? (
+          <div className="seq-pool" aria-label="Phrase chips">
+            {contentPool.map(({ item, idx }) => (
+              <button
+                key={`c-${idx}`}
+                type="button"
+                className="seq-pool-item"
+                onClick={() => handlePoolPick(idx)}
+                disabled={grade !== null}
+              >
+                {item.label}
+              </button>
+            ))}
+          </div>
+        ) : null}
+        {pool.length === 0 && grade === null ? (
+          <p className="seq-pool-empty">All elements placed.</p>
+        ) : null}
+      </div>
 
       <div className="actions">
         {grade === null ? (
@@ -185,31 +222,56 @@ export function SequenceCard({ template, onComplete, onRestart, onBack }: Sequen
           </>
         ) : (
           <>
-            <button type="button" className="btn-secondary" onClick={onBack}>
-              ← Procedures
+            <button type="button" className="btn-secondary" onClick={onRetry}>
+              Try again
             </button>
-            <button type="button" className="btn-primary btn-grow" onClick={onRestart}>
-              {grade.passed ? "Drill again" : "Try again"}
+            <button type="button" className="btn-primary btn-grow" onClick={onNewScenario}>
+              New scenario
             </button>
           </>
         )}
       </div>
 
-      {grade !== null ? (
-        <div
-          className="seq-summary"
-          data-state={grade.passed ? "pass" : "partial"}
-          aria-live="polite"
-        >
-          <span className="seq-summary-score">
-            {grade.correctCount}
-            <small> / {grade.total}</small>
-          </span>
-          <span className="seq-summary-label">
-            {grade.passed ? "perfect order" : "review the misplaced fields"}
-          </span>
-        </div>
-      ) : null}
+      {grade !== null ? <SequenceBreakdown grade={grade} /> : null}
     </div>
+  );
+}
+
+interface SequenceBreakdownProps {
+  readonly grade: SequenceGrade;
+}
+
+function SequenceBreakdown({ grade }: SequenceBreakdownProps) {
+  return (
+    <div className="seq-summary" data-state={grade.passed ? "pass" : "partial"} aria-live="polite">
+      <div className="seq-summary-header">
+        <span className="seq-summary-score">
+          {grade.correctCount}
+          <small> / {grade.total}</small>
+        </span>
+        <span className="seq-summary-label">
+          {grade.passed ? "perfect call" : "review the misplaced fields"}
+        </span>
+      </div>
+      <ul className="seq-breakdown" aria-label="Score breakdown by dimension">
+        {grade.dimensions.map((d) => (
+          <DimensionRow key={d.id} dimension={d} />
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+function DimensionRow({ dimension }: { readonly dimension: SequenceScoreDimension }) {
+  return (
+    <li className="seq-breakdown-row" data-status={dimension.status}>
+      <span className="seq-breakdown-label">{dimension.label}</span>
+      <span className="seq-breakdown-score">
+        {dimension.correct} / {dimension.total}
+      </span>
+      <span className="seq-breakdown-status" aria-label={dimension.status}>
+        {STATUS_ICONS[dimension.status]}
+      </span>
+    </li>
   );
 }

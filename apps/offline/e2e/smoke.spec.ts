@@ -51,42 +51,25 @@ test("voice dictation button appears during a callsign drill on supported browse
   await expect(page.getByRole("button", { name: /start voice dictation/i })).toBeVisible();
 });
 
-test("Procedures tab loads the home tile and grades the order-of-phrases drill", async ({
-  page,
-}) => {
+test("Procedures tab loads the home tile and starts a scenario drill", async ({ page }) => {
   await page.goto("/");
   await page.getByRole("tab", { name: "Procedures" }).click();
 
-  await expect(page.getByRole("button", { name: /order of phrases drill/i })).toBeVisible();
-  await page.getByRole("button", { name: /order of phrases drill/i }).click();
-  await expect(page.getByText(/place each element in the correct order/i)).toBeVisible();
+  await expect(page.getByRole("button", { name: /scenario reconstruction drill/i })).toBeVisible();
+  await page.getByRole("button", { name: /scenario reconstruction drill/i }).click();
 
-  // Canonical order — duplicate labels (MAYDAY × 4, Vessel name × 4) are
-  // interchangeable, so always click the first remaining pool button by label.
-  const order = [
-    "MAYDAY",
-    "MAYDAY",
-    "MAYDAY",
-    "Vessel name",
-    "Vessel name",
-    "Vessel name",
-    "Callsign / MMSI",
-    "MAYDAY",
-    "Vessel name",
-    "Position",
-    "Nature of distress",
-    "Request immediate assistance",
-    "Persons on board",
-    "OVER",
-  ];
-  for (const label of order) {
-    await page.locator(".seq-pool-item").getByText(label, { exact: true }).first().click();
-  }
+  // The scenario brief is rendered above the slots.
+  await expect(page.getByLabel("Scenario").first()).toBeVisible();
 
-  const submit = page.getByRole("button", { name: /^Submit$/ });
-  await expect(submit).toBeEnabled();
-  await submit.click();
-  await expect(page.getByText(/perfect order/i)).toBeVisible();
+  // The priority openings group offers all three priorities as chips,
+  // so the user must pick the correct one for the scenario.
+  const priorityPool = page.getByLabel("Priority openings");
+  await expect(priorityPool.getByRole("button", { name: "MAYDAY" }).first()).toBeVisible();
+  await expect(priorityPool.getByRole("button", { name: "PAN-PAN" }).first()).toBeVisible();
+  await expect(priorityPool.getByRole("button", { name: "SECURITE" }).first()).toBeVisible();
+
+  // Submit is disabled until every slot is filled.
+  await expect(page.getByRole("button", { name: /^Submit$/ })).toBeDisabled();
 });
 
 test("service worker is registered after first load", async ({ page }) => {

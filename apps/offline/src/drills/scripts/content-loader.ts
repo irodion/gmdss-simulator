@@ -1,7 +1,13 @@
 import type { RubricDefinition } from "@gmdss-simulator/utils";
-import type { ScriptDrillContent } from "./types.ts";
+import type { PriorityId, RubricsByPriority, ScenarioBank, ScriptDrillContent } from "./types.ts";
 
-const STRUCTURAL_RUBRIC_ID = "v1/distress";
+const RUBRIC_IDS: Readonly<Record<PriorityId, string>> = {
+  mayday: "v1/distress",
+  pan_pan: "v1/urgency",
+  securite: "v1/safety",
+};
+
+const SCENARIOS_URL = "/content/en/rubrics/v1/scenarios.json";
 
 async function fetchJson<T>(url: string): Promise<T> {
   const res = await fetch(url);
@@ -16,6 +22,12 @@ export async function loadRubric(rubricId: string): Promise<RubricDefinition> {
 }
 
 export async function loadScriptDrillContent(): Promise<ScriptDrillContent> {
-  const structuralRubric = await loadRubric(STRUCTURAL_RUBRIC_ID);
-  return { structuralRubric };
+  const [mayday, pan_pan, securite, scenarios] = await Promise.all([
+    loadRubric(RUBRIC_IDS.mayday),
+    loadRubric(RUBRIC_IDS.pan_pan),
+    loadRubric(RUBRIC_IDS.securite),
+    fetchJson<ScenarioBank>(SCENARIOS_URL),
+  ]);
+  const rubrics: RubricsByPriority = { mayday, pan_pan, securite };
+  return { rubrics, scenarios };
 }
