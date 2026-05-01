@@ -11,10 +11,14 @@ import {
 } from "./types.ts";
 
 const ENDING_IDS = ["over", "out"] as const;
-const VESSEL_ID = "vessel";
+const VESSEL_IDS = ["vessel", "callsign"] as const;
 
 function isEndingItem(id: string): boolean {
   return (ENDING_IDS as readonly string[]).includes(id);
+}
+
+function isVesselIdentification(id: string): boolean {
+  return (VESSEL_IDS as readonly string[]).includes(id);
 }
 
 function status(correct: number, total: number): DimensionStatus {
@@ -88,7 +92,7 @@ function pickAccumulator(
   accs: Record<DimensionId, DimensionAccumulator>,
 ): DimensionAccumulator {
   if (isPriorityItem(expectedId)) return accs.priority;
-  if (expectedId === VESSEL_ID) return accs.vessel;
+  if (isVesselIdentification(expectedId)) return accs.vessel;
   if (isEndingItem(expectedId)) return accs.ending;
   return accs.body;
 }

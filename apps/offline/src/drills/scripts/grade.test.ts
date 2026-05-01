@@ -58,13 +58,26 @@ describe("gradeScenario", () => {
   test("vessel dimension reports partial when one vessel slot is wrong", () => {
     const tpl = template(DISTRESS_ITEMS);
     const wrongVessel = [...DISTRESS_ITEMS];
-    // slot 4 expects vessel; place callsign instead
-    wrongVessel[3] = { id: "callsign", label: "wrong" };
+    // slot 4 expects vessel; place position instead
+    wrongVessel[3] = { id: "position", label: "wrong" };
     const grade = gradeScenario(tpl, placementsMap(wrongVessel));
     const vessel = grade.dimensions.find((d) => d.id === "vessel")!;
     expect(vessel.status).toBe("partial");
-    expect(vessel.total).toBe(4);
-    expect(vessel.correct).toBe(3);
+    // 4 vessel slots + 1 callsign slot = 5 vessel-identification slots
+    expect(vessel.total).toBe(5);
+    expect(vessel.correct).toBe(4);
+  });
+
+  test("callsign slots count toward vessel identification dimension", () => {
+    const tpl = template(DISTRESS_ITEMS);
+    const wrongCallsign = [...DISTRESS_ITEMS];
+    // slot 7 expects callsign; place position instead
+    wrongCallsign[6] = { id: "position", label: "wrong" };
+    const grade = gradeScenario(tpl, placementsMap(wrongCallsign));
+    const vessel = grade.dimensions.find((d) => d.id === "vessel")!;
+    expect(vessel.status).toBe("partial");
+    expect(vessel.total).toBe(5);
+    expect(vessel.correct).toBe(4);
   });
 
   test("ending dimension fails when last slot has wrong id", () => {
@@ -78,12 +91,13 @@ describe("gradeScenario", () => {
     expect(ending.correct).toBe(0);
   });
 
-  test("body dimension counts position/nature/assistance/persons/callsign slots", () => {
+  test("body dimension counts position/nature/assistance/persons slots", () => {
     const tpl = template(DISTRESS_ITEMS);
     const grade = gradeScenario(tpl, placementsMap(DISTRESS_ITEMS));
     const body = grade.dimensions.find((d) => d.id === "body")!;
-    // callsign + position + nature + assistance + persons = 5 body slots.
-    expect(body.total).toBe(5);
+    // position + nature + assistance + persons = 4 body slots
+    // (callsign is part of vessel identification, not body).
+    expect(body.total).toBe(4);
     expect(body.status).toBe("pass");
   });
 

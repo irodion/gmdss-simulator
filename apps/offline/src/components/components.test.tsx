@@ -294,6 +294,7 @@ const SAMPLE_TEMPLATE: SequenceTemplate = {
         { id: "mayday", label: "MAYDAY" },
         { id: "vessel", label: "Blue Duck" },
         { id: "callsign", label: "5BCD2" },
+        { id: "position", label: "32°05'N 034°45'E" },
         { id: "over", label: "OVER" },
       ],
     },
@@ -303,6 +304,7 @@ const SAMPLE_TEMPLATE: SequenceTemplate = {
     { id: "mayday", label: "MAYDAY" },
     { id: "vessel", label: "Blue Duck" },
     { id: "callsign", label: "5BCD2" },
+    { id: "position", label: "32°05'N 034°45'E" },
     { id: "over", label: "OVER" },
     { id: "pan_pan", label: "PAN-PAN" },
     { id: "pan_pan", label: "PAN-PAN" },
@@ -486,12 +488,13 @@ describe("SequenceCard", () => {
   test("placing a wrong-priority chip in the opening slot triggers a partial score", () => {
     const onComplete = vi.fn();
     renderCard({ onComplete });
-    // Expected: [mayday, mayday, vessel, callsign, over].
+    // Expected: [mayday, mayday, vessel, callsign, position, over].
     // Swap the first opening with a PAN-PAN decoy → priority dimension partial.
     fireEvent.click(poolItem("PAN-PAN"));
     fireEvent.click(poolItem("MAYDAY"));
     fireEvent.click(poolItem("Blue Duck"));
     fireEvent.click(poolItem("5BCD2"));
+    fireEvent.click(poolItem("32°05'N 034°45'E"));
     fireEvent.click(poolItem("OVER"));
     fireEvent.click(screen.getByRole("button", { name: /^Submit$/ }));
     expect(onComplete.mock.calls[0]![0].passed).toBe(false);

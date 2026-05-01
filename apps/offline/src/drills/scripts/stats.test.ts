@@ -88,9 +88,14 @@ describe("recordAttempt + getAggregates", () => {
         dimensionPasses: { priority: true, vessel: false, body: true, ending: true },
       }),
     );
-    const aggs = getAggregates();
-    expect(aggs).toHaveLength(1);
-    expect(aggs[0]!.attempts).toBe(1);
+    const raw = window.localStorage.getItem("roc-trainer:procedure-stats");
+    expect(raw).toBeTruthy();
+    const stored = JSON.parse(raw!) as unknown[];
+    expect(stored).toHaveLength(1);
+    expect(stored[0]).toMatchObject({
+      scenarioId: "fire-blue-duck",
+      dimensionPasses: { priority: true, vessel: false, body: true, ending: true },
+    });
   });
 
   test("survives a localStorage that throws on write (Safari private mode)", () => {
