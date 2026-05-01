@@ -28,6 +28,27 @@ const SCENARIOS: ScenarioBank = {
         nature: "Engine room fire",
       },
     },
+    {
+      id: "engine-failure",
+      priority: "pan_pan",
+      rubricId: "v1/urgency",
+      brief: "Engine failure.",
+      facts: { vessel: "Red Fox", position: "x", nature: "y" },
+    },
+    {
+      id: "container",
+      priority: "securite",
+      rubricId: "v1/safety",
+      brief: "Floating container.",
+      facts: { vessel: "Cape Runner", position: "x", nature: "y" },
+    },
+    {
+      id: "sart-albatross",
+      priority: "mayday",
+      rubricId: "v1/distress-sart",
+      brief: "SART activated.",
+      facts: { vessel: "Albatross life raft" },
+    },
   ],
 };
 
@@ -53,6 +74,7 @@ function pickBody(url: string): unknown {
   if (url.endsWith("/rubrics/v1/distress.json")) return rubric("v1/distress", "distress");
   if (url.endsWith("/rubrics/v1/urgency.json")) return rubric("v1/urgency", "urgency");
   if (url.endsWith("/rubrics/v1/safety.json")) return rubric("v1/safety", "safety");
+  if (url.endsWith("/rubrics/v1/distress-sart.json")) return rubric("v1/distress-sart", "distress");
   if (url.endsWith("/rubrics/v1/scenarios.json")) return SCENARIOS;
   return null;
 }
@@ -67,12 +89,13 @@ describe("content-loader", () => {
     await expect(loadRubric("v1/nope")).rejects.toThrow(/HTTP 404/);
   });
 
-  test("loadScriptDrillContent loads all three rubrics and the scenario bank", async () => {
+  test("loadScriptDrillContent loads only rubrics referenced by scenarios, keyed by rubric id", async () => {
     const content = await loadScriptDrillContent();
-    expect(content.rubrics.mayday.id).toBe("v1/distress");
-    expect(content.rubrics.pan_pan.id).toBe("v1/urgency");
-    expect(content.rubrics.securite.id).toBe("v1/safety");
-    expect(content.scenarios.scenarios).toHaveLength(1);
-    expect(content.scenarios.scenarios[0]!.id).toBe("fire-blue-duck");
+    expect(content.rubrics["v1/distress"]!.id).toBe("v1/distress");
+    expect(content.rubrics["v1/urgency"]!.id).toBe("v1/urgency");
+    expect(content.rubrics["v1/safety"]!.id).toBe("v1/safety");
+    expect(content.rubrics["v1/distress-sart"]!.id).toBe("v1/distress-sart");
+    expect(Object.keys(content.rubrics)).toHaveLength(4);
+    expect(content.scenarios.scenarios).toHaveLength(4);
   });
 });

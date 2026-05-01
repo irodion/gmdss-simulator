@@ -72,10 +72,14 @@ export interface GradeEvent {
 export interface ScenarioFacts {
   readonly vessel: string;
   readonly callsign?: string;
-  readonly position: string;
-  readonly nature: string;
+  readonly position?: string;
+  readonly nature?: string;
   readonly assistance?: string;
   readonly persons?: string;
+  readonly sartAddressee?: string;
+  readonly shipDescription?: string;
+  readonly addresseeRcc?: string;
+  readonly actionRequest?: string;
 }
 
 export interface Scenario {
@@ -90,10 +94,10 @@ export interface ScenarioBank {
   readonly scenarios: readonly Scenario[];
 }
 
-export type RubricsByPriority = Readonly<Record<PriorityId, RubricDefinition>>;
+export type RubricsById = Readonly<Record<string, RubricDefinition>>;
 
 export interface ScriptDrillContent {
-  readonly rubrics: RubricsByPriority;
+  readonly rubrics: RubricsById;
   readonly scenarios: ScenarioBank;
 }
 

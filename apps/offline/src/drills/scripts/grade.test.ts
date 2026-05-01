@@ -101,6 +101,40 @@ describe("gradeScenario", () => {
     expect(body.status).toBe("pass");
   });
 
+  test("SART rubric grades dimensions correctly with new item ids in body", () => {
+    const sartItems: readonly SequenceItem[] = [
+      { id: "mayday", label: "MAYDAY" },
+      { id: "mayday", label: "MAYDAY" },
+      { id: "mayday", label: "MAYDAY" },
+      { id: "sart_addressee", label: "Ship who received my Radar SART" },
+      { id: "sart_addressee", label: "Ship who received my Radar SART" },
+      { id: "sart_addressee", label: "Ship who received my Radar SART" },
+      { id: "vessel", label: "Albatross life raft" },
+      { id: "vessel", label: "Albatross life raft" },
+      { id: "vessel", label: "Albatross life raft" },
+      { id: "assistance", label: "Require immediate assistance" },
+      { id: "persons", label: "4 persons on board" },
+      { id: "over", label: "OVER" },
+    ];
+    const tpl: SequenceTemplate = {
+      rubricId: "v1/distress-sart",
+      callLabel: "MAYDAY procedure (Radar SART)",
+      priorityId: "mayday",
+      parts: [{ id: "procedure", label: "MAYDAY procedure (Radar SART)", items: sartItems }],
+      pool: [],
+    };
+    const grade = gradeScenario(tpl, placementsMap(sartItems));
+    expect(grade.passed).toBe(true);
+    const priority = grade.dimensions.find((d) => d.id === "priority")!;
+    const vessel = grade.dimensions.find((d) => d.id === "vessel")!;
+    const body = grade.dimensions.find((d) => d.id === "body")!;
+    const ending = grade.dimensions.find((d) => d.id === "ending")!;
+    expect(priority.total).toBe(3);
+    expect(vessel.total).toBe(3);
+    expect(body.total).toBe(5);
+    expect(ending.total).toBe(1);
+  });
+
   test("safety priorityId scenario uses 'out' as ending", () => {
     const items: readonly SequenceItem[] = [
       { id: "securite", label: "SECURITE" },

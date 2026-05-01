@@ -1,0 +1,29 @@
+{
+  "id": "v1/distress-sart",
+  "version": "1.0.0",
+  "category": "distress",
+  "requiredFields": [],
+  "prowordRules": [],
+  "sequenceRules": { "fieldOrder": [] },
+  "channelRules": { "requiredChannel": 16, "blockChannel70Voice": true },
+  "sequenceParts": [
+    {
+      "id": "procedure",
+      "label": "MAYDAY procedure (Radar SART)",
+      "items": [
+        { "id": "mayday", "label": "MAYDAY" },
+        { "id": "mayday", "label": "MAYDAY" },
+        { "id": "mayday", "label": "MAYDAY" },
+        { "id": "sart_addressee", "label": "Ship who received my Radar SART" },
+        { "id": "sart_addressee", "label": "Ship who received my Radar SART" },
+        { "id": "sart_addressee", "label": "Ship who received my Radar SART" },
+        { "id": "vessel", "label": "Vessel name" },
+        { "id": "vessel", "label": "Vessel name" },
+        { "id": "vessel", "label": "Vessel name" },
+        { "id": "assistance", "label": "Request immediate assistance" },
+        { "id": "persons", "label": "Persons on board" },
+        { "id": "over", "label": "OVER" }
+      ]
+    }
+  ]
+}

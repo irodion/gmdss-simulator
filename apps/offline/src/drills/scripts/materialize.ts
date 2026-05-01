@@ -2,7 +2,7 @@ import type { RubricDefinition } from "@gmdss-simulator/utils";
 import {
   PRIORITY_IDS,
   type PriorityId,
-  type RubricsByPriority,
+  type RubricsById,
   type Scenario,
   type ScenarioFacts,
   type SequenceItem,
@@ -23,24 +23,31 @@ const FALLBACK_LABELS: Readonly<Record<string, string>> = {
   nature: "Nature of message",
   assistance: "Assistance / information needed",
   persons: "Persons on board",
+  sart_addressee: "Ship who received my Radar SART",
+  ship_description: "Ship description",
+  addressee_rcc: "RCC station name",
+  action_request: "Action request",
   over: "OVER",
   out: "OUT",
 };
 
-type FactKey = keyof ScenarioFacts;
-
-const FACT_GETTERS: Readonly<Record<FactKey, (f: ScenarioFacts) => string | undefined>> = {
-  vessel: (f) => f.vessel,
-  callsign: (f) => f.callsign,
-  position: (f) => f.position,
-  nature: (f) => f.nature,
-  assistance: (f) => f.assistance,
-  persons: (f) => f.persons,
-};
+const ITEM_TO_FACT_KEY = {
+  vessel: "vessel",
+  callsign: "callsign",
+  position: "position",
+  nature: "nature",
+  assistance: "assistance",
+  persons: "persons",
+  sart_addressee: "sartAddressee",
+  ship_description: "shipDescription",
+  addressee_rcc: "addresseeRcc",
+  action_request: "actionRequest",
+} as const satisfies Readonly<Record<string, keyof ScenarioFacts>>;
 
 function factLabel(itemId: string, facts: ScenarioFacts, fallback: string): string {
-  const getter = FACT_GETTERS[itemId as FactKey];
-  return getter ? (getter(facts) ?? fallback) : fallback;
+  const factKey = (ITEM_TO_FACT_KEY as Readonly<Record<string, keyof ScenarioFacts>>)[itemId];
+  if (!factKey) return fallback;
+  return facts[factKey] ?? fallback;
 }
 
 function injectScenarioLabels(
@@ -73,11 +80,11 @@ function shuffle<T>(arr: readonly T[]): T[] {
 
 export function materializeScenario(
   scenario: Scenario,
-  rubricsByPriority: RubricsByPriority,
+  rubricsById: RubricsById,
 ): SequenceTemplate {
-  const rubric = rubricsByPriority[scenario.priority];
+  const rubric = rubricsById[scenario.rubricId];
   if (!rubric) {
-    throw new Error(`No rubric available for priority ${scenario.priority}`);
+    throw new Error(`No rubric available for id ${scenario.rubricId}`);
   }
   if (!rubric.sequenceParts || rubric.sequenceParts.length === 0) {
     throw new Error(`Rubric ${rubric.id} has no sequenceParts`);
