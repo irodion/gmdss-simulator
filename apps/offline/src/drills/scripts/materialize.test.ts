@@ -1,7 +1,7 @@
 import type { RubricDefinition } from "@gmdss-simulator/utils";
 import { describe, expect, test } from "vite-plus/test";
 import { materializeScenario, materializeStructural } from "./materialize.ts";
-import type { RubricsByPriority, Scenario } from "./types.ts";
+import type { RubricsById, Scenario } from "./types.ts";
 
 const DISTRESS: RubricDefinition = {
   id: "v1/distress",
@@ -86,10 +86,76 @@ const SAFETY: RubricDefinition = {
   ],
 };
 
-const RUBRICS: RubricsByPriority = {
-  mayday: DISTRESS,
-  pan_pan: URGENCY,
-  securite: SAFETY,
+type SequenceItemSpec = NonNullable<RubricDefinition["sequenceParts"]>[number]["items"][number];
+
+function distressRubric(
+  id: string,
+  partLabel: string,
+  items: readonly SequenceItemSpec[],
+): RubricDefinition {
+  return {
+    id,
+    version: "1.0.0",
+    category: "distress",
+    requiredFields: [],
+    prowordRules: [],
+    sequenceRules: { fieldOrder: [] },
+    channelRules: { requiredChannel: 16, blockChannel70Voice: true },
+    sequenceParts: [{ id: "procedure", label: partLabel, items }],
+  };
+}
+
+const DISTRESS_SART = distressRubric("v1/distress-sart", "MAYDAY procedure (Radar SART)", [
+  { id: "mayday", label: "MAYDAY" },
+  { id: "mayday", label: "MAYDAY" },
+  { id: "mayday", label: "MAYDAY" },
+  { id: "sart_addressee", label: "Ship who received my Radar SART" },
+  { id: "sart_addressee", label: "Ship who received my Radar SART" },
+  { id: "sart_addressee", label: "Ship who received my Radar SART" },
+  { id: "vessel", label: "Vessel name" },
+  { id: "vessel", label: "Vessel name" },
+  { id: "vessel", label: "Vessel name" },
+  { id: "assistance", label: "Request immediate assistance" },
+  { id: "persons", label: "Persons on board" },
+  { id: "over", label: "OVER" },
+]);
+
+const DISTRESS_RELATIVE = distressRubric(
+  "v1/distress-relative",
+  "MAYDAY procedure (sighted ship)",
+  [
+    { id: "mayday", label: "MAYDAY" },
+    { id: "mayday", label: "MAYDAY" },
+    { id: "mayday", label: "MAYDAY" },
+    { id: "ship_description", label: "Ship description" },
+    { id: "ship_description", label: "Ship description" },
+    { id: "ship_description", label: "Ship description" },
+    { id: "vessel", label: "Vessel name" },
+    { id: "vessel", label: "Vessel name" },
+    { id: "vessel", label: "Vessel name" },
+    { id: "position", label: "Relative bearing" },
+    { id: "assistance", label: "Request immediate assistance" },
+    { id: "persons", label: "Persons on board" },
+    { id: "over", label: "OVER" },
+  ],
+);
+
+const DISTRESS_RCC_RESPONSE = distressRubric("v1/distress-rcc-response", "MAYDAY response to RCC", [
+  { id: "mayday", label: "MAYDAY" },
+  { id: "addressee_rcc", label: "RCC station name" },
+  { id: "vessel", label: "Responding vessel" },
+  { id: "vessel", label: "Responding vessel" },
+  { id: "action_request", label: "Action request" },
+  { id: "over", label: "OVER" },
+]);
+
+const RUBRICS: RubricsById = {
+  "v1/distress": DISTRESS,
+  "v1/urgency": URGENCY,
+  "v1/safety": SAFETY,
+  "v1/distress-sart": DISTRESS_SART,
+  "v1/distress-relative": DISTRESS_RELATIVE,
+  "v1/distress-rcc-response": DISTRESS_RCC_RESPONSE,
 };
 
 const DISTRESS_SCENARIO: Scenario = {
@@ -173,6 +239,95 @@ describe("materializeScenario", () => {
     const items = template.parts[0]!.items;
     expect(items.find((i) => i.id === "out")!.label).toBe("OUT");
     expect(items.find((i) => i.id === "vessel")!.label).toBe("Cape Runner");
+  });
+
+  test("SART life raft scenario injects vessel and addressee facts", () => {
+    const sartScenario: Scenario = {
+      id: "sart-albatross",
+      priority: "mayday",
+      rubricId: "v1/distress-sart",
+      brief: "SART activated.",
+      facts: {
+        vessel: "Albatross life raft",
+        sartAddressee: "Ship who received my Radar SART",
+        assistance: "Require immediate assistance",
+        persons: "4 persons on board",
+      },
+    };
+    const template = materializeScenario(sartScenario, RUBRICS);
+    expect(template.parts[0]!.items).toHaveLength(12);
+    const items = template.parts[0]!.items;
+    expect(
+      items.filter((i) => i.id === "vessel").every((i) => i.label === "Albatross life raft"),
+    ).toBe(true);
+    expect(items.filter((i) => i.id === "sart_addressee")).toHaveLength(3);
+    expect(items.find((i) => i.id === "assistance")!.label).toBe("Require immediate assistance");
+    expect(items.find((i) => i.id === "persons")!.label).toBe("4 persons on board");
+    expect(template.pool.filter((i) => i.id === "pan_pan").length).toBe(3);
+    expect(template.pool.filter((i) => i.id === "securite").length).toBe(3);
+    expect(template.pool.length).toBe(12 + 6);
+  });
+
+  test("relative-bearing scenario injects ship description and side as position", () => {
+    const horizonScenario: Scenario = {
+      id: "horizon-petrel",
+      priority: "mayday",
+      rubricId: "v1/distress-relative",
+      brief: "Sighted ship.",
+      facts: {
+        vessel: "Petrel life raft",
+        shipDescription: "Red-hulled cargo ship",
+        position: "I am on your starboard side",
+        assistance: "Require immediate assistance",
+        persons: "5 persons on board",
+      },
+    };
+    const template = materializeScenario(horizonScenario, RUBRICS);
+    expect(template.parts[0]!.items).toHaveLength(13);
+    const items = template.parts[0]!.items;
+    expect(
+      items
+        .filter((i) => i.id === "ship_description")
+        .every((i) => i.label === "Red-hulled cargo ship"),
+    ).toBe(true);
+    expect(items.find((i) => i.id === "position")!.label).toBe("I am on your starboard side");
+  });
+
+  test("RCC response scenario uses short non-standard sequence", () => {
+    const rccScenario: Scenario = {
+      id: "rcc-haifa",
+      priority: "mayday",
+      rubricId: "v1/distress-rcc-response",
+      brief: "Respond to RCC.",
+      facts: {
+        vessel: "Sea Otter",
+        addresseeRcc: "Haifa Rescue Coordination Centre",
+        actionRequest: "Send fast ships to the distress area to evacuate the crew",
+      },
+    };
+    const template = materializeScenario(rccScenario, RUBRICS);
+    expect(template.parts[0]!.items).toHaveLength(6);
+    const items = template.parts[0]!.items;
+    expect(items.filter((i) => i.id === "mayday")).toHaveLength(1);
+    expect(items.find((i) => i.id === "addressee_rcc")!.label).toBe(
+      "Haifa Rescue Coordination Centre",
+    );
+    expect(items.filter((i) => i.id === "vessel").every((i) => i.label === "Sea Otter")).toBe(true);
+    expect(items.find((i) => i.id === "action_request")!.label).toBe(
+      "Send fast ships to the distress area to evacuate the crew",
+    );
+    expect(items.find((i) => i.id === "over")!.label).toBe("OVER");
+  });
+
+  test("throws when scenario references a rubric id that is not loaded", () => {
+    const orphan: Scenario = {
+      id: "orphan",
+      priority: "mayday",
+      rubricId: "v1/does-not-exist",
+      brief: "x",
+      facts: { vessel: "X" },
+    };
+    expect(() => materializeScenario(orphan, RUBRICS)).toThrow(/v1\/does-not-exist/);
   });
 });
 

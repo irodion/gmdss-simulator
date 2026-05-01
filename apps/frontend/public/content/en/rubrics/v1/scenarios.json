@@ -113,6 +113,42 @@
         "position": "33°00'N 035°00'E and surrounding 10 NM",
         "nature": "Severe squalls observed, gale-force winds"
       }
+    },
+    {
+      "id": "distress-sart-life-raft-albatross",
+      "priority": "mayday",
+      "rubricId": "v1/distress-sart",
+      "brief": "You abandoned ship and are aboard the Albatross life raft. Your Radar SART has just activated and is being tracked by passing ships. 4 persons on board. Make the distress call.",
+      "facts": {
+        "vessel": "Albatross life raft",
+        "sartAddressee": "Ship who received my Radar SART",
+        "assistance": "Require immediate assistance",
+        "persons": "4 persons on board"
+      }
+    },
+    {
+      "id": "distress-horizon-life-raft-petrel",
+      "priority": "mayday",
+      "rubricId": "v1/distress-relative",
+      "brief": "You are aboard the Petrel life raft and sight a red-hulled cargo ship on the horizon, off the ship's starboard side. 5 persons on board. Make the distress call to the sighted ship.",
+      "facts": {
+        "vessel": "Petrel life raft",
+        "shipDescription": "Red-hulled cargo ship",
+        "position": "I am on your starboard side",
+        "assistance": "Require immediate assistance",
+        "persons": "5 persons on board"
+      }
+    },
+    {
+      "id": "distress-rcc-response-haifa-sea-otter",
+      "priority": "mayday",
+      "rubricId": "v1/distress-rcc-response",
+      "brief": "Haifa Rescue Coordination Centre acknowledged your earlier MAYDAY. Respond to RCC and request fast vessels to evacuate your crew. You are sailboat Sea Otter.",
+      "facts": {
+        "vessel": "Sea Otter",
+        "addresseeRcc": "Haifa Rescue Coordination Centre",
+        "actionRequest": "Send fast ships to the distress area to evacuate the crew"
+      }
     }
   ]
 }
