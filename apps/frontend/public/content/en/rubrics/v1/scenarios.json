@@ -122,7 +122,7 @@
       "facts": {
         "vessel": "Albatross life raft",
         "sartAddressee": "Ship who received my Radar SART",
-        "assistance": "Require immediate assistance",
+        "assistance": "I require immediate assistance",
         "persons": "4 persons on board"
       }
     },
@@ -135,7 +135,7 @@
         "vessel": "Petrel life raft",
         "shipDescription": "Red-hulled cargo ship",
         "position": "I am on your starboard side",
-        "assistance": "Require immediate assistance",
+        "assistance": "I require immediate assistance",
         "persons": "5 persons on board"
       }
     },
