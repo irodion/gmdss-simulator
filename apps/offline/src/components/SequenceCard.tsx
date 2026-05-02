@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { gradeScenario } from "../drills/scripts/grade.ts";
 import {
   type DimensionStatus,
@@ -50,6 +50,13 @@ export function SequenceCard({
   const [parts, setParts] = useState<PartState[]>(() => initParts(template));
   const [pool, setPool] = useState<readonly SequenceItem[]>(() => template.pool);
   const [grade, setGrade] = useState<SequenceGrade | null>(null);
+  const scenarioRef = useRef<HTMLElement | null>(null);
+
+  // Scroll the scenario brief into view whenever the scenario changes (e.g. "New
+  // scenario" after a long-scrolled feedback view), so the student starts at the top.
+  useEffect(() => {
+    scenarioRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }, [scenario.id]);
 
   const ready = parts.every((p) => p.placements.every((slot) => slot !== null));
   const showPartHeader = template.parts.length > 1;
@@ -118,7 +125,7 @@ export function SequenceCard({
 
   return (
     <div>
-      <section className="scenario-card" aria-label="Scenario">
+      <section ref={scenarioRef} className="scenario-card" aria-label="Scenario">
         <span className="scenario-eyebrow">Scenario</span>
         <p className="scenario-brief">{scenario.brief}</p>
       </section>
