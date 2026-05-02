@@ -512,4 +512,88 @@ describe("SequenceCard", () => {
     fireEvent.click(screen.getByRole("button", { name: /^New scenario$/ }));
     expect(onNewScenario).toHaveBeenCalled();
   });
+
+  test("renders a procedure pool group when the template includes procedural items", () => {
+    const procedureTemplate: SequenceTemplate = {
+      ...SAMPLE_TEMPLATE,
+      parts: [
+        {
+          id: "procedure",
+          label: "MAYDAY procedure",
+          items: [
+            { id: "epirb_on", label: "Turn on EPIRB" },
+            { id: "dsc_channel70", label: "DSC: Channel 70, High 25W" },
+            { id: "nature_fire", label: "DSC: Fire & Explosion" },
+            { id: "mayday", label: "MAYDAY" },
+            { id: "vessel", label: "Blue Duck" },
+            { id: "over", label: "OVER" },
+          ],
+        },
+      ],
+      pool: [
+        { id: "epirb_on", label: "Turn on EPIRB" },
+        { id: "dsc_channel70", label: "DSC: Channel 70, High 25W" },
+        { id: "nature_fire", label: "DSC: Fire & Explosion" },
+        { id: "nature_collision", label: "DSC: Collision" },
+        { id: "mayday", label: "MAYDAY" },
+        { id: "vessel", label: "Blue Duck" },
+        { id: "over", label: "OVER" },
+      ],
+    };
+    render(
+      <SequenceCard
+        template={procedureTemplate}
+        scenario={SAMPLE_SCENARIO}
+        onComplete={() => {}}
+        onRetry={() => {}}
+        onNewScenario={() => {}}
+        onBack={() => {}}
+      />,
+    );
+    const group = screen.getByLabelText("Procedure actions");
+    expect(group).toBeTruthy();
+    expect(group.querySelectorAll(".seq-pool-item-procedure").length).toBeGreaterThanOrEqual(4);
+  });
+
+  test("renders the in_raft slot when the template ends with in_raft", () => {
+    const abandonTemplate: SequenceTemplate = {
+      ...SAMPLE_TEMPLATE,
+      parts: [
+        {
+          id: "procedure",
+          label: "MAYDAY procedure",
+          items: [
+            { id: "mayday", label: "MAYDAY" },
+            { id: "vessel", label: "Blue Duck" },
+            { id: "over", label: "OVER" },
+            { id: "in_raft", label: "In raft: EPIRB, SART, portable VHF" },
+          ],
+        },
+      ],
+      pool: [
+        { id: "mayday", label: "MAYDAY" },
+        { id: "vessel", label: "Blue Duck" },
+        { id: "over", label: "OVER" },
+        { id: "in_raft", label: "In raft: EPIRB, SART, portable VHF" },
+      ],
+    };
+    render(
+      <SequenceCard
+        template={abandonTemplate}
+        scenario={SAMPLE_SCENARIO}
+        onComplete={() => {}}
+        onRetry={() => {}}
+        onNewScenario={() => {}}
+        onBack={() => {}}
+      />,
+    );
+    const slot4 = screen.getByRole("button", {
+      name: (n) => n.startsWith("MAYDAY procedure slot 4,"),
+    });
+    expect(slot4).toBeTruthy();
+    const chip = screen
+      .getAllByRole("button", { name: /In raft: EPIRB, SART, portable VHF/ })
+      .find((el) => el.className.includes("seq-pool-item-procedure"));
+    expect(chip).toBeTruthy();
+  });
 });

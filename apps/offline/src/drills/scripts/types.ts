@@ -10,9 +10,74 @@ export function isPriorityItem(id: string): id is PriorityId {
   return (PRIORITY_IDS as readonly string[]).includes(id);
 }
 
+export type NatureCode =
+  | "nature_undesignated"
+  | "nature_collision"
+  | "nature_fire"
+  | "nature_disabled"
+  | "nature_listing"
+  | "nature_flooding"
+  | "nature_grounding"
+  | "nature_piracy"
+  | "nature_abandoning"
+  | "nature_mob";
+
+export const NATURE_CODES: readonly NatureCode[] = [
+  "nature_undesignated",
+  "nature_collision",
+  "nature_fire",
+  "nature_disabled",
+  "nature_listing",
+  "nature_flooding",
+  "nature_grounding",
+  "nature_piracy",
+  "nature_abandoning",
+  "nature_mob",
+];
+
+export const NATURE_LABELS: Readonly<Record<NatureCode, string>> = {
+  nature_undesignated: "DSC: Undesignated",
+  nature_collision: "DSC: Collision",
+  nature_fire: "DSC: Fire & Explosion",
+  nature_disabled: "DSC: Disabled & Adrift",
+  nature_listing: "DSC: Listing & Capsizing",
+  nature_flooding: "DSC: Flooding",
+  nature_grounding: "DSC: Grounding",
+  nature_piracy: "DSC: Piracy",
+  nature_abandoning: "DSC: Abandoning",
+  nature_mob: "DSC: Man overboard",
+};
+
+export function isNatureItem(id: string): id is NatureCode {
+  return (NATURE_CODES as readonly string[]).includes(id);
+}
+
+export const DSC_NATURE_PLACEHOLDER_ID = "dsc_nature";
+
+const PROCEDURE_STEP_IDS = [
+  "epirb_on",
+  "dsc_channel70",
+  "dsc_time_location",
+  DSC_NATURE_PLACEHOLDER_ID,
+  "dsc_button",
+  "dsc_channel16",
+  "in_raft",
+] as const;
+
+export function isProcedureItem(id: string): boolean {
+  return (PROCEDURE_STEP_IDS as readonly string[]).includes(id) || isNatureItem(id);
+}
+
 export interface SequenceItem {
   readonly id: string;
   readonly label: string;
+  /**
+   * Alternate item ids that should also be accepted as correct in this slot.
+   * The slot's own `id` is implicitly always accepted; `acceptableIds` adds
+   * other defensible answers (e.g. multiple DSC nature codes that map to the
+   * same scenario). Empty/undefined ⇒ strict id equality.
+   */
+  readonly acceptableIds?: readonly string[];
 }
 
 export interface SequenceTemplatePart {
@@ -40,7 +105,7 @@ export interface SequencePartGrade {
   readonly placements: readonly SequencePlacementResult[];
 }
 
-export type DimensionId = "priority" | "vessel" | "body" | "ending";
+export type DimensionId = "priority" | "vessel" | "body" | "ending" | "procedure";
 export type DimensionStatus = "pass" | "partial" | "fail";
 
 export interface SequenceScoreDimension {
@@ -80,6 +145,13 @@ export interface ScenarioFacts {
   readonly shipDescription?: string;
   readonly addresseeRcc?: string;
   readonly actionRequest?: string;
+  readonly natureCode?: NatureCode;
+  /**
+   * Additional DSC nature codes that should also be accepted for this scenario.
+   * The canonical `natureCode` is always accepted; `acceptableNatureCodes` lists
+   * other defensible picks. Pool decoys exclude every acceptable code.
+   */
+  readonly acceptableNatureCodes?: readonly NatureCode[];
 }
 
 export interface Scenario {
@@ -88,6 +160,7 @@ export interface Scenario {
   readonly rubricId: string;
   readonly brief: string;
   readonly facts: ScenarioFacts;
+  readonly requiresAbandon?: boolean;
 }
 
 export interface ScenarioBank {

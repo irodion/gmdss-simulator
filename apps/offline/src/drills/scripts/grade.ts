@@ -2,6 +2,7 @@ import {
   type DimensionId,
   type DimensionStatus,
   isPriorityItem,
+  isProcedureItem,
   type SequenceGrade,
   type SequenceItem,
   type SequencePartGrade,
@@ -48,6 +49,7 @@ export function gradeScenario(
     vessel: { id: "vessel", label: "Vessel identification", correct: 0, total: 0 },
     body: { id: "body", label: "Message body", correct: 0, total: 0 },
     ending: { id: "ending", label: "Ending", correct: 0, total: 0 },
+    procedure: { id: "procedure", label: "Procedure", correct: 0, total: 0 },
   };
 
   for (const part of template.parts) {
@@ -56,7 +58,8 @@ export function gradeScenario(
     for (let i = 0; i < part.items.length; i++) {
       const expected = part.items[i]!;
       const placed = placements[i]!;
-      const correct = placed.id === expected.id;
+      const correct =
+        placed.id === expected.id || (expected.acceptableIds?.includes(placed.id) ?? false);
       if (correct) correctCount++;
       total++;
       partResults.push({ placed, expected, correct });
@@ -94,5 +97,6 @@ function pickAccumulator(
   if (isPriorityItem(expectedId)) return accs.priority;
   if (isVesselIdentification(expectedId)) return accs.vessel;
   if (isEndingItem(expectedId)) return accs.ending;
+  if (isProcedureItem(expectedId)) return accs.procedure;
   return accs.body;
 }

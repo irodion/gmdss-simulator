@@ -11,7 +11,8 @@
         "position": "32°05'N 034°45'E",
         "nature": "On fire, fire spreading",
         "assistance": "I require immediate assistance",
-        "persons": "6 persons on board"
+        "persons": "6 persons on board",
+        "natureCode": "nature_fire"
       }
     },
     {
@@ -25,7 +26,9 @@
         "position": "31°50'N 034°30'E",
         "nature": "Holed and sinking",
         "assistance": "I require immediate assistance",
-        "persons": "4 persons on board"
+        "persons": "4 persons on board",
+        "natureCode": "nature_flooding",
+        "acceptableNatureCodes": ["nature_grounding"]
       }
     },
     {
@@ -39,7 +42,43 @@
         "position": "33°10'N 035°02'E",
         "nature": "Collided with another vessel and taking water",
         "assistance": "I require immediate assistance",
-        "persons": "12 persons on board"
+        "persons": "12 persons on board",
+        "natureCode": "nature_collision",
+        "acceptableNatureCodes": ["nature_flooding"]
+      }
+    },
+    {
+      "id": "distress-abandon-fire-river-hawk",
+      "priority": "mayday",
+      "rubricId": "v1/distress",
+      "requiresAbandon": true,
+      "brief": "You are MV River Hawk. Engine-room fire has spread to the bridge and is uncontrollable. 7 persons on board, position 32°25'N 034°48'E. Make the MAYDAY call — you must abandon ship to the liferaft immediately after.",
+      "facts": {
+        "vessel": "River Hawk",
+        "callsign": "5RHK3",
+        "position": "32°25'N 034°48'E",
+        "nature": "Fire out of control, abandoning ship",
+        "assistance": "I require immediate assistance",
+        "persons": "7 persons on board",
+        "natureCode": "nature_abandoning",
+        "acceptableNatureCodes": ["nature_fire"]
+      }
+    },
+    {
+      "id": "distress-abandon-flooding-aurora",
+      "priority": "mayday",
+      "rubricId": "v1/distress",
+      "requiresAbandon": true,
+      "brief": "You are MV Aurora. Catastrophic hull breach after grounding, vessel listing heavily and capsizing. 9 persons on board, position 31°40'N 034°25'E. Make the MAYDAY call — you must abandon ship to the liferaft immediately after.",
+      "facts": {
+        "vessel": "Aurora",
+        "callsign": "MMSI 211 444 555",
+        "position": "31°40'N 034°25'E",
+        "nature": "Capsizing after grounding, abandoning ship",
+        "assistance": "I require immediate assistance",
+        "persons": "9 persons on board",
+        "natureCode": "nature_abandoning",
+        "acceptableNatureCodes": ["nature_flooding", "nature_listing", "nature_grounding"]
       }
     },
     {
