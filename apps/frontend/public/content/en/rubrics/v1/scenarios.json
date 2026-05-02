@@ -97,14 +97,46 @@
     {
       "id": "urgency-medical-grey-whale",
       "priority": "pan_pan",
-      "rubricId": "v1/urgency",
-      "brief": "You are MV Grey Whale. Crew member with serious chest pain, need medical advice and possible evacuation. 8 persons on board, position 31°45'N 034°20'E.",
+      "rubricId": "v1/urgency-medico",
+      "brief": "You are MV Grey Whale (MMSI 211 555 200). Crew member with severe chest pain — suspected cardiac event. Address RCC Haifa. 8 persons on board, position 31°45'N 034°20'E. Patient: male, 52, temp 37.2°C, BP 160/100, conscious but very weak. Crew has given aspirin and rigged oxygen. Make the MEDICO call (DSC + Ch 16), then continue on the working channel.",
       "facts": {
         "vessel": "Grey Whale",
-        "callsign": "5GWH3",
+        "callsign": "MMSI 211 555 200",
         "position": "31°45'N 034°20'E",
-        "nature": "Medical emergency, suspected heart attack on board",
-        "assistance": "I require medical advice and possible evacuation"
+        "addressee": "RCC Haifa",
+        "patientVitals": "Male, age 52, temperature 37.2°C, BP 160/100",
+        "patientStatus": "Severe chest pain, conscious but very weak, suspected cardiac event",
+        "actionsTaken": "Aspirin administered, oxygen rigged, patient resting"
+      }
+    },
+    {
+      "id": "urgency-medico-allstations-cargo-ranger",
+      "priority": "pan_pan",
+      "rubricId": "v1/urgency-medico",
+      "brief": "You are MV Cargo Ranger (MMSI 211 666 410). A crew member fell from the upper deck and is unconscious. No nearby coast station designated — broadcast to All Stations. 14 persons on board, position 32°50'N 035°10'E. Patient: male, 28, temp 36.0°C, BP 90/60, unresponsive with suspected head injury. Crew immobilised the head/neck and is monitoring breathing. Make the MEDICO call (DSC + Ch 16), then continue on the working channel.",
+      "facts": {
+        "vessel": "Cargo Ranger",
+        "callsign": "MMSI 211 666 410",
+        "position": "32°50'N 035°10'E",
+        "addressee": "All Stations",
+        "patientVitals": "Male, age 28, temperature 36.0°C, BP 90/60",
+        "patientStatus": "Unconscious after fall from upper deck, suspected head injury",
+        "actionsTaken": "Head and neck immobilised, breathing monitored, no medication given"
+      }
+    },
+    {
+      "id": "urgency-medico-rcc-haifa-blue-marlin",
+      "priority": "pan_pan",
+      "rubricId": "v1/urgency-medico",
+      "brief": "You are SY Blue Marlin (MMSI 211 777 030). A crew member has uncontrolled bleeding from a deep galley laceration. Address RCC Haifa. 5 persons on board, position 32°10'N 034°35'E. Patient: female, 41, temp 36.8°C, BP 100/65, conscious and pale. Direct pressure applied, tourniquet rigged on upper arm. Make the MEDICO call (DSC + Ch 16), then continue on the working channel.",
+      "facts": {
+        "vessel": "Blue Marlin",
+        "callsign": "MMSI 211 777 030",
+        "position": "32°10'N 034°35'E",
+        "addressee": "RCC Haifa",
+        "patientVitals": "Female, age 41, temperature 36.8°C, BP 100/65",
+        "patientStatus": "Uncontrolled bleeding from deep galley laceration, conscious and pale",
+        "actionsTaken": "Direct pressure applied, tourniquet rigged on upper arm"
       }
     },
     {

@@ -11,7 +11,7 @@ import {
   type SequenceTemplate,
 } from "./types.ts";
 
-const ENDING_IDS = ["over", "out"] as const;
+const ENDING_IDS = ["over", "out", "medico_ends"] as const;
 const VESSEL_IDS = ["vessel", "callsign"] as const;
 
 function isEndingItem(id: string): boolean {

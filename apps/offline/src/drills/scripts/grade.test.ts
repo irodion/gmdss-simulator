@@ -245,6 +245,122 @@ describe("gradeScenario", () => {
     expect(grade.correctCount).toBe(3);
   });
 
+  test("MEDICO scenario: procedure=6, priority=6, vessel=8, body=15, ending=2 on perfect run", () => {
+    // Part 1 voice tally: 3 priority + 3 addressee + 1 this_is + 3 vessel + 1 callsign + 1 position + 1 medico + 1 OVER
+    // Part 2 voice tally: 1 working_channel + 3 priority + 3 addressee + 1 this_is + 3 vessel + 1 callsign + 1 position + 3 medical + 1 medico_ends
+    const items: readonly SequenceItem[] = [
+      { id: "dsc_channel70", label: "DSC: Channel 70" },
+      { id: "dsc_urgency_category", label: "DSC: category Urgency" },
+      { id: "dsc_addressee_all_stations", label: "DSC: addressee All Stations" },
+      { id: "dsc_time_position", label: "DSC: confirm time and position" },
+      { id: "dsc_send_urgency", label: "DSC: send urgency alert" },
+      { id: "dsc_channel16", label: "DSC: Channel 16, High" },
+      { id: "pan_pan", label: "PAN-PAN" },
+      { id: "pan_pan", label: "PAN-PAN" },
+      { id: "pan_pan", label: "PAN-PAN" },
+      { id: "addressee", label: "RCC Haifa" },
+      { id: "addressee", label: "RCC Haifa" },
+      { id: "addressee", label: "RCC Haifa" },
+      { id: "this_is", label: "THIS IS" },
+      { id: "vessel", label: "Grey Whale" },
+      { id: "vessel", label: "Grey Whale" },
+      { id: "vessel", label: "Grey Whale" },
+      { id: "callsign", label: "MMSI 211 555 200" },
+      { id: "position", label: "31°45'N 034°20'E" },
+      { id: "medico", label: "MEDICO" },
+      { id: "over", label: "OVER" },
+      { id: "working_channel_switch", label: "Switch to Ch 24" },
+      { id: "pan_pan", label: "PAN-PAN" },
+      { id: "pan_pan", label: "PAN-PAN" },
+      { id: "pan_pan", label: "PAN-PAN" },
+      { id: "addressee", label: "RCC Haifa" },
+      { id: "addressee", label: "RCC Haifa" },
+      { id: "addressee", label: "RCC Haifa" },
+      { id: "this_is", label: "THIS IS" },
+      { id: "vessel", label: "Grey Whale" },
+      { id: "vessel", label: "Grey Whale" },
+      { id: "vessel", label: "Grey Whale" },
+      { id: "callsign", label: "MMSI 211 555 200" },
+      { id: "position", label: "31°45'N 034°20'E" },
+      { id: "patient_vitals", label: "Male, 52" },
+      { id: "patient_status", label: "Chest pain" },
+      { id: "actions_taken", label: "Aspirin given" },
+      { id: "medico_ends", label: "Medico message ends, Over" },
+    ];
+    const tpl: SequenceTemplate = {
+      rubricId: "v1/urgency-medico",
+      callLabel: "MEDICO procedure",
+      priorityId: "pan_pan",
+      parts: [
+        { id: "procedure", label: "MEDICO procedure", items: items.slice(0, 20) },
+        { id: "medical_message", label: "Detailed medical message", items: items.slice(20) },
+      ],
+      pool: [],
+    };
+    const placementsByPart = new Map([
+      ["procedure", items.slice(0, 20)],
+      ["medical_message", items.slice(20)],
+    ]);
+    const grade = gradeScenario(tpl, placementsByPart);
+    expect(grade.passed).toBe(true);
+    const procedure = grade.dimensions.find((d) => d.id === "procedure")!;
+    const priority = grade.dimensions.find((d) => d.id === "priority")!;
+    const vessel = grade.dimensions.find((d) => d.id === "vessel")!;
+    const body = grade.dimensions.find((d) => d.id === "body")!;
+    const ending = grade.dimensions.find((d) => d.id === "ending")!;
+    expect(procedure.total).toBe(6);
+    expect(priority.total).toBe(6);
+    expect(vessel.total).toBe(8);
+    expect(body.total).toBe(15);
+    expect(ending.total).toBe(2);
+  });
+
+  test("MEDICO: medico_ends folds into ending; patient_* fold into body", () => {
+    const items: readonly SequenceItem[] = [
+      { id: "patient_vitals", label: "v" },
+      { id: "patient_status", label: "s" },
+      { id: "actions_taken", label: "a" },
+      { id: "medico_ends", label: "Medico message ends, Over" },
+    ];
+    const tpl: SequenceTemplate = {
+      rubricId: "v1/urgency-medico",
+      callLabel: "MEDICO body-only fixture",
+      priorityId: "pan_pan",
+      parts: [{ id: "medical_message", label: "x", items }],
+      pool: [],
+    };
+    const grade = gradeScenario(tpl, new Map([["medical_message", items]]));
+    const body = grade.dimensions.find((d) => d.id === "body")!;
+    const ending = grade.dimensions.find((d) => d.id === "ending")!;
+    expect(body.total).toBe(3);
+    expect(body.correct).toBe(3);
+    expect(ending.total).toBe(1);
+    expect(ending.correct).toBe(1);
+  });
+
+  test("MEDICO: DSC urgency procedural ids land in procedure dimension", () => {
+    const items: readonly SequenceItem[] = [
+      { id: "dsc_channel70", label: "x" },
+      { id: "dsc_urgency_category", label: "x" },
+      { id: "dsc_addressee_all_stations", label: "x" },
+      { id: "dsc_time_position", label: "x" },
+      { id: "dsc_send_urgency", label: "x" },
+      { id: "dsc_channel16", label: "x" },
+    ];
+    const tpl: SequenceTemplate = {
+      rubricId: "v1/urgency-medico",
+      callLabel: "DSC fixture",
+      priorityId: "pan_pan",
+      parts: [{ id: "procedure", label: "x", items }],
+      pool: [],
+    };
+    const grade = gradeScenario(tpl, new Map([["procedure", items]]));
+    const procedure = grade.dimensions.find((d) => d.id === "procedure")!;
+    expect(procedure.total).toBe(6);
+    expect(procedure.correct).toBe(6);
+    expect(procedure.status).toBe("pass");
+  });
+
   test("non-acceptable nature code in an acceptable slot is graded wrong", () => {
     const items: readonly SequenceItem[] = [
       {

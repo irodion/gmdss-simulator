@@ -62,6 +62,10 @@ const PROCEDURE_STEP_IDS = [
   "dsc_button",
   "dsc_channel16",
   "in_raft",
+  "dsc_urgency_category",
+  "dsc_addressee_all_stations",
+  "dsc_time_position",
+  "dsc_send_urgency",
 ] as const;
 
 export function isProcedureItem(id: string): boolean {
@@ -152,6 +156,18 @@ export interface ScenarioFacts {
    * other defensible picks. Pool decoys exclude every acceptable code.
    */
   readonly acceptableNatureCodes?: readonly NatureCode[];
+  /**
+   * Voice-call addressee (e.g. "All Stations", "RCC Haifa"). Used by the
+   * MEDICO drill to populate the addressee chips in both the initial Ch 16
+   * call and the working-channel re-establishment header.
+   */
+  readonly addressee?: string;
+  /** Patient vitals line for the MEDICO detailed-message phase. */
+  readonly patientVitals?: string;
+  /** Short patient status / problem description. */
+  readonly patientStatus?: string;
+  /** Actions taken by the crew, treatment given, medication administered. */
+  readonly actionsTaken?: string;
 }
 
 export interface Scenario {

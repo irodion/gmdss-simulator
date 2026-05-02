@@ -155,6 +155,67 @@ const DISTRESS_RCC_RESPONSE = distressRubric("v1/distress-rcc-response", "MAYDAY
   { id: "over", label: "OVER" },
 ]);
 
+const URGENCY_MEDICO: RubricDefinition = {
+  id: "v1/urgency-medico",
+  version: "1.0.0",
+  category: "urgency",
+  requiredFields: [],
+  prowordRules: [],
+  sequenceRules: { fieldOrder: [] },
+  channelRules: { requiredChannel: 16, blockChannel70Voice: true },
+  sequenceParts: [
+    {
+      id: "procedure",
+      label: "MEDICO procedure (DSC + Ch 16 voice call)",
+      items: [
+        { id: "dsc_channel70", label: "DSC: Channel 70" },
+        { id: "dsc_urgency_category", label: "DSC: category Urgency" },
+        { id: "dsc_addressee_all_stations", label: "DSC: All Ships call" },
+        { id: "dsc_time_position", label: "DSC: confirm time and position" },
+        { id: "dsc_send_urgency", label: "DSC: send urgency alert" },
+        { id: "dsc_channel16", label: "DSC: Channel 16, High" },
+        { id: "pan_pan", label: "PAN-PAN" },
+        { id: "pan_pan", label: "PAN-PAN" },
+        { id: "pan_pan", label: "PAN-PAN" },
+        { id: "addressee", label: "Addressee (All Stations / RCC)" },
+        { id: "addressee", label: "Addressee (All Stations / RCC)" },
+        { id: "addressee", label: "Addressee (All Stations / RCC)" },
+        { id: "this_is", label: "THIS IS" },
+        { id: "vessel", label: "Vessel name" },
+        { id: "vessel", label: "Vessel name" },
+        { id: "vessel", label: "Vessel name" },
+        { id: "callsign", label: "Callsign / MMSI" },
+        { id: "position", label: "Position" },
+        { id: "medico", label: "MEDICO / Need medical advice" },
+        { id: "over", label: "OVER" },
+      ],
+    },
+    {
+      id: "medical_message",
+      label: "Detailed medical message (working channel)",
+      items: [
+        { id: "working_channel_switch", label: "Switch to working channel (e.g., Ch 24)" },
+        { id: "pan_pan", label: "PAN-PAN" },
+        { id: "pan_pan", label: "PAN-PAN" },
+        { id: "pan_pan", label: "PAN-PAN" },
+        { id: "addressee", label: "Addressee (All Stations / RCC)" },
+        { id: "addressee", label: "Addressee (All Stations / RCC)" },
+        { id: "addressee", label: "Addressee (All Stations / RCC)" },
+        { id: "this_is", label: "THIS IS" },
+        { id: "vessel", label: "Vessel name" },
+        { id: "vessel", label: "Vessel name" },
+        { id: "vessel", label: "Vessel name" },
+        { id: "callsign", label: "Callsign / MMSI" },
+        { id: "position", label: "Position" },
+        { id: "patient_vitals", label: "Patient vitals (gender, age, temp, BP)" },
+        { id: "patient_status", label: "Patient status / problem" },
+        { id: "actions_taken", label: "Actions taken / treatment given" },
+        { id: "medico_ends", label: "Medico message ends, Over" },
+      ],
+    },
+  ],
+};
+
 const RUBRICS: RubricsById = {
   "v1/distress": DISTRESS,
   "v1/urgency": URGENCY,
@@ -162,6 +223,7 @@ const RUBRICS: RubricsById = {
   "v1/distress-sart": DISTRESS_SART,
   "v1/distress-relative": DISTRESS_RELATIVE,
   "v1/distress-rcc-response": DISTRESS_RCC_RESPONSE,
+  "v1/urgency-medico": URGENCY_MEDICO,
 };
 
 const DISTRESS_SCENARIO: Scenario = {
@@ -177,6 +239,22 @@ const DISTRESS_SCENARIO: Scenario = {
     assistance: "I require immediate assistance",
     persons: "6 persons on board",
     natureCode: "nature_fire",
+  },
+};
+
+const MEDICO_SCENARIO: Scenario = {
+  id: "medico-grey-whale",
+  priority: "pan_pan",
+  rubricId: "v1/urgency-medico",
+  brief: "Cardiac event onboard.",
+  facts: {
+    vessel: "Grey Whale",
+    callsign: "MMSI 211 555 200",
+    position: "31°45'N 034°20'E",
+    addressee: "RCC Haifa",
+    patientVitals: "Male, age 52, temperature 37.2°C, BP 160/100",
+    patientStatus: "Severe chest pain, conscious but very weak",
+    actionsTaken: "Aspirin administered, oxygen rigged",
   },
 };
 
@@ -470,6 +548,65 @@ describe("materializeScenario", () => {
       "Send fast ships to the distress area to evacuate the crew",
     );
     expect(items.find((i) => i.id === "over")!.label).toBe("OVER");
+  });
+
+  test("MEDICO scenario produces two parts with the canonical chip counts", () => {
+    const template = materializeScenario(MEDICO_SCENARIO, RUBRICS);
+    expect(template.parts).toHaveLength(2);
+    expect(template.parts[0]!.id).toBe("procedure");
+    expect(template.parts[1]!.id).toBe("medical_message");
+    expect(template.parts[0]!.items).toHaveLength(20);
+    expect(template.parts[1]!.items).toHaveLength(17);
+  });
+
+  test("MEDICO materializer injects addressee × 3 in both parts", () => {
+    const template = materializeScenario(MEDICO_SCENARIO, RUBRICS);
+    const part1Addressees = template.parts[0]!.items.filter((i) => i.id === "addressee");
+    const part2Addressees = template.parts[1]!.items.filter((i) => i.id === "addressee");
+    expect(part1Addressees).toHaveLength(3);
+    expect(part2Addressees).toHaveLength(3);
+    expect(part1Addressees.every((i) => i.label === "RCC Haifa")).toBe(true);
+    expect(part2Addressees.every((i) => i.label === "RCC Haifa")).toBe(true);
+  });
+
+  test("MEDICO materializer injects MMSI into the callsign chip", () => {
+    const template = materializeScenario(
+      { ...MEDICO_SCENARIO, facts: { ...MEDICO_SCENARIO.facts, addressee: "All Stations" } },
+      RUBRICS,
+    );
+    const callsigns = template.parts.flatMap((p) => p.items).filter((i) => i.id === "callsign");
+    expect(callsigns).toHaveLength(2);
+    expect(callsigns.every((i) => i.label === "MMSI 211 555 200")).toBe(true);
+  });
+
+  test("MEDICO Part 2 chips carry the injected medical fact text", () => {
+    const template = materializeScenario(MEDICO_SCENARIO, RUBRICS);
+    const part2 = template.parts[1]!.items;
+    expect(part2.find((i) => i.id === "patient_vitals")!.label).toBe(
+      "Male, age 52, temperature 37.2°C, BP 160/100",
+    );
+    expect(part2.find((i) => i.id === "patient_status")!.label).toBe(
+      "Severe chest pain, conscious but very weak",
+    );
+    expect(part2.find((i) => i.id === "actions_taken")!.label).toBe(
+      "Aspirin administered, oxygen rigged",
+    );
+    // working_channel_switch and medico_ends are not in ITEM_TO_FACT_KEY,
+    // so they fall back to their rubric-supplied labels.
+    expect(part2.find((i) => i.id === "working_channel_switch")!.label).toBe(
+      "Switch to working channel (e.g., Ch 24)",
+    );
+    expect(part2.find((i) => i.id === "medico_ends")!.label).toBe("Medico message ends, Over");
+  });
+
+  test("MEDICO pool contains all correct items plus wrong-priority decoys", () => {
+    const template = materializeScenario(MEDICO_SCENARIO, RUBRICS);
+    const correctCount = template.parts.flatMap((p) => p.items).length;
+    // 6 wrong-priority decoys (3 mayday + 3 securite); MEDICO has no dsc_nature slot,
+    // so no nature decoys are added.
+    expect(template.pool.length).toBe(correctCount + 6);
+    expect(template.pool.filter((i) => i.id === "mayday").length).toBe(3);
+    expect(template.pool.filter((i) => i.id === "securite").length).toBe(3);
   });
 
   test("throws when scenario references a rubric id that is not loaded", () => {
