@@ -12,6 +12,7 @@ const TABS: ReadonlyArray<{ value: AppMode; label: string; numeral: string }> = 
   { value: "number-pronunciation", label: "Numbers", numeral: "II" },
   { value: "reverse", label: "Listen", numeral: "III" },
   { value: "procedures", label: "Procedures", numeral: "IV" },
+  { value: "abbreviation", label: "Abbreviations", numeral: "V" },
 ];
 
 export function ModeTabs({ mode, onChange }: ModeTabsProps) {

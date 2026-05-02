@@ -1,11 +1,19 @@
 import "./styles/app.css";
 import { useCallback, useMemo, useState } from "react";
+import { AbbreviationCard } from "./components/AbbreviationCard.tsx";
+import { AbbreviationStats } from "./components/AbbreviationStats.tsx";
 import { DrillCard } from "./components/DrillCard.tsx";
 import { InstallChip } from "./components/InstallChip.tsx";
 import { ModeTabs, type AppMode } from "./components/ModeTabs.tsx";
 import { ProceduresPanel } from "./components/ProceduresPanel.tsx";
 import { SessionConfig } from "./components/SessionConfig.tsx";
 import { SessionResults } from "./components/SessionResults.tsx";
+import {
+  generateAbbreviationChallenges,
+  getAbbreviation,
+  scoreAbbreviation,
+} from "./drills/abbreviation-mode.ts";
+import { recordAbbreviationAttempt } from "./drills/abbreviation-stats.ts";
 import {
   generateNumberChallenges,
   generatePhoneticChallenges,
@@ -21,11 +29,14 @@ type Screen = "config" | "drill" | "summary";
 function generateChallenges(mode: DrillType, count: number): DrillChallenge[] {
   if (mode === "phonetic") return generatePhoneticChallenges(count);
   if (mode === "number-pronunciation") return generateNumberChallenges(count);
+  if (mode === "abbreviation") return generateAbbreviationChallenges(count);
   return generateReverseChallenges(count);
 }
 
 function scorerFor(mode: DrillType): (c: DrillChallenge, a: string) => DrillResult {
-  return mode === "reverse" ? scoreReverse : scoreDrill;
+  if (mode === "reverse") return scoreReverse;
+  if (mode === "abbreviation") return scoreAbbreviation;
+  return scoreDrill;
 }
 
 export function App() {
@@ -35,6 +46,7 @@ export function App() {
   const [challenges, setChallenges] = useState<DrillChallenge[]>([]);
   const [index, setIndex] = useState(0);
   const [results, setResults] = useState<DrillResult[]>([]);
+  const [abbrStatsToken, setAbbrStatsToken] = useState(0);
 
   const drillMode: DrillType | null = mode === "procedures" ? null : mode;
   const score = useMemo(() => (drillMode ? scorerFor(drillMode) : scoreDrill), [drillMode]);
@@ -47,9 +59,23 @@ export function App() {
     setScreen("drill");
   }, [drillMode, count]);
 
-  const handleSubmit = useCallback((result: DrillResult) => {
-    setResults((prev) => [...prev, result]);
-  }, []);
+  const handleSubmit = useCallback(
+    (result: DrillResult) => {
+      setResults((prev) => [...prev, result]);
+      if (mode === "abbreviation" && result.challenge.direction) {
+        const abbr = getAbbreviation(result.challenge);
+        if (abbr) {
+          recordAbbreviationAttempt({
+            abbr,
+            direction: result.challenge.direction,
+            correct: result.score === 100,
+            ts: Date.now(),
+          });
+        }
+      }
+    },
+    [mode],
+  );
 
   const handleNext = useCallback(() => {
     if (index + 1 >= challenges.length) {
@@ -64,6 +90,7 @@ export function App() {
     setChallenges([]);
     setResults([]);
     setIndex(0);
+    setAbbrStatsToken((t) => t + 1);
   }, []);
 
   return (
@@ -98,19 +125,36 @@ export function App() {
             {mode === "procedures" ? <ProceduresPanel /> : null}
 
             {mode !== "procedures" && screen === "config" ? (
-              <SessionConfig count={count} onCountChange={setCount} onStart={handleStart} />
+              <>
+                {mode === "abbreviation" ? (
+                  <AbbreviationStats refreshToken={abbrStatsToken} />
+                ) : null}
+                <SessionConfig count={count} onCountChange={setCount} onStart={handleStart} />
+              </>
             ) : null}
 
             {mode !== "procedures" && screen === "drill" && challenges[index] ? (
-              <DrillCard
-                key={challenges[index]!.id}
-                challenge={challenges[index]!}
-                index={index}
-                total={challenges.length}
-                score={score}
-                onSubmit={handleSubmit}
-                onNext={handleNext}
-              />
+              mode === "abbreviation" ? (
+                <AbbreviationCard
+                  key={challenges[index]!.id}
+                  challenge={challenges[index]!}
+                  index={index}
+                  total={challenges.length}
+                  score={score}
+                  onSubmit={handleSubmit}
+                  onNext={handleNext}
+                />
+              ) : (
+                <DrillCard
+                  key={challenges[index]!.id}
+                  challenge={challenges[index]!}
+                  index={index}
+                  total={challenges.length}
+                  score={score}
+                  onSubmit={handleSubmit}
+                  onNext={handleNext}
+                />
+              )
             ) : null}
 
             {mode !== "procedures" && screen === "summary" ? (
@@ -118,10 +162,16 @@ export function App() {
             ) : null}
           </div>
 
-          {mode !== "procedures" ? (
+          {mode !== "procedures" && mode !== "abbreviation" ? (
             <p className="help">
               Both standard ("THREE") and maritime ("TREE") forms are accepted. Voice quality for
               "Hear correct" depends on your device.
+            </p>
+          ) : null}
+          {mode === "abbreviation" ? (
+            <p className="help">
+              Answers are case-insensitive. Multiple-choice and free-text questions are mixed each
+              session.
             </p>
           ) : null}
         </article>

@@ -1,11 +1,12 @@
 import { expect, test } from "@playwright/test";
 
-test("config screen renders the four drill modes", async ({ page }) => {
+test("config screen renders the five drill modes", async ({ page }) => {
   await page.goto("/");
   await expect(page.getByRole("tab", { name: "Callsigns" })).toBeVisible();
   await expect(page.getByRole("tab", { name: "Numbers" })).toBeVisible();
   await expect(page.getByRole("tab", { name: "Listen" })).toBeVisible();
   await expect(page.getByRole("tab", { name: "Procedures" })).toBeVisible();
+  await expect(page.getByRole("tab", { name: "Abbreviations" })).toBeVisible();
   await expect(page.getByRole("button", { name: /^begin/i })).toBeVisible();
 });
 
@@ -104,6 +105,37 @@ test("Procedures MAYDAY drill exposes the procedure pool group with enough chips
   // Procedure pool should contain at least 6 chips for ship-side distress drills.
   const procedureChips = procedurePool.locator(".seq-pool-item-procedure");
   expect(await procedureChips.count()).toBeGreaterThanOrEqual(6);
+});
+
+test("Abbreviations tab runs a 5-question session through to the summary", async ({ page }) => {
+  await page.goto("/");
+  // Clear any prior stats so the empty-state panel renders.
+  await page.evaluate(() => window.localStorage.clear());
+
+  await page.getByRole("tab", { name: "Abbreviations" }).click();
+  await expect(page.getByText(/no attempts yet/i)).toBeVisible();
+
+  await page.getByRole("button", { name: "5" }).click();
+  await page.getByRole("button", { name: /^begin/i }).click();
+
+  for (let i = 1; i <= 5; i++) {
+    await expect(page.getByText(new RegExp(`transmission ${i} of 5`, "i"))).toBeVisible();
+    // Detect MC vs free-text by looking for the answer input.
+    const input = page.getByLabel(/your answer/i);
+    if ((await input.count()) > 0) {
+      // Free-text variant — submit a deliberate wrong answer; the test only checks flow.
+      await input.fill("XYZ");
+      await page.getByRole("button", { name: "Submit" }).click();
+    } else {
+      // MC variant — pick the first choice (may be right or wrong; flow proceeds either way).
+      const choices = page.locator(".mc-choice");
+      await choices.first().click();
+    }
+    const next = page.getByRole("button", { name: i === 5 ? /see results/i : /next →/i });
+    await next.click();
+  }
+
+  await expect(page.getByText(/logbook entry/i)).toBeVisible();
 });
 
 test("service worker is registered after first load", async ({ page }) => {

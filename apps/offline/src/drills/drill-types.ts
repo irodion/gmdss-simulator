@@ -1,4 +1,6 @@
-export type DrillType = "phonetic" | "number-pronunciation" | "reverse";
+export type DrillType = "phonetic" | "number-pronunciation" | "reverse" | "abbreviation";
+
+export type AbbreviationDirection = "abbr-to-expansion" | "expansion-to-abbr";
 
 export interface DrillChallenge {
   readonly id: string;
@@ -11,6 +13,10 @@ export interface DrillChallenge {
    * Unused for other types.
    */
   readonly spoken?: string;
+  /** Abbreviation mode only: which direction this question runs. */
+  readonly direction?: AbbreviationDirection;
+  /** Abbreviation mode only: 4 multiple-choice options (abbr → expansion direction). */
+  readonly choices?: readonly string[];
 }
 
 export interface DrillResult {
