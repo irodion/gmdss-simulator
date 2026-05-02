@@ -742,6 +742,103 @@
   margin-top: 28px;
 }
 
+/* ── Abbreviation drill: multiple choice ── */
+.mc-choices {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 20px 0 12px;
+}
+.mc-choice {
+  display: block;
+  width: 100%;
+  text-align: left;
+  font-family: var(--body);
+  font-size: 0.95rem;
+  line-height: 1.4;
+  letter-spacing: 0.01em;
+  padding: 14px 18px;
+  border: 1px solid var(--ink-line);
+  background: var(--paper);
+  color: var(--ink);
+  cursor: pointer;
+  transition:
+    background 160ms ease,
+    border-color 160ms ease,
+    color 160ms ease;
+}
+.mc-choice:hover:not(:disabled) {
+  border-color: var(--ink);
+  background: var(--paper-deep);
+}
+.mc-choice:disabled {
+  cursor: default;
+}
+.mc-choice[data-state="correct"] {
+  border-color: var(--brass-deep);
+  background: var(--brass-glow);
+  color: var(--ink);
+  font-weight: 600;
+}
+.mc-choice[data-state="wrong"] {
+  border-color: var(--ink);
+  background: var(--paper-dark);
+  color: var(--ink-soft);
+  text-decoration: line-through;
+}
+
+/* ── Abbreviation drill: per-item stats ── */
+.abbr-stats,
+.abbr-stats-empty {
+  margin-bottom: 24px;
+  padding-bottom: 18px;
+  border-bottom: 1px dashed var(--ink-hair);
+}
+.abbr-stats-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 10px;
+}
+.abbr-stats-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--mono);
+  font-size: 0.82rem;
+  color: var(--ink);
+}
+.abbr-stats-table thead th {
+  text-align: left;
+  font-weight: 500;
+  font-size: 0.7rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  padding: 6px 10px;
+  border-bottom: 1px solid var(--ink-hair);
+}
+.abbr-stats-table tbody td {
+  padding: 6px 10px;
+  border-bottom: 1px solid var(--ink-hair);
+}
+.abbr-stats-table tbody tr:last-child td {
+  border-bottom: 0;
+}
+.btn-link {
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--brass-deep);
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  padding: 0;
+}
+.btn-link:hover {
+  text-decoration: underline;
+}
+
 /* ── Animations ── */
 @keyframes rise {
   from {

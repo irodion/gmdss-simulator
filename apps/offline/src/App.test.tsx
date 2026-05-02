@@ -96,4 +96,47 @@ describe("App", () => {
 
     expect(within(document.body).getByRole("button", { name: /play prompt/i })).toBeTruthy();
   });
+
+  test("Abbreviations tab is reachable and starts a drill", () => {
+    window.localStorage.clear();
+    render(<App />);
+    fireEvent.click(screen.getByRole("tab", { name: "Abbreviations" }));
+    // Empty-state stats panel before any attempts.
+    expect(screen.getByText(/no attempts yet/i)).toBeTruthy();
+
+    fireEvent.click(screen.getByRole("button", { name: "5" }));
+    fireEvent.click(screen.getByRole("button", { name: /^begin/i }));
+
+    expect(screen.getByText(/transmission 1 of 5/i)).toBeTruthy();
+  });
+
+  test("Abbreviations tab records per-item stats after submitting answers", () => {
+    window.localStorage.clear();
+    render(<App />);
+    fireEvent.click(screen.getByRole("tab", { name: "Abbreviations" }));
+    fireEvent.click(screen.getByRole("button", { name: "5" }));
+    fireEvent.click(screen.getByRole("button", { name: /^begin/i }));
+
+    // Answer all 5 questions; for both MC and free-text variants we just submit
+    // *something* so the recordAbbreviationAttempt branch is exercised.
+    for (let i = 0; i < 5; i++) {
+      const input = screen.queryByLabelText(/your answer/i) as HTMLInputElement | null;
+      if (input) {
+        fireEvent.change(input, { target: { value: "answer" } });
+        fireEvent.click(screen.getByRole("button", { name: "Submit" }));
+      } else {
+        const choices = document.querySelectorAll<HTMLButtonElement>(".mc-choice");
+        fireEvent.click(choices[0]!);
+      }
+      const next = screen.queryByRole("button", { name: /next →|see results/i });
+      if (next) fireEvent.click(next);
+    }
+
+    expect(screen.getByText(/logbook entry/i)).toBeTruthy();
+
+    // Walking back to config exposes the (now non-empty) stats panel.
+    fireEvent.click(screen.getByRole("button", { name: /begin a new watch/i }));
+    expect(screen.queryByText(/no attempts yet/i)).toBeNull();
+    expect(screen.getByRole("button", { name: /reset stats/i })).toBeTruthy();
+  });
 });
