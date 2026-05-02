@@ -1,5 +1,6 @@
-import { useEffect, useRef, useState } from "react";
+import { type ReactNode, useEffect, useMemo, useRef, useState } from "react";
 import { gradeScenario } from "../drills/scripts/grade.ts";
+import { buildSpokenTransmission } from "../drills/scripts/spoken-script.ts";
 import {
   type DimensionStatus,
   isPriorityItem,
@@ -11,6 +12,8 @@ import {
   type SequenceTemplate,
   type SequenceTemplatePart,
 } from "../drills/scripts/types.ts";
+import { cancel as cancelTts, isSupported as isTtsSupported, speak } from "../lib/tts.ts";
+import { useTtsEnabled } from "../lib/use-tts-enabled.ts";
 
 interface SequenceCardProps {
   readonly template: SequenceTemplate;
@@ -53,11 +56,58 @@ export function SequenceCard({
   const [activePartId, setActivePartId] = useState<string>(() => template.parts[0]?.id ?? "");
   const scenarioRef = useRef<HTMLElement | null>(null);
 
+  const [ttsEnabled, setTtsEnabledRaw] = useTtsEnabled();
+  const [isSpeaking, setIsSpeaking] = useState(false);
+  const ttsSupported = useMemo(() => isTtsSupported(), []);
+  const playGenRef = useRef(0);
+
   // Scroll the scenario brief into view whenever the scenario changes (e.g. "New
   // scenario" after a long-scrolled feedback view), so the student starts at the top.
   useEffect(() => {
     scenarioRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   }, [scenario.id]);
+
+  useEffect(
+    () => () => {
+      cancelTts();
+    },
+    [],
+  );
+
+  useEffect(() => {
+    cancelTts();
+    setIsSpeaking(false);
+  }, [scenario.id, grade]);
+
+  const handlePlayTts = async () => {
+    const text = buildSpokenTransmission(template);
+    if (!text) return;
+    const gen = ++playGenRef.current;
+    setIsSpeaking(true);
+    try {
+      await speak(text);
+    } finally {
+      // Only the most recent click owns the speaking-flag transition back; an
+      // earlier click whose speak() resolved late must not flip the UI off
+      // while a newer utterance is still in flight.
+      if (playGenRef.current === gen) setIsSpeaking(false);
+    }
+  };
+
+  const handleStopTts = () => {
+    playGenRef.current++;
+    cancelTts();
+    setIsSpeaking(false);
+  };
+
+  const handleToggleTts = (next: boolean) => {
+    if (!next) {
+      playGenRef.current++;
+      cancelTts();
+      setIsSpeaking(false);
+    }
+    setTtsEnabledRaw(next);
+  };
 
   const showPartHeader = template.parts.length > 1;
   const totalPlaced = parts.reduce((sum, p) => sum + p.placements.length, 0);
@@ -128,6 +178,16 @@ export function SequenceCard({
       <section ref={scenarioRef} className="scenario-card" aria-label="Scenario">
         <span className="scenario-eyebrow">Scenario</span>
         <p className="scenario-brief">{scenario.brief}</p>
+        {ttsSupported ? (
+          <label className="seq-tts-toggle">
+            <input
+              type="checkbox"
+              checked={ttsEnabled}
+              onChange={(e) => handleToggleTts(e.target.checked)}
+            />
+            <span>Read correct transmission aloud after submit</span>
+          </label>
+        ) : null}
       </section>
 
       <div className="prompt">
@@ -319,7 +379,28 @@ export function SequenceCard({
         )}
       </div>
 
-      {grade !== null ? <SequenceBreakdown grade={grade} label={summaryLabel} /> : null}
+      {grade !== null ? (
+        <SequenceBreakdown
+          grade={grade}
+          label={summaryLabel}
+          ttsControl={
+            ttsEnabled && ttsSupported ? (
+              <button
+                type="button"
+                className="seq-tts-play"
+                onClick={isSpeaking ? handleStopTts : handlePlayTts}
+                aria-label={
+                  isSpeaking
+                    ? "Stop transmission playback"
+                    : "Play correct radio transmission aloud"
+                }
+              >
+                {isSpeaking ? "Stop" : "Play correct transmission"}
+              </button>
+            ) : null
+          }
+        />
+      ) : null}
     </div>
   );
 }
@@ -358,9 +439,10 @@ function MissingList({ partLabel, missing }: MissingListProps) {
 interface SequenceBreakdownProps {
   readonly grade: SequenceGrade;
   readonly label: string;
+  readonly ttsControl?: ReactNode;
 }
 
-function SequenceBreakdown({ grade, label }: SequenceBreakdownProps) {
+function SequenceBreakdown({ grade, label, ttsControl }: SequenceBreakdownProps) {
   const percent = Math.round(grade.score * 100);
   return (
     <div className="seq-summary" data-state={grade.passed ? "pass" : "partial"} aria-live="polite">
@@ -371,6 +453,7 @@ function SequenceBreakdown({ grade, label }: SequenceBreakdownProps) {
         </span>
         <span className="seq-summary-label">{label}</span>
       </div>
+      {ttsControl ?? null}
       <p className="seq-summary-detail">
         {grade.correctCount} of {grade.total} expected steps matched
         {grade.extraCount > 0 ? `; ${grade.extraCount} extra entries` : ""}.
