@@ -178,6 +178,25 @@ describe("AbbreviationCard — free text", () => {
     expect(submit.disabled).toBe(false);
   });
 
+  test("Enter on an empty input does not submit", () => {
+    const onSubmit = vi.fn<(r: DrillResult) => void>();
+    render(
+      <AbbreviationCard
+        challenge={textChallenge}
+        index={0}
+        total={3}
+        score={scoreAbbreviation}
+        onSubmit={onSubmit}
+        onNext={() => {}}
+      />,
+    );
+    const input = screen.getByLabelText(/your answer/i);
+    fireEvent.keyDown(input, { key: "Enter" });
+    fireEvent.change(input, { target: { value: "   " } });
+    fireEvent.keyDown(input, { key: "Enter" });
+    expect(onSubmit).not.toHaveBeenCalled();
+  });
+
   test("Enter submits the typed answer", () => {
     const onSubmit = vi.fn<(r: DrillResult) => void>();
     render(

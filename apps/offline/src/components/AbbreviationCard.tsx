@@ -36,6 +36,7 @@ export function AbbreviationCard({
 
   function submitText() {
     if (result !== null) return;
+    if (answer.trim() === "") return;
     const r = score(challenge, answer);
     setResult(r);
     onSubmit(r);

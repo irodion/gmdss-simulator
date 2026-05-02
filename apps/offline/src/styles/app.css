@@ -114,7 +114,7 @@
 /* ── Mode tabs (Roman numerals) ── */
 .mode-tabs {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(5, 1fr);
   gap: 0;
   border: 1px solid var(--ink-line);
 }
@@ -1523,6 +1523,9 @@
     margin-top: 12px;
     font-size: 0.66rem;
     letter-spacing: 0.14em;
+  }
+  .mode-tabs {
+    grid-template-columns: repeat(3, 1fr);
   }
   .mode-tab {
     padding: 14px 8px 12px;
