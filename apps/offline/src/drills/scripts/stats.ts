@@ -23,7 +23,13 @@ export interface StatsAggregate {
   readonly pctCorrect: number;
 }
 
-const KNOWN_DIMENSIONS: readonly DimensionId[] = ["priority", "vessel", "body", "ending"];
+const KNOWN_DIMENSIONS: readonly DimensionId[] = [
+  "priority",
+  "vessel",
+  "body",
+  "ending",
+  "procedure",
+];
 
 function isDimensionPasses(value: unknown): value is Record<DimensionId, boolean> {
   if (value === null || typeof value !== "object") return false;

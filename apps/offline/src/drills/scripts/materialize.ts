@@ -1,5 +1,9 @@
 import type { RubricDefinition } from "@gmdss-simulator/utils";
 import {
+  DSC_NATURE_PLACEHOLDER_ID,
+  NATURE_CODES,
+  NATURE_LABELS,
+  type NatureCode,
   PRIORITY_IDS,
   type PriorityId,
   type RubricsById,
@@ -9,6 +13,12 @@ import {
   type SequenceTemplate,
   type SequenceTemplatePart,
 } from "./types.ts";
+
+const NATURE_DECOY_COUNT = 4;
+const IN_RAFT_ITEM: SequenceItem = {
+  id: "in_raft",
+  label: "In raft: EPIRB, SART, portable VHF",
+};
 
 const PRIORITY_LABELS: Readonly<Record<PriorityId, string>> = {
   mayday: "MAYDAY",
@@ -53,11 +63,21 @@ function factLabel(itemId: string, facts: ScenarioFacts, fallback: string): stri
 function injectScenarioLabels(
   items: readonly { id: string; label: string }[],
   facts: ScenarioFacts,
+  scenarioId: string,
 ): SequenceItem[] {
-  return items.map((item) => ({
-    id: item.id,
-    label: factLabel(item.id, facts, item.label),
-  }));
+  return items.map((item) => {
+    if (item.id === DSC_NATURE_PLACEHOLDER_ID) {
+      const code = facts.natureCode;
+      if (!code) {
+        throw new Error(`Scenario ${scenarioId} uses dsc_nature slot but has no facts.natureCode`);
+      }
+      return { id: code, label: NATURE_LABELS[code] };
+    }
+    return {
+      id: item.id,
+      label: factLabel(item.id, facts, item.label),
+    };
+  });
 }
 
 function decoyOpening(priority: PriorityId): readonly SequenceItem[] {
@@ -67,6 +87,12 @@ function decoyOpening(priority: PriorityId): readonly SequenceItem[] {
     { id: priority, label },
     { id: priority, label },
   ];
+}
+
+function pickNatureDecoys(correct: NatureCode, count: number): readonly SequenceItem[] {
+  const candidates = NATURE_CODES.filter((code) => code !== correct);
+  const shuffled = shuffle(candidates);
+  return shuffled.slice(0, count).map((code) => ({ id: code, label: NATURE_LABELS[code] }));
 }
 
 function shuffle<T>(arr: readonly T[]): T[] {
@@ -90,17 +116,23 @@ export function materializeScenario(
     throw new Error(`Rubric ${rubric.id} has no sequenceParts`);
   }
 
-  const parts: SequenceTemplatePart[] = rubric.sequenceParts.map((part) => ({
-    id: part.id,
-    label: part.label,
-    items: injectScenarioLabels(part.items, scenario.facts),
-  }));
+  const parts: SequenceTemplatePart[] = rubric.sequenceParts.map((part, partIndex) => {
+    const items = injectScenarioLabels(part.items, scenario.facts, scenario.id);
+    const isLast = partIndex === (rubric.sequenceParts?.length ?? 0) - 1;
+    if (isLast && scenario.requiresAbandon) {
+      return { id: part.id, label: part.label, items: [...items, IN_RAFT_ITEM] };
+    }
+    return { id: part.id, label: part.label, items };
+  });
 
   const correctItems = parts.flatMap((p) => p.items);
-  const decoys = PRIORITY_IDS.filter((p) => p !== scenario.priority).flatMap((p) =>
+  const priorityDecoys = PRIORITY_IDS.filter((p) => p !== scenario.priority).flatMap((p) =>
     decoyOpening(p),
   );
-  const pool = shuffle([...correctItems, ...decoys]);
+  const natureDecoys = scenario.facts.natureCode
+    ? pickNatureDecoys(scenario.facts.natureCode, NATURE_DECOY_COUNT)
+    : [];
+  const pool = shuffle([...correctItems, ...priorityDecoys, ...natureDecoys]);
 
   const heading = parts[0]?.label ?? rubric.id;
   return {

@@ -3,6 +3,7 @@ import { gradeScenario } from "../drills/scripts/grade.ts";
 import {
   type DimensionStatus,
   isPriorityItem,
+  isProcedureItem,
   type Scenario,
   type SequenceGrade,
   type SequenceItem,
@@ -106,12 +107,14 @@ export function SequenceCard({
     return cell?.correct ? "correct" : "wrong";
   }
 
-  const priorityPool = pool
-    .map((item, idx) => ({ item, idx }))
-    .filter(({ item }) => isPriorityItem(item.id));
-  const contentPool = pool
-    .map((item, idx) => ({ item, idx }))
-    .filter(({ item }) => !isPriorityItem(item.id));
+  const indexedPool = pool.map((item, idx) => ({ item, idx }));
+  const priorityPool = indexedPool.filter(({ item }) => isPriorityItem(item.id));
+  const procedurePool = indexedPool.filter(
+    ({ item }) => !isPriorityItem(item.id) && isProcedureItem(item.id),
+  );
+  const contentPool = indexedPool.filter(
+    ({ item }) => !isPriorityItem(item.id) && !isProcedureItem(item.id),
+  );
 
   return (
     <div>
@@ -177,6 +180,21 @@ export function SequenceCard({
                 key={`p-${idx}`}
                 type="button"
                 className="seq-pool-item seq-pool-item-priority"
+                onClick={() => handlePoolPick(idx)}
+                disabled={grade !== null}
+              >
+                {item.label}
+              </button>
+            ))}
+          </div>
+        ) : null}
+        {procedurePool.length > 0 ? (
+          <div className="seq-pool seq-pool-procedure" aria-label="Procedure actions">
+            {procedurePool.map(({ item, idx }) => (
+              <button
+                key={`r-${idx}`}
+                type="button"
+                className="seq-pool-item seq-pool-item-procedure"
                 onClick={() => handlePoolPick(idx)}
                 disabled={grade !== null}
               >

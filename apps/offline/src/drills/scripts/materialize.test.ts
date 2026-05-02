@@ -1,11 +1,11 @@
 import type { RubricDefinition } from "@gmdss-simulator/utils";
 import { describe, expect, test } from "vite-plus/test";
 import { materializeScenario, materializeStructural } from "./materialize.ts";
-import type { RubricsById, Scenario } from "./types.ts";
+import { isNatureItem, type RubricsById, type Scenario } from "./types.ts";
 
 const DISTRESS: RubricDefinition = {
   id: "v1/distress",
-  version: "1.0.0",
+  version: "1.2.0",
   category: "distress",
   requiredFields: [],
   prowordRules: [],
@@ -16,6 +16,12 @@ const DISTRESS: RubricDefinition = {
       id: "procedure",
       label: "MAYDAY procedure",
       items: [
+        { id: "epirb_on", label: "Turn on EPIRB" },
+        { id: "dsc_channel70", label: "DSC: Channel 70, High 25W" },
+        { id: "dsc_time_location", label: "DSC: confirm time and location" },
+        { id: "dsc_nature", label: "DSC:" },
+        { id: "dsc_button", label: "DSC: press distress button 5 sec" },
+        { id: "dsc_channel16", label: "DSC: Channel 16, High" },
         { id: "mayday", label: "MAYDAY" },
         { id: "mayday", label: "MAYDAY" },
         { id: "mayday", label: "MAYDAY" },
@@ -170,6 +176,7 @@ const DISTRESS_SCENARIO: Scenario = {
     nature: "Engine room fire",
     assistance: "I require immediate assistance",
     persons: "6 persons on board",
+    natureCode: "nature_fire",
   },
 };
 
@@ -192,14 +199,86 @@ describe("materializeScenario", () => {
     expect(template.priorityId).toBe("mayday");
   });
 
-  test("pool contains all correct items plus 3x of each wrong-priority opening", () => {
+  test("pool contains all correct items plus 3x of each wrong-priority opening and 4 nature decoys", () => {
     const template = materializeScenario(DISTRESS_SCENARIO, RUBRICS);
     const correctCount = template.parts.flatMap((p) => p.items).length;
     const panPanInPool = template.pool.filter((i) => i.id === "pan_pan").length;
     const securiteInPool = template.pool.filter((i) => i.id === "securite").length;
     expect(panPanInPool).toBe(3);
     expect(securiteInPool).toBe(3);
-    expect(template.pool.length).toBe(correctCount + 6);
+    // 6 priority decoys + 4 nature decoys (the correct nature is counted in correctCount)
+    expect(template.pool.length).toBe(correctCount + 6 + 4);
+  });
+
+  test("ship-side distress scenario produces 20 slots ending with OVER, procedural items first", () => {
+    const template = materializeScenario(DISTRESS_SCENARIO, RUBRICS);
+    const items = template.parts[0]!.items;
+    expect(items).toHaveLength(20);
+    expect(items.slice(0, 6).map((i) => i.id)).toEqual([
+      "epirb_on",
+      "dsc_channel70",
+      "dsc_time_location",
+      "nature_fire",
+      "dsc_button",
+      "dsc_channel16",
+    ]);
+    expect(items[19]!.id).toBe("over");
+  });
+
+  test("dsc_nature slot is materialized with the scenario nature code id and label", () => {
+    const template = materializeScenario(DISTRESS_SCENARIO, RUBRICS);
+    const natureSlot = template.parts[0]!.items[3]!;
+    expect(natureSlot.id).toBe("nature_fire");
+    expect(natureSlot.label).toBe("DSC: Fire & Explosion");
+  });
+
+  test("requiresAbandon scenario appends in_raft slot and chip", () => {
+    const abandon: Scenario = {
+      ...DISTRESS_SCENARIO,
+      id: "abandon-river-hawk",
+      requiresAbandon: true,
+      facts: { ...DISTRESS_SCENARIO.facts, natureCode: "nature_abandoning" },
+    };
+    const template = materializeScenario(abandon, RUBRICS);
+    const items = template.parts[0]!.items;
+    expect(items).toHaveLength(21);
+    expect(items[20]!.id).toBe("in_raft");
+    expect(items[20]!.label).toBe("In raft: EPIRB, SART, portable VHF");
+    expect(template.pool.filter((i) => i.id === "in_raft").length).toBe(1);
+  });
+
+  test("non-abandon scenario has no in_raft chip in pool", () => {
+    const template = materializeScenario(DISTRESS_SCENARIO, RUBRICS);
+    expect(template.pool.filter((i) => i.id === "in_raft").length).toBe(0);
+  });
+
+  test("pool contains exactly the correct nature chip plus 4 nature decoys", () => {
+    const template = materializeScenario(DISTRESS_SCENARIO, RUBRICS);
+    const natureChips = template.pool.filter((i) => isNatureItem(i.id));
+    expect(natureChips).toHaveLength(5);
+    expect(natureChips.filter((i) => i.id === "nature_fire")).toHaveLength(1);
+    // Decoys must not duplicate the correct one.
+    const decoys = natureChips.filter((i) => i.id !== "nature_fire");
+    expect(decoys).toHaveLength(4);
+    expect(new Set(decoys.map((i) => i.id)).size).toBe(4);
+  });
+
+  test("throws when v1/distress scenario is missing facts.natureCode", () => {
+    const broken: Scenario = {
+      id: "broken",
+      priority: "mayday",
+      rubricId: "v1/distress",
+      brief: "x",
+      facts: {
+        vessel: "X",
+        callsign: "X",
+        position: "X",
+        nature: "X",
+        assistance: "X",
+        persons: "X",
+      },
+    };
+    expect(() => materializeScenario(broken, RUBRICS)).toThrow(/natureCode/);
   });
 
   test("uses the correct rubric for each priority", () => {
@@ -335,7 +414,7 @@ describe("materializeStructural (legacy)", () => {
   test("preserves rubric.sequenceParts in the template", () => {
     const template = materializeStructural(DISTRESS);
     expect(template.rubricId).toBe("v1/distress");
-    expect(template.parts[0]!.items).toHaveLength(14);
+    expect(template.parts[0]!.items).toHaveLength(20);
     expect(template.priorityId).toBe("mayday");
   });
 

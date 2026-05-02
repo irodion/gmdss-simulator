@@ -1127,6 +1127,16 @@
   font-weight: 600;
   letter-spacing: 0.04em;
 }
+.seq-pool-procedure {
+  border-style: dashed;
+  border-color: var(--ink-line);
+  background: var(--paper);
+}
+.seq-pool-item-procedure {
+  background: var(--paper);
+  border-color: var(--ink-line);
+  font-style: italic;
+}
 
 .seq-summary {
   margin-top: 18px;

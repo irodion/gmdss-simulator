@@ -85,7 +85,13 @@ describe("recordAttempt + getAggregates", () => {
     recordAttempt(
       ev({
         scenarioId: "fire-blue-duck",
-        dimensionPasses: { priority: true, vessel: false, body: true, ending: true },
+        dimensionPasses: {
+          priority: true,
+          vessel: false,
+          body: true,
+          ending: true,
+          procedure: true,
+        },
       }),
     );
     const raw = window.localStorage.getItem("roc-trainer:procedure-stats");
@@ -94,8 +100,29 @@ describe("recordAttempt + getAggregates", () => {
     expect(stored).toHaveLength(1);
     expect(stored[0]).toMatchObject({
       scenarioId: "fire-blue-duck",
-      dimensionPasses: { priority: true, vessel: false, body: true, ending: true },
+      dimensionPasses: {
+        priority: true,
+        vessel: false,
+        body: true,
+        ending: true,
+        procedure: true,
+      },
     });
+  });
+
+  test("events with procedure dimension survive the read-back validator", () => {
+    recordAttempt(
+      ev({
+        dimensionPasses: {
+          priority: true,
+          vessel: true,
+          body: true,
+          ending: true,
+          procedure: true,
+        },
+      }),
+    );
+    expect(getAggregates()).toHaveLength(1);
   });
 
   test("survives a localStorage that throws on write (Safari private mode)", () => {

@@ -1,6 +1,6 @@
 {
   "id": "v1/distress",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "category": "distress",
   "requiredFields": [
     {
@@ -85,6 +85,12 @@
       "id": "procedure",
       "label": "MAYDAY procedure",
       "items": [
+        { "id": "epirb_on", "label": "Turn on EPIRB" },
+        { "id": "dsc_channel70", "label": "DSC: Channel 70, High 25W" },
+        { "id": "dsc_time_location", "label": "DSC: confirm time and location" },
+        { "id": "dsc_nature", "label": "DSC:" },
+        { "id": "dsc_button", "label": "DSC: press distress button 5 sec" },
+        { "id": "dsc_channel16", "label": "DSC: Channel 16, High" },
         { "id": "mayday", "label": "MAYDAY" },
         { "id": "mayday", "label": "MAYDAY" },
         { "id": "mayday", "label": "MAYDAY" },

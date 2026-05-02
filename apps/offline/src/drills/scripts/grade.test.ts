@@ -157,4 +157,70 @@ describe("gradeScenario", () => {
     expect(ending.status).toBe("pass");
     expect(ending.correct).toBe(1);
   });
+
+  test("ship-side distress with procedural items scores procedure dimension 6/6 on perfect run", () => {
+    const items: readonly SequenceItem[] = [
+      { id: "epirb_on", label: "Turn on EPIRB" },
+      { id: "dsc_channel70", label: "DSC: Channel 70, High 25W" },
+      { id: "dsc_time_location", label: "DSC: confirm time and location" },
+      { id: "nature_fire", label: "DSC: Fire & Explosion" },
+      { id: "dsc_button", label: "DSC: press distress button 5 sec" },
+      { id: "dsc_channel16", label: "DSC: Channel 16, High" },
+      ...DISTRESS_ITEMS,
+    ];
+    const tpl = template(items);
+    const grade = gradeScenario(tpl, placementsMap(items));
+    expect(grade.passed).toBe(true);
+    const procedure = grade.dimensions.find((d) => d.id === "procedure")!;
+    expect(procedure.total).toBe(6);
+    expect(procedure.correct).toBe(6);
+    expect(procedure.status).toBe("pass");
+    expect(grade.dimensions.find((d) => d.id === "priority")!.total).toBe(4);
+    expect(grade.dimensions.find((d) => d.id === "vessel")!.total).toBe(5);
+    expect(grade.dimensions.find((d) => d.id === "body")!.total).toBe(4);
+    expect(grade.dimensions.find((d) => d.id === "ending")!.total).toBe(1);
+  });
+
+  test("abandoning scenario scores procedure dimension 7/7 with in_raft", () => {
+    const items: readonly SequenceItem[] = [
+      { id: "epirb_on", label: "Turn on EPIRB" },
+      { id: "dsc_channel70", label: "DSC: Channel 70, High 25W" },
+      { id: "dsc_time_location", label: "DSC: confirm time and location" },
+      { id: "nature_abandoning", label: "DSC: Abandoning" },
+      { id: "dsc_button", label: "DSC: press distress button 5 sec" },
+      { id: "dsc_channel16", label: "DSC: Channel 16, High" },
+      ...DISTRESS_ITEMS,
+      { id: "in_raft", label: "In raft: EPIRB, SART, portable VHF" },
+    ];
+    const tpl = template(items);
+    const grade = gradeScenario(tpl, placementsMap(items));
+    const procedure = grade.dimensions.find((d) => d.id === "procedure")!;
+    expect(procedure.total).toBe(7);
+    expect(procedure.correct).toBe(7);
+    expect(procedure.status).toBe("pass");
+  });
+
+  test("misplacing only procedural items leaves other dimensions passing", () => {
+    const correct: readonly SequenceItem[] = [
+      { id: "epirb_on", label: "Turn on EPIRB" },
+      { id: "dsc_channel70", label: "DSC: Channel 70, High 25W" },
+      { id: "dsc_time_location", label: "DSC: confirm time and location" },
+      { id: "nature_fire", label: "DSC: Fire & Explosion" },
+      { id: "dsc_button", label: "DSC: press distress button 5 sec" },
+      { id: "dsc_channel16", label: "DSC: Channel 16, High" },
+      ...DISTRESS_ITEMS,
+    ];
+    const tpl = template(correct);
+    // Swap two procedural items (still procedural ids, just wrong order).
+    const placed = [...correct];
+    placed[0] = { id: "dsc_channel70", label: "DSC: Channel 70, High 25W" };
+    placed[1] = { id: "epirb_on", label: "Turn on EPIRB" };
+    const grade = gradeScenario(tpl, placementsMap(placed));
+    const procedure = grade.dimensions.find((d) => d.id === "procedure")!;
+    expect(procedure.status).toBe("partial");
+    expect(grade.dimensions.find((d) => d.id === "priority")!.status).toBe("pass");
+    expect(grade.dimensions.find((d) => d.id === "vessel")!.status).toBe("pass");
+    expect(grade.dimensions.find((d) => d.id === "body")!.status).toBe("pass");
+    expect(grade.dimensions.find((d) => d.id === "ending")!.status).toBe("pass");
+  });
 });
