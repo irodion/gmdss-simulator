@@ -100,13 +100,20 @@ export interface SequenceTemplate {
 
 export interface SequencePlacementResult {
   readonly placed: SequenceItem;
-  readonly expected: SequenceItem;
+  /**
+   * The expected item this entry aligned with via LCS, or `null` if it didn't
+   * align (i.e. the student placed an extra/wrong entry that has no counterpart
+   * in the expected sequence).
+   */
+  readonly expected: SequenceItem | null;
   readonly correct: boolean;
 }
 
 export interface SequencePartGrade {
   readonly partId: string;
   readonly placements: readonly SequencePlacementResult[];
+  /** Expected items the student didn't include (not aligned in the LCS). */
+  readonly missing: readonly SequenceItem[];
 }
 
 export type DimensionId = "priority" | "vessel" | "body" | "ending" | "procedure";
@@ -124,6 +131,13 @@ export interface SequenceGrade {
   readonly parts: readonly SequencePartGrade[];
   readonly correctCount: number;
   readonly total: number;
+  /** Student entries that didn't align with any expected item (LCS extras). */
+  readonly extraCount: number;
+  /**
+   * Score in [0, 1]. correctCount / max(totalExpected, totalStudent), so
+   * omissions and extra noise both reduce the score symmetrically.
+   */
+  readonly score: number;
   readonly passed: boolean;
   readonly dimensions: readonly SequenceScoreDimension[];
 }

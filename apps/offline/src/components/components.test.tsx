@@ -383,12 +383,17 @@ describe("SequenceCard", () => {
     if (!btn) throw new Error(`No pool item with label "${label}"`);
     return btn;
   }
-  function slot(index: number): HTMLButtonElement {
-    const partLabel = SAMPLE_TEMPLATE.parts[0]!.label;
-    const prefix = `${partLabel} slot ${index},`;
-    return screen.getByRole("button", {
-      name: (accessible) => accessible.startsWith(prefix),
-    }) as HTMLButtonElement;
+  function entries(partLabel = SAMPLE_TEMPLATE.parts[0]!.label): HTMLLIElement[] {
+    const list = screen.getByLabelText(`${partLabel} entries`) as HTMLOListElement;
+    return Array.from(list.querySelectorAll<HTMLLIElement>("li.seq-slot"));
+  }
+  function entryText(index: number, partLabel?: string): string {
+    const entry = entries(partLabel)[index];
+    if (!entry) throw new Error(`No entry at index ${index}`);
+    return entry.querySelector(".seq-slot-content")?.textContent ?? "";
+  }
+  function removeButton(label: string): HTMLButtonElement {
+    return screen.getByRole("button", { name: `Remove ${label}` }) as HTMLButtonElement;
   }
   function placeInOrder() {
     for (const item of ITEMS) {
@@ -440,44 +445,60 @@ describe("SequenceCard", () => {
     ).toHaveLength(3);
   });
 
-  test("tapping a pool item fills the first empty slot", () => {
+  test("entries list is empty before any phrase is placed (count is hidden)", () => {
     renderCard();
-    fireEvent.click(poolItem("5BCD2"));
-    expect(slot(1).textContent).toMatch(/5BCD2/);
+    expect(entries()).toHaveLength(0);
   });
 
-  test("tapping a filled slot returns the item to the pool", () => {
+  test("tapping a pool item appends a new entry to the list", () => {
     renderCard();
     fireEvent.click(poolItem("5BCD2"));
-    fireEvent.click(slot(1));
+    expect(entries()).toHaveLength(1);
+    expect(entryText(0)).toMatch(/5BCD2/);
+  });
+
+  test("tapping the × on an entry returns it to the pool and shrinks the list", () => {
+    renderCard();
+    fireEvent.click(poolItem("5BCD2"));
+    fireEvent.click(removeButton("5BCD2"));
+    expect(entries()).toHaveLength(0);
     expect(poolItem("5BCD2")).toBeTruthy();
-    expect(slot(1).textContent).not.toMatch(/5BCD2/);
   });
 
-  test("Submit is disabled until every slot is filled", () => {
-    renderCard();
-    const submit = screen.getByRole("button", { name: /^Submit$/ }) as HTMLButtonElement;
-    expect(submit.disabled).toBe(true);
-    for (let i = 0; i < TOTAL - 1; i++) {
-      fireEvent.click(poolItem(ITEMS[i]!.label));
-    }
-    expect(submit.disabled).toBe(true);
-    fireEvent.click(poolItem(ITEMS.at(-1)!.label));
+  test("Submit is always enabled, even with an empty list", () => {
+    const onComplete = vi.fn();
+    renderCard({ onComplete });
+    const submit = screen.getByRole("button", { name: /^Submit/ }) as HTMLButtonElement;
     expect(submit.disabled).toBe(false);
+    fireEvent.click(submit);
+    // Submitting with no entries grades 0/total and reports missing.
+    expect(onComplete.mock.calls[0]![0].passed).toBe(false);
+    expect(onComplete.mock.calls[0]![0].correctCount).toBe(0);
+  });
+
+  test("up/down buttons reorder entries within a part", () => {
+    renderCard();
+    fireEvent.click(poolItem("MAYDAY"));
+    fireEvent.click(poolItem("Blue Duck"));
+    expect(entryText(0)).toMatch(/MAYDAY/);
+    expect(entryText(1)).toMatch(/Blue Duck/);
+    fireEvent.click(screen.getByRole("button", { name: /^Move Blue Duck up$/ }));
+    expect(entryText(0)).toMatch(/Blue Duck/);
+    expect(entryText(1)).toMatch(/MAYDAY/);
   });
 
   test("submitting in correct order grades pass and shows the breakdown", () => {
     const onComplete = vi.fn();
     renderCard({ onComplete });
     placeInOrder();
-    fireEvent.click(screen.getByRole("button", { name: /^Submit$/ }));
+    fireEvent.click(screen.getByRole("button", { name: /^Submit/ }));
     expect(onComplete).toHaveBeenCalledTimes(1);
     expect(onComplete.mock.calls[0]![0]).toMatchObject({
       passed: true,
       correctCount: TOTAL,
       total: TOTAL,
     });
-    expect(screen.getByText(/perfect call/i)).toBeTruthy();
+    expect(screen.getByText(/passed/i)).toBeTruthy();
     // Breakdown rows for the four dimensions present in the sample template.
     expect(screen.getByText(/^priority$/i)).toBeTruthy();
     expect(screen.getByText(/vessel identification/i)).toBeTruthy();
@@ -489,16 +510,33 @@ describe("SequenceCard", () => {
     const onComplete = vi.fn();
     renderCard({ onComplete });
     // Expected: [mayday, mayday, vessel, callsign, position, over].
-    // Swap the first opening with a PAN-PAN decoy → priority dimension partial.
+    // Swap the first opening with a PAN-PAN decoy.
     fireEvent.click(poolItem("PAN-PAN"));
     fireEvent.click(poolItem("MAYDAY"));
     fireEvent.click(poolItem("Blue Duck"));
     fireEvent.click(poolItem("5BCD2"));
     fireEvent.click(poolItem("32°05'N 034°45'E"));
     fireEvent.click(poolItem("OVER"));
-    fireEvent.click(screen.getByRole("button", { name: /^Submit$/ }));
-    expect(onComplete.mock.calls[0]![0].passed).toBe(false);
-    expect(screen.getByText(/should be:/i)).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: /^Submit/ }));
+    // 5/6 expected matched but 1 extra = score = 5 / max(6,6) = 5/6 ≈ 83% → still passes.
+    // The point of this test: the wrong PAN-PAN entry is flagged.
+    const result = onComplete.mock.calls[0]![0];
+    expect(result.extraCount).toBe(1);
+    expect(
+      result.parts[0].placements.find((p: { placed: { id: string } }) => p.placed.id === "pan_pan")
+        .correct,
+    ).toBe(false);
+  });
+
+  test("submitting with a missing step lists it under 'Missed steps'", () => {
+    renderCard();
+    // Place all but the OVER ending.
+    for (const item of ITEMS.slice(0, -1)) {
+      fireEvent.click(poolItem(item.label));
+    }
+    fireEvent.click(screen.getByRole("button", { name: /^Submit/ }));
+    expect(screen.getByText(/missed steps/i)).toBeTruthy();
+    expect(screen.getByLabelText(/missing steps/i).textContent).toMatch(/OVER/);
   });
 
   test("Try again calls onRetry; New scenario calls onNewScenario", () => {
@@ -506,7 +544,7 @@ describe("SequenceCard", () => {
     const onNewScenario = vi.fn();
     renderCard({ onRetry, onNewScenario });
     placeInOrder();
-    fireEvent.click(screen.getByRole("button", { name: /^Submit$/ }));
+    fireEvent.click(screen.getByRole("button", { name: /^Submit/ }));
     fireEvent.click(screen.getByRole("button", { name: /^Try again$/ }));
     expect(onRetry).toHaveBeenCalled();
     fireEvent.click(screen.getByRole("button", { name: /^New scenario$/ }));
@@ -555,7 +593,52 @@ describe("SequenceCard", () => {
     expect(group.querySelectorAll(".seq-pool-item-procedure").length).toBeGreaterThanOrEqual(4);
   });
 
-  test("renders the in_raft slot when the template ends with in_raft", () => {
+  test("multi-part: clicking a part header (keyboard-accessible) switches the active part", () => {
+    const multiPartTemplate: SequenceTemplate = {
+      ...SAMPLE_TEMPLATE,
+      parts: [
+        {
+          id: "procedure",
+          label: "Part one",
+          items: [{ id: "mayday", label: "MAYDAY" }],
+        },
+        {
+          id: "medical_message",
+          label: "Part two",
+          items: [{ id: "over", label: "OVER" }],
+        },
+      ],
+      pool: [
+        { id: "mayday", label: "MAYDAY" },
+        { id: "over", label: "OVER" },
+      ],
+    };
+    render(
+      <SequenceCard
+        template={multiPartTemplate}
+        scenario={SAMPLE_SCENARIO}
+        onComplete={() => {}}
+        onRetry={() => {}}
+        onNewScenario={() => {}}
+        onBack={() => {}}
+      />,
+    );
+    // First part is active by default.
+    const partTwoBtn = screen.getByRole("button", { name: /^Part two — make active$/ });
+    expect(partTwoBtn.getAttribute("aria-pressed")).toBe("false");
+
+    // Activating part two via keyboard-reachable button.
+    fireEvent.click(partTwoBtn);
+
+    // Pool pick now appends to part two.
+    fireEvent.click(poolItem("OVER"));
+    const partTwoEntries = screen.getByLabelText("Part two entries");
+    expect(partTwoEntries.querySelectorAll("li.seq-slot")).toHaveLength(1);
+    const partOneEntries = screen.getByLabelText("Part one entries");
+    expect(partOneEntries.querySelectorAll("li.seq-slot")).toHaveLength(0);
+  });
+
+  test("renders the in_raft chip in the procedure pool when the template includes it", () => {
     const abandonTemplate: SequenceTemplate = {
       ...SAMPLE_TEMPLATE,
       parts: [
@@ -587,10 +670,6 @@ describe("SequenceCard", () => {
         onBack={() => {}}
       />,
     );
-    const slot4 = screen.getByRole("button", {
-      name: (n) => n.startsWith("MAYDAY procedure slot 4,"),
-    });
-    expect(slot4).toBeTruthy();
     const chip = screen
       .getAllByRole("button", { name: /In raft: EPIRB, SART, portable VHF/ })
       .find((el) => el.className.includes("seq-pool-item-procedure"));

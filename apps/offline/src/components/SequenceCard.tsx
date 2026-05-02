@@ -23,7 +23,7 @@ interface SequenceCardProps {
 
 interface PartState {
   readonly part: SequenceTemplatePart;
-  readonly placements: (SequenceItem | null)[];
+  readonly placements: SequenceItem[];
 }
 
 const STATUS_ICONS: Readonly<Record<DimensionStatus, string>> = {
@@ -35,7 +35,7 @@ const STATUS_ICONS: Readonly<Record<DimensionStatus, string>> = {
 function initParts(template: SequenceTemplate): PartState[] {
   return template.parts.map((part) => ({
     part,
-    placements: Array(part.items.length).fill(null),
+    placements: [],
   }));
 }
 
@@ -50,6 +50,7 @@ export function SequenceCard({
   const [parts, setParts] = useState<PartState[]>(() => initParts(template));
   const [pool, setPool] = useState<readonly SequenceItem[]>(() => template.pool);
   const [grade, setGrade] = useState<SequenceGrade | null>(null);
+  const [activePartId, setActivePartId] = useState<string>(() => template.parts[0]?.id ?? "");
   const scenarioRef = useRef<HTMLElement | null>(null);
 
   // Scroll the scenario brief into view whenever the scenario changes (e.g. "New
@@ -58,8 +59,8 @@ export function SequenceCard({
     scenarioRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   }, [scenario.id]);
 
-  const ready = parts.every((p) => p.placements.every((slot) => slot !== null));
   const showPartHeader = template.parts.length > 1;
+  const totalPlaced = parts.reduce((sum, p) => sum + p.placements.length, 0);
 
   function updatePart(partId: string, updater: (state: PartState) => PartState) {
     setParts((prev) => prev.map((p) => (p.part.id === partId ? updater(p) : p)));
@@ -69,49 +70,46 @@ export function SequenceCard({
     if (grade !== null) return;
     const item = pool[poolIndex];
     if (!item) return;
-    const targetPart = parts.find((p) => p.placements.some((slot) => slot === null));
-    if (!targetPart) return;
-    updatePart(targetPart.part.id, (state) => {
-      const nextEmpty = state.placements.findIndex((slot) => slot === null);
-      if (nextEmpty === -1) return state;
-      const placements = [...state.placements];
-      placements[nextEmpty] = item;
-      return { ...state, placements };
-    });
+    updatePart(activePartId, (state) => ({
+      ...state,
+      placements: [...state.placements, item],
+    }));
     setPool((prev) => prev.filter((_, i) => i !== poolIndex));
   }
 
-  function handleSlotReturn(partId: string, slotIndex: number) {
+  function handleEntryRemove(partId: string, entryIndex: number) {
     if (grade !== null) return;
     const part = parts.find((p) => p.part.id === partId);
-    const item = part?.placements[slotIndex];
+    const item = part?.placements[entryIndex];
     if (!item) return;
-    updatePart(partId, (state) => {
-      const placements = [...state.placements];
-      placements[slotIndex] = null;
-      return { ...state, placements };
-    });
+    updatePart(partId, (state) => ({
+      ...state,
+      placements: state.placements.filter((_, i) => i !== entryIndex),
+    }));
     setPool((prev) => [...prev, item]);
   }
 
+  function handleEntryMove(partId: string, entryIndex: number, direction: -1 | 1) {
+    if (grade !== null) return;
+    updatePart(partId, (state) => {
+      const target = entryIndex + direction;
+      if (target < 0 || target >= state.placements.length) return state;
+      const next = [...state.placements];
+      const [moved] = next.splice(entryIndex, 1);
+      if (!moved) return state;
+      next.splice(target, 0, moved);
+      return { ...state, placements: next };
+    });
+  }
+
   function handleSubmit() {
-    if (!ready || grade !== null) return;
+    if (grade !== null) return;
     const placementsByPart = new Map<string, SequenceItem[]>(
-      parts.map((p) => [p.part.id, p.placements as SequenceItem[]]),
+      parts.map((p) => [p.part.id, [...p.placements]]),
     );
     const result = gradeScenario(template, placementsByPart);
     setGrade(result);
     onComplete(result);
-  }
-
-  function slotState(
-    partId: string,
-    slotIndex: number,
-    placed: SequenceItem | null,
-  ): "empty" | "filled" | "correct" | "wrong" {
-    if (!grade) return placed === null ? "empty" : "filled";
-    const cell = grade.parts.find((p) => p.partId === partId)?.placements[slotIndex];
-    return cell?.correct ? "correct" : "wrong";
   }
 
   const indexedPool = pool.map((item, idx) => ({ item, idx }));
@@ -122,6 +120,8 @@ export function SequenceCard({
   const contentPool = indexedPool.filter(
     ({ item }) => !isPriorityItem(item.id) && !isProcedureItem(item.id),
   );
+
+  const summaryLabel = grade ? (grade.passed ? "passed" : "review the misplaced fields") : "";
 
   return (
     <div>
@@ -137,44 +137,102 @@ export function SequenceCard({
 
       {parts.map((state) => {
         const partGrade = grade?.parts.find((p) => p.partId === state.part.id);
+        const isActive = grade === null && showPartHeader && activePartId === state.part.id;
+        const activate = () => {
+          if (grade === null && activePartId !== state.part.id) {
+            setActivePartId(state.part.id);
+          }
+        };
         return (
-          <section key={state.part.id} className="seq-part">
-            {showPartHeader ? <h3 className="seq-part-header">{state.part.label}</h3> : null}
-            <ol className="seq-slots">
+          <section
+            key={state.part.id}
+            className="seq-part"
+            data-active={isActive ? "true" : undefined}
+            onPointerDown={activate}
+            onFocus={activate}
+          >
+            {showPartHeader ? (
+              <h3 className="seq-part-header">
+                <button
+                  type="button"
+                  className="seq-part-header-btn"
+                  onClick={activate}
+                  aria-pressed={isActive}
+                  aria-label={
+                    isActive
+                      ? `${state.part.label} (active — pool picks add here)`
+                      : `${state.part.label} — make active`
+                  }
+                >
+                  {state.part.label}
+                  {isActive ? (
+                    <span className="seq-part-active-tag" aria-hidden="true">
+                      {" "}
+                      · active
+                    </span>
+                  ) : null}
+                </button>
+              </h3>
+            ) : null}
+            <ol className="seq-slots" aria-label={`${state.part.label} entries`}>
               {state.placements.map((placed, i) => {
-                const status = slotState(state.part.id, i, placed);
-                const expected = partGrade?.placements[i]?.expected ?? null;
+                const cell = partGrade?.placements[i];
+                const status = renderStatus(grade, cell);
+                const expected = cell?.expected ?? null;
+                const isLast = i === state.placements.length - 1;
                 return (
-                  <li key={i} className="seq-slot" data-state={status}>
-                    <button
-                      type="button"
-                      className="seq-slot-btn"
-                      onClick={() => handleSlotReturn(state.part.id, i)}
-                      disabled={placed === null || grade !== null}
-                      aria-label={
-                        placed === null
-                          ? `${state.part.label} slot ${i + 1}, empty`
-                          : `${state.part.label} slot ${i + 1}, ${placed.label}`
-                      }
-                    >
-                      <span className="seq-slot-num" aria-hidden="true">
-                        {i + 1}.
+                  <li key={`${state.part.id}-${i}`} className="seq-slot" data-state={status}>
+                    <span className="seq-slot-num" aria-hidden="true">
+                      {i + 1}.
+                    </span>
+                    <span className="seq-slot-content">{placed.label}</span>
+                    {grade === null ? (
+                      <span className="seq-slot-controls">
+                        <button
+                          type="button"
+                          className="seq-slot-move"
+                          onClick={() => handleEntryMove(state.part.id, i, -1)}
+                          disabled={i === 0}
+                          aria-label={`Move ${placed.label} up`}
+                        >
+                          ↑
+                        </button>
+                        <button
+                          type="button"
+                          className="seq-slot-move"
+                          onClick={() => handleEntryMove(state.part.id, i, 1)}
+                          disabled={isLast}
+                          aria-label={`Move ${placed.label} down`}
+                        >
+                          ↓
+                        </button>
+                        <button
+                          type="button"
+                          className="seq-slot-remove"
+                          onClick={() => handleEntryRemove(state.part.id, i)}
+                          aria-label={`Remove ${placed.label}`}
+                        >
+                          ×
+                        </button>
                       </span>
-                      <span className="seq-slot-content">
-                        {placed === null ? (
-                          <em className="seq-slot-placeholder">—</em>
-                        ) : (
-                          placed.label
-                        )}
-                      </span>
-                    </button>
+                    ) : null}
                     {status === "wrong" && expected ? (
                       <div className="seq-slot-expected">should be: {expected.label}</div>
                     ) : null}
                   </li>
                 );
               })}
+              {grade === null ? (
+                <li className="seq-droparea" aria-hidden="true">
+                  {state.placements.length === 0
+                    ? "Tap a phrase below to add it as the first step"
+                    : "Tap another phrase to add it as the next step"}
+                </li>
+              ) : null}
             </ol>
+            {grade !== null && partGrade && partGrade.missing.length > 0 ? (
+              <MissingList partLabel={state.part.label} missing={partGrade.missing} />
+            ) : null}
           </section>
         );
       })}
@@ -226,7 +284,7 @@ export function SequenceCard({
           </div>
         ) : null}
         {pool.length === 0 && grade === null ? (
-          <p className="seq-pool-empty">All elements placed.</p>
+          <p className="seq-pool-empty">All phrases used.</p>
         ) : null}
       </div>
 
@@ -240,7 +298,11 @@ export function SequenceCard({
               type="button"
               className="btn-primary btn-grow"
               onClick={handleSubmit}
-              disabled={!ready}
+              aria-label={
+                totalPlaced === 0
+                  ? "Submit (no phrases placed yet)"
+                  : `Submit ${totalPlaced} placed phrase${totalPlaced === 1 ? "" : "s"}`
+              }
             >
               Submit
             </button>
@@ -257,27 +319,62 @@ export function SequenceCard({
         )}
       </div>
 
-      {grade !== null ? <SequenceBreakdown grade={grade} /> : null}
+      {grade !== null ? <SequenceBreakdown grade={grade} label={summaryLabel} /> : null}
+    </div>
+  );
+}
+
+function renderStatus(
+  grade: SequenceGrade | null,
+  cell: { correct: boolean } | undefined,
+): "filled" | "correct" | "wrong" {
+  if (!grade) return "filled";
+  return cell?.correct ? "correct" : "wrong";
+}
+
+interface MissingListProps {
+  readonly partLabel: string;
+  readonly missing: readonly SequenceItem[];
+}
+
+function MissingList({ partLabel, missing }: MissingListProps) {
+  return (
+    <div className="seq-missing" aria-label={`${partLabel} missing steps`}>
+      <span className="seq-missing-eyebrow">Missed steps</span>
+      <ul>
+        {missing.map((item, i) => (
+          <li key={`${item.id}-${i}`}>
+            <span className="seq-missing-mark" aria-hidden="true">
+              ⊘
+            </span>{" "}
+            {item.label}
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }
 
 interface SequenceBreakdownProps {
   readonly grade: SequenceGrade;
+  readonly label: string;
 }
 
-function SequenceBreakdown({ grade }: SequenceBreakdownProps) {
+function SequenceBreakdown({ grade, label }: SequenceBreakdownProps) {
+  const percent = Math.round(grade.score * 100);
   return (
     <div className="seq-summary" data-state={grade.passed ? "pass" : "partial"} aria-live="polite">
       <div className="seq-summary-header">
         <span className="seq-summary-score">
-          {grade.correctCount}
-          <small> / {grade.total}</small>
+          {percent}
+          <small>%</small>
         </span>
-        <span className="seq-summary-label">
-          {grade.passed ? "perfect call" : "review the misplaced fields"}
-        </span>
+        <span className="seq-summary-label">{label}</span>
       </div>
+      <p className="seq-summary-detail">
+        {grade.correctCount} of {grade.total} expected steps matched
+        {grade.extraCount > 0 ? `; ${grade.extraCount} extra entries` : ""}.
+      </p>
       <ul className="seq-breakdown" aria-label="Score breakdown by dimension">
         {grade.dimensions.map((d) => (
           <DimensionRow key={d.id} dimension={d} />

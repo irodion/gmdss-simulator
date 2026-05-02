@@ -58,7 +58,7 @@ test("Procedures tab loads the home tile and starts a scenario drill", async ({ 
   await expect(page.getByRole("button", { name: /scenario reconstruction drill/i })).toBeVisible();
   await page.getByRole("button", { name: /scenario reconstruction drill/i }).click();
 
-  // The scenario brief is rendered above the slots.
+  // The scenario brief is rendered above the entries list.
   await expect(page.getByLabel("Scenario").first()).toBeVisible();
 
   // The priority openings group offers all three priorities as chips,
@@ -68,11 +68,17 @@ test("Procedures tab loads the home tile and starts a scenario drill", async ({ 
   await expect(priorityPool.getByRole("button", { name: "PAN-PAN" }).first()).toBeVisible();
   await expect(priorityPool.getByRole("button", { name: "SECURITE" }).first()).toBeVisible();
 
-  // Submit is disabled until every slot is filled.
-  await expect(page.getByRole("button", { name: /^Submit$/ })).toBeDisabled();
+  // Submit is always enabled — students can submit a partial answer to be evaluated.
+  // The aria-label includes the entry count so we anchor on the visible button text.
+  await expect(page.getByRole("button", { name: /^Submit/ })).toBeEnabled();
+
+  // The list starts empty — no pre-rendered slots reveal the answer count.
+  await expect(page.locator("li.seq-slot")).toHaveCount(0);
+  // A drop/tap affordance is shown instead.
+  await expect(page.locator(".seq-droparea").first()).toBeVisible();
 });
 
-test("Procedures MAYDAY drill shows the procedure pool group with at least 20 slots", async ({
+test("Procedures MAYDAY drill exposes the procedure pool group with enough chips", async ({
   page,
 }) => {
   await page.goto("/");
@@ -87,9 +93,6 @@ test("Procedures MAYDAY drill shows the procedure pool group with at least 20 sl
 
   // The Procedure pool group only appears for v1/distress MAYDAY scenarios.
   // Cycle through scenarios via Back → start until we hit one (cap at 20 attempts).
-  // Wait for the Scenario section to mount before checking procedurePool, otherwise
-  // a non-retrying isVisible() can race with React commits and silently skip a valid
-  // scenario.
   for (let attempt = 0; attempt < 20; attempt++) {
     await scenarioSection.waitFor({ state: "visible" });
     if (await procedurePool.isVisible()) break;
@@ -98,9 +101,9 @@ test("Procedures MAYDAY drill shows the procedure pool group with at least 20 sl
   }
 
   await expect(procedurePool).toBeVisible();
-  // 20 slots minimum for ship-side distress, 21 for abandoning.
-  const slots = page.locator(".seq-slot");
-  expect(await slots.count()).toBeGreaterThanOrEqual(20);
+  // Procedure pool should contain at least 6 chips for ship-side distress drills.
+  const procedureChips = procedurePool.locator(".seq-pool-item-procedure");
+  expect(await procedureChips.count()).toBeGreaterThanOrEqual(6);
 });
 
 test("service worker is registered after first load", async ({ page }) => {
