@@ -60,6 +60,7 @@ export function SequenceCard({
   const [isSpeaking, setIsSpeaking] = useState(false);
   const ttsSupported = useMemo(() => isTtsSupported(), []);
   const playGenRef = useRef(0);
+  const playAbortRef = useRef<AbortController | null>(null);
 
   // Scroll the scenario brief into view whenever the scenario changes (e.g. "New
   // scenario" after a long-scrolled feedback view), so the student starts at the top.
@@ -67,45 +68,53 @@ export function SequenceCard({
     scenarioRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   }, [scenario.id]);
 
+  function abortAndStopTts() {
+    playGenRef.current++;
+    playAbortRef.current?.abort();
+    playAbortRef.current = null;
+    cancelTts();
+    setIsSpeaking(false);
+  }
+
   useEffect(
     () => () => {
+      playAbortRef.current?.abort();
       cancelTts();
     },
     [],
   );
 
   useEffect(() => {
-    cancelTts();
-    setIsSpeaking(false);
+    abortAndStopTts();
   }, [scenario.id, grade]);
 
   const handlePlayTts = async () => {
     const text = buildSpokenTransmission(template);
     if (!text) return;
+    playAbortRef.current?.abort();
+    const controller = new AbortController();
+    playAbortRef.current = controller;
     const gen = ++playGenRef.current;
     setIsSpeaking(true);
     try {
-      await speak(text);
+      await speak(text, 0.9, controller.signal);
     } finally {
       // Only the most recent click owns the speaking-flag transition back; an
       // earlier click whose speak() resolved late must not flip the UI off
       // while a newer utterance is still in flight.
-      if (playGenRef.current === gen) setIsSpeaking(false);
+      if (playGenRef.current === gen) {
+        playAbortRef.current = null;
+        setIsSpeaking(false);
+      }
     }
   };
 
   const handleStopTts = () => {
-    playGenRef.current++;
-    cancelTts();
-    setIsSpeaking(false);
+    abortAndStopTts();
   };
 
   const handleToggleTts = (next: boolean) => {
-    if (!next) {
-      playGenRef.current++;
-      cancelTts();
-      setIsSpeaking(false);
-    }
+    if (!next) abortAndStopTts();
     setTtsEnabledRaw(next);
   };
 

@@ -3,13 +3,13 @@ import { afterEach, beforeEach, describe, expect, test, vi } from "vite-plus/tes
 import type { Scenario, SequenceTemplate } from "../drills/scripts/types.ts";
 import { SequenceCard } from "./SequenceCard.tsx";
 
-const speakMock = vi.fn<(text: string, rate?: number) => Promise<void>>();
+const speakMock = vi.fn<(text: string, rate?: number, signal?: AbortSignal) => Promise<void>>();
 const cancelMock = vi.fn<() => void>();
 const isSupportedMock = vi.fn<() => boolean>();
 
 vi.mock("../lib/tts.ts", () => ({
   isSupported: () => isSupportedMock(),
-  speak: (text: string, rate?: number) => speakMock(text, rate),
+  speak: (text: string, rate?: number, signal?: AbortSignal) => speakMock(text, rate, signal),
   cancel: () => cancelMock(),
 }));
 
@@ -154,6 +154,26 @@ describe("SequenceCard TTS toggle", () => {
     fireEvent.click(screen.getByRole("button", { name: /play correct radio transmission/i }));
     fireEvent.click(toggle);
     expect(cancelMock).toHaveBeenCalled();
+    resolveSpeak();
+  });
+
+  test("Stop aborts the AbortSignal passed to speak()", () => {
+    let resolveSpeak: () => void = () => {};
+    let receivedSignal: AbortSignal | undefined;
+    speakMock.mockImplementationOnce(
+      (_text, _rate, signal) =>
+        new Promise<void>((resolve) => {
+          receivedSignal = signal;
+          resolveSpeak = resolve;
+        }),
+    );
+    renderCard();
+    fireEvent.click(screen.getByLabelText(/read correct transmission aloud/i));
+    submit();
+    fireEvent.click(screen.getByRole("button", { name: /play correct radio transmission/i }));
+    expect(receivedSignal?.aborted).toBe(false);
+    fireEvent.click(screen.getByRole("button", { name: /stop transmission playback/i }));
+    expect(receivedSignal?.aborted).toBe(true);
     resolveSpeak();
   });
 

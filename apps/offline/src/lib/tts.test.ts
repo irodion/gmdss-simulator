@@ -86,6 +86,33 @@ describe("speak", () => {
     await speak("   ");
     expect(fakeSynth.spoken).toHaveLength(0);
   });
+
+  test("returns without enqueueing when the signal is already aborted", async () => {
+    const ctrl = new AbortController();
+    ctrl.abort();
+    await speak("hello", 0.9, ctrl.signal);
+    expect(fakeSynth.spoken).toHaveLength(0);
+  });
+
+  test("aborting after enqueue cancels the in-flight utterance and resolves", async () => {
+    let pendingUtter: FakeUtterance | null = null;
+    fakeSynth.speak = function (u: FakeUtterance) {
+      this.spoken.push(u.text);
+      pendingUtter = u; // hold; let abort drive the resolve via cancel→onerror
+    };
+    fakeSynth.cancel = function () {
+      this.cancelled++;
+      pendingUtter?.onerror?.();
+      pendingUtter = null;
+    };
+    const ctrl = new AbortController();
+    const promise = speak("hello", 0.9, ctrl.signal);
+    await Promise.resolve(); // let ensureVoiceReady + synth.speak run
+    expect(fakeSynth.spoken).toEqual(["hello"]);
+    ctrl.abort();
+    await promise;
+    expect(fakeSynth.cancelled).toBeGreaterThanOrEqual(1);
+  });
 });
 
 describe("speakSequence", () => {

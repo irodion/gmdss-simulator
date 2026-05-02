@@ -50,10 +50,17 @@ function ensureVoiceReady(): Promise<void> {
   return voicesReadyPromise;
 }
 
-/** Speak a single phrase. Resolves when speech finishes or errors. */
-export async function speak(text: string, rate = 0.9): Promise<void> {
+/**
+ * Speak a single phrase. Resolves when speech finishes, errors, or is aborted.
+ * Pass an AbortSignal to cancel cooperatively — important during the
+ * voice-loading wait on the first call, when synth.cancel() alone has nothing
+ * to cancel and a quick Stop click would otherwise still let speech start.
+ */
+export async function speak(text: string, rate = 0.9, signal?: AbortSignal): Promise<void> {
   if (!isSupported() || text.trim() === "") return;
+  if (signal?.aborted) return;
   await ensureVoiceReady();
+  if (signal?.aborted) return;
 
   const synth = window.speechSynthesis;
   synth.cancel();
@@ -63,8 +70,14 @@ export async function speak(text: string, rate = 0.9): Promise<void> {
     if (cachedVoice) utter.voice = cachedVoice;
     utter.lang = cachedVoice?.lang ?? "en-US";
     utter.rate = rate;
-    utter.onend = () => resolve();
-    utter.onerror = () => resolve();
+    const onAbort = () => synth.cancel();
+    const finish = () => {
+      signal?.removeEventListener("abort", onAbort);
+      resolve();
+    };
+    utter.onend = finish;
+    utter.onerror = finish;
+    signal?.addEventListener("abort", onAbort, { once: true });
     synth.speak(utter);
   });
 }
