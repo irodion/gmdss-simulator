@@ -375,4 +375,102 @@ describe("gradeScenario", () => {
     expect(grade.passed).toBe(false);
     expect(grade.correctCount).toBe(0);
   });
+
+  test("empty student list yields score=0, passed=false, and full missing list", () => {
+    const tpl = template(DISTRESS_ITEMS);
+    const grade = gradeScenario(tpl, placementsMap([]));
+    expect(grade.correctCount).toBe(0);
+    expect(grade.total).toBe(DISTRESS_ITEMS.length);
+    expect(grade.score).toBe(0);
+    expect(grade.passed).toBe(false);
+    expect(grade.extraCount).toBe(0);
+    expect(grade.parts[0]?.placements).toHaveLength(0);
+    expect(grade.parts[0]?.missing).toHaveLength(DISTRESS_ITEMS.length);
+  });
+
+  test("forgotten middle step still scores surrounding items via LCS", () => {
+    const items: readonly SequenceItem[] = [
+      { id: "mayday", label: "MAYDAY" },
+      { id: "vessel", label: "Blue Duck" },
+      { id: "position", label: "32°05'N" },
+      { id: "nature", label: "Fire" },
+      { id: "over", label: "OVER" },
+    ];
+    const tpl = template(items);
+    // Student forgot the middle "position" step.
+    const placed: readonly SequenceItem[] = [
+      { id: "mayday", label: "MAYDAY" },
+      { id: "vessel", label: "Blue Duck" },
+      { id: "nature", label: "Fire" },
+      { id: "over", label: "OVER" },
+    ];
+    const grade = gradeScenario(tpl, placementsMap(placed));
+    expect(grade.correctCount).toBe(4);
+    expect(grade.parts[0]?.placements.every((p) => p.correct)).toBe(true);
+    expect(grade.parts[0]?.missing.map((m) => m.id)).toEqual(["position"]);
+    // 4/5 = 80% — at threshold.
+    expect(grade.score).toBeCloseTo(0.8, 5);
+    expect(grade.passed).toBe(true);
+  });
+
+  test("extra noise entries reduce score and are flagged as not correct", () => {
+    const items: readonly SequenceItem[] = [
+      { id: "mayday", label: "MAYDAY" },
+      { id: "vessel", label: "Blue Duck" },
+      { id: "over", label: "OVER" },
+    ];
+    const tpl = template(items);
+    // Student placed all correct items + 2 random extras.
+    const placed: readonly SequenceItem[] = [
+      { id: "mayday", label: "MAYDAY" },
+      { id: "position", label: "noise" },
+      { id: "vessel", label: "Blue Duck" },
+      { id: "nature", label: "noise" },
+      { id: "over", label: "OVER" },
+    ];
+    const grade = gradeScenario(tpl, placementsMap(placed));
+    expect(grade.correctCount).toBe(3);
+    expect(grade.extraCount).toBe(2);
+    // 3 / max(3, 5) = 0.6 — below threshold.
+    expect(grade.score).toBeCloseTo(0.6, 5);
+    expect(grade.passed).toBe(false);
+    const noise = grade.parts[0]?.placements.filter((p) => !p.correct) ?? [];
+    expect(noise).toHaveLength(2);
+    expect(noise.every((p) => p.expected === null)).toBe(true);
+  });
+
+  test("score boundary: just below 80% does not pass", () => {
+    const items: readonly SequenceItem[] = [
+      { id: "mayday", label: "MAYDAY" },
+      { id: "mayday", label: "MAYDAY" },
+      { id: "mayday", label: "MAYDAY" },
+      { id: "vessel", label: "v" },
+      { id: "over", label: "OVER" },
+    ];
+    const tpl = template(items);
+    // Only 3 of 5 correct → 60%.
+    const placed: readonly SequenceItem[] = [
+      { id: "mayday", label: "MAYDAY" },
+      { id: "mayday", label: "MAYDAY" },
+      { id: "mayday", label: "MAYDAY" },
+    ];
+    const grade = gradeScenario(tpl, placementsMap(placed));
+    expect(grade.correctCount).toBe(3);
+    expect(grade.score).toBeCloseTo(0.6, 5);
+    expect(grade.passed).toBe(false);
+  });
+
+  test("score at exactly 80% passes", () => {
+    const items: readonly SequenceItem[] = Array.from({ length: 10 }, () => ({
+      id: "mayday",
+      label: "MAYDAY",
+    }));
+    const tpl = template(items);
+    // 8 of 10 placed in order → 80%.
+    const placed: readonly SequenceItem[] = items.slice(0, 8);
+    const grade = gradeScenario(tpl, placementsMap(placed));
+    expect(grade.correctCount).toBe(8);
+    expect(grade.score).toBeCloseTo(0.8, 5);
+    expect(grade.passed).toBe(true);
+  });
 });

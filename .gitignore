@@ -32,6 +32,8 @@ test-results/
 .env
 .env.local
 
-# AI agent worktrees
+# AI agent worktrees and machine-local Claude state
 .claude/worktrees/
+.claude/scheduled_tasks.lock
+.claude/skills/
 docs/study_plan/
