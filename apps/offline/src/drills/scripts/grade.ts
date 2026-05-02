@@ -58,7 +58,8 @@ export function gradeScenario(
     for (let i = 0; i < part.items.length; i++) {
       const expected = part.items[i]!;
       const placed = placements[i]!;
-      const correct = placed.id === expected.id;
+      const correct =
+        placed.id === expected.id || (expected.acceptableIds?.includes(placed.id) ?? false);
       if (correct) correctCount++;
       total++;
       partResults.push({ placed, expected, correct });

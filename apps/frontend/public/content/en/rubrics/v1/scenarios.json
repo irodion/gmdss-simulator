@@ -27,7 +27,8 @@
         "nature": "Holed and sinking",
         "assistance": "I require immediate assistance",
         "persons": "4 persons on board",
-        "natureCode": "nature_flooding"
+        "natureCode": "nature_flooding",
+        "acceptableNatureCodes": ["nature_grounding"]
       }
     },
     {
@@ -42,7 +43,8 @@
         "nature": "Collided with another vessel and taking water",
         "assistance": "I require immediate assistance",
         "persons": "12 persons on board",
-        "natureCode": "nature_collision"
+        "natureCode": "nature_collision",
+        "acceptableNatureCodes": ["nature_flooding"]
       }
     },
     {
@@ -58,7 +60,8 @@
         "nature": "Fire out of control, abandoning ship",
         "assistance": "I require immediate assistance",
         "persons": "7 persons on board",
-        "natureCode": "nature_abandoning"
+        "natureCode": "nature_abandoning",
+        "acceptableNatureCodes": ["nature_fire"]
       }
     },
     {
@@ -74,7 +77,8 @@
         "nature": "Capsizing after grounding, abandoning ship",
         "assistance": "I require immediate assistance",
         "persons": "9 persons on board",
-        "natureCode": "nature_abandoning"
+        "natureCode": "nature_abandoning",
+        "acceptableNatureCodes": ["nature_flooding", "nature_listing", "nature_grounding"]
       }
     },
     {

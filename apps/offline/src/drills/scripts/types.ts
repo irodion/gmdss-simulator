@@ -71,6 +71,13 @@ export function isProcedureItem(id: string): boolean {
 export interface SequenceItem {
   readonly id: string;
   readonly label: string;
+  /**
+   * Alternate item ids that should also be accepted as correct in this slot.
+   * The slot's own `id` is implicitly always accepted; `acceptableIds` adds
+   * other defensible answers (e.g. multiple DSC nature codes that map to the
+   * same scenario). Empty/undefined ⇒ strict id equality.
+   */
+  readonly acceptableIds?: readonly string[];
 }
 
 export interface SequenceTemplatePart {
@@ -139,6 +146,12 @@ export interface ScenarioFacts {
   readonly addresseeRcc?: string;
   readonly actionRequest?: string;
   readonly natureCode?: NatureCode;
+  /**
+   * Additional DSC nature codes that should also be accepted for this scenario.
+   * The canonical `natureCode` is always accepted; `acceptableNatureCodes` lists
+   * other defensible picks. Pool decoys exclude every acceptable code.
+   */
+  readonly acceptableNatureCodes?: readonly NatureCode[];
 }
 
 export interface Scenario {

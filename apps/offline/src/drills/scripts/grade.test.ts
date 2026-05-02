@@ -223,4 +223,40 @@ describe("gradeScenario", () => {
     expect(grade.dimensions.find((d) => d.id === "body")!.status).toBe("pass");
     expect(grade.dimensions.find((d) => d.id === "ending")!.status).toBe("pass");
   });
+
+  test("any acceptableIds value is graded as correct in that slot", () => {
+    const items: readonly SequenceItem[] = [
+      { id: "mayday", label: "MAYDAY" },
+      {
+        id: "nature_abandoning",
+        label: "DSC: Abandoning",
+        acceptableIds: ["nature_flooding", "nature_listing"],
+      },
+      { id: "over", label: "OVER" },
+    ];
+    const tpl = template(items);
+    const placed: readonly SequenceItem[] = [
+      { id: "mayday", label: "MAYDAY" },
+      { id: "nature_listing", label: "DSC: Listing & Capsizing" },
+      { id: "over", label: "OVER" },
+    ];
+    const grade = gradeScenario(tpl, placementsMap(placed));
+    expect(grade.passed).toBe(true);
+    expect(grade.correctCount).toBe(3);
+  });
+
+  test("non-acceptable nature code in an acceptable slot is graded wrong", () => {
+    const items: readonly SequenceItem[] = [
+      {
+        id: "nature_abandoning",
+        label: "DSC: Abandoning",
+        acceptableIds: ["nature_flooding"],
+      },
+    ];
+    const tpl = template(items);
+    const placed: readonly SequenceItem[] = [{ id: "nature_fire", label: "DSC: Fire & Explosion" }];
+    const grade = gradeScenario(tpl, placementsMap(placed));
+    expect(grade.passed).toBe(false);
+    expect(grade.correctCount).toBe(0);
+  });
 });

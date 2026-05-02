@@ -54,16 +54,26 @@ const ITEM_TO_FACT_KEY = {
   action_request: "actionRequest",
 } as const satisfies Readonly<Record<string, keyof ScenarioFacts>>;
 
+type StringFactKey = (typeof ITEM_TO_FACT_KEY)[keyof typeof ITEM_TO_FACT_KEY];
+
 function factLabel(itemId: string, facts: ScenarioFacts, fallback: string): string {
-  const factKey = (ITEM_TO_FACT_KEY as Readonly<Record<string, keyof ScenarioFacts>>)[itemId];
+  const factKey = (ITEM_TO_FACT_KEY as Readonly<Record<string, StringFactKey>>)[itemId];
   if (!factKey) return fallback;
   return facts[factKey] ?? fallback;
+}
+
+function buildAcceptableNatureSet(facts: ScenarioFacts): readonly NatureCode[] {
+  if (!facts.natureCode) return [];
+  const extras = facts.acceptableNatureCodes ?? [];
+  const seen = new Set<NatureCode>([facts.natureCode, ...extras]);
+  return Array.from(seen);
 }
 
 function injectScenarioLabels(
   items: readonly { id: string; label: string }[],
   facts: ScenarioFacts,
   scenarioId: string,
+  acceptableNatureIds: readonly NatureCode[],
 ): SequenceItem[] {
   return items.map((item) => {
     if (item.id === DSC_NATURE_PLACEHOLDER_ID) {
@@ -71,7 +81,12 @@ function injectScenarioLabels(
       if (!code) {
         throw new Error(`Scenario ${scenarioId} uses dsc_nature slot but has no facts.natureCode`);
       }
-      return { id: code, label: NATURE_LABELS[code] };
+      const otherAcceptable = acceptableNatureIds.filter((c) => c !== code);
+      return {
+        id: code,
+        label: NATURE_LABELS[code],
+        ...(otherAcceptable.length > 0 ? { acceptableIds: otherAcceptable } : {}),
+      };
     }
     return {
       id: item.id,
@@ -89,10 +104,18 @@ function decoyOpening(priority: PriorityId): readonly SequenceItem[] {
   ];
 }
 
-function pickNatureDecoys(correct: NatureCode, count: number): readonly SequenceItem[] {
-  const candidates = NATURE_CODES.filter((code) => code !== correct);
+function pickNatureDecoys(
+  acceptable: readonly NatureCode[],
+  count: number,
+): readonly SequenceItem[] {
+  const exclude = new Set<NatureCode>(acceptable);
+  const candidates = NATURE_CODES.filter((code) => !exclude.has(code));
   const shuffled = shuffle(candidates);
   return shuffled.slice(0, count).map((code) => ({ id: code, label: NATURE_LABELS[code] }));
+}
+
+function natureChip(code: NatureCode): SequenceItem {
+  return { id: code, label: NATURE_LABELS[code] };
 }
 
 function shuffle<T>(arr: readonly T[]): T[] {
@@ -119,9 +142,15 @@ export function materializeScenario(
   const hasNatureSlot = rubric.sequenceParts.some((part) =>
     part.items.some((item) => item.id === DSC_NATURE_PLACEHOLDER_ID),
   );
+  const acceptableNatureIds = hasNatureSlot ? buildAcceptableNatureSet(scenario.facts) : [];
 
   const parts: SequenceTemplatePart[] = rubric.sequenceParts.map((part, partIndex) => {
-    const items = injectScenarioLabels(part.items, scenario.facts, scenario.id);
+    const items = injectScenarioLabels(
+      part.items,
+      scenario.facts,
+      scenario.id,
+      acceptableNatureIds,
+    );
     const isLast = partIndex === (rubric.sequenceParts?.length ?? 0) - 1;
     if (isLast && scenario.requiresAbandon) {
       return { id: part.id, label: part.label, items: [...items, IN_RAFT_ITEM] };
@@ -133,11 +162,20 @@ export function materializeScenario(
   const priorityDecoys = PRIORITY_IDS.filter((p) => p !== scenario.priority).flatMap((p) =>
     decoyOpening(p),
   );
+  // Pool gets every acceptable nature chip (canonical is already in correctItems via the
+  // dsc_nature slot; the rest are added here so the student can actually pick them) plus
+  // NATURE_DECOY_COUNT random distractors drawn from natures NOT in the acceptable set.
+  const extraAcceptableChips = acceptableNatureIds
+    .filter((code) => code !== scenario.facts.natureCode)
+    .map(natureChip);
   const natureDecoys =
-    hasNatureSlot && scenario.facts.natureCode
-      ? pickNatureDecoys(scenario.facts.natureCode, NATURE_DECOY_COUNT)
-      : [];
-  const pool = shuffle([...correctItems, ...priorityDecoys, ...natureDecoys]);
+    acceptableNatureIds.length > 0 ? pickNatureDecoys(acceptableNatureIds, NATURE_DECOY_COUNT) : [];
+  const pool = shuffle([
+    ...correctItems,
+    ...priorityDecoys,
+    ...extraAcceptableChips,
+    ...natureDecoys,
+  ]);
 
   const heading = parts[0]?.label ?? rubric.id;
   return {

@@ -263,6 +263,62 @@ describe("materializeScenario", () => {
     expect(new Set(decoys.map((i) => i.id)).size).toBe(4);
   });
 
+  test("acceptable nature codes are stamped on dsc_nature slot and added as pool chips", () => {
+    const aurora: Scenario = {
+      ...DISTRESS_SCENARIO,
+      id: "abandon-aurora",
+      requiresAbandon: true,
+      facts: {
+        ...DISTRESS_SCENARIO.facts,
+        natureCode: "nature_abandoning",
+        acceptableNatureCodes: ["nature_flooding", "nature_listing", "nature_grounding"],
+      },
+    };
+    const template = materializeScenario(aurora, RUBRICS);
+    const natureSlot = template.parts[0]!.items[3]!;
+    expect(natureSlot.id).toBe("nature_abandoning");
+    expect(natureSlot.acceptableIds).toEqual([
+      "nature_flooding",
+      "nature_listing",
+      "nature_grounding",
+    ]);
+    // All acceptable chips are pickable from the pool (canonical via correctItems,
+    // others as extras), so the student can land on any one.
+    for (const code of [
+      "nature_abandoning",
+      "nature_flooding",
+      "nature_listing",
+      "nature_grounding",
+    ]) {
+      expect(template.pool.filter((i) => i.id === code)).toHaveLength(1);
+    }
+  });
+
+  test("nature decoys exclude every acceptable code, not just the canonical one", () => {
+    const aurora: Scenario = {
+      ...DISTRESS_SCENARIO,
+      id: "abandon-aurora-decoy-check",
+      facts: {
+        ...DISTRESS_SCENARIO.facts,
+        natureCode: "nature_abandoning",
+        acceptableNatureCodes: ["nature_flooding", "nature_listing", "nature_grounding"],
+      },
+    };
+    const template = materializeScenario(aurora, RUBRICS);
+    const acceptable = new Set([
+      "nature_abandoning",
+      "nature_flooding",
+      "nature_listing",
+      "nature_grounding",
+    ]);
+    const natureChips = template.pool.filter((i) => isNatureItem(i.id));
+    // Total = 4 acceptable (1 canonical + 3 extras) + 4 distractors = 8.
+    expect(natureChips).toHaveLength(8);
+    const decoys = natureChips.filter((i) => !acceptable.has(i.id));
+    expect(decoys).toHaveLength(4);
+    expect(new Set(decoys.map((i) => i.id)).size).toBe(4);
+  });
+
   test("does not add nature decoys when rubric has no dsc_nature slot, even if facts.natureCode is set", () => {
     const sartScenario: Scenario = {
       id: "sart-with-stray-nature-code",
