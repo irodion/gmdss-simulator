@@ -45,7 +45,7 @@ export const NATURE_LABELS: Readonly<Record<NatureCode, string>> = {
   nature_grounding: "DSC: Grounding",
   nature_piracy: "DSC: Piracy",
   nature_abandoning: "DSC: Abandoning",
-  nature_mob: "DSC: Man over board",
+  nature_mob: "DSC: Man overboard",
 };
 
 export function isNatureItem(id: string): id is NatureCode {

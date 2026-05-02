@@ -116,6 +116,10 @@ export function materializeScenario(
     throw new Error(`Rubric ${rubric.id} has no sequenceParts`);
   }
 
+  const hasNatureSlot = rubric.sequenceParts.some((part) =>
+    part.items.some((item) => item.id === DSC_NATURE_PLACEHOLDER_ID),
+  );
+
   const parts: SequenceTemplatePart[] = rubric.sequenceParts.map((part, partIndex) => {
     const items = injectScenarioLabels(part.items, scenario.facts, scenario.id);
     const isLast = partIndex === (rubric.sequenceParts?.length ?? 0) - 1;
@@ -129,9 +133,10 @@ export function materializeScenario(
   const priorityDecoys = PRIORITY_IDS.filter((p) => p !== scenario.priority).flatMap((p) =>
     decoyOpening(p),
   );
-  const natureDecoys = scenario.facts.natureCode
-    ? pickNatureDecoys(scenario.facts.natureCode, NATURE_DECOY_COUNT)
-    : [];
+  const natureDecoys =
+    hasNatureSlot && scenario.facts.natureCode
+      ? pickNatureDecoys(scenario.facts.natureCode, NATURE_DECOY_COUNT)
+      : [];
   const pool = shuffle([...correctItems, ...priorityDecoys, ...natureDecoys]);
 
   const heading = parts[0]?.label ?? rubric.id;

@@ -263,6 +263,24 @@ describe("materializeScenario", () => {
     expect(new Set(decoys.map((i) => i.id)).size).toBe(4);
   });
 
+  test("does not add nature decoys when rubric has no dsc_nature slot, even if facts.natureCode is set", () => {
+    const sartScenario: Scenario = {
+      id: "sart-with-stray-nature-code",
+      priority: "mayday",
+      rubricId: "v1/distress-sart",
+      brief: "SART activated.",
+      facts: {
+        vessel: "Albatross life raft",
+        sartAddressee: "Ship who received my Radar SART",
+        assistance: "Require immediate assistance",
+        persons: "4 persons on board",
+        natureCode: "nature_fire",
+      },
+    };
+    const template = materializeScenario(sartScenario, RUBRICS);
+    expect(template.pool.filter((i) => isNatureItem(i.id))).toHaveLength(0);
+  });
+
   test("throws when v1/distress scenario is missing facts.natureCode", () => {
     const broken: Scenario = {
       id: "broken",

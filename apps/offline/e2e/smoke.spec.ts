@@ -80,13 +80,18 @@ test("Procedures MAYDAY drill shows the procedure pool group with at least 20 sl
 
   const startTile = page.getByRole("button", { name: /scenario reconstruction drill/i });
   const back = page.getByRole("button", { name: /^← Procedures$/ });
+  const scenarioSection = page.getByLabel("Scenario").first();
   const procedurePool = page.getByLabel("Procedure actions");
 
   await startTile.click();
 
   // The Procedure pool group only appears for v1/distress MAYDAY scenarios.
   // Cycle through scenarios via Back → start until we hit one (cap at 20 attempts).
+  // Wait for the Scenario section to mount before checking procedurePool, otherwise
+  // a non-retrying isVisible() can race with React commits and silently skip a valid
+  // scenario.
   for (let attempt = 0; attempt < 20; attempt++) {
+    await scenarioSection.waitFor({ state: "visible" });
     if (await procedurePool.isVisible()) break;
     await back.click();
     await startTile.click();
