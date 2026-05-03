@@ -22,7 +22,9 @@ export function ScenarioBriefing({ scenario }: ScenarioBriefingProps) {
       .replace(/\{\{position\}\}/g, scenario.vessel.position ?? "")
       .replace(/\{\{channel\}\}/g, String(scenario.requiredChannel))
       .replace(/\{\{course\}\}/g, "180")
-      .replace(/\{\{speed\}\}/g, "8");
+      .replace(/\{\{speed\}\}/g, "8")
+      .replace(/\{\{mmsi\}\}/g, scenario.vessel.mmsi ?? "")
+      .replace(/\{\{personsOnBoard\}\}/g, String(scenario.vessel.personsOnBoard ?? ""));
   }
 
   return (
@@ -34,6 +36,7 @@ export function ScenarioBriefing({ scenario }: ScenarioBriefingProps) {
         <p className="sim-scenario-meta">
           {scenario.vessel.name}
           {scenario.vessel.callsign ? ` / Callsign ${scenario.vessel.callsign}` : ""}
+          {scenario.vessel.mmsi ? ` / MMSI ${scenario.vessel.mmsi}` : ""}
         </p>
         {scenario.vessel.position && (
           <p className="sim-scenario-row">

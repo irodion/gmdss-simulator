@@ -433,6 +433,20 @@ describe("resolveRubricTemplates", () => {
     expect(callsignField.patterns[0]).toBe("5\\s*B\\s*C\\s*D\\s*2");
   });
 
+  it("substitutes {{mmsi}} with spaced regex so STT digit grouping matches", () => {
+    const rubric: RubricDefinition = {
+      ...TEMPLATE_RUBRIC,
+      requiredFields: [
+        { id: "mmsi", label: "Vessel MMSI", patterns: ["{{mmsi}}"], required: true },
+      ],
+      sequenceRules: { fieldOrder: ["mmsi"] },
+    };
+    const resolved = resolveRubricTemplates(rubric, { mmsi: "211239680" });
+    const mmsiField = resolved.requiredFields.find((f) => f.id === "mmsi")!;
+    expect(mmsiField.patterns[0]).toBe("2\\s*1\\s*1\\s*2\\s*3\\s*9\\s*6\\s*8\\s*0");
+    expect(new RegExp(mmsiField.patterns[0]!).test("211 239 680")).toBe(true);
+  });
+
   it("leaves patterns without templates unchanged", () => {
     const resolved = resolveRubricTemplates(TEMPLATE_RUBRIC, { callsign: "5BCD2" });
     const stationField = resolved.requiredFields.find((f) => f.id === "station")!;
