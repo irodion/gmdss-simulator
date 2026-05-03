@@ -23,7 +23,8 @@ export function ScenarioBriefing({ scenario }: ScenarioBriefingProps) {
       .replace(/\{\{channel\}\}/g, String(scenario.requiredChannel))
       .replace(/\{\{course\}\}/g, "180")
       .replace(/\{\{speed\}\}/g, "8")
-      .replace(/\{\{mmsi\}\}/g, scenario.vessel.mmsi ?? "");
+      .replace(/\{\{mmsi\}\}/g, scenario.vessel.mmsi ?? "")
+      .replace(/\{\{personsOnBoard\}\}/g, String(scenario.vessel.personsOnBoard ?? ""));
   }
 
   return (
