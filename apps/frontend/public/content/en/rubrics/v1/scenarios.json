@@ -214,10 +214,10 @@
       "id": "distress-rcc-response-haifa-sea-otter",
       "priority": "mayday",
       "rubricId": "v1/distress-rcc-response",
-      "brief": "Haifa Rescue Coordination Centre acknowledged your earlier MAYDAY. Respond to RCC and request fast vessels to evacuate your crew. You are sailboat Sea Otter.",
+      "brief": "RCC Haifa acknowledged your earlier MAYDAY. Respond to RCC and request fast vessels to evacuate your crew. You are sailboat Sea Otter.",
       "facts": {
         "vessel": "Sea Otter",
-        "addresseeRcc": "Haifa Rescue Coordination Centre",
+        "addresseeRcc": "RCC Haifa",
         "actionRequest": "Send fast ships to the distress area to evacuate the crew"
       }
     }

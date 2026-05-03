@@ -532,7 +532,7 @@ describe("materializeScenario", () => {
       brief: "Respond to RCC.",
       facts: {
         vessel: "Sea Otter",
-        addresseeRcc: "Haifa Rescue Coordination Centre",
+        addresseeRcc: "RCC Haifa",
         actionRequest: "Send fast ships to the distress area to evacuate the crew",
       },
     };
@@ -540,9 +540,7 @@ describe("materializeScenario", () => {
     expect(template.parts[0]!.items).toHaveLength(6);
     const items = template.parts[0]!.items;
     expect(items.filter((i) => i.id === "mayday")).toHaveLength(1);
-    expect(items.find((i) => i.id === "addressee_rcc")!.label).toBe(
-      "Haifa Rescue Coordination Centre",
-    );
+    expect(items.find((i) => i.id === "addressee_rcc")!.label).toBe("RCC Haifa");
     expect(items.filter((i) => i.id === "vessel").every((i) => i.label === "Sea Otter")).toBe(true);
     expect(items.find((i) => i.id === "action_request")!.label).toBe(
       "Send fast ships to the distress area to evacuate the crew",
