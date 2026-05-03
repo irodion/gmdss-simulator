@@ -176,7 +176,10 @@ export function SimulatorPage() {
         try {
           const cr = await fetchRubric(scenario.closingRubricId);
           setClosingRubric(
-            resolveRubricTemplates(cr, { callsign: scenario.vessel.callsign ?? "" }),
+            resolveRubricTemplates(cr, {
+              callsign: scenario.vessel.callsign ?? "",
+              mmsi: scenario.vessel.mmsi ?? "",
+            }),
           );
         } catch (err) {
           console.error("Failed to load closing rubric:", scenario.closingRubricId, err);

@@ -7,7 +7,7 @@
       "brief": "You are MV Blue Duck. Engine room fire is out of control. 6 persons on board, position 32°05'N 034°45'E. Ship is in immediate danger.",
       "facts": {
         "vessel": "Blue Duck",
-        "callsign": "5BCD2",
+        "callsign": "MMSI 211 239 680",
         "position": "32°05'N 034°45'E",
         "nature": "On fire, fire spreading",
         "assistance": "I require immediate assistance",
@@ -55,7 +55,7 @@
       "brief": "You are MV River Hawk. Engine-room fire has spread to the bridge and is uncontrollable. 7 persons on board, position 32°25'N 034°48'E. Make the MAYDAY call — you must abandon ship to the liferaft immediately after.",
       "facts": {
         "vessel": "River Hawk",
-        "callsign": "5RHK3",
+        "callsign": "MMSI 211 222 110",
         "position": "32°25'N 034°48'E",
         "nature": "Fire out of control, abandoning ship",
         "assistance": "I require immediate assistance",
@@ -88,7 +88,7 @@
       "brief": "You are SY Red Fox. Engine has failed, drifting toward a traffic separation scheme. Not in immediate danger, but need a tow. 3 persons on board, position 32°15'N 034°40'E.",
       "facts": {
         "vessel": "Red Fox",
-        "callsign": "5RFX1",
+        "callsign": "MMSI 211 888 040",
         "position": "32°15'N 034°40'E",
         "nature": "Engine failure, drifting toward TSS",
         "assistance": "I require a tow"
@@ -146,7 +146,7 @@
       "brief": "You are MV Silver Arrow. Lost steering, vessel manoeuvring with difficulty in busy shipping lane. Position 32°30'N 034°55'E.",
       "facts": {
         "vessel": "Silver Arrow",
-        "callsign": "5SVA2",
+        "callsign": "MMSI 211 999 050",
         "position": "32°30'N 034°55'E",
         "nature": "Lost steering, manoeuvring with difficulty",
         "assistance": "Request other vessels to keep clear"

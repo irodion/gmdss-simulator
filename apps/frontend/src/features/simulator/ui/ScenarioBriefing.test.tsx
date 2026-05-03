@@ -25,9 +25,9 @@ describe("ScenarioBriefing", () => {
     expect(screen.getByText("Radio Check")).not.toBeNull();
   });
 
-  test("displays vessel info", () => {
+  test("displays vessel info including MMSI", () => {
     render(<ScenarioBriefing scenario={MOCK_SCENARIO} />);
-    expect(screen.getByText(/BLUE DUCK.*5BCD2/)).not.toBeNull();
+    expect(screen.getByText(/BLUE DUCK.*5BCD2.*211239680/)).not.toBeNull();
   });
 
   test("displays task", () => {

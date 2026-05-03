@@ -39,9 +39,9 @@
     "State RADIO CHECK and the channel number",
     "End with OVER to invite a response",
     "In your closing reply, say the station name",
-    "Say THIS IS followed by your callsign twice",
+    "Say THIS IS followed by your MMSI twice",
     "Say ROGER to acknowledge",
     "Say NOTHING ELSE FOR YOU, OUT"
   ],
-  "closingScriptReference": "{{stationName}}, THIS IS {{callsign}} {{callsign}}, ROGER, NOTHING ELSE FOR YOU, OUT"
+  "closingScriptReference": "{{stationName}}, THIS IS {{mmsi}} {{mmsi}}, ROGER, NOTHING ELSE FOR YOU, OUT"
 }

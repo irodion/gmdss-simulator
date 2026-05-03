@@ -17,8 +17,8 @@
     },
     {
       "id": "callsign",
-      "label": "Vessel callsign (twice)",
-      "patterns": ["{{callsign}}\\W+{{callsign}}"],
+      "label": "Vessel MMSI (twice)",
+      "patterns": ["{{mmsi}}\\W+{{mmsi}}"],
       "required": true
     },
     {

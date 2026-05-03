@@ -388,13 +388,13 @@ function escapeRegExp(s: string): string {
   return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
-function callsignToSpacedRegex(value: string): string {
+function toSpacedRegex(value: string): string {
   return value.split("").map(escapeRegExp).join("\\s*");
 }
 
 /**
  * Replace `{{key}}` placeholders in rubric patterns with regex-safe values.
- * For `callsign` keys, inserts `\s*` between characters to tolerate STT spacing.
+ * For `callsign` and `mmsi` keys, inserts `\s*` between characters to tolerate STT spacing.
  */
 export function resolveRubricTemplates(
   rubric: RubricDefinition,
@@ -408,7 +408,7 @@ export function resolveRubricTemplates(
       // Fail closed: an empty/missing value becomes a never-matching fragment
       // instead of "", which would make the surrounding regex match anything.
       if (value == null || value === "") return "(?!)";
-      if (key === "callsign") return callsignToSpacedRegex(value);
+      if (key === "callsign" || key === "mmsi") return toSpacedRegex(value);
       return escapeRegExp(value);
     });
   }
