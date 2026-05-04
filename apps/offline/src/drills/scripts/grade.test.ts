@@ -165,7 +165,7 @@ describe("gradeScenario", () => {
       { id: "dsc_time_location", label: "DSC: confirm time and location" },
       { id: "nature_fire", label: "DSC: Fire & Explosion" },
       { id: "dsc_button", label: "DSC: press distress button 5 sec" },
-      { id: "dsc_channel16", label: "DSC: Channel 16, High" },
+      { id: "dsc_channel16", label: "Radio: Channel 16, High" },
       ...DISTRESS_ITEMS,
     ];
     const tpl = template(items);
@@ -188,7 +188,7 @@ describe("gradeScenario", () => {
       { id: "dsc_time_location", label: "DSC: confirm time and location" },
       { id: "nature_abandoning", label: "DSC: Abandoning" },
       { id: "dsc_button", label: "DSC: press distress button 5 sec" },
-      { id: "dsc_channel16", label: "DSC: Channel 16, High" },
+      { id: "dsc_channel16", label: "Radio: Channel 16, High" },
       ...DISTRESS_ITEMS,
       { id: "in_raft", label: "In raft: EPIRB, SART, portable VHF" },
     ];
@@ -207,7 +207,7 @@ describe("gradeScenario", () => {
       { id: "dsc_time_location", label: "DSC: confirm time and location" },
       { id: "nature_fire", label: "DSC: Fire & Explosion" },
       { id: "dsc_button", label: "DSC: press distress button 5 sec" },
-      { id: "dsc_channel16", label: "DSC: Channel 16, High" },
+      { id: "dsc_channel16", label: "Radio: Channel 16, High" },
       ...DISTRESS_ITEMS,
     ];
     const tpl = template(correct);
@@ -254,7 +254,7 @@ describe("gradeScenario", () => {
       { id: "dsc_addressee_all_stations", label: "DSC: addressee All Stations" },
       { id: "dsc_time_position", label: "DSC: confirm time and position" },
       { id: "dsc_send_urgency", label: "DSC: send urgency alert" },
-      { id: "dsc_channel16", label: "DSC: Channel 16, High" },
+      { id: "dsc_channel16", label: "Radio: Channel 16, High" },
       { id: "pan_pan", label: "PAN-PAN" },
       { id: "pan_pan", label: "PAN-PAN" },
       { id: "pan_pan", label: "PAN-PAN" },
