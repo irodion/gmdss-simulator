@@ -65,7 +65,7 @@
         { "id": "dsc_addressee_all_stations", "label": "DSC: All Ships call" },
         { "id": "dsc_time_position", "label": "DSC: confirm time and position" },
         { "id": "dsc_send_urgency", "label": "DSC: send urgency alert" },
-        { "id": "dsc_channel16", "label": "DSC: Channel 16, High" },
+        { "id": "dsc_channel16", "label": "Radio: Channel 16, High" },
         { "id": "pan_pan", "label": "PAN-PAN" },
         { "id": "pan_pan", "label": "PAN-PAN" },
         { "id": "pan_pan", "label": "PAN-PAN" },
