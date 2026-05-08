@@ -5,8 +5,14 @@ import {
   recordAbbreviationAttempt,
   type AbbrAttemptEvent,
 } from "./abbreviation-stats.ts";
+import {
+  abbreviationAtomId,
+  LEARNING_EVENTS_KEY,
+  readEvents,
+  recordLearningEvent,
+} from "./learning-events.ts";
 
-const STORAGE_KEY = "roc-trainer:abbreviation-stats";
+const LEGACY_KEY = "roc-trainer:abbreviation-stats";
 
 function ev(over: Partial<AbbrAttemptEvent> = {}): AbbrAttemptEvent {
   return {
@@ -43,31 +49,22 @@ describe("recordAbbreviationAttempt + getAbbreviationAggregates", () => {
     expect(getAbbreviationAggregates()).toEqual([]);
   });
 
-  test("clearAbbreviationStats wipes the store", () => {
+  test("writes go to the unified learning-events store, not the legacy key", () => {
     recordAbbreviationAttempt(ev());
-    clearAbbreviationStats();
-    expect(getAbbreviationAggregates()).toEqual([]);
+    expect(window.localStorage.getItem(LEGACY_KEY)).toBeNull();
+    expect(readEvents()).toHaveLength(1);
   });
 
-  test("FIFO-caps at 500 events", () => {
-    for (let i = 0; i < 600; i++) {
-      recordAbbreviationAttempt(ev({ ts: i }));
-    }
-    const aggs = getAbbreviationAggregates();
-    expect(aggs).toHaveLength(1);
-    expect(aggs[0]!.attempts).toBe(500);
-  });
-
-  test("survives JSON corruption gracefully", () => {
-    window.localStorage.setItem(STORAGE_KEY, "{not json");
+  test("survives JSON corruption in the legacy store", () => {
+    window.localStorage.setItem(LEGACY_KEY, "{not json");
     expect(getAbbreviationAggregates()).toEqual([]);
     recordAbbreviationAttempt(ev());
     expect(getAbbreviationAggregates()).toHaveLength(1);
   });
 
-  test("filters out malformed entries", () => {
+  test("filters out malformed entries from the legacy store", () => {
     window.localStorage.setItem(
-      STORAGE_KEY,
+      LEGACY_KEY,
       JSON.stringify([ev(), null, "string", 42, { abbr: "X" }, { ...ev(), direction: "bogus" }]),
     );
     const aggs = getAbbreviationAggregates();
@@ -89,5 +86,82 @@ describe("recordAbbreviationAttempt + getAbbreviationAggregates", () => {
     recordAbbreviationAttempt(ev({ ts: 200 }));
     const agg = getAbbreviationAggregates().find((a) => a.abbr === "MRCC");
     expect(agg!.lastTs).toBe(300);
+  });
+});
+
+describe("legacy + unified merge", () => {
+  test("legacy events still surface in aggregates after migration", () => {
+    const legacy: AbbrAttemptEvent[] = [
+      { abbr: "DSC", direction: "abbr-to-expansion", correct: true, ts: 100 },
+      { abbr: "DSC", direction: "abbr-to-expansion", correct: false, ts: 200 },
+    ];
+    window.localStorage.setItem(LEGACY_KEY, JSON.stringify(legacy));
+
+    const aggs = getAbbreviationAggregates();
+    expect(aggs).toHaveLength(1);
+    expect(aggs[0]).toMatchObject({ abbr: "DSC", attempts: 2, correct: 1 });
+  });
+
+  test("aggregates merge legacy and unified events for the same abbr", () => {
+    window.localStorage.setItem(
+      LEGACY_KEY,
+      JSON.stringify([{ abbr: "DSC", direction: "abbr-to-expansion", correct: true, ts: 100 }]),
+    );
+    recordAbbreviationAttempt({
+      abbr: "DSC",
+      direction: "abbr-to-expansion",
+      correct: false,
+      ts: 200,
+    });
+
+    const aggs = getAbbreviationAggregates();
+    expect(aggs).toHaveLength(1);
+    expect(aggs[0]).toMatchObject({ abbr: "DSC", attempts: 2, correct: 1, pctCorrect: 50 });
+  });
+
+  test("events written via recordLearningEvent surface in aggregates", () => {
+    recordLearningEvent({
+      v: 1,
+      atomId: abbreviationAtomId("EPIRB", "expansion-to-abbr"),
+      mode: "abbreviation",
+      correct: true,
+      ts: 500,
+      meta: { direction: "expansion-to-abbr" },
+    });
+    const agg = getAbbreviationAggregates().find((a) => a.abbr === "EPIRB");
+    expect(agg).toMatchObject({ attempts: 1, correct: 1 });
+  });
+
+  test("clearAbbreviationStats wipes both legacy and unified abbreviation events", () => {
+    window.localStorage.setItem(
+      LEGACY_KEY,
+      JSON.stringify([{ abbr: "DSC", direction: "abbr-to-expansion", correct: true, ts: 100 }]),
+    );
+    recordAbbreviationAttempt(ev());
+
+    clearAbbreviationStats();
+
+    expect(getAbbreviationAggregates()).toEqual([]);
+    expect(window.localStorage.getItem(LEGACY_KEY)).toBeNull();
+    expect(readEvents().filter((e) => e.mode === "abbreviation")).toEqual([]);
+  });
+
+  test("clear preserves events of other modes", () => {
+    recordLearningEvent({
+      v: 1,
+      atomId: "phon:A",
+      mode: "phonetic",
+      correct: true,
+      ts: 100,
+    });
+    recordAbbreviationAttempt(ev());
+
+    clearAbbreviationStats();
+
+    const remaining = readEvents();
+    expect(remaining).toHaveLength(1);
+    expect(remaining[0]!.mode).toBe("phonetic");
+    // unified store key untouched
+    expect(window.localStorage.getItem(LEARNING_EVENTS_KEY)).not.toBeNull();
   });
 });

@@ -2,13 +2,14 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { loadScriptDrillContent } from "../drills/scripts/content-loader.ts";
 import { materializeScenario } from "../drills/scripts/materialize.ts";
 import { recordAttempt } from "../drills/scripts/stats.ts";
-import type {
-  DimensionId,
-  Scenario,
-  ScenarioBank,
-  ScriptDrillContent,
-  SequenceGrade,
-  SequenceTemplate,
+import {
+  SCENARIO_STATS_KEY,
+  type DimensionId,
+  type Scenario,
+  type ScenarioBank,
+  type ScriptDrillContent,
+  type SequenceGrade,
+  type SequenceTemplate,
 } from "../drills/scripts/types.ts";
 import { ProceduresHome } from "./ProceduresHome.tsx";
 import { SequenceCard } from "./SequenceCard.tsx";
@@ -21,8 +22,6 @@ type View =
       template: SequenceTemplate;
       round: number;
     };
-
-const SCENARIO_STATS_KEY = "v1/scenarios";
 
 export function ProceduresPanel() {
   const [content, setContent] = useState<ScriptDrillContent | null>(null);

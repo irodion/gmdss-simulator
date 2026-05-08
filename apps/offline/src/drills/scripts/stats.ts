@@ -1,4 +1,17 @@
-import type { DimensionId, GradeEvent, ScriptDrillMode } from "./types.ts";
+import {
+  clearLearningEventsForMode,
+  procedureAtomId,
+  readEvents,
+  recordLearningEvents,
+  safeReadJsonArray,
+  type LearningEvent,
+} from "../learning-events.ts";
+import {
+  SCENARIO_STATS_KEY,
+  type DimensionId,
+  type GradeEvent,
+  type ScriptDrillMode,
+} from "./types.ts";
 
 type StoredMode = ScriptDrillMode | "structural";
 
@@ -12,8 +25,7 @@ interface StoredEvent {
   readonly dimensionPasses?: Readonly<Record<DimensionId, boolean>>;
 }
 
-const STORAGE_KEY = "roc-trainer:procedure-stats";
-const MAX_EVENTS = 200;
+const LEGACY_KEY = "roc-trainer:procedure-stats";
 
 export interface StatsAggregate {
   readonly mode: ScriptDrillMode;
@@ -30,6 +42,13 @@ const KNOWN_DIMENSIONS: readonly DimensionId[] = [
   "ending",
   "procedure",
 ];
+
+/**
+ * Synthetic dimension key used when an attempt has no dimensionPasses to fan
+ * out. Carries the scenario-level pass through to the unified store. Filter
+ * this value out when computing per-dimension queue signal in later PRs.
+ */
+const ATTEMPT_DIMENSION = "_attempt";
 
 function isDimensionPasses(value: unknown): value is Record<DimensionId, boolean> {
   if (value === null || typeof value !== "object") return false;
@@ -60,58 +79,113 @@ function isStoredEvent(value: unknown): value is StoredEvent {
   return true;
 }
 
-function safeRead(): StoredEvent[] {
-  try {
-    const raw = window.localStorage.getItem(STORAGE_KEY);
-    if (!raw) return [];
-    const parsed = JSON.parse(raw) as unknown;
-    if (!Array.isArray(parsed)) return [];
-    return parsed.filter(isStoredEvent);
-  } catch {
-    return [];
-  }
+function readLegacy(): StoredEvent[] {
+  return safeReadJsonArray(LEGACY_KEY, isStoredEvent);
 }
 
-function safeWrite(events: readonly StoredEvent[]): void {
-  try {
-    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(events));
-  } catch {
-    // Safari private mode and quota errors are silently dropped — stats are not load-bearing.
-  }
+function newAttemptId(ts: number): string {
+  return `${ts}-${Math.random().toString(36).slice(2, 10)}`;
 }
 
 export function recordAttempt(event: GradeEvent): void {
-  const events = safeRead();
-  events.push(event as StoredEvent);
-  const trimmed = events.length > MAX_EVENTS ? events.slice(-MAX_EVENTS) : events;
-  safeWrite(trimmed);
-}
+  const dimensionPasses = event.dimensionPasses;
+  const attemptId = newAttemptId(event.ts);
+  const batch: LearningEvent[] = [];
 
-export function clearStats(): void {
-  safeWrite([]);
-}
-
-export function getAggregates(): StatsAggregate[] {
-  const events = safeRead().filter((e) => e.mode === "scenario");
-  const grouped = new Map<string, { mode: ScriptDrillMode; key: string; events: StoredEvent[] }>();
-  for (const ev of events) {
-    const groupKey = `${ev.mode}:${ev.key}`;
-    const existing = grouped.get(groupKey);
-    if (existing) {
-      existing.events.push(ev);
-    } else {
-      grouped.set(groupKey, {
-        mode: ev.mode as ScriptDrillMode,
-        key: ev.key,
-        events: [ev],
+  if (dimensionPasses) {
+    for (const dim of KNOWN_DIMENSIONS) {
+      const passed = dimensionPasses[dim];
+      if (typeof passed !== "boolean") continue;
+      batch.push({
+        v: 1,
+        atomId: procedureAtomId(event.rubricId, dim),
+        mode: "procedures",
+        correct: passed,
+        ts: event.ts,
+        meta: {
+          rubricId: event.rubricId,
+          ...(event.scenarioId !== undefined ? { scenarioId: event.scenarioId } : {}),
+          attemptId,
+          scenarioPassed: event.correct,
+        },
       });
     }
   }
-  return Array.from(grouped.values()).map(({ mode, key, events: evs }) => {
+
+  if (batch.length === 0) {
+    batch.push({
+      v: 1,
+      atomId: procedureAtomId(event.rubricId, ATTEMPT_DIMENSION),
+      mode: "procedures",
+      correct: event.correct,
+      ts: event.ts,
+      meta: {
+        rubricId: event.rubricId,
+        ...(event.scenarioId !== undefined ? { scenarioId: event.scenarioId } : {}),
+        attemptId,
+        scenarioPassed: event.correct,
+      },
+    });
+  }
+
+  recordLearningEvents(batch);
+}
+
+export function clearStats(): void {
+  try {
+    window.localStorage.removeItem(LEGACY_KEY);
+  } catch {
+    /* private mode / quota — stats are not load-bearing */
+  }
+  clearLearningEventsForMode("procedures");
+}
+
+interface AttemptBucket {
+  readonly mode: ScriptDrillMode;
+  readonly key: string;
+  readonly correct: boolean;
+}
+
+function legacyBuckets(events: readonly StoredEvent[]): AttemptBucket[] {
+  return events
+    .filter((e) => e.mode === "scenario")
+    .map((e) => ({ mode: "scenario" as ScriptDrillMode, key: e.key, correct: e.correct }));
+}
+
+function unifiedBuckets(events: readonly LearningEvent[]): AttemptBucket[] {
+  // One scenario attempt becomes multiple per-dimension events. Group them by
+  // attemptId — a stable id minted once per recordAttempt call.
+  const seen = new Set<string>();
+  const out: AttemptBucket[] = [];
+  for (const ev of events) {
+    if (ev.mode !== "procedures") continue;
+    const passed = ev.meta?.scenarioPassed;
+    if (typeof passed !== "boolean") continue;
+    const dedupeKey = ev.meta?.attemptId ?? `_anon|${ev.ts}`;
+    if (seen.has(dedupeKey)) continue;
+    seen.add(dedupeKey);
+    // The legacy `key` was the StatsKey passed by ProceduresPanel
+    // ("v1/scenarios"). It's not on the unified event — ProceduresHome reads
+    // aggregates by the legacy key, so reconstruct it from a stable constant.
+    out.push({ mode: "scenario", key: SCENARIO_STATS_KEY, correct: passed });
+  }
+  return out;
+}
+
+export function getAggregates(): StatsAggregate[] {
+  const buckets = [...legacyBuckets(readLegacy()), ...unifiedBuckets(readEvents())];
+  const grouped = new Map<string, AttemptBucket[]>();
+  for (const b of buckets) {
+    const groupKey = `${b.mode}:${b.key}`;
+    const list = grouped.get(groupKey);
+    if (list) list.push(b);
+    else grouped.set(groupKey, [b]);
+  }
+  return Array.from(grouped.values()).map((evs) => {
     const correct = evs.filter((e) => e.correct).length;
     return {
-      mode,
-      key,
+      mode: evs[0]!.mode,
+      key: evs[0]!.key,
       attempts: evs.length,
       correct,
       pctCorrect: Math.round((correct / evs.length) * 100),

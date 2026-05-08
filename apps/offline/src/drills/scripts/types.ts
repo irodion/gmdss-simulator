@@ -205,3 +205,11 @@ export interface ScriptDrillContent {
 }
 
 export const PASS_THRESHOLD = 80;
+
+/**
+ * Stable aggregation key for the all-scenarios bucket.
+ * `ProceduresHome` reads aggregates by this key; the procedure stats façade
+ * writes/reads with it. Keeping the literal in one place prevents silent
+ * mismatches between writer and reader.
+ */
+export const SCENARIO_STATS_KEY = "v1/scenarios";

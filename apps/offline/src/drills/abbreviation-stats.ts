@@ -1,7 +1,14 @@
 import type { AbbreviationDirection } from "./drill-types.ts";
+import {
+  abbreviationAtomId,
+  clearLearningEventsForMode,
+  readEvents,
+  recordLearningEvent,
+  safeReadJsonArray,
+  type LearningEvent,
+} from "./learning-events.ts";
 
-const STORAGE_KEY = "roc-trainer:abbreviation-stats";
-const MAX_EVENTS = 500;
+const LEGACY_KEY = "roc-trainer:abbreviation-stats";
 
 export interface AbbrAttemptEvent {
   readonly abbr: string;
@@ -33,41 +40,53 @@ function isAttempt(value: unknown): value is AbbrAttemptEvent {
   );
 }
 
-function safeRead(): AbbrAttemptEvent[] {
-  try {
-    const raw = window.localStorage.getItem(STORAGE_KEY);
-    if (!raw) return [];
-    const parsed = JSON.parse(raw) as unknown;
-    if (!Array.isArray(parsed)) return [];
-    return parsed.filter(isAttempt);
-  } catch {
-    return [];
-  }
+function readLegacy(): AbbrAttemptEvent[] {
+  return safeReadJsonArray(LEGACY_KEY, isAttempt);
 }
 
-function safeWrite(events: readonly AbbrAttemptEvent[]): void {
-  try {
-    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(events));
-  } catch {
-    // Safari private mode and quota errors are silently dropped — stats are not load-bearing.
-  }
+function abbreviationFromEvent(event: LearningEvent): AbbrAttemptEvent | null {
+  if (event.mode !== "abbreviation") return null;
+  const direction = event.meta?.direction;
+  if (!direction) return null;
+  // atomId format: "abbr:<ABBR>:<direction>" — abbr is everything between the
+  // leading "abbr:" and the trailing ":<direction>".
+  const prefix = "abbr:";
+  const suffix = `:${direction}`;
+  if (!event.atomId.startsWith(prefix) || !event.atomId.endsWith(suffix)) return null;
+  const abbr = event.atomId.slice(prefix.length, event.atomId.length - suffix.length);
+  if (!abbr) return null;
+  return { abbr, direction, correct: event.correct, ts: event.ts };
 }
 
 export function recordAbbreviationAttempt(event: AbbrAttemptEvent): void {
-  const events = safeRead();
-  events.push(event);
-  const trimmed = events.length > MAX_EVENTS ? events.slice(-MAX_EVENTS) : events;
-  safeWrite(trimmed);
+  recordLearningEvent({
+    v: 1,
+    atomId: abbreviationAtomId(event.abbr, event.direction),
+    mode: "abbreviation",
+    correct: event.correct,
+    ts: event.ts,
+    meta: { direction: event.direction },
+  });
 }
 
 export function clearAbbreviationStats(): void {
-  safeWrite([]);
+  try {
+    window.localStorage.removeItem(LEGACY_KEY);
+  } catch {
+    /* private mode / quota — stats are not load-bearing */
+  }
+  clearLearningEventsForMode("abbreviation");
 }
 
 export function getAbbreviationAggregates(): AbbrAggregate[] {
-  const events = safeRead();
+  const legacy = readLegacy();
+  const fromUnified = readEvents()
+    .map(abbreviationFromEvent)
+    .filter((e): e is AbbrAttemptEvent => e !== null);
+  const all = [...legacy, ...fromUnified];
+
   const grouped = new Map<string, AbbrAttemptEvent[]>();
-  for (const ev of events) {
+  for (const ev of all) {
     const list = grouped.get(ev.abbr);
     if (list) list.push(ev);
     else grouped.set(ev.abbr, [ev]);
