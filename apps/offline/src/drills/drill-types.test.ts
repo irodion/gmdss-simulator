@@ -1,6 +1,7 @@
 import { describe, expect, test } from "vite-plus/test";
 import {
   PHONETIC_ALPHABET,
+  PHONETIC_REVERSE,
   createPhoneticChallenge,
   generateNumberChallenges,
   generatePhoneticChallenges,
@@ -72,6 +73,29 @@ describe("generateNumberChallenges", () => {
       expect(c.expectedAnswer.length).toBeGreaterThan(0);
       expect(c.type).toBe("number-pronunciation");
     }
+  });
+
+  test("every challenge carries a format tag from the known set", () => {
+    const challenges = generateNumberChallenges(20);
+    const allowed = new Set(["position", "bearing", "time", "channel"]);
+    for (const c of challenges) {
+      expect(c.format).toBeDefined();
+      expect(allowed.has(c.format!)).toBe(true);
+    }
+  });
+});
+
+describe("PHONETIC_REVERSE", () => {
+  test("round-trips against PHONETIC_ALPHABET for every entry", () => {
+    for (const [letter, word] of Object.entries(PHONETIC_ALPHABET)) {
+      expect(PHONETIC_REVERSE[word]).toBe(letter);
+    }
+  });
+
+  test("handles maritime digit forms", () => {
+    expect(PHONETIC_REVERSE["TREE"]).toBe("3");
+    expect(PHONETIC_REVERSE["FIFE"]).toBe("5");
+    expect(PHONETIC_REVERSE["NIN-ER"]).toBe("9");
   });
 });
 

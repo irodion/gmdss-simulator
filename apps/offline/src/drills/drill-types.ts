@@ -2,6 +2,8 @@ export type DrillType = "phonetic" | "number-pronunciation" | "reverse" | "abbre
 
 export type AbbreviationDirection = "abbr-to-expansion" | "expansion-to-abbr";
 
+export type NumberFormat = "position" | "bearing" | "time" | "channel";
+
 export interface DrillChallenge {
   readonly id: string;
   readonly type: DrillType;
@@ -17,6 +19,8 @@ export interface DrillChallenge {
   readonly direction?: AbbreviationDirection;
   /** Abbreviation mode only: 4 multiple-choice options (abbr → expansion direction). */
   readonly choices?: readonly string[];
+  /** number-pronunciation only: which generator produced this challenge. */
+  readonly format?: NumberFormat;
 }
 
 export interface DrillResult {
@@ -66,6 +70,15 @@ export const PHONETIC_ALPHABET: Record<string, string> = {
   "8": "AIT",
   "9": "NIN-ER",
 };
+
+/**
+ * Reverse lookup from a phonetic word back to its letter/digit.
+ * Used by per-attempt event capture to know which letters were matched/missed
+ * given a scoreDrill result's matchedWords / missedWords arrays.
+ */
+export const PHONETIC_REVERSE: Readonly<Record<string, string>> = Object.freeze(
+  Object.fromEntries(Object.entries(PHONETIC_ALPHABET).map(([letter, word]) => [word, letter])),
+);
 
 /** Convert a digit string to maritime pronunciation using PHONETIC_ALPHABET. */
 export function pronounceDigits(digits: string): string {
@@ -216,18 +229,28 @@ function randomChannel(): { prompt: string; expected: string } {
 
 type NumberGenerator = () => { prompt: string; expected: string };
 
+interface FormatGenerator {
+  readonly gen: NumberGenerator;
+  readonly format: NumberFormat;
+}
+
 /** Generate a set of number pronunciation drill challenges. */
 export function generateNumberChallenges(count: number): DrillChallenge[] {
-  const base: NumberGenerator[] = [
-    randomPosition,
-    randomPosition,
-    randomBearing,
-    randomTime,
-    randomChannel,
+  const base: readonly FormatGenerator[] = [
+    { gen: randomPosition, format: "position" },
+    { gen: randomPosition, format: "position" },
+    { gen: randomBearing, format: "bearing" },
+    { gen: randomTime, format: "time" },
+    { gen: randomChannel, format: "channel" },
   ];
-  const extras: NumberGenerator[] = [randomPosition, randomBearing, randomTime, randomChannel];
+  const extras: readonly FormatGenerator[] = [
+    { gen: randomPosition, format: "position" },
+    { gen: randomBearing, format: "bearing" },
+    { gen: randomTime, format: "time" },
+    { gen: randomChannel, format: "channel" },
+  ];
 
-  const generators = base.slice(0, count);
+  const generators: FormatGenerator[] = base.slice(0, count);
   while (generators.length < count) {
     generators.push(extras[randomInt(extras.length)]!);
   }
@@ -237,11 +260,12 @@ export function generateNumberChallenges(count: number): DrillChallenge[] {
     [generators[i], generators[j]] = [generators[j]!, generators[i]!];
   }
 
-  return generators.map((gen, i) => {
-    const data = gen();
+  return generators.map((entry, i) => {
+    const data = entry.gen();
     return {
       id: `number-${i}`,
       type: "number-pronunciation",
+      format: entry.format,
       prompt: `Read using maritime pronunciation:\n${data.prompt}`,
       expectedAnswer: data.expected,
       hint: data.expected,

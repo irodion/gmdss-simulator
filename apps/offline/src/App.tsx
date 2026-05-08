@@ -8,12 +8,7 @@ import { ModeTabs, type AppMode } from "./components/ModeTabs.tsx";
 import { ProceduresPanel } from "./components/ProceduresPanel.tsx";
 import { SessionConfig } from "./components/SessionConfig.tsx";
 import { SessionResults } from "./components/SessionResults.tsx";
-import {
-  generateAbbreviationChallenges,
-  getAbbreviation,
-  scoreAbbreviation,
-} from "./drills/abbreviation-mode.ts";
-import { recordAbbreviationAttempt } from "./drills/abbreviation-stats.ts";
+import { generateAbbreviationChallenges, scoreAbbreviation } from "./drills/abbreviation-mode.ts";
 import {
   generateNumberChallenges,
   generatePhoneticChallenges,
@@ -22,6 +17,7 @@ import {
   type DrillResult,
   type DrillType,
 } from "./drills/drill-types.ts";
+import { recordDrillAttempt } from "./drills/learning-events.ts";
 import { generateReverseChallenges, scoreReverse } from "./drills/reverse-mode.ts";
 
 type Screen = "config" | "drill" | "summary";
@@ -62,19 +58,9 @@ export function App() {
   const handleSubmit = useCallback(
     (result: DrillResult) => {
       setResults((prev) => [...prev, result]);
-      if (mode === "abbreviation" && result.challenge.direction) {
-        const abbr = getAbbreviation(result.challenge);
-        if (abbr) {
-          recordAbbreviationAttempt({
-            abbr,
-            direction: result.challenge.direction,
-            correct: result.score === 100,
-            ts: Date.now(),
-          });
-        }
-      }
+      if (drillMode) recordDrillAttempt(drillMode, result);
     },
-    [mode],
+    [drillMode],
   );
 
   const handleNext = useCallback(() => {

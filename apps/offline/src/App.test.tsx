@@ -110,6 +110,29 @@ describe("App", () => {
     expect(screen.getByText(/transmission 1 of 5/i)).toBeTruthy();
   });
 
+  test("Callsigns session writes phonetic events to the unified learning-events store", () => {
+    window.localStorage.clear();
+    render(<App />);
+
+    fireEvent.click(screen.getByRole("button", { name: "5" }));
+    fireEvent.click(screen.getByRole("button", { name: /^begin/i }));
+
+    for (let i = 0; i < 5; i++) {
+      const input = screen.getByLabelText(/your answer/i) as HTMLTextAreaElement;
+      fireEvent.change(input, { target: { value: "ALFA" } });
+      fireEvent.click(screen.getByRole("button", { name: "Submit" }));
+      const next = screen.queryByRole("button", { name: /next →|see results/i });
+      if (next) fireEvent.click(next);
+    }
+
+    const raw = window.localStorage.getItem("roc-trainer:learning-events");
+    expect(raw).toBeTruthy();
+    const parsed = JSON.parse(raw!) as { mode: string; atomId: string }[];
+    expect(parsed.length).toBeGreaterThan(0);
+    expect(parsed.every((e) => e.mode === "phonetic")).toBe(true);
+    expect(parsed.every((e) => e.atomId.startsWith("phon:"))).toBe(true);
+  });
+
   test("Abbreviations tab records per-item stats after submitting answers", () => {
     window.localStorage.clear();
     render(<App />);
