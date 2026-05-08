@@ -84,7 +84,7 @@ function readLegacy(): StoredEvent[] {
 }
 
 function newAttemptId(ts: number): string {
-  return `${ts}-${Math.random().toString(36).slice(2, 10)}`;
+  return `${ts}-${crypto.randomUUID()}`;
 }
 
 export function recordAttempt(event: GradeEvent): void {
@@ -157,11 +157,14 @@ function unifiedBuckets(events: readonly LearningEvent[]): AttemptBucket[] {
   // attemptId — a stable id minted once per recordAttempt call.
   const seen = new Set<string>();
   const out: AttemptBucket[] = [];
-  for (const ev of events) {
+  for (const [index, ev] of events.entries()) {
     if (ev.mode !== "procedures") continue;
     const passed = ev.meta?.scenarioPassed;
     if (typeof passed !== "boolean") continue;
-    const dedupeKey = ev.meta?.attemptId ?? `_anon|${ev.ts}`;
+    // Fallback dedupe key uses the array index too, so distinct attempts
+    // sharing a millisecond aren't collapsed when attemptId is missing
+    // (only happens for hand-crafted events outside recordAttempt).
+    const dedupeKey = ev.meta?.attemptId ?? `_anon|${ev.ts}-${index}`;
     if (seen.has(dedupeKey)) continue;
     seen.add(dedupeKey);
     // The legacy `key` was the StatsKey passed by ProceduresPanel

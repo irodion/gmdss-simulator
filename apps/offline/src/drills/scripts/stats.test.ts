@@ -245,7 +245,8 @@ describe("legacy + unified merge", () => {
     clearStats();
 
     const remaining = readEvents();
-    expect(remaining.every((e) => e.mode === "phonetic")).toBe(true);
+    expect(remaining).toHaveLength(1);
+    expect(remaining[0]).toMatchObject({ mode: "phonetic", atomId: "phon:A" });
     expect(window.localStorage.getItem(LEARNING_EVENTS_KEY)).not.toBeNull();
   });
 });
