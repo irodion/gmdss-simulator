@@ -49,7 +49,6 @@ describe("generateChannelChallenges", () => {
     const target = CHANNELS.length + 11;
     const out = generateChannelChallenges(target);
     expect(out).toHaveLength(target);
-    // First pool-sized window is unique; remaining slots are repeats from the pool.
     for (const c of out) {
       expect(CHANNELS.some((entry) => entry.channel === c.channelId)).toBe(true);
     }
