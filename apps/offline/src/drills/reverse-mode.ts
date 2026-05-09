@@ -5,7 +5,8 @@ import {
   type DrillResult,
 } from "./drill-types.ts";
 
-function spokenForm(text: string): string {
+/** Render the spoken phonetic spelling fed to TTS for a callsign/text. */
+export function spokenForm(text: string): string {
   return text
     .split("")
     .map((ch) => PHONETIC_ALPHABET[ch] ?? ch)

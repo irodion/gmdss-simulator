@@ -1,30 +1,15 @@
 import { useCallback, useState } from "react";
+import { readBoolPref, writeBoolPref } from "./local-pref.ts";
 
 const STORAGE_KEY = "gmdss-offline:procedures:tts-enabled";
 
-function readStored(): boolean {
-  try {
-    return window.localStorage.getItem(STORAGE_KEY) === "true";
-  } catch {
-    return false;
-  }
-}
-
-function writeStored(value: boolean): void {
-  try {
-    window.localStorage.setItem(STORAGE_KEY, value ? "true" : "false");
-  } catch {
-    // private mode / quota: silently ignore — runtime state still flips.
-  }
-}
-
 export function useTtsEnabled(): readonly [boolean, (next: boolean) => void] {
-  const [enabled, setEnabled] = useState<boolean>(() => readStored());
+  const [enabled, setEnabled] = useState<boolean>(() => readBoolPref(STORAGE_KEY, false));
 
   const update = useCallback(
     (next: boolean) => {
       if (next === enabled) return;
-      writeStored(next);
+      writeBoolPref(STORAGE_KEY, next);
       setEnabled(next);
     },
     [enabled],

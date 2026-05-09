@@ -234,6 +234,50 @@
   transform: translateX(-50%) rotate(45deg);
 }
 
+/* ── Queue preview (PR 2 adaptive practice) ── */
+.queue-preview {
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  letter-spacing: 0.06em;
+  color: var(--ink-soft);
+  margin: 4px 0 14px;
+  text-align: center;
+}
+.queue-preview strong {
+  color: var(--ink);
+  font-weight: 600;
+  font-feature-settings: "tnum";
+}
+
+/* ── Adaptive / Free Practice toggle ── */
+.adaptive-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 14px;
+  padding: 6px 12px;
+  background: transparent;
+  border: 1px dashed var(--ink-line);
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  cursor: pointer;
+  transition:
+    border-color 180ms ease,
+    color 180ms ease;
+}
+.adaptive-toggle:hover {
+  border-color: var(--ink);
+  color: var(--ink);
+}
+.adaptive-toggle[aria-checked="true"] {
+  border-style: solid;
+  border-color: var(--brass);
+  color: var(--ink);
+}
+
 /* ── Buttons ── */
 .btn-primary {
   display: inline-flex;

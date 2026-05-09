@@ -35,8 +35,17 @@ function pickDistractors(correct: AbbreviationEntry, pool: readonly Abbreviation
   return out;
 }
 
-function buildChallenge(entry: AbbreviationEntry, index: number): DrillChallenge {
-  const direction = pickDirection();
+/**
+ * Build a single abbreviation challenge with the direction chosen by the caller.
+ * Public so the adaptive selection layer can force a specific direction
+ * (e.g. when the queue has decided `abbr:DSC:expansion-to-abbr` is the weak
+ * atom and that's the variant we want to surface).
+ */
+export function buildChallengeWithDirection(
+  entry: AbbreviationEntry,
+  direction: AbbreviationDirection,
+  index: number,
+): DrillChallenge {
   const id = `abbreviation-${index}-${entry.abbr}`;
 
   if (direction === "abbr-to-expansion") {
@@ -66,7 +75,9 @@ function buildChallenge(entry: AbbreviationEntry, index: number): DrillChallenge
 export function generateAbbreviationChallenges(count: number): DrillChallenge[] {
   const pool = shuffle(ABBREVIATIONS);
   const take = Math.min(count, pool.length);
-  return pool.slice(0, take).map((entry, i) => buildChallenge(entry, i));
+  return pool
+    .slice(0, take)
+    .map((entry, i) => buildChallengeWithDirection(entry, pickDirection(), i));
 }
 
 function normalize(value: string): string {

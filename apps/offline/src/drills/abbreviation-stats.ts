@@ -2,6 +2,7 @@ import type { AbbreviationDirection } from "./drill-types.ts";
 import {
   abbreviationAtomId,
   clearLearningEventsForMode,
+  parseAbbreviationAtomId,
   readEvents,
   recordLearningEvent,
   safeReadJsonArray,
@@ -46,16 +47,9 @@ function readLegacy(): AbbrAttemptEvent[] {
 
 function abbreviationFromEvent(event: LearningEvent): AbbrAttemptEvent | null {
   if (event.mode !== "abbreviation") return null;
-  const direction = event.meta?.direction;
-  if (!direction) return null;
-  // atomId format: "abbr:<ABBR>:<direction>" — abbr is everything between the
-  // leading "abbr:" and the trailing ":<direction>".
-  const prefix = "abbr:";
-  const suffix = `:${direction}`;
-  if (!event.atomId.startsWith(prefix) || !event.atomId.endsWith(suffix)) return null;
-  const abbr = event.atomId.slice(prefix.length, event.atomId.length - suffix.length);
-  if (!abbr) return null;
-  return { abbr, direction, correct: event.correct, ts: event.ts };
+  const parsed = parseAbbreviationAtomId(event.atomId);
+  if (!parsed) return null;
+  return { abbr: parsed.abbr, direction: parsed.direction, correct: event.correct, ts: event.ts };
 }
 
 export function recordAbbreviationAttempt(event: AbbrAttemptEvent): void {

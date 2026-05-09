@@ -139,6 +139,33 @@ export function procedureAtomId(rubricId: string, dimension: string): string {
   return `proc:${rubricId}:${dimension}`;
 }
 
+// ---------- atom id parsers (paired with the minters above) ----------
+
+const ABBR_PREFIX = "abbr:";
+const NUM_PREFIX = "num:";
+
+export function parseAbbreviationAtomId(
+  atomId: string,
+): { abbr: string; direction: AbbreviationDirection } | null {
+  if (!atomId.startsWith(ABBR_PREFIX)) return null;
+  const lastColon = atomId.lastIndexOf(":");
+  if (lastColon <= ABBR_PREFIX.length) return null;
+  const direction = atomId.slice(lastColon + 1);
+  if (direction !== "abbr-to-expansion" && direction !== "expansion-to-abbr") return null;
+  const abbr = atomId.slice(ABBR_PREFIX.length, lastColon);
+  if (!abbr) return null;
+  return { abbr, direction };
+}
+
+export function parseNumberAtomId(atomId: string): NumberFormat | null {
+  if (!atomId.startsWith(NUM_PREFIX)) return null;
+  const format = atomId.slice(NUM_PREFIX.length);
+  if (format === "position" || format === "bearing" || format === "time" || format === "channel") {
+    return format;
+  }
+  return null;
+}
+
 // ---------- per-mode emitters ----------
 
 function emitPhonetic(result: DrillResult, ts: number): void {

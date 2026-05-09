@@ -9,6 +9,8 @@ import { ProceduresPanel } from "./components/ProceduresPanel.tsx";
 import { SessionConfig } from "./components/SessionConfig.tsx";
 import { SessionResults } from "./components/SessionResults.tsx";
 import { generateAbbreviationChallenges, scoreAbbreviation } from "./drills/abbreviation-mode.ts";
+import { readAdaptivePreference, writeAdaptivePreference } from "./drills/adaptive-prefs.ts";
+import { previewQueue, selectAdaptiveChallenges } from "./drills/adaptive-selection.ts";
 import {
   generateNumberChallenges,
   generatePhoneticChallenges,
@@ -17,7 +19,7 @@ import {
   type DrillResult,
   type DrillType,
 } from "./drills/drill-types.ts";
-import { recordDrillAttempt } from "./drills/learning-events.ts";
+import { readEvents, recordDrillAttempt } from "./drills/learning-events.ts";
 import { generateReverseChallenges, scoreReverse } from "./drills/reverse-mode.ts";
 
 type Screen = "config" | "drill" | "summary";
@@ -42,18 +44,33 @@ export function App() {
   const [challenges, setChallenges] = useState<DrillChallenge[]>([]);
   const [index, setIndex] = useState(0);
   const [results, setResults] = useState<DrillResult[]>([]);
-  const [abbrStatsToken, setAbbrStatsToken] = useState(0);
+  const [eventsToken, setEventsToken] = useState(0);
+  const [adaptiveEnabled, setAdaptiveEnabled] = useState<boolean>(() => readAdaptivePreference());
 
   const drillMode: DrillType | null = mode === "procedures" ? null : mode;
   const score = useMemo(() => (drillMode ? scorerFor(drillMode) : scoreDrill), [drillMode]);
 
+  const preview = useMemo(() => {
+    // eventsToken in deps forces re-read after each submit/restart cycle.
+    void eventsToken;
+    if (!drillMode || !adaptiveEnabled) return null;
+    return previewQueue(drillMode, count, readEvents());
+  }, [drillMode, count, adaptiveEnabled, eventsToken]);
+
   const handleStart = useCallback(() => {
     if (!drillMode) return;
-    setChallenges(generateChallenges(drillMode, count));
+    let next: DrillChallenge[] = [];
+    if (adaptiveEnabled) {
+      next = selectAdaptiveChallenges(drillMode, count, readEvents());
+    }
+    if (next.length === 0) {
+      next = generateChallenges(drillMode, count);
+    }
+    setChallenges(next);
     setIndex(0);
     setResults([]);
     setScreen("drill");
-  }, [drillMode, count]);
+  }, [drillMode, count, adaptiveEnabled]);
 
   const handleSubmit = useCallback(
     (result: DrillResult) => {
@@ -76,7 +93,12 @@ export function App() {
     setChallenges([]);
     setResults([]);
     setIndex(0);
-    setAbbrStatsToken((t) => t + 1);
+    setEventsToken((t) => t + 1);
+  }, []);
+
+  const handleAdaptiveChange = useCallback((enabled: boolean) => {
+    setAdaptiveEnabled(enabled);
+    writeAdaptivePreference(enabled);
   }, []);
 
   return (
@@ -112,10 +134,15 @@ export function App() {
 
             {mode !== "procedures" && screen === "config" ? (
               <>
-                {mode === "abbreviation" ? (
-                  <AbbreviationStats refreshToken={abbrStatsToken} />
-                ) : null}
-                <SessionConfig count={count} onCountChange={setCount} onStart={handleStart} />
+                {mode === "abbreviation" ? <AbbreviationStats refreshToken={eventsToken} /> : null}
+                <SessionConfig
+                  count={count}
+                  onCountChange={setCount}
+                  onStart={handleStart}
+                  preview={preview}
+                  adaptiveEnabled={adaptiveEnabled}
+                  onAdaptiveChange={handleAdaptiveChange}
+                />
               </>
             ) : null}
 
