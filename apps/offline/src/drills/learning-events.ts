@@ -1,5 +1,11 @@
 import { getAbbreviation } from "./abbreviation-mode.ts";
-import type { AbbreviationDirection, DrillResult, DrillType, NumberFormat } from "./drill-types.ts";
+import type {
+  AbbreviationDirection,
+  ChannelDirection,
+  DrillResult,
+  DrillType,
+  NumberFormat,
+} from "./drill-types.ts";
 import { PHONETIC_REVERSE } from "./drill-types.ts";
 
 export type LearningMode =
@@ -7,6 +13,7 @@ export type LearningMode =
   | "reverse"
   | "number-pronunciation"
   | "abbreviation"
+  | "channel"
   | "procedures";
 
 export interface LearningEventMeta {
@@ -21,6 +28,7 @@ export interface LearningEventMeta {
    */
   readonly attemptId?: string;
   readonly direction?: AbbreviationDirection;
+  readonly channelDirection?: ChannelDirection;
   readonly format?: NumberFormat;
   readonly score?: number;
   readonly scenarioPassed?: boolean;
@@ -44,6 +52,7 @@ const KNOWN_MODES: ReadonlySet<LearningMode> = new Set([
   "reverse",
   "number-pronunciation",
   "abbreviation",
+  "channel",
   "procedures",
 ]);
 
@@ -135,6 +144,10 @@ export function abbreviationAtomId(abbr: string, direction: AbbreviationDirectio
   return `abbr:${abbr}:${direction}`;
 }
 
+export function channelAtomId(channel: string, direction: ChannelDirection): string {
+  return `chan:${channel}:${direction}`;
+}
+
 export function procedureAtomId(rubricId: string, dimension: string): string {
   return `proc:${rubricId}:${dimension}`;
 }
@@ -142,6 +155,7 @@ export function procedureAtomId(rubricId: string, dimension: string): string {
 // ---------- atom id parsers (paired with the minters above) ----------
 
 const ABBR_PREFIX = "abbr:";
+const CHAN_PREFIX = "chan:";
 const NUM_PREFIX = "num:";
 
 export function parseAbbreviationAtomId(
@@ -155,6 +169,19 @@ export function parseAbbreviationAtomId(
   const abbr = atomId.slice(ABBR_PREFIX.length, lastColon);
   if (!abbr) return null;
   return { abbr, direction };
+}
+
+export function parseChannelAtomId(
+  atomId: string,
+): { channel: string; direction: ChannelDirection } | null {
+  if (!atomId.startsWith(CHAN_PREFIX)) return null;
+  const lastColon = atomId.lastIndexOf(":");
+  if (lastColon <= CHAN_PREFIX.length) return null;
+  const direction = atomId.slice(lastColon + 1);
+  if (direction !== "channel-to-usage" && direction !== "usage-to-channel") return null;
+  const channel = atomId.slice(CHAN_PREFIX.length, lastColon);
+  if (!channel) return null;
+  return { channel, direction };
 }
 
 export function parseNumberAtomId(atomId: string): NumberFormat | null {
@@ -229,6 +256,20 @@ function emitAbbreviation(result: DrillResult, ts: number): void {
   });
 }
 
+function emitChannel(result: DrillResult, ts: number): void {
+  const direction = result.challenge.channelDirection;
+  const channel = result.challenge.channelId;
+  if (!direction || !channel) return;
+  recordLearningEvent({
+    v: 1,
+    atomId: channelAtomId(channel, direction),
+    mode: "channel",
+    correct: result.score === 100,
+    ts,
+    meta: { channelDirection: direction },
+  });
+}
+
 // ---------- dispatcher ----------
 
 export function recordDrillAttempt(mode: DrillType, result: DrillResult): void {
@@ -242,5 +283,7 @@ export function recordDrillAttempt(mode: DrillType, result: DrillResult): void {
       return emitNumber(result, ts);
     case "abbreviation":
       return emitAbbreviation(result, ts);
+    case "channel":
+      return emitChannel(result, ts);
   }
 }

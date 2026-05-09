@@ -8,6 +8,7 @@ import {
 } from "../drills/daily-progress.ts";
 import { deriveAllBoxes, deriveMaxCorrectStreak } from "../drills/leitner.ts";
 import { evaluateBadges } from "../drills/badges.ts";
+import { EXAM_MOCK_TOTAL } from "../drills/exam-mock.ts";
 import { readEvents } from "../drills/learning-events.ts";
 import { getLocalDateKey, previousLocalDateKey } from "../lib/date-utils.ts";
 import { BadgesGrid } from "./BadgesGrid.tsx";
@@ -133,8 +134,8 @@ export function Logbook({ progress, onBack, onProgressChanged, onLaunchExamMock 
       <section className="logbook-section">
         <div className="section-eyebrow">Exam Mock</div>
         <p className="help">
-          Twenty questions interleaved across all four count-driven modes. No feedback until the
-          end. Once per day.
+          {EXAM_MOCK_TOTAL} questions interleaved across all count-driven modes. No feedback until
+          the end. Once per day.
         </p>
         <button
           type="button"
@@ -142,7 +143,7 @@ export function Logbook({ progress, onBack, onProgressChanged, onLaunchExamMock 
           onClick={onLaunchExamMock}
           disabled={examTakenToday}
         >
-          {examTakenToday ? "Already taken today" : "Take a 20-question exam mock"}
+          {examTakenToday ? "Already taken today" : `Take a ${EXAM_MOCK_TOTAL}-question exam mock`}
         </button>
       </section>
 

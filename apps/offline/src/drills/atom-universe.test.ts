@@ -1,6 +1,7 @@
 import { describe, expect, test } from "vite-plus/test";
 import { ABBREVIATIONS } from "./abbreviations.ts";
 import { atomUniverse } from "./atom-universe.ts";
+import { CHANNELS } from "./channels.ts";
 
 describe("atomUniverse", () => {
   test("phonetic returns 36 unique atoms (26 letters + 10 digits)", () => {
@@ -39,6 +40,16 @@ describe("atomUniverse", () => {
     for (const entry of ABBREVIATIONS) {
       expect(universe).toContain(`abbr:${entry.abbr}:abbr-to-expansion`);
       expect(universe).toContain(`abbr:${entry.abbr}:expansion-to-abbr`);
+    }
+  });
+
+  test("channel has 2 atoms per CHANNELS entry, all unique", () => {
+    const universe = atomUniverse("channel");
+    expect(universe).toHaveLength(CHANNELS.length * 2);
+    expect(new Set(universe).size).toBe(universe.length);
+    for (const entry of CHANNELS) {
+      expect(universe).toContain(`chan:${entry.channel}:channel-to-usage`);
+      expect(universe).toContain(`chan:${entry.channel}:usage-to-channel`);
     }
   });
 

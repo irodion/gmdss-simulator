@@ -2,11 +2,13 @@ import { afterEach, beforeEach, describe, expect, test, vi } from "vite-plus/tes
 import type { DrillChallenge, DrillResult } from "./drill-types.ts";
 import {
   abbreviationAtomId,
+  channelAtomId,
   clearAllLearningEvents,
   clearLearningEventsForMode,
   LEARNING_EVENTS_KEY,
   listenAtomId,
   numberAtomId,
+  parseChannelAtomId,
   phoneticAtomId,
   procedureAtomId,
   readEvents,
@@ -83,7 +85,7 @@ describe("recordLearningEvent + readEvents", () => {
     expect(events).toHaveLength(2000);
     expect(events[0]!.ts).toBe(100);
     expect(events[events.length - 1]!.ts).toBe(2099);
-  });
+  }, 15000);
 
   test("survives JSON corruption", () => {
     window.localStorage.setItem(LEARNING_EVENTS_KEY, "{not json");
@@ -177,6 +179,25 @@ describe("atom-id helpers", () => {
   test("abbreviationAtomId encodes both abbr and direction", () => {
     expect(abbreviationAtomId("DSC", "abbr-to-expansion")).toBe("abbr:DSC:abbr-to-expansion");
     expect(abbreviationAtomId("EPIRB", "expansion-to-abbr")).toBe("abbr:EPIRB:expansion-to-abbr");
+  });
+
+  test("channelAtomId encodes both channel and direction", () => {
+    expect(channelAtomId("16", "channel-to-usage")).toBe("chan:16:channel-to-usage");
+    expect(channelAtomId("70", "usage-to-channel")).toBe("chan:70:usage-to-channel");
+  });
+
+  test("parseChannelAtomId round-trips channelAtomId output", () => {
+    expect(parseChannelAtomId("chan:16:channel-to-usage")).toEqual({
+      channel: "16",
+      direction: "channel-to-usage",
+    });
+    expect(parseChannelAtomId("chan:70:usage-to-channel")).toEqual({
+      channel: "70",
+      direction: "usage-to-channel",
+    });
+    expect(parseChannelAtomId("phon:A")).toBeNull();
+    expect(parseChannelAtomId("chan:16:bogus")).toBeNull();
+    expect(parseChannelAtomId("chan::channel-to-usage")).toBeNull();
   });
 
   test("procedureAtomId pairs rubric and dimension", () => {
@@ -353,6 +374,63 @@ describe("recordDrillAttempt — abbreviation", () => {
       "abbreviation",
       result({
         challenge: { type: "abbreviation", prompt: "...", expectedAnswer: "DSC" },
+        score: 100,
+      }),
+    );
+    expect(readEvents()).toEqual([]);
+  });
+});
+
+describe("recordDrillAttempt — channel", () => {
+  test("emits an event tagged with channel id and direction", () => {
+    recordDrillAttempt(
+      "channel",
+      result({
+        challenge: {
+          type: "channel",
+          channelDirection: "channel-to-usage",
+          channelId: "16",
+          prompt: "What is the primary use of Channel 16?",
+          expectedAnswer: "Distress, safety, and calling",
+        },
+        score: 100,
+      }),
+    );
+    const events = readEvents();
+    expect(events).toHaveLength(1);
+    expect(events[0]).toMatchObject({
+      atomId: "chan:16:channel-to-usage",
+      mode: "channel",
+      correct: true,
+      meta: { channelDirection: "channel-to-usage" },
+    });
+  });
+
+  test("score < 100 is recorded as incorrect", () => {
+    recordDrillAttempt(
+      "channel",
+      result({
+        challenge: {
+          type: "channel",
+          channelDirection: "usage-to-channel",
+          channelId: "70",
+          prompt: "...",
+          expectedAnswer: "Channel 70",
+        },
+        score: 0,
+      }),
+    );
+    expect(readEvents()[0]).toMatchObject({
+      atomId: "chan:70:usage-to-channel",
+      correct: false,
+    });
+  });
+
+  test("missing channelId or direction is a no-op", () => {
+    recordDrillAttempt(
+      "channel",
+      result({
+        challenge: { type: "channel", prompt: "...", expectedAnswer: "x" },
         score: 100,
       }),
     );

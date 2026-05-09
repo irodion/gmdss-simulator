@@ -21,6 +21,7 @@ const COUNT_DRIVEN_MODES: readonly LearningMode[] = [
   "reverse",
   "number-pronunciation",
   "abbreviation",
+  "channel",
 ];
 
 function rowFor(mode: LearningMode, boxes: ReadonlyMap<string, Box>): ModeRow {

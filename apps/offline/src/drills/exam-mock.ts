@@ -1,11 +1,12 @@
-/** 20-question interleaved exam across the four count-driven modes; strict scoring (only 100% counts). */
+/** Interleaved exam across the count-driven modes; strict scoring (only 100% counts). */
 
 import { generateAbbreviationChallenges } from "./abbreviation-mode.ts";
 import { selectAdaptiveChallenges } from "./adaptive-selection.ts";
+import { generateChannelChallenges } from "./channel-mode.ts";
 import {
   generateNumberChallenges,
   generatePhoneticChallenges,
-  randomInt,
+  shuffle,
   type DrillChallenge,
   type DrillResult,
   type DrillType,
@@ -13,7 +14,6 @@ import {
 import type { LearningEvent } from "./learning-events.ts";
 import { generateReverseChallenges } from "./reverse-mode.ts";
 
-export const EXAM_MOCK_TOTAL = 20;
 export const EXAM_MOCK_PER_MODE = 5;
 export const EXAM_MOCK_PASS_PCT = 80;
 
@@ -22,7 +22,10 @@ export const EXAM_MOCK_MODES: readonly DrillType[] = [
   "number-pronunciation",
   "reverse",
   "abbreviation",
+  "channel",
 ];
+
+export const EXAM_MOCK_TOTAL = EXAM_MOCK_MODES.length * EXAM_MOCK_PER_MODE;
 
 export interface ExamModeBreakdown {
   readonly mode: DrillType;
@@ -48,6 +51,8 @@ function generateFor(mode: DrillType, count: number): DrillChallenge[] {
       return generateNumberChallenges(count);
     case "abbreviation":
       return generateAbbreviationChallenges(count);
+    case "channel":
+      return generateChannelChallenges(count);
   }
 }
 
@@ -60,11 +65,7 @@ export function selectExamMockChallenges(events: readonly LearningEvent[]): Dril
     }
     merged.push(...bucket);
   }
-  for (let i = merged.length - 1; i > 0; i--) {
-    const j = randomInt(i + 1);
-    [merged[i], merged[j]] = [merged[j]!, merged[i]!];
-  }
-  return merged;
+  return shuffle(merged);
 }
 
 export function summarizeExamMock(results: readonly DrillResult[]): ExamMockSummary {

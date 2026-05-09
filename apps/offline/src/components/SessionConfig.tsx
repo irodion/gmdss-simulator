@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { AdaptiveModeToggle } from "./AdaptiveModeToggle.tsx";
 import { PhoneticCheatsheet } from "./PhoneticCheatsheet.tsx";
 import { QueuePreview } from "./QueuePreview.tsx";
@@ -9,6 +10,8 @@ interface SessionConfigProps {
   readonly preview?: { weak: number; review: number; fresh: number } | null;
   readonly adaptiveEnabled?: boolean;
   readonly onAdaptiveChange?: (enabled: boolean) => void;
+  /** Reference panel rendered at the bottom; defaults to the phonetic alphabet. */
+  readonly cheatsheet?: ReactNode;
 }
 
 const COUNTS = [5, 10, 20] as const;
@@ -20,6 +23,7 @@ export function SessionConfig({
   preview,
   adaptiveEnabled,
   onAdaptiveChange,
+  cheatsheet = <PhoneticCheatsheet />,
 }: SessionConfigProps) {
   return (
     <div>
@@ -50,7 +54,7 @@ export function SessionConfig({
           ⌘↵
         </span>
       </button>
-      <PhoneticCheatsheet />
+      {cheatsheet}
     </div>
   );
 }

@@ -114,7 +114,7 @@
 /* ── Mode tabs (Roman numerals) ── */
 .mode-tabs {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(6, 1fr);
   gap: 0;
   border: 1px solid var(--ink-line);
 }
@@ -746,6 +746,13 @@
 .cheatsheet-grid-digits {
   border-top: 1px solid var(--ink-hair);
   padding-top: 12px;
+}
+.cheatsheet-grid-channels {
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 6px 18px;
+}
+.cheatsheet-grid-channels .cheatsheet-key {
+  min-width: 3.5em;
 }
 .cheatsheet-row {
   display: flex;
