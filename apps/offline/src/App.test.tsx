@@ -50,6 +50,137 @@ describe("App", () => {
     expect(document.querySelector(".queue-preview")).not.toBeNull();
   });
 
+  test("daily indicator renders on adaptive mode with default zero state", () => {
+    window.localStorage.clear();
+    render(<App />);
+    expect(document.querySelector(".daily-indicator")).not.toBeNull();
+    // Streak label hidden at 0.
+    expect(screen.queryByText(/day streak/i)).toBeNull();
+    // Progress text shows 0 / 30.
+    const node = document.querySelector(".daily-indicator");
+    expect(node?.textContent).toMatch(/0.*\/.*30/);
+  });
+
+  test("daily indicator hides on Free Practice mode", () => {
+    window.localStorage.clear();
+    window.localStorage.setItem("roc-trainer:adaptive-enabled", "false");
+    render(<App />);
+    expect(document.querySelector(".daily-indicator")).toBeNull();
+  });
+
+  test("Logbook is reachable from masthead and Back returns to config", () => {
+    window.localStorage.clear();
+    render(<App />);
+    fireEvent.click(screen.getByRole("button", { name: /logbook/i }));
+    // Logbook hides mode tabs.
+    expect(screen.queryByRole("tab", { name: "Callsigns" })).toBeNull();
+    // Back returns to config.
+    fireEvent.click(screen.getByRole("button", { name: /^← back$/i }));
+    expect(screen.getByRole("tab", { name: "Callsigns" })).toBeTruthy();
+  });
+
+  test("opening Logbook mid-drill and pressing Back resumes the drill", () => {
+    window.localStorage.clear();
+    render(<App />);
+
+    // Start a 5-question drill, advance to transmission 2.
+    fireEvent.click(screen.getByRole("button", { name: "5" }));
+    fireEvent.click(screen.getByRole("button", { name: /^begin/i }));
+    expect(screen.getByText(/transmission 1 of 5/i)).toBeTruthy();
+    const input = screen.getByLabelText(/your answer/i) as HTMLTextAreaElement;
+    fireEvent.change(input, { target: { value: "ALFA" } });
+    fireEvent.click(screen.getByRole("button", { name: "Submit" }));
+    fireEvent.click(screen.getByRole("button", { name: /next →/i }));
+    expect(screen.getByText(/transmission 2 of 5/i)).toBeTruthy();
+
+    // Open Logbook from the drill.
+    fireEvent.click(screen.getByRole("button", { name: /logbook/i }));
+    expect(screen.queryByText(/transmission \d of 5/i)).toBeNull();
+
+    // Back resumes the same drill at transmission 2 (not config).
+    fireEvent.click(screen.getByRole("button", { name: /^← back$/i }));
+    expect(screen.getByText(/transmission 2 of 5/i)).toBeTruthy();
+  });
+
+  test("Reset everything refreshes the adaptive toggle from storage", () => {
+    window.localStorage.clear();
+    window.localStorage.setItem("roc-trainer:adaptive-enabled", "false");
+    render(<App />);
+
+    // Toggle reads false from storage.
+    expect(
+      screen
+        .getByRole("switch", { name: /toggle adaptive practice/i })
+        .getAttribute("aria-checked"),
+    ).toBe("false");
+
+    // Open Logbook and click Reset (window.confirm auto-accepted).
+    vi.stubGlobal("confirm", () => true);
+    fireEvent.click(screen.getByRole("button", { name: /logbook/i }));
+    fireEvent.click(screen.getByRole("button", { name: /reset everything/i }));
+
+    // Reset wiped the adaptive-enabled key; default reads back as true.
+    expect(window.localStorage.getItem("roc-trainer:adaptive-enabled")).toBeNull();
+    // Back to config and verify the toggle UI now shows the new default.
+    fireEvent.click(screen.getByRole("button", { name: /^← back$/i }));
+    expect(
+      screen
+        .getByRole("switch", { name: /toggle adaptive practice/i })
+        .getAttribute("aria-checked"),
+    ).toBe("true");
+  });
+
+  test("completing an adaptive session bumps today's adaptiveItems", () => {
+    window.localStorage.clear();
+    render(<App />);
+
+    fireEvent.click(screen.getByRole("button", { name: "5" }));
+    fireEvent.click(screen.getByRole("button", { name: /^begin/i }));
+
+    for (let i = 0; i < 5; i++) {
+      const input = screen.getByLabelText(/your answer/i) as HTMLTextAreaElement;
+      fireEvent.change(input, { target: { value: "ALFA" } });
+      fireEvent.click(screen.getByRole("button", { name: "Submit" }));
+      const next = screen.queryByRole("button", { name: /next →|see results/i });
+      if (next) fireEvent.click(next);
+    }
+
+    const raw = window.localStorage.getItem("roc-trainer:daily-progress");
+    expect(raw).toBeTruthy();
+    const parsed = JSON.parse(raw!) as {
+      byDate: Record<string, { adaptiveItems: number; freeItems: number }>;
+    };
+    const today = new Date();
+    const todayKey = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
+    expect(parsed.byDate[todayKey]?.adaptiveItems).toBe(5);
+  });
+
+  test("Free Practice session bumps freeItems, not adaptiveItems", () => {
+    window.localStorage.clear();
+    window.localStorage.setItem("roc-trainer:adaptive-enabled", "false");
+    render(<App />);
+
+    fireEvent.click(screen.getByRole("button", { name: "5" }));
+    fireEvent.click(screen.getByRole("button", { name: /^begin/i }));
+
+    for (let i = 0; i < 5; i++) {
+      const input = screen.getByLabelText(/your answer/i) as HTMLTextAreaElement;
+      fireEvent.change(input, { target: { value: "ALFA" } });
+      fireEvent.click(screen.getByRole("button", { name: "Submit" }));
+      const next = screen.queryByRole("button", { name: /next →|see results/i });
+      if (next) fireEvent.click(next);
+    }
+
+    const raw = window.localStorage.getItem("roc-trainer:daily-progress");
+    const parsed = JSON.parse(raw!) as {
+      byDate: Record<string, { adaptiveItems: number; freeItems: number }>;
+      streak: { current: number };
+    };
+    const todayKey = Object.keys(parsed.byDate)[0]!;
+    expect(parsed.byDate[todayKey]).toEqual({ adaptiveItems: 0, freeItems: 5 });
+    expect(parsed.streak.current).toBe(0);
+  });
+
   test("flipping the adaptive toggle to Free Practice hides the preview and persists", () => {
     window.localStorage.clear();
     const { unmount } = render(<App />);

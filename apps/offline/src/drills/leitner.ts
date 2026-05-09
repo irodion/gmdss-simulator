@@ -56,3 +56,23 @@ export function deriveBox(events: readonly LearningEvent[], atomId: string): Box
 export function boxFor(boxes: ReadonlyMap<string, Box>, atomId: string): Box {
   return boxes.get(atomId) ?? NEW_BOX;
 }
+
+/**
+ * Walk events chronologically and return the longest run of consecutive
+ * `correct === true` outcomes across the user's entire history. Used by the
+ * "Twenty in a row" badge — counts cross-mode, since a perfect-correct streak
+ * is a coherent signal regardless of which atom produced each event.
+ */
+export function deriveMaxCorrectStreak(events: readonly LearningEvent[]): number {
+  let longest = 0;
+  let current = 0;
+  for (const ev of events) {
+    if (ev.correct) {
+      current += 1;
+      if (current > longest) longest = current;
+    } else {
+      current = 0;
+    }
+  }
+  return longest;
+}

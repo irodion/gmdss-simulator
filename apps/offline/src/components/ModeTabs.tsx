@@ -7,12 +7,21 @@ interface ModeTabsProps {
   readonly onChange: (mode: AppMode) => void;
 }
 
-const TABS: ReadonlyArray<{ value: AppMode; label: string; numeral: string }> = [
-  { value: "phonetic", label: "Callsigns", numeral: "I" },
-  { value: "number-pronunciation", label: "Numbers", numeral: "II" },
-  { value: "reverse", label: "Listen", numeral: "III" },
-  { value: "procedures", label: "Procedures", numeral: "IV" },
-  { value: "abbreviation", label: "Abbreviations", numeral: "V" },
+/** Single source of truth for user-facing mode labels — also consumed by Logbook. */
+export const MODE_LABELS: Readonly<Record<AppMode, string>> = {
+  phonetic: "Callsigns",
+  "number-pronunciation": "Numbers",
+  reverse: "Listen",
+  procedures: "Procedures",
+  abbreviation: "Abbreviations",
+};
+
+const TABS: ReadonlyArray<{ value: AppMode; numeral: string }> = [
+  { value: "phonetic", numeral: "I" },
+  { value: "number-pronunciation", numeral: "II" },
+  { value: "reverse", numeral: "III" },
+  { value: "procedures", numeral: "IV" },
+  { value: "abbreviation", numeral: "V" },
 ];
 
 export function ModeTabs({ mode, onChange }: ModeTabsProps) {
@@ -30,7 +39,7 @@ export function ModeTabs({ mode, onChange }: ModeTabsProps) {
           <span className="mode-numeral" aria-hidden="true">
             {tab.numeral}
           </span>
-          <span className="mode-label">{tab.label}</span>
+          <span className="mode-label">{MODE_LABELS[tab.value]}</span>
         </button>
       ))}
     </div>

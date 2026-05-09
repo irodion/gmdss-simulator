@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { readAdaptivePreference } from "../drills/adaptive-prefs.ts";
+import { applySessionAndPersist } from "../drills/daily-progress.ts";
 import { readEvents } from "../drills/learning-events.ts";
 import { pickAdaptiveScenario } from "../drills/scripts/adaptive-scenarios.ts";
 import { loadScriptDrillContent } from "../drills/scripts/content-loader.ts";
@@ -24,9 +25,16 @@ type View =
       scenario: Scenario;
       template: SequenceTemplate;
       round: number;
+      /** Adaptive preference snapshot at scenario start — locks the run's classification. */
+      readonly startedAdaptive: boolean;
     };
 
-export function ProceduresPanel() {
+interface ProceduresPanelProps {
+  /** Called after each scenario completion so the daily indicator updates. */
+  readonly onSessionRecorded?: () => void;
+}
+
+export function ProceduresPanel({ onSessionRecorded }: ProceduresPanelProps = {}) {
   const [content, setContent] = useState<ScriptDrillContent | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [view, setView] = useState<View>({ kind: "home" });
@@ -48,7 +56,8 @@ export function ProceduresPanel() {
   }, []);
 
   const startScenario = useCallback((c: ScriptDrillContent) => {
-    const scenario = readAdaptivePreference()
+    const adaptive = readAdaptivePreference();
+    const scenario = adaptive
       ? pickAdaptiveScenario(c.scenarios, readEvents(), recentScenarioId.current)
       : pickScenario(c.scenarios, recentScenarioId.current);
     if (!scenario) return;
@@ -59,6 +68,7 @@ export function ProceduresPanel() {
       scenario,
       template,
       round: (prev.kind === "scenario" ? prev.round : 0) + 1,
+      startedAdaptive: adaptive,
     }));
   }, []);
 
@@ -74,18 +84,30 @@ export function ProceduresPanel() {
       for (const d of grade.dimensions) {
         dimensionPasses[d.id] = d.status === "pass";
       }
+      const now = Date.now();
       recordAttempt({
         rubricId: view.template.rubricId,
         mode: "scenario",
         key: SCENARIO_STATS_KEY,
-        ts: Date.now(),
+        ts: now,
         correct: grade.passed,
         scenarioId: view.scenario.id,
         dimensionPasses,
       });
+      // Daily-goal accounting: one scenario completion = 5 items, matching
+      // the per-dimension event fan-out granularity in the unified store.
+      // Use the preference snapshot taken at start so a mid-scenario toggle
+      // can't reclassify the run.
+      const adaptive = view.startedAdaptive;
+      applySessionAndPersist({
+        adaptiveItems: adaptive ? 5 : 0,
+        freeItems: adaptive ? 0 : 5,
+        now,
+      });
       setStatsToken((t) => t + 1);
+      onSessionRecorded?.();
     },
-    [view],
+    [view, onSessionRecorded],
   );
 
   const handleRetry = useCallback(() => {
