@@ -1,6 +1,7 @@
 import { fireEvent, render, screen, within } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, test, vi } from "vite-plus/test";
 import { App } from "./App.tsx";
+import { EXAM_MOCK_TOTAL } from "./drills/exam-mock.ts";
 import { getLocalDateKey } from "./lib/date-utils.ts";
 
 beforeEach(() => {
@@ -359,10 +360,14 @@ describe("App", () => {
     window.localStorage.clear();
     render(<App />);
     fireEvent.click(screen.getByRole("button", { name: /^logbook$/i }));
-    fireEvent.click(screen.getByRole("button", { name: /take a 20-question exam mock/i }));
+    fireEvent.click(
+      screen.getByRole("button", {
+        name: new RegExp(`take a ${EXAM_MOCK_TOTAL}-question exam mock`, "i"),
+      }),
+    );
     // Mode tabs hidden, drill card visible.
     expect(screen.queryByRole("tab", { name: "Callsigns" })).toBeNull();
-    expect(screen.getByText(/transmission 1 of 20/i)).toBeTruthy();
+    expect(screen.getByText(new RegExp(`transmission 1 of ${EXAM_MOCK_TOTAL}`, "i"))).toBeTruthy();
   });
 
   test("Exam Mock cooldown disables the Logbook button after completion", () => {

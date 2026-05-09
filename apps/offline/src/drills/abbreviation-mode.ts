@@ -1,21 +1,12 @@
 import { ABBREVIATIONS, type AbbreviationEntry } from "./abbreviations.ts";
 import {
-  randomInt,
+  shuffle,
   type AbbreviationDirection,
   type DrillChallenge,
   type DrillResult,
 } from "./drill-types.ts";
 
 const CHOICE_COUNT = 4;
-
-function shuffle<T>(items: readonly T[]): T[] {
-  const out = [...items];
-  for (let i = out.length - 1; i > 0; i--) {
-    const j = randomInt(i + 1);
-    [out[i], out[j]] = [out[j]!, out[i]!];
-  }
-  return out;
-}
 
 function pickDirection(): AbbreviationDirection {
   return Math.random() < 0.5 ? "abbr-to-expansion" : "expansion-to-abbr";

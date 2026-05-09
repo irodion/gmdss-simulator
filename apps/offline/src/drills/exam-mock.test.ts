@@ -25,25 +25,26 @@ describe("constants", () => {
     expect(EXAM_MOCK_TOTAL).toBe(EXAM_MOCK_PER_MODE * EXAM_MOCK_MODES.length);
   });
 
-  test("4 count-driven modes (excludes procedures)", () => {
-    expect(EXAM_MOCK_MODES).toHaveLength(4);
+  test("count-driven modes (excludes procedures)", () => {
     expect(EXAM_MOCK_MODES).not.toContain("procedures");
+    expect(EXAM_MOCK_MODES.length).toBeGreaterThanOrEqual(4);
   });
 });
 
 describe("selectExamMockChallenges", () => {
-  test("cold-start returns 20 challenges", () => {
+  test("cold-start returns EXAM_MOCK_TOTAL challenges", () => {
     const challenges = selectExamMockChallenges([]);
     expect(challenges).toHaveLength(EXAM_MOCK_TOTAL);
   });
 
-  test("each mode is represented exactly 5 times", () => {
+  test("each mode is represented exactly EXAM_MOCK_PER_MODE times", () => {
     const challenges = selectExamMockChallenges([]);
     const counts: Record<DrillType, number> = {
       phonetic: 0,
       "number-pronunciation": 0,
       reverse: 0,
       abbreviation: 0,
+      channel: 0,
     };
     for (const c of challenges) {
       counts[c.type] += 1;
@@ -71,30 +72,32 @@ describe("summarizeExamMock", () => {
     return out;
   }
 
-  test("16 of 20 perfect → 80% / passed", () => {
+  test("20 of 25 perfect → 80% / passed", () => {
     const results = buildResults({
       phonetic: [100, 100, 100, 100, 99],
       "number-pronunciation": [100, 100, 100, 0, 50],
       reverse: [100, 100, 100, 100, 100],
       abbreviation: [100, 100, 100, 100, 0],
+      channel: [100, 100, 100, 100, 0],
     });
     const summary = summarizeExamMock(results);
-    expect(summary.correct).toBe(16);
-    expect(summary.total).toBe(20);
+    expect(summary.correct).toBe(20);
+    expect(summary.total).toBe(25);
     expect(summary.pct).toBe(80);
     expect(summary.passed).toBe(true);
   });
 
-  test("15 of 20 perfect → 75% / failed (just below threshold)", () => {
+  test("18 of 25 perfect → 72% / failed (just below threshold)", () => {
     const results = buildResults({
       phonetic: [100, 100, 100, 100, 0],
       "number-pronunciation": [100, 100, 100, 0, 0],
       reverse: [100, 100, 100, 100, 0],
       abbreviation: [100, 100, 100, 100, 0],
+      channel: [100, 100, 100, 0, 0],
     });
     const summary = summarizeExamMock(results);
-    expect(summary.correct).toBe(15);
-    expect(summary.pct).toBe(75);
+    expect(summary.correct).toBe(18);
+    expect(summary.pct).toBe(72);
     expect(summary.passed).toBe(false);
   });
 
@@ -110,6 +113,7 @@ describe("summarizeExamMock", () => {
       "number-pronunciation": [100, 100, 100, 0, 0],
       reverse: [100, 100, 0, 0, 0],
       abbreviation: [100, 0, 0, 0, 0],
+      channel: [100, 100, 100, 100, 0],
     });
     const summary = summarizeExamMock(results);
     const byMode = new Map<DrillType, ExamModeBreakdown>();
@@ -122,6 +126,7 @@ describe("summarizeExamMock", () => {
     });
     expect(byMode.get("reverse")).toEqual({ mode: "reverse", correct: 2, total: 5 });
     expect(byMode.get("abbreviation")).toEqual({ mode: "abbreviation", correct: 1, total: 5 });
+    expect(byMode.get("channel")).toEqual({ mode: "channel", correct: 4, total: 5 });
   });
 
   test("empty results return zeros and 0%", () => {

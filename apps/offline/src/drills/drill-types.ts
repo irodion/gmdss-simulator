@@ -1,6 +1,13 @@
-export type DrillType = "phonetic" | "number-pronunciation" | "reverse" | "abbreviation";
+export type DrillType =
+  | "phonetic"
+  | "number-pronunciation"
+  | "reverse"
+  | "abbreviation"
+  | "channel";
 
 export type AbbreviationDirection = "abbr-to-expansion" | "expansion-to-abbr";
+
+export type ChannelDirection = "channel-to-usage" | "usage-to-channel";
 
 export type NumberFormat = "position" | "bearing" | "time" | "channel";
 
@@ -24,6 +31,10 @@ export interface DrillChallenge {
   readonly choices?: readonly string[];
   /** number-pronunciation only: which generator produced this challenge. */
   readonly format?: NumberFormat;
+  /** Channel mode only: which direction this question runs. */
+  readonly channelDirection?: ChannelDirection;
+  /** Channel mode only: the channel id this question is about (e.g. "16"). */
+  readonly channelId?: string;
 }
 
 export interface DrillResult {
@@ -147,6 +158,16 @@ const VESSEL_NOUNS = [
 
 export function randomInt(max: number): number {
   return Math.floor(Math.random() * max);
+}
+
+/** Fisher-Yates shuffle returning a new array; original is left untouched. */
+export function shuffle<T>(items: readonly T[]): T[] {
+  const out = [...items];
+  for (let i = out.length - 1; i > 0; i--) {
+    const j = randomInt(i + 1);
+    [out[i], out[j]] = [out[j]!, out[i]!];
+  }
+  return out;
 }
 
 export function randomCallsign(): string {
@@ -275,12 +296,7 @@ export function generateNumberChallenges(
     picks.push(extras[randomInt(extras.length)]!);
   }
 
-  for (let i = picks.length - 1; i > 0; i--) {
-    const j = randomInt(i + 1);
-    [picks[i], picks[j]] = [picks[j]!, picks[i]!];
-  }
-
-  return picks.map((format, i) => buildNumberChallenge(format, i));
+  return shuffle(picks).map((format, i) => buildNumberChallenge(format, i));
 }
 
 /**

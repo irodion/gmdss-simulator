@@ -14,6 +14,7 @@ export const MODE_LABELS: Readonly<Record<AppMode, string>> = {
   reverse: "Listen",
   procedures: "Procedures",
   abbreviation: "Abbreviations",
+  channel: "Channels",
 };
 
 const TABS: ReadonlyArray<{ value: AppMode; numeral: string }> = [
@@ -22,6 +23,7 @@ const TABS: ReadonlyArray<{ value: AppMode; numeral: string }> = [
   { value: "reverse", numeral: "III" },
   { value: "procedures", numeral: "IV" },
   { value: "abbreviation", numeral: "V" },
+  { value: "channel", numeral: "VI" },
 ];
 
 export function ModeTabs({ mode, onChange }: ModeTabsProps) {

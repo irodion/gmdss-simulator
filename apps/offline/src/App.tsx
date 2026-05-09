@@ -2,6 +2,8 @@ import "./styles/app.css";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { AbbreviationCard } from "./components/AbbreviationCard.tsx";
 import { AbbreviationStats } from "./components/AbbreviationStats.tsx";
+import { ChannelCard } from "./components/ChannelCard.tsx";
+import { ChannelCheatsheet } from "./components/ChannelCheatsheet.tsx";
 import { DailyIndicator } from "./components/DailyIndicator.tsx";
 import { DrillCard } from "./components/DrillCard.tsx";
 import { ExamMockResults } from "./components/ExamMockResults.tsx";
@@ -14,6 +16,7 @@ import { SessionResults } from "./components/SessionResults.tsx";
 import { generateAbbreviationChallenges, scoreAbbreviation } from "./drills/abbreviation-mode.ts";
 import { readAdaptivePreference, writeAdaptivePreference } from "./drills/adaptive-prefs.ts";
 import { previewQueue, selectAdaptiveChallenges } from "./drills/adaptive-selection.ts";
+import { generateChannelChallenges, scoreChannel } from "./drills/channel-mode.ts";
 import {
   applySessionAndPersist,
   markExamMockCompleteAndPersist,
@@ -39,14 +42,35 @@ function generateChallenges(mode: DrillType, count: number): DrillChallenge[] {
   if (mode === "phonetic") return generatePhoneticChallenges(count);
   if (mode === "number-pronunciation") return generateNumberChallenges(count);
   if (mode === "abbreviation") return generateAbbreviationChallenges(count);
+  if (mode === "channel") return generateChannelChallenges(count);
   return generateReverseChallenges(count);
 }
 
 function scorerFor(mode: DrillType): (c: DrillChallenge, a: string) => DrillResult {
   if (mode === "reverse") return scoreReverse;
   if (mode === "abbreviation") return scoreAbbreviation;
+  if (mode === "channel") return scoreChannel;
   return scoreDrill;
 }
+
+function cardFor(type: DrillType) {
+  if (type === "abbreviation") return AbbreviationCard;
+  if (type === "channel") return ChannelCard;
+  return DrillCard;
+}
+
+const HELP_BY_MODE: Partial<Record<AppMode, string>> = {
+  phonetic:
+    'Both standard ("THREE") and maritime ("TREE") forms are accepted. Voice quality for "Hear correct" depends on your device.',
+  reverse:
+    'Both standard ("THREE") and maritime ("TREE") forms are accepted. Voice quality for "Hear correct" depends on your device.',
+  "number-pronunciation":
+    'Both standard ("THREE") and maritime ("TREE") forms are accepted. Voice quality for "Hear correct" depends on your device.',
+  abbreviation:
+    "Answers are case-insensitive. Multiple-choice and free-text questions are mixed each session.",
+  channel:
+    "Each session mixes both directions: pick the usage for a given channel, or pick the channel for a given usage.",
+};
 
 function renderExamMockCard(
   challenge: DrillChallenge | null,
@@ -56,7 +80,7 @@ function renderExamMockCard(
   onNext: () => void,
 ) {
   if (!challenge) return null;
-  const Card = challenge.type === "abbreviation" ? AbbreviationCard : DrillCard;
+  const Card = cardFor(challenge.type);
   return (
     <Card
       key={challenge.id}
@@ -221,6 +245,9 @@ export function App() {
     setEventsToken((t) => t + 1);
   }, []);
 
+  const currentChallenge = challenges[index] ?? null;
+  const CurrentCard = currentChallenge ? cardFor(currentChallenge.type) : null;
+
   return (
     <>
       <CompassRose />
@@ -301,32 +328,21 @@ export function App() {
                       preview={preview}
                       adaptiveEnabled={adaptiveEnabled}
                       onAdaptiveChange={handleAdaptiveChange}
+                      cheatsheet={mode === "channel" ? <ChannelCheatsheet /> : undefined}
                     />
                   </>
                 ) : null}
 
-                {mode !== "procedures" && screen === "drill" && challenges[index] ? (
-                  mode === "abbreviation" ? (
-                    <AbbreviationCard
-                      key={challenges[index]!.id}
-                      challenge={challenges[index]!}
-                      index={index}
-                      total={challenges.length}
-                      score={score}
-                      onSubmit={handleSubmit}
-                      onNext={handleNext}
-                    />
-                  ) : (
-                    <DrillCard
-                      key={challenges[index]!.id}
-                      challenge={challenges[index]!}
-                      index={index}
-                      total={challenges.length}
-                      score={score}
-                      onSubmit={handleSubmit}
-                      onNext={handleNext}
-                    />
-                  )
+                {mode !== "procedures" && screen === "drill" && currentChallenge && CurrentCard ? (
+                  <CurrentCard
+                    key={currentChallenge.id}
+                    challenge={currentChallenge}
+                    index={index}
+                    total={challenges.length}
+                    score={score}
+                    onSubmit={handleSubmit}
+                    onNext={handleNext}
+                  />
                 ) : null}
 
                 {mode !== "procedures" && screen === "summary" ? (
@@ -334,18 +350,7 @@ export function App() {
                 ) : null}
               </div>
 
-              {mode !== "procedures" && mode !== "abbreviation" ? (
-                <p className="help">
-                  Both standard ("THREE") and maritime ("TREE") forms are accepted. Voice quality
-                  for "Hear correct" depends on your device.
-                </p>
-              ) : null}
-              {mode === "abbreviation" ? (
-                <p className="help">
-                  Answers are case-insensitive. Multiple-choice and free-text questions are mixed
-                  each session.
-                </p>
-              ) : null}
+              {HELP_BY_MODE[mode] ? <p className="help">{HELP_BY_MODE[mode]}</p> : null}
             </>
           )}
         </article>

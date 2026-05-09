@@ -138,6 +138,32 @@ test("Abbreviations tab runs a 5-question session through to the summary", async
   await expect(page.getByText(/logbook entry/i)).toBeVisible();
 });
 
+test("Channels tab runs a 5-question session through to the summary", async ({ page }) => {
+  await page.goto("/");
+  await page.evaluate(() => window.localStorage.clear());
+
+  await page.getByRole("tab", { name: "Channels" }).click();
+
+  // Cheatsheet sits at the bottom of the config screen, collapsed by default.
+  const cheatsheet = page.locator("details.cheatsheet");
+  await expect(cheatsheet).toBeVisible();
+  await expect(cheatsheet).not.toHaveAttribute("open", "");
+  await expect(page.getByText(/VHF channel usage/i)).toBeVisible();
+
+  await page.getByRole("button", { name: "5" }).click();
+  await page.getByRole("button", { name: /^begin/i }).click();
+
+  for (let i = 1; i <= 5; i++) {
+    await expect(page.getByText(new RegExp(`transmission ${i} of 5`, "i"))).toBeVisible();
+    // Channel mode is always MC; pick the first choice (right or wrong, flow proceeds).
+    await page.locator(".mc-choice").first().click();
+    const next = page.getByRole("button", { name: i === 5 ? /see results/i : /next →/i });
+    await next.click();
+  }
+
+  await expect(page.getByText(/logbook entry/i)).toBeVisible();
+});
+
 test("adaptive toggle and queue preview render on the Callsigns tab", async ({ page }) => {
   await page.goto("/");
   await page.evaluate(() => window.localStorage.clear());
@@ -192,7 +218,7 @@ test("Logbook opens from masthead and renders streak + daily goal + badges secti
   await expect(page.getByRole("button", { name: /reset everything/i })).toBeVisible();
 
   // PR 4: Exam Mock CTA section is also visible.
-  await expect(page.getByRole("button", { name: /take a 20-question exam mock/i })).toBeVisible();
+  await expect(page.getByRole("button", { name: /take a \d+-question exam mock/i })).toBeVisible();
 
   // Back returns to config.
   await page.getByRole("button", { name: /^← back$/i }).click();

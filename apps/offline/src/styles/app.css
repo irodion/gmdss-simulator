@@ -747,6 +747,13 @@
   border-top: 1px solid var(--ink-hair);
   padding-top: 12px;
 }
+.cheatsheet-grid-channels {
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 6px 18px;
+}
+.cheatsheet-grid-channels .cheatsheet-key {
+  min-width: 3.5em;
+}
 .cheatsheet-row {
   display: flex;
   gap: 8px;

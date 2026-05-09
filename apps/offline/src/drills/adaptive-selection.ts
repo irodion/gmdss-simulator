@@ -18,6 +18,8 @@
 import { ABBREVIATIONS, type AbbreviationEntry } from "./abbreviations.ts";
 import { buildChallengeWithDirection } from "./abbreviation-mode.ts";
 import { atomUniverse } from "./atom-universe.ts";
+import { buildChannelChallengeWithDirection } from "./channel-mode.ts";
+import { getChannelEntry } from "./channels.ts";
 import {
   CALLSIGN_CHARS,
   createPhoneticChallenge,
@@ -31,6 +33,7 @@ import { boxFor, deriveAllBoxes, type Box } from "./leitner.ts";
 import {
   listenAtomId,
   parseAbbreviationAtomId,
+  parseChannelAtomId,
   parseNumberAtomId,
   phoneticAtomId,
   type LearningEvent,
@@ -292,6 +295,8 @@ function materialize(
       return materializeNumbers(atomIds);
     case "abbreviation":
       return materializeAbbreviations(atomIds);
+    case "channel":
+      return materializeChannels(atomIds);
   }
 }
 
@@ -400,6 +405,18 @@ function materializeAbbreviations(atomIds: readonly string[]): DrillChallenge[] 
     const entry = ABBREVIATION_LOOKUP.get(parsed.abbr);
     if (!entry) continue;
     challenges.push(buildChallengeWithDirection(entry, parsed.direction, i));
+  }
+  return challenges;
+}
+
+function materializeChannels(atomIds: readonly string[]): DrillChallenge[] {
+  const challenges: DrillChallenge[] = [];
+  for (let i = 0; i < atomIds.length; i++) {
+    const parsed = parseChannelAtomId(atomIds[i]!);
+    if (!parsed) continue;
+    const entry = getChannelEntry(parsed.channel);
+    if (!entry) continue;
+    challenges.push(buildChannelChallengeWithDirection(entry, parsed.direction, i));
   }
   return challenges;
 }
