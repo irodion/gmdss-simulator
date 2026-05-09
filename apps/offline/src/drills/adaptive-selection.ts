@@ -296,7 +296,7 @@ function materialize(
 }
 
 /**
- * Build a 4–7 char callsign whose letter distribution favors the given
+ * Build a 4–6 char callsign whose letter distribution favors the given
  * weight map. Skips vessel names entirely — the fixed adjective×noun pool
  * can't be biased by single-letter weights without producing nonsense.
  */
