@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { MAX_GOAL_TARGET, MIN_GOAL_TARGET } from "../drills/daily-progress.ts";
 
 const PRESETS: readonly number[] = [10, 20, 30, 50];
@@ -12,11 +12,19 @@ export function GoalPicker({ target, onChange }: GoalPickerProps) {
   const isPreset = PRESETS.includes(target);
   const [customText, setCustomText] = useState<string>(isPreset ? "" : String(target));
 
+  // Keep the local input in sync with external target changes — clicking a
+  // preset clears the field; an out-of-range custom value snaps to the
+  // clamped value after submit.
+  useEffect(() => {
+    setCustomText(isPreset ? "" : String(target));
+  }, [target, isPreset]);
+
   const submitCustom = () => {
     const parsed = Number.parseInt(customText, 10);
     if (!Number.isFinite(parsed)) return;
     const clamped = Math.max(MIN_GOAL_TARGET, Math.min(MAX_GOAL_TARGET, parsed));
     onChange(clamped);
+    if (!PRESETS.includes(clamped)) setCustomText(String(clamped));
   };
 
   return (

@@ -57,20 +57,44 @@ const EMPTY_STATE: DailyProgressV1 = Object.freeze({
   unlockedBadges: Object.freeze([]),
 });
 
+const DATE_KEY_RE = /^\d{4}-\d{2}-\d{2}$/;
+
+function isDateKeyOrNull(value: unknown): value is string | null {
+  if (value === null) return true;
+  return typeof value === "string" && DATE_KEY_RE.test(value);
+}
+
 function isDayCount(value: unknown): value is DayCount {
   if (value === null || typeof value !== "object") return false;
   const v = value as Record<string, unknown>;
-  return typeof v["adaptiveItems"] === "number" && typeof v["freeItems"] === "number";
+  return (
+    Number.isFinite(v["adaptiveItems"]) &&
+    Number.isFinite(v["freeItems"]) &&
+    (v["adaptiveItems"] as number) >= 0 &&
+    (v["freeItems"] as number) >= 0
+  );
+}
+
+function isStreakState(value: unknown): value is StreakState {
+  if (value === null || typeof value !== "object") return false;
+  const s = value as Record<string, unknown>;
+  return (
+    Number.isInteger(s["current"]) &&
+    (s["current"] as number) >= 0 &&
+    isDateKeyOrNull(s["lastClearedDate"]) &&
+    isDateKeyOrNull(s["lastFreezeDate"])
+  );
 }
 
 function isDailyProgress(value: unknown): value is DailyProgressV1 {
   if (value === null || typeof value !== "object") return false;
   const v = value as Record<string, unknown>;
   if (v["v"] !== 1) return false;
-  if (typeof v["dailyGoalTarget"] !== "number") return false;
+  if (!Number.isInteger(v["dailyGoalTarget"])) return false;
   if (typeof v["byDate"] !== "object" || v["byDate"] === null) return false;
-  if (typeof v["streak"] !== "object" || v["streak"] === null) return false;
+  if (!isStreakState(v["streak"])) return false;
   if (!Array.isArray(v["unlockedBadges"])) return false;
+  if (!v["unlockedBadges"].every((b) => typeof b === "string")) return false;
   return Object.values(v["byDate"] as Record<string, unknown>).every(isDayCount);
 }
 

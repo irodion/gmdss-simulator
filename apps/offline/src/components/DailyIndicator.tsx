@@ -6,7 +6,9 @@ interface DailyIndicatorProps {
 
 export function DailyIndicator({ streak, itemsToday, target }: DailyIndicatorProps) {
   const cleared = itemsToday >= target;
-  const pct = Math.min(100, Math.round((itemsToday / Math.max(1, target)) * 100));
+  const safeMax = Math.max(1, target);
+  const safeNow = Math.min(itemsToday, safeMax);
+  const pct = Math.min(100, Math.round((itemsToday / safeMax) * 100));
   return (
     <div className="daily-indicator" aria-live="polite">
       <div className="daily-indicator-line">
@@ -41,8 +43,8 @@ export function DailyIndicator({ streak, itemsToday, target }: DailyIndicatorPro
       <div
         className="progress-bar"
         role="progressbar"
-        aria-valuenow={itemsToday}
-        aria-valuemax={target}
+        aria-valuenow={safeNow}
+        aria-valuemax={safeMax}
       >
         <div className="progress-bar-fill" style={{ width: `${pct}%` }} />
       </div>

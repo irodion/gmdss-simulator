@@ -17,9 +17,30 @@ export function getLocalDateKey(timestamp: number): string {
   return `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`;
 }
 
+const DATE_KEY_RE = /^(\d{4})-(\d{2})-(\d{2})$/;
+
+/**
+ * Parse a strict "YYYY-MM-DD" key into a local-time Date at 00:00.
+ * Throws on malformed input — callers (`previousLocalDateKey`, `daysBetween`)
+ * have a strict contract: keys must come from `getLocalDateKey` or pass the
+ * regex above. Validators upstream (e.g. `daily-progress.ts:isDateKeyOrNull`)
+ * reject persisted state with malformed keys before we reach this point.
+ */
 function parseLocalKey(dateKey: string): Date {
-  const [y, m, d] = dateKey.split("-").map((s) => Number.parseInt(s, 10));
-  return new Date(y!, m! - 1, d!);
+  const match = DATE_KEY_RE.exec(dateKey);
+  if (!match) throw new Error(`Invalid date key: ${dateKey}`);
+  const y = Number.parseInt(match[1]!, 10);
+  const m = Number.parseInt(match[2]!, 10);
+  const d = Number.parseInt(match[3]!, 10);
+  if (m < 1 || m > 12 || d < 1 || d > 31) {
+    throw new Error(`Invalid date key: ${dateKey}`);
+  }
+  const date = new Date(y, m - 1, d);
+  // Detect month/day overflow (e.g. "2026-02-30" → Mar 2).
+  if (date.getFullYear() !== y || date.getMonth() !== m - 1 || date.getDate() !== d) {
+    throw new Error(`Invalid date key: ${dateKey}`);
+  }
+  return date;
 }
 
 /** "YYYY-MM-DD" for the day before the given key. Local-time math. */

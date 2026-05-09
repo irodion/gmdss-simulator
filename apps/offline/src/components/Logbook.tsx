@@ -62,7 +62,12 @@ export function Logbook({ progress, onBack, onProgressChanged }: LogbookProps) {
     onProgressChanged();
   };
 
-  const freezeJustApplied = progress.streak.lastFreezeDate === todayKey;
+  // transitionStreak records the consumed freeze on the bridged (yesterday)
+  // day, not today, so the pill should appear when today is cleared AND the
+  // freeze date sits at yesterday.
+  const freezeJustApplied =
+    progress.streak.lastClearedDate === todayKey &&
+    progress.streak.lastFreezeDate === previousLocalDateKey(todayKey);
   const cleared = today.adaptiveItems >= target;
   const pct = Math.min(100, Math.round((today.adaptiveItems / Math.max(1, target)) * 100));
 

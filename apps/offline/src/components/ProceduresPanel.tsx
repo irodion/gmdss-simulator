@@ -25,6 +25,8 @@ type View =
       scenario: Scenario;
       template: SequenceTemplate;
       round: number;
+      /** Adaptive preference snapshot at scenario start — locks the run's classification. */
+      readonly startedAdaptive: boolean;
     };
 
 interface ProceduresPanelProps {
@@ -54,7 +56,8 @@ export function ProceduresPanel({ onSessionRecorded }: ProceduresPanelProps = {}
   }, []);
 
   const startScenario = useCallback((c: ScriptDrillContent) => {
-    const scenario = readAdaptivePreference()
+    const adaptive = readAdaptivePreference();
+    const scenario = adaptive
       ? pickAdaptiveScenario(c.scenarios, readEvents(), recentScenarioId.current)
       : pickScenario(c.scenarios, recentScenarioId.current);
     if (!scenario) return;
@@ -65,6 +68,7 @@ export function ProceduresPanel({ onSessionRecorded }: ProceduresPanelProps = {}
       scenario,
       template,
       round: (prev.kind === "scenario" ? prev.round : 0) + 1,
+      startedAdaptive: adaptive,
     }));
   }, []);
 
@@ -92,7 +96,9 @@ export function ProceduresPanel({ onSessionRecorded }: ProceduresPanelProps = {}
       });
       // Daily-goal accounting: one scenario completion = 5 items, matching
       // the per-dimension event fan-out granularity in the unified store.
-      const adaptive = readAdaptivePreference();
+      // Use the preference snapshot taken at start so a mid-scenario toggle
+      // can't reclassify the run.
+      const adaptive = view.startedAdaptive;
       applySessionAndPersist({
         adaptiveItems: adaptive ? 5 : 0,
         freeItems: adaptive ? 0 : 5,

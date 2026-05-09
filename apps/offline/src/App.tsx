@@ -1,5 +1,5 @@
 import "./styles/app.css";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { AbbreviationCard } from "./components/AbbreviationCard.tsx";
 import { AbbreviationStats } from "./components/AbbreviationStats.tsx";
 import { DailyIndicator } from "./components/DailyIndicator.tsx";
@@ -53,6 +53,11 @@ export function App() {
   // Remember the screen the user was on before opening Logbook so Back
   // resumes a mid-drill or post-summary session rather than dropping to config.
   const [screenBeforeLogbook, setScreenBeforeLogbook] = useState<Screen>("config");
+  // Identity of the results array we last persisted to daily-progress. Each
+  // session resets `results` to a new array reference (handleStart), so this
+  // ref skips re-persisting when the user revisits the summary screen via
+  // logbook → back without starting a fresh session.
+  const lastPersistedResultsRef = useRef<DrillResult[] | null>(null);
 
   const drillMode: DrillType | null = mode === "procedures" ? null : mode;
   const score = useMemo(() => (drillMode ? scorerFor(drillMode) : scoreDrill), [drillMode]);
@@ -83,15 +88,14 @@ export function App() {
 
   useEffect(() => {
     if (screen !== "summary" || !drillMode) return;
+    if (lastPersistedResultsRef.current === results) return;
     const adaptiveItems = adaptiveEnabled ? results.length : 0;
     const freeItems = adaptiveEnabled ? 0 : results.length;
     const next = applySessionAndPersist({ adaptiveItems, freeItems, now: Date.now() });
+    lastPersistedResultsRef.current = results;
     setDailyProgress(next);
     setEventsToken((t) => t + 1);
-    // results are stable for the lifetime of the summary screen; depend on
-    // screen alone so the effect runs once per summary entry.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [screen]);
+  }, [screen, results, drillMode, adaptiveEnabled]);
 
   const handleStart = useCallback(() => {
     if (!drillMode) return;

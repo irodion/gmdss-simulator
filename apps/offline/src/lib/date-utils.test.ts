@@ -71,3 +71,18 @@ describe("daysBetween", () => {
     expect(daysBetween("2024-02-28", "2024-03-01")).toBe(2);
   });
 });
+
+describe("malformed date key handling", () => {
+  test("previousLocalDateKey throws on garbage input", () => {
+    expect(() => previousLocalDateKey("not-a-date")).toThrow(/invalid date key/i);
+    expect(() => previousLocalDateKey("")).toThrow(/invalid date key/i);
+    expect(() => previousLocalDateKey("2026-13-01")).toThrow(/invalid date key/i);
+    expect(() => previousLocalDateKey("2026-02-30")).toThrow(/invalid date key/i);
+    expect(() => previousLocalDateKey("2026-1-1")).toThrow(/invalid date key/i);
+  });
+
+  test("daysBetween throws on garbage input on either side", () => {
+    expect(() => daysBetween("invalid", "2026-05-09")).toThrow(/invalid date key/i);
+    expect(() => daysBetween("2026-05-09", "garbage")).toThrow(/invalid date key/i);
+  });
+});
