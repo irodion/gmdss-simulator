@@ -47,6 +47,10 @@ export interface DailyProgressV1 {
   readonly byDate: Readonly<Record<string, DayCount>>;
   readonly streak: StreakState;
   readonly unlockedBadges: readonly string[];
+  /** PR 4: ISO date of the last Daily Scenario completion. Null/missing = never. */
+  readonly lastDailyScenarioDate?: string | null;
+  /** PR 4: ISO date of the last Exam Mock completion. Null/missing = never. */
+  readonly lastExamMockDate?: string | null;
 }
 
 const EMPTY_STATE: DailyProgressV1 = Object.freeze({
@@ -86,6 +90,10 @@ function isStreakState(value: unknown): value is StreakState {
   );
 }
 
+function isOptionalDateKey(value: unknown): value is string | null | undefined {
+  return value === undefined || isDateKeyOrNull(value);
+}
+
 function isDailyProgress(value: unknown): value is DailyProgressV1 {
   if (value === null || typeof value !== "object") return false;
   const v = value as Record<string, unknown>;
@@ -95,6 +103,8 @@ function isDailyProgress(value: unknown): value is DailyProgressV1 {
   if (!isStreakState(v["streak"])) return false;
   if (!Array.isArray(v["unlockedBadges"])) return false;
   if (!v["unlockedBadges"].every((b) => typeof b === "string")) return false;
+  if (!isOptionalDateKey(v["lastDailyScenarioDate"])) return false;
+  if (!isOptionalDateKey(v["lastExamMockDate"])) return false;
   return Object.values(v["byDate"] as Record<string, unknown>).every(isDayCount);
 }
 
@@ -194,11 +204,10 @@ export function applySessionCompletion(
   const streak = justCrossed ? transitionStreak(state.streak, today) : state.streak;
 
   return {
+    ...state,
     v: 1,
-    dailyGoalTarget: state.dailyGoalTarget,
     byDate: trimmed,
     streak,
-    unlockedBadges: state.unlockedBadges,
   };
 }
 
@@ -206,6 +215,30 @@ export function setDailyGoalTarget(state: DailyProgressV1, target: number): Dail
   const clamped = Math.max(MIN_GOAL_TARGET, Math.min(MAX_GOAL_TARGET, Math.round(target)));
   if (clamped === state.dailyGoalTarget) return state;
   return { ...state, dailyGoalTarget: clamped };
+}
+
+export function markDailyScenarioComplete(state: DailyProgressV1, today: string): DailyProgressV1 {
+  if (state.lastDailyScenarioDate === today) return state;
+  return { ...state, lastDailyScenarioDate: today };
+}
+
+export function markExamMockComplete(state: DailyProgressV1, today: string): DailyProgressV1 {
+  if (state.lastExamMockDate === today) return state;
+  return { ...state, lastExamMockDate: today };
+}
+
+/** Read → mark Daily Scenario → write → return. Idempotent for same-day calls. */
+export function markDailyScenarioCompleteAndPersist(today: string): DailyProgressV1 {
+  const next = markDailyScenarioComplete(readDailyProgress(), today);
+  writeDailyProgress(next);
+  return next;
+}
+
+/** Read → mark Exam Mock → write → return. Idempotent for same-day calls. */
+export function markExamMockCompleteAndPersist(today: string): DailyProgressV1 {
+  const next = markExamMockComplete(readDailyProgress(), today);
+  writeDailyProgress(next);
+  return next;
 }
 
 export function todayCount(state: DailyProgressV1, now: number): DayCount {

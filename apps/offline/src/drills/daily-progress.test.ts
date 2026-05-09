@@ -5,6 +5,10 @@ import {
   BY_DATE_CAP,
   DAILY_PROGRESS_KEY,
   DEFAULT_GOAL_TARGET,
+  markDailyScenarioComplete,
+  markDailyScenarioCompleteAndPersist,
+  markExamMockComplete,
+  markExamMockCompleteAndPersist,
   readDailyProgress,
   resetEverything,
   setDailyGoalTarget,
@@ -297,5 +301,123 @@ describe("resetEverything", () => {
 
     expect(window.localStorage.getItem("roc-trainer:install-dismissed")).toBe("1");
     expect(window.localStorage.getItem("gmdss-offline:procedures:tts-enabled")).toBe("true");
+  });
+});
+
+describe("markDailyScenarioComplete / markExamMockComplete", () => {
+  test("markDailyScenarioComplete sets the field on first call", () => {
+    const next = markDailyScenarioComplete(freshState(), "2026-05-09");
+    expect(next.lastDailyScenarioDate).toBe("2026-05-09");
+  });
+
+  test("markDailyScenarioComplete is idempotent for same-day calls", () => {
+    const a = markDailyScenarioComplete(freshState(), "2026-05-09");
+    const b = markDailyScenarioComplete(a, "2026-05-09");
+    expect(b).toBe(a);
+  });
+
+  test("markDailyScenarioComplete updates when the day rolls over", () => {
+    const a = markDailyScenarioComplete(freshState(), "2026-05-09");
+    const b = markDailyScenarioComplete(a, "2026-05-10");
+    expect(b.lastDailyScenarioDate).toBe("2026-05-10");
+  });
+
+  test("markExamMockComplete sets the field independently", () => {
+    const next = markExamMockComplete(freshState(), "2026-05-09");
+    expect(next.lastExamMockDate).toBe("2026-05-09");
+    expect(next.lastDailyScenarioDate).toBeUndefined();
+  });
+
+  test("markExamMockComplete is idempotent", () => {
+    const a = markExamMockComplete(freshState(), "2026-05-09");
+    const b = markExamMockComplete(a, "2026-05-09");
+    expect(b).toBe(a);
+  });
+
+  test("markDailyScenarioCompleteAndPersist roundtrips through localStorage", () => {
+    markDailyScenarioCompleteAndPersist("2026-05-09");
+    expect(readDailyProgress().lastDailyScenarioDate).toBe("2026-05-09");
+  });
+
+  test("markExamMockCompleteAndPersist roundtrips through localStorage", () => {
+    markExamMockCompleteAndPersist("2026-05-09");
+    expect(readDailyProgress().lastExamMockDate).toBe("2026-05-09");
+  });
+
+  test("applySessionCompletion preserves PR 4 cooldown fields", () => {
+    // Regression: previously the function returned a fresh object that omitted
+    // lastDailyScenarioDate / lastExamMockDate, so any session after a Daily
+    // Scenario or Exam Mock would silently wipe the cooldown.
+    const seeded: DailyProgressV1 = {
+      ...freshState(),
+      lastDailyScenarioDate: "2026-05-09",
+      lastExamMockDate: "2026-05-09",
+    };
+    const next = applySessionCompletion(seeded, {
+      adaptiveItems: 5,
+      freeItems: 0,
+      now: localTimestamp(2026, 5, 9, 14),
+    });
+    expect(next.lastDailyScenarioDate).toBe("2026-05-09");
+    expect(next.lastExamMockDate).toBe("2026-05-09");
+  });
+});
+
+describe("DailyProgressV1 forward-compat validator", () => {
+  test("accepts state without the PR 4 optional fields", () => {
+    const stored = {
+      v: 1,
+      dailyGoalTarget: 30,
+      byDate: {},
+      streak: { current: 1, lastClearedDate: "2026-05-09", lastFreezeDate: null },
+      unlockedBadges: [],
+    };
+    window.localStorage.setItem(DAILY_PROGRESS_KEY, JSON.stringify(stored));
+    const read = readDailyProgress();
+    expect(read.lastDailyScenarioDate).toBeUndefined();
+    expect(read.lastExamMockDate).toBeUndefined();
+    expect(read.streak.current).toBe(1);
+  });
+
+  test("rejects malformed lastDailyScenarioDate", () => {
+    const malformed = {
+      v: 1,
+      dailyGoalTarget: 30,
+      byDate: {},
+      streak: { current: 0, lastClearedDate: null, lastFreezeDate: null },
+      unlockedBadges: [],
+      lastDailyScenarioDate: "not-a-date",
+    };
+    window.localStorage.setItem(DAILY_PROGRESS_KEY, JSON.stringify(malformed));
+    expect(readDailyProgress()).toEqual(freshState());
+  });
+
+  test("rejects malformed lastExamMockDate", () => {
+    const malformed = {
+      v: 1,
+      dailyGoalTarget: 30,
+      byDate: {},
+      streak: { current: 0, lastClearedDate: null, lastFreezeDate: null },
+      unlockedBadges: [],
+      lastExamMockDate: 12345,
+    };
+    window.localStorage.setItem(DAILY_PROGRESS_KEY, JSON.stringify(malformed));
+    expect(readDailyProgress()).toEqual(freshState());
+  });
+
+  test("accepts null for both new fields", () => {
+    const stored = {
+      v: 1,
+      dailyGoalTarget: 30,
+      byDate: {},
+      streak: { current: 0, lastClearedDate: null, lastFreezeDate: null },
+      unlockedBadges: [],
+      lastDailyScenarioDate: null,
+      lastExamMockDate: null,
+    };
+    window.localStorage.setItem(DAILY_PROGRESS_KEY, JSON.stringify(stored));
+    const read = readDailyProgress();
+    expect(read.lastDailyScenarioDate).toBeNull();
+    expect(read.lastExamMockDate).toBeNull();
   });
 });

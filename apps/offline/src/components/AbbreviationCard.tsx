@@ -9,6 +9,8 @@ interface AbbreviationCardProps {
   readonly score: (challenge: DrillChallenge, answer: string) => DrillResult;
   readonly onSubmit: (result: DrillResult) => void;
   readonly onNext: () => void;
+  /** When true, MC choices stay neutral after submit and ResultBadge is hidden. */
+  readonly suppressFeedback?: boolean;
 }
 
 export function AbbreviationCard({
@@ -18,6 +20,7 @@ export function AbbreviationCard({
   score,
   onSubmit,
   onNext,
+  suppressFeedback = false,
 }: AbbreviationCardProps) {
   const [answer, setAnswer] = useState("");
   const [picked, setPicked] = useState<string | null>(null);
@@ -51,7 +54,7 @@ export function AbbreviationCard({
   }
 
   function choiceState(choice: string): "neutral" | "correct" | "wrong" {
-    if (result === null) return "neutral";
+    if (result === null || suppressFeedback) return "neutral";
     if (choice === challenge.expectedAnswer) return "correct";
     if (choice === picked) return "wrong";
     return "neutral";
@@ -144,7 +147,7 @@ export function AbbreviationCard({
         ) : null}
       </div>
 
-      {result !== null ? (
+      {result !== null && !suppressFeedback ? (
         <ResultBadge result={result} correctAnswer={challenge.expectedAnswer} />
       ) : null}
     </div>
