@@ -1,6 +1,6 @@
 /** Same date → same scenario, with adjacent days strictly never colliding. */
 
-import { daysBetween, previousLocalDateKey } from "../../lib/date-utils.ts";
+import { daysBetween } from "../../lib/date-utils.ts";
 import type { ScenarioBank } from "./types.ts";
 
 export function pickDailyScenarioId(bank: ScenarioBank, dateKey: string): string | null {
@@ -17,20 +17,14 @@ export function pickDailyScenarioId(bank: ScenarioBank, dateKey: string): string
  * the result independent of the query day (so today's chain agrees with
  * yesterday's chain on every shared day), we walk forward from a fixed
  * `ANCHOR_DATE_KEY`, chosen far enough in the past that the cost is bounded
- * (~one or two thousand cheap hashes) and the algorithm is anchor-stable
- * for every plausible call.
+ * (~one or two thousand cheap hashes) for any plausible call. Production
+ * callers always pass `getLocalDateKey(Date.now())` — pre-anchor dates are
+ * out of contract and would collapse to the anchor's served value.
  */
 const ANCHOR_DATE_KEY = "2024-01-01";
 
 function servedIdx(dateKey: string, n: number): number {
-  const distance = daysBetween(ANCHOR_DATE_KEY, dateKey);
-  if (distance < 0) {
-    // Pre-anchor dates fall back to a single-step rule. Practical callers
-    // always pass today or near-future, so this branch is defensive only.
-    const yesterdayRaw = hashIndex(previousLocalDateKey(dateKey), n);
-    const raw = hashIndex(dateKey, n);
-    return raw === yesterdayRaw ? (raw + 1) % n : raw;
-  }
+  const distance = Math.max(0, daysBetween(ANCHOR_DATE_KEY, dateKey));
   let cursor = ANCHOR_DATE_KEY;
   let served = hashIndex(cursor, n);
   for (let i = 0; i < distance; i++) {
