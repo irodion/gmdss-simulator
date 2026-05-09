@@ -4,6 +4,7 @@ import { AbbreviationCard } from "./components/AbbreviationCard.tsx";
 import { AbbreviationStats } from "./components/AbbreviationStats.tsx";
 import { DailyIndicator } from "./components/DailyIndicator.tsx";
 import { DrillCard } from "./components/DrillCard.tsx";
+import { ExamMockResults } from "./components/ExamMockResults.tsx";
 import { InstallChip } from "./components/InstallChip.tsx";
 import { Logbook } from "./components/Logbook.tsx";
 import { ModeTabs, type AppMode } from "./components/ModeTabs.tsx";
@@ -13,7 +14,12 @@ import { SessionResults } from "./components/SessionResults.tsx";
 import { generateAbbreviationChallenges, scoreAbbreviation } from "./drills/abbreviation-mode.ts";
 import { readAdaptivePreference, writeAdaptivePreference } from "./drills/adaptive-prefs.ts";
 import { previewQueue, selectAdaptiveChallenges } from "./drills/adaptive-selection.ts";
-import { applySessionAndPersist, readDailyProgress, todayCount } from "./drills/daily-progress.ts";
+import {
+  applySessionAndPersist,
+  markExamMockCompleteAndPersist,
+  readDailyProgress,
+  todayCount,
+} from "./drills/daily-progress.ts";
 import {
   generateNumberChallenges,
   generatePhoneticChallenges,
@@ -22,10 +28,12 @@ import {
   type DrillResult,
   type DrillType,
 } from "./drills/drill-types.ts";
+import { selectExamMockChallenges, summarizeExamMock } from "./drills/exam-mock.ts";
 import { readEvents, recordDrillAttempt } from "./drills/learning-events.ts";
 import { generateReverseChallenges, scoreReverse } from "./drills/reverse-mode.ts";
+import { getLocalDateKey } from "./lib/date-utils.ts";
 
-type Screen = "config" | "drill" | "summary" | "logbook";
+type Screen = "config" | "drill" | "summary" | "logbook" | "exam-mock" | "exam-mock-summary";
 
 function generateChallenges(mode: DrillType, count: number): DrillChallenge[] {
   if (mode === "phonetic") return generatePhoneticChallenges(count);
@@ -38,6 +46,29 @@ function scorerFor(mode: DrillType): (c: DrillChallenge, a: string) => DrillResu
   if (mode === "reverse") return scoreReverse;
   if (mode === "abbreviation") return scoreAbbreviation;
   return scoreDrill;
+}
+
+function renderExamMockCard(
+  challenge: DrillChallenge | null,
+  index: number,
+  total: number,
+  onSubmit: (r: DrillResult) => void,
+  onNext: () => void,
+) {
+  if (!challenge) return null;
+  const Card = challenge.type === "abbreviation" ? AbbreviationCard : DrillCard;
+  return (
+    <Card
+      key={challenge.id}
+      challenge={challenge}
+      index={index}
+      total={total}
+      score={scorerFor(challenge.type)}
+      onSubmit={onSubmit}
+      onNext={onNext}
+      suppressFeedback
+    />
+  );
 }
 
 export function App() {
@@ -58,6 +89,13 @@ export function App() {
   // ref skips re-persisting when the user revisits the summary screen via
   // logbook → back without starting a fresh session.
   const lastPersistedResultsRef = useRef<DrillResult[] | null>(null);
+
+  // Exam Mock state — separate from regular `challenges`/`results` so a
+  // drill in flight isn't disturbed when the user launches an exam from Logbook.
+  const [examMockChallenges, setExamMockChallenges] = useState<DrillChallenge[]>([]);
+  const [examMockIndex, setExamMockIndex] = useState(0);
+  const [examMockResults, setExamMockResults] = useState<DrillResult[]>([]);
+  const lastPersistedExamResultsRef = useRef<DrillResult[] | null>(null);
 
   const drillMode: DrillType | null = mode === "procedures" ? null : mode;
   const score = useMemo(() => (drillMode ? scorerFor(drillMode) : scoreDrill), [drillMode]);
@@ -96,6 +134,18 @@ export function App() {
     setDailyProgress(next);
     setEventsToken((t) => t + 1);
   }, [screen, results, drillMode, adaptiveEnabled]);
+
+  useEffect(() => {
+    if (screen !== "exam-mock-summary") return;
+    if (lastPersistedExamResultsRef.current === examMockResults) return;
+    if (examMockResults.length === 0) return;
+    const now = Date.now();
+    applySessionAndPersist({ adaptiveItems: examMockResults.length, freeItems: 0, now });
+    markExamMockCompleteAndPersist(getLocalDateKey(now));
+    lastPersistedExamResultsRef.current = examMockResults;
+    setDailyProgress(readDailyProgress());
+    setEventsToken((t) => t + 1);
+  }, [screen, examMockResults]);
 
   const handleStart = useCallback(() => {
     if (!drillMode) return;
@@ -141,6 +191,36 @@ export function App() {
     writeAdaptivePreference(enabled);
   }, []);
 
+  const handleLaunchExamMock = useCallback(() => {
+    setExamMockChallenges(selectExamMockChallenges(readEvents()));
+    setExamMockIndex(0);
+    setExamMockResults([]);
+    lastPersistedExamResultsRef.current = null;
+    setScreen("exam-mock");
+  }, []);
+
+  const handleExamSubmit = useCallback((result: DrillResult) => {
+    setExamMockResults((prev) => [...prev, result]);
+    recordDrillAttempt(result.challenge.type, result);
+  }, []);
+
+  const handleExamNext = useCallback(() => {
+    if (examMockIndex + 1 >= examMockChallenges.length) {
+      setScreen("exam-mock-summary");
+    } else {
+      setExamMockIndex((i) => i + 1);
+    }
+  }, [examMockIndex, examMockChallenges.length]);
+
+  const handleExamMockClose = useCallback(() => {
+    setScreenBeforeLogbook("config");
+    setScreen("logbook");
+    setExamMockChallenges([]);
+    setExamMockResults([]);
+    setExamMockIndex(0);
+    setEventsToken((t) => t + 1);
+  }, []);
+
   return (
     <>
       <CompassRose />
@@ -171,6 +251,20 @@ export function App() {
               progress={dailyProgress}
               onBack={closeLogbook}
               onProgressChanged={refreshDailyProgress}
+              onLaunchExamMock={handleLaunchExamMock}
+            />
+          ) : screen === "exam-mock" ? (
+            renderExamMockCard(
+              examMockChallenges[examMockIndex] ?? null,
+              examMockIndex,
+              examMockChallenges.length,
+              handleExamSubmit,
+              handleExamNext,
+            )
+          ) : screen === "exam-mock-summary" ? (
+            <ExamMockResults
+              summary={summarizeExamMock(examMockResults)}
+              onClose={handleExamMockClose}
             />
           ) : (
             <>

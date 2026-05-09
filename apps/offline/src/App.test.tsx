@@ -1,6 +1,7 @@
 import { fireEvent, render, screen, within } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, test, vi } from "vite-plus/test";
 import { App } from "./App.tsx";
+import { getLocalDateKey } from "./lib/date-utils.ts";
 
 beforeEach(() => {
   // Provide a no-op speechSynthesis so isSupported() is true and TTS calls don't blow up.
@@ -150,8 +151,7 @@ describe("App", () => {
     const parsed = JSON.parse(raw!) as {
       byDate: Record<string, { adaptiveItems: number; freeItems: number }>;
     };
-    const today = new Date();
-    const todayKey = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
+    const todayKey = getLocalDateKey(Date.now());
     expect(parsed.byDate[todayKey]?.adaptiveItems).toBe(5);
   });
 
@@ -353,5 +353,36 @@ describe("App", () => {
     fireEvent.click(screen.getByRole("button", { name: /begin a new watch/i }));
     expect(screen.queryByText(/no attempts yet/i)).toBeNull();
     expect(screen.getByRole("button", { name: /reset stats/i })).toBeTruthy();
+  });
+
+  test("Exam Mock launch from Logbook flips to exam screen with no per-item feedback", () => {
+    window.localStorage.clear();
+    render(<App />);
+    fireEvent.click(screen.getByRole("button", { name: /^logbook$/i }));
+    fireEvent.click(screen.getByRole("button", { name: /take a 20-question exam mock/i }));
+    // Mode tabs hidden, drill card visible.
+    expect(screen.queryByRole("tab", { name: "Callsigns" })).toBeNull();
+    expect(screen.getByText(/transmission 1 of 20/i)).toBeTruthy();
+  });
+
+  test("Exam Mock cooldown disables the Logbook button after completion", () => {
+    window.localStorage.clear();
+    // Pre-seed lastExamMockDate to today so the Logbook renders cooldown state directly.
+    const todayKey = getLocalDateKey(Date.now());
+    window.localStorage.setItem(
+      "roc-trainer:daily-progress",
+      JSON.stringify({
+        v: 1,
+        dailyGoalTarget: 30,
+        byDate: {},
+        streak: { current: 0, lastClearedDate: null, lastFreezeDate: null },
+        unlockedBadges: [],
+        lastExamMockDate: todayKey,
+      }),
+    );
+    render(<App />);
+    fireEvent.click(screen.getByRole("button", { name: /^logbook$/i }));
+    const button = screen.getByRole("button", { name: /already taken today/i });
+    expect((button as HTMLButtonElement).disabled).toBe(true);
   });
 });

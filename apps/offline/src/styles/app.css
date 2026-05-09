@@ -1366,6 +1366,72 @@
   color: var(--ink-soft);
 }
 
+/* PR 4 — Daily Scenario tile */
+.proc-tile-daily[data-done="true"] {
+  border-left-color: var(--ink-line);
+  background: var(--paper);
+}
+.proc-tile-daily[data-done="true"] .proc-tile-title {
+  color: var(--ink-soft);
+}
+.proc-tile-priority {
+  display: inline-block;
+  padding: 2px 8px;
+  margin-right: 6px;
+  font-family: var(--mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  border: 1px solid var(--brass);
+  color: var(--brass-deep);
+  vertical-align: 2px;
+}
+.proc-tile-priority[data-priority="pan_pan"] {
+  border-color: var(--ink);
+  color: var(--ink);
+}
+.proc-tile-priority[data-priority="securite"] {
+  border-color: var(--ink-line);
+  color: var(--ink-soft);
+}
+
+/* PR 4 — Exam Mock results */
+.exam-results {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 4px 4px;
+}
+.exam-results .summary-detail[data-state="pass"] {
+  color: var(--ink);
+}
+.exam-results .summary-detail[data-state="fail"] {
+  color: var(--ink-soft);
+}
+.exam-breakdown {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--mono);
+  font-size: 0.85rem;
+  margin: 4px 0 16px;
+}
+.exam-breakdown th,
+.exam-breakdown td {
+  text-align: left;
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--ink-line);
+}
+.exam-breakdown th {
+  font-weight: 400;
+  color: var(--ink-soft);
+}
+.exam-breakdown td {
+  font-feature-settings: "tnum";
+  color: var(--ink);
+  text-align: right;
+}
+
 /* ── Structural sequencing drill ── */
 .seq-part {
   margin: 8px 0 18px;

@@ -1,9 +1,15 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { getLocalDateKey } from "../lib/date-utils.ts";
 import { readAdaptivePreference } from "../drills/adaptive-prefs.ts";
-import { applySessionAndPersist } from "../drills/daily-progress.ts";
+import {
+  applySessionAndPersist,
+  markDailyScenarioCompleteAndPersist,
+  readDailyProgress,
+} from "../drills/daily-progress.ts";
 import { readEvents } from "../drills/learning-events.ts";
 import { pickAdaptiveScenario } from "../drills/scripts/adaptive-scenarios.ts";
 import { loadScriptDrillContent } from "../drills/scripts/content-loader.ts";
+import { pickDailyScenarioId } from "../drills/scripts/daily-scenario.ts";
 import { materializeScenario } from "../drills/scripts/materialize.ts";
 import { recordAttempt } from "../drills/scripts/stats.ts";
 import {
@@ -27,6 +33,8 @@ type View =
       round: number;
       /** Adaptive preference snapshot at scenario start — locks the run's classification. */
       readonly startedAdaptive: boolean;
+      /** Daily Scenario flag — completion writes lastDailyScenarioDate (once per day). */
+      readonly isDaily: boolean;
     };
 
 interface ProceduresPanelProps {
@@ -69,13 +77,42 @@ export function ProceduresPanel({ onSessionRecorded }: ProceduresPanelProps = {}
       template,
       round: (prev.kind === "scenario" ? prev.round : 0) + 1,
       startedAdaptive: adaptive,
+      isDaily: false,
     }));
   }, []);
+
+  const startDailyScenario = useCallback(
+    (c: ScriptDrillContent) => {
+      const today = getLocalDateKey(Date.now());
+      const id = pickDailyScenarioId(c.scenarios, today);
+      const scenario = id != null ? c.scenarios.scenarios.find((s) => s.id === id) : null;
+      if (!scenario) {
+        startScenario(c);
+        return;
+      }
+      recentScenarioId.current = scenario.id;
+      const template = materializeScenario(scenario, c.rubrics);
+      setView((prev) => ({
+        kind: "scenario",
+        scenario,
+        template,
+        round: (prev.kind === "scenario" ? prev.round : 0) + 1,
+        startedAdaptive: readAdaptivePreference(),
+        isDaily: true,
+      }));
+    },
+    [startScenario],
+  );
 
   const handleStart = useCallback(() => {
     if (!content) return;
     startScenario(content);
   }, [content, startScenario]);
+
+  const handleStartDaily = useCallback(() => {
+    if (!content) return;
+    startDailyScenario(content);
+  }, [content, startDailyScenario]);
 
   const handleComplete = useCallback(
     (grade: SequenceGrade) => {
@@ -85,6 +122,7 @@ export function ProceduresPanel({ onSessionRecorded }: ProceduresPanelProps = {}
         dimensionPasses[d.id] = d.status === "pass";
       }
       const now = Date.now();
+      const today = getLocalDateKey(now);
       recordAttempt({
         rubricId: view.template.rubricId,
         mode: "scenario",
@@ -97,13 +135,19 @@ export function ProceduresPanel({ onSessionRecorded }: ProceduresPanelProps = {}
       // Daily-goal accounting: one scenario completion = 5 items, matching
       // the per-dimension event fan-out granularity in the unified store.
       // Use the preference snapshot taken at start so a mid-scenario toggle
-      // can't reclassify the run.
+      // can't reclassify the run. Re-launching today's Daily Scenario plays
+      // but doesn't re-credit — preserves the streak's ungameable property.
       const adaptive = view.startedAdaptive;
-      applySessionAndPersist({
-        adaptiveItems: adaptive ? 5 : 0,
-        freeItems: adaptive ? 0 : 5,
-        now,
-      });
+      const alreadyCreditedToday =
+        view.isDaily && readDailyProgress().lastDailyScenarioDate === today;
+      if (!alreadyCreditedToday) {
+        applySessionAndPersist({
+          adaptiveItems: adaptive ? 5 : 0,
+          freeItems: adaptive ? 0 : 5,
+          now,
+        });
+        if (view.isDaily) markDailyScenarioCompleteAndPersist(today);
+      }
       setStatsToken((t) => t + 1);
       onSessionRecorded?.();
     },
@@ -128,6 +172,28 @@ export function ProceduresPanel({ onSessionRecorded }: ProceduresPanelProps = {}
   }, []);
 
   const scenarioCount = useMemo(() => content?.scenarios.scenarios.length ?? 0, [content]);
+
+  const todayKey = getLocalDateKey(Date.now());
+  const daily = useMemo(() => {
+    if (!content) return null;
+    const id = pickDailyScenarioId(content.scenarios, todayKey);
+    if (!id) return null;
+    const s = content.scenarios.scenarios.find((sc) => sc.id === id);
+    if (!s) return null;
+    const [year, month, day] = todayKey.split("-").map(Number);
+    const dateLabel = new Date(year!, month! - 1, day!).toLocaleDateString(undefined, {
+      month: "short",
+      day: "numeric",
+    });
+    const doneToday = readDailyProgress().lastDailyScenarioDate === todayKey;
+    return {
+      scenario: { id: s.id, vesselName: s.facts.vessel, priority: s.priority },
+      dateLabel,
+      doneToday,
+      onStart: handleStartDaily,
+    };
+    // statsToken changes after each scenario completion so doneToday refreshes.
+  }, [content, todayKey, statsToken, handleStartDaily]);
 
   if (error) {
     return (
@@ -162,6 +228,7 @@ export function ProceduresPanel({ onSessionRecorded }: ProceduresPanelProps = {}
       statsToken={statsToken}
       scenarioCount={scenarioCount}
       onStart={handleStart}
+      daily={daily}
     />
   );
 }

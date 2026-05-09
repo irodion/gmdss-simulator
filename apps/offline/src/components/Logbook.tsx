@@ -18,9 +18,10 @@ interface LogbookProps {
   readonly progress: DailyProgressV1;
   readonly onBack: () => void;
   readonly onProgressChanged: () => void;
+  readonly onLaunchExamMock: () => void;
 }
 
-export function Logbook({ progress, onBack, onProgressChanged }: LogbookProps) {
+export function Logbook({ progress, onBack, onProgressChanged, onLaunchExamMock }: LogbookProps) {
   const now = Date.now();
   const todayKey = getLocalDateKey(now);
   const today = todayCount(progress, now);
@@ -70,6 +71,7 @@ export function Logbook({ progress, onBack, onProgressChanged }: LogbookProps) {
     progress.streak.lastFreezeDate === previousLocalDateKey(todayKey);
   const cleared = today.adaptiveItems >= target;
   const pct = Math.min(100, Math.round((today.adaptiveItems / Math.max(1, target)) * 100));
+  const examTakenToday = progress.lastExamMockDate === todayKey;
 
   return (
     <div className="logbook">
@@ -126,6 +128,22 @@ export function Logbook({ progress, onBack, onProgressChanged }: LogbookProps) {
       <section className="logbook-section">
         <div className="section-eyebrow">Daily goal</div>
         <GoalPicker target={target} onChange={onTargetChange} />
+      </section>
+
+      <section className="logbook-section">
+        <div className="section-eyebrow">Exam Mock</div>
+        <p className="help">
+          Twenty questions interleaved across all four count-driven modes. No feedback until the
+          end. Once per day.
+        </p>
+        <button
+          type="button"
+          className="btn-primary btn-block"
+          onClick={onLaunchExamMock}
+          disabled={examTakenToday}
+        >
+          {examTakenToday ? "Already taken today" : "Take a 20-question exam mock"}
+        </button>
       </section>
 
       <section className="logbook-section">

@@ -191,9 +191,22 @@ test("Logbook opens from masthead and renders streak + daily goal + badges secti
   await expect(page.locator(".badge-grid")).toBeVisible();
   await expect(page.getByRole("button", { name: /reset everything/i })).toBeVisible();
 
+  // PR 4: Exam Mock CTA section is also visible.
+  await expect(page.getByRole("button", { name: /take a 20-question exam mock/i })).toBeVisible();
+
   // Back returns to config.
   await page.getByRole("button", { name: /^← back$/i }).click();
   await expect(page.getByRole("tab", { name: "Callsigns" })).toBeVisible();
+});
+
+test("Procedures tab shows two tiles including the Daily Scenario", async ({ page }) => {
+  await page.goto("/");
+  await page.evaluate(() => window.localStorage.clear());
+  await page.reload();
+  await page.getByRole("tab", { name: "Procedures" }).click();
+  await expect(page.locator(".proc-tile").nth(0)).toBeVisible();
+  await expect(page.locator(".proc-tile-daily")).toBeVisible();
+  await expect(page.getByText(/today ·/i)).toBeVisible();
 });
 
 test("service worker is registered after first load", async ({ page }) => {

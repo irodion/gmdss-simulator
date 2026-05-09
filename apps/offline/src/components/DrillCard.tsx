@@ -11,9 +11,19 @@ interface DrillCardProps {
   readonly score: (challenge: DrillChallenge, answer: string) => DrillResult;
   readonly onSubmit: (result: DrillResult) => void;
   readonly onNext: () => void;
+  /** When true, hide ResultBadge and "Hear correct" — for Exam Mock conditions. */
+  readonly suppressFeedback?: boolean;
 }
 
-export function DrillCard({ challenge, index, total, score, onSubmit, onNext }: DrillCardProps) {
+export function DrillCard({
+  challenge,
+  index,
+  total,
+  score,
+  onSubmit,
+  onNext,
+  suppressFeedback = false,
+}: DrillCardProps) {
   const [answer, setAnswer] = useState("");
   const [dictating, setDictating] = useState(false);
   const [result, setResult] = useState<DrillResult | null>(null);
@@ -146,7 +156,7 @@ export function DrillCard({ challenge, index, total, score, onSubmit, onNext }: 
           </button>
         ) : (
           <>
-            {ttsAvailable ? (
+            {ttsAvailable && !suppressFeedback ? (
               <button type="button" className="btn-secondary" onClick={handlePlay}>
                 🔊 Hear correct
               </button>
@@ -158,7 +168,7 @@ export function DrillCard({ challenge, index, total, score, onSubmit, onNext }: 
         )}
       </div>
 
-      {result !== null ? (
+      {result !== null && !suppressFeedback ? (
         <ResultBadge
           result={result}
           correctAnswer={isReverse ? (challenge.spoken ?? "") : challenge.expectedAnswer}
