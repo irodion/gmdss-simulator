@@ -176,6 +176,26 @@ test("flipping to Free Practice hides the queue preview and persists across relo
   await expect(toggleAfterReload).toHaveAttribute("aria-checked", "false");
 });
 
+test("Logbook opens from masthead and renders streak + daily goal + badges sections", async ({
+  page,
+}) => {
+  await page.goto("/");
+  await page.evaluate(() => window.localStorage.clear());
+  await page.reload();
+
+  await page.getByRole("button", { name: /^logbook$/i }).click();
+
+  await expect(page.locator(".streak-block")).toBeVisible();
+  await expect(page.getByText(/day streak/i)).toBeVisible();
+  await expect(page.getByText(/adaptive items/i)).toBeVisible();
+  await expect(page.locator(".badge-grid")).toBeVisible();
+  await expect(page.getByRole("button", { name: /reset everything/i })).toBeVisible();
+
+  // Back returns to config.
+  await page.getByRole("button", { name: /^← back$/i }).click();
+  await expect(page.getByRole("tab", { name: "Callsigns" })).toBeVisible();
+});
+
 test("service worker is registered after first load", async ({ page }) => {
   await page.goto("/");
   // Service worker registration is async; wait for the SW controller to take over.

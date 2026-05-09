@@ -1,5 +1,12 @@
 import { describe, expect, test } from "vite-plus/test";
-import { boxFor, deriveAllBoxes, deriveBox, MAX_BOX, NEW_BOX } from "./leitner.ts";
+import {
+  boxFor,
+  deriveAllBoxes,
+  deriveBox,
+  deriveMaxCorrectStreak,
+  MAX_BOX,
+  NEW_BOX,
+} from "./leitner.ts";
 import type { LearningEvent } from "./learning-events.ts";
 
 function ev(over: Partial<LearningEvent> = {}): LearningEvent {
@@ -126,5 +133,52 @@ describe("boxFor", () => {
 
   test("returns NEW_BOX for unknown atoms", () => {
     expect(boxFor(new Map(), "phon:Z")).toBe(NEW_BOX);
+  });
+});
+
+describe("deriveMaxCorrectStreak", () => {
+  test("empty events return 0", () => {
+    expect(deriveMaxCorrectStreak([])).toBe(0);
+  });
+
+  test("counts the longest run of consecutive correct events", () => {
+    const events: LearningEvent[] = [
+      ev({ ts: 1, correct: true }),
+      ev({ ts: 2, correct: true }),
+      ev({ ts: 3, correct: false }),
+      ev({ ts: 4, correct: true }),
+      ev({ ts: 5, correct: true }),
+      ev({ ts: 6, correct: true }),
+      ev({ ts: 7, correct: false }),
+    ];
+    expect(deriveMaxCorrectStreak(events)).toBe(3);
+  });
+
+  test("a single wrong answer resets the run mid-streak", () => {
+    const events: LearningEvent[] = [
+      ...Array.from({ length: 5 }, (_, i) => ev({ ts: i + 1, correct: true })),
+      ev({ ts: 99, correct: false }),
+      ...Array.from({ length: 3 }, (_, i) => ev({ ts: 100 + i, correct: true })),
+    ];
+    expect(deriveMaxCorrectStreak(events)).toBe(5);
+  });
+
+  test("all wrong returns 0", () => {
+    const events = Array.from({ length: 10 }, (_, i) => ev({ ts: i, correct: false }));
+    expect(deriveMaxCorrectStreak(events)).toBe(0);
+  });
+
+  test("all correct returns the full count", () => {
+    const events = Array.from({ length: 25 }, (_, i) => ev({ ts: i, correct: true }));
+    expect(deriveMaxCorrectStreak(events)).toBe(25);
+  });
+
+  test("counts run across atoms (cross-mode streak)", () => {
+    const events: LearningEvent[] = [
+      ev({ ts: 1, atomId: "phon:A", correct: true }),
+      ev({ ts: 2, atomId: "lstn:B", correct: true }),
+      ev({ ts: 3, atomId: "num:position", mode: "number-pronunciation", correct: true }),
+    ];
+    expect(deriveMaxCorrectStreak(events)).toBe(3);
   });
 });
