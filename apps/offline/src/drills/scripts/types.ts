@@ -116,7 +116,9 @@ export interface SequencePartGrade {
   readonly missing: readonly SequenceItem[];
 }
 
-export type DimensionId = "priority" | "vessel" | "body" | "ending" | "procedure";
+/** Canonical, ordered dimension list — single source of truth for DimensionId. */
+export const KNOWN_DIMENSIONS = ["priority", "vessel", "body", "ending", "procedure"] as const;
+export type DimensionId = (typeof KNOWN_DIMENSIONS)[number];
 export type DimensionStatus = "pass" | "partial" | "fail";
 
 export interface SequenceScoreDimension {

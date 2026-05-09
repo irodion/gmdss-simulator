@@ -138,6 +138,44 @@ test("Abbreviations tab runs a 5-question session through to the summary", async
   await expect(page.getByText(/logbook entry/i)).toBeVisible();
 });
 
+test("adaptive toggle and queue preview render on the Callsigns tab", async ({ page }) => {
+  await page.goto("/");
+  await page.evaluate(() => window.localStorage.clear());
+  await page.reload();
+
+  // Toggle is rendered as a switch; defaults to Adaptive.
+  const toggle = page.getByRole("switch", { name: /toggle adaptive practice/i });
+  await expect(toggle).toBeVisible();
+  await expect(toggle).toHaveAttribute("aria-checked", "true");
+  await expect(toggle).toContainText(/adaptive/i);
+
+  // Preview line shows three counts on a fresh install.
+  const preview = page.locator(".queue-preview");
+  await expect(preview).toBeVisible();
+  await expect(preview).toContainText(/weak/i);
+  await expect(preview).toContainText(/review/i);
+  await expect(preview).toContainText(/new/i);
+});
+
+test("flipping to Free Practice hides the queue preview and persists across reload", async ({
+  page,
+}) => {
+  await page.goto("/");
+  await page.evaluate(() => window.localStorage.clear());
+  await page.reload();
+
+  const toggle = page.getByRole("switch", { name: /toggle adaptive practice/i });
+  await toggle.click();
+  await expect(toggle).toHaveAttribute("aria-checked", "false");
+  await expect(toggle).toContainText(/free practice/i);
+  await expect(page.locator(".queue-preview")).toHaveCount(0);
+
+  // Preference persists.
+  await page.reload();
+  const toggleAfterReload = page.getByRole("switch", { name: /toggle adaptive practice/i });
+  await expect(toggleAfterReload).toHaveAttribute("aria-checked", "false");
+});
+
 test("service worker is registered after first load", async ({ page }) => {
   await page.goto("/");
   // Service worker registration is async; wait for the SW controller to take over.

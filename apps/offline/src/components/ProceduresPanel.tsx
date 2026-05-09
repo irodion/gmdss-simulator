@@ -1,4 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { readAdaptivePreference } from "../drills/adaptive-prefs.ts";
+import { readEvents } from "../drills/learning-events.ts";
+import { pickAdaptiveScenario } from "../drills/scripts/adaptive-scenarios.ts";
 import { loadScriptDrillContent } from "../drills/scripts/content-loader.ts";
 import { materializeScenario } from "../drills/scripts/materialize.ts";
 import { recordAttempt } from "../drills/scripts/stats.ts";
@@ -45,7 +48,9 @@ export function ProceduresPanel() {
   }, []);
 
   const startScenario = useCallback((c: ScriptDrillContent) => {
-    const scenario = pickScenario(c.scenarios, recentScenarioId.current);
+    const scenario = readAdaptivePreference()
+      ? pickAdaptiveScenario(c.scenarios, readEvents(), recentScenarioId.current)
+      : pickScenario(c.scenarios, recentScenarioId.current);
     if (!scenario) return;
     recentScenarioId.current = scenario.id;
     const template = materializeScenario(scenario, c.rubrics);

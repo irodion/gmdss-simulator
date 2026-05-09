@@ -4,6 +4,9 @@ export type AbbreviationDirection = "abbr-to-expansion" | "expansion-to-abbr";
 
 export type NumberFormat = "position" | "bearing" | "time" | "channel";
 
+/** Companion enumeration of every NumberFormat literal — used by the atom universe and the adaptive selection layer. */
+export const NUMBER_FORMATS: readonly NumberFormat[] = ["position", "bearing", "time", "channel"];
+
 export interface DrillChallenge {
   readonly id: string;
   readonly type: DrillType;
@@ -105,7 +108,8 @@ export function createPhoneticChallenge(text: string, id: string): DrillChalleng
   };
 }
 
-const CALLSIGN_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+/** Character pool used for synthetic callsigns. Exported for the adaptive selection layer's weighted sampler. */
+export const CALLSIGN_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 
 const VESSEL_ADJECTIVES = [
   "RED",
@@ -229,48 +233,54 @@ function randomChannel(): { prompt: string; expected: string } {
 
 type NumberGenerator = () => { prompt: string; expected: string };
 
-interface FormatGenerator {
-  readonly gen: NumberGenerator;
-  readonly format: NumberFormat;
+const FORMAT_GENERATORS: Readonly<Record<NumberFormat, NumberGenerator>> = {
+  position: randomPosition,
+  bearing: randomBearing,
+  time: randomTime,
+  channel: randomChannel,
+};
+
+function buildNumberChallenge(format: NumberFormat, index: number): DrillChallenge {
+  const data = FORMAT_GENERATORS[format]();
+  return {
+    id: `number-${index}`,
+    type: "number-pronunciation",
+    format,
+    prompt: `Read using maritime pronunciation:\n${data.prompt}`,
+    expectedAnswer: data.expected,
+    hint: data.expected,
+  };
 }
 
-/** Generate a set of number pronunciation drill challenges. */
-export function generateNumberChallenges(count: number): DrillChallenge[] {
-  const base: readonly FormatGenerator[] = [
-    { gen: randomPosition, format: "position" },
-    { gen: randomPosition, format: "position" },
-    { gen: randomBearing, format: "bearing" },
-    { gen: randomTime, format: "time" },
-    { gen: randomChannel, format: "channel" },
-  ];
-  const extras: readonly FormatGenerator[] = [
-    { gen: randomPosition, format: "position" },
-    { gen: randomBearing, format: "bearing" },
-    { gen: randomTime, format: "time" },
-    { gen: randomChannel, format: "channel" },
-  ];
-
-  const generators: FormatGenerator[] = base.slice(0, count);
-  while (generators.length < count) {
-    generators.push(extras[randomInt(extras.length)]!);
+/**
+ * Generate number pronunciation drill challenges.
+ *
+ * Without `formats`: shuffled mix biased toward positions (for free practice).
+ * With `formats`: one challenge per entry in order — used by the adaptive
+ * selection layer to drill specific weak formats.
+ */
+export function generateNumberChallenges(
+  count: number,
+  formats?: readonly NumberFormat[],
+): DrillChallenge[] {
+  if (formats) {
+    return formats.slice(0, count).map((format, i) => buildNumberChallenge(format, i));
   }
 
-  for (let i = generators.length - 1; i > 0; i--) {
+  const base: readonly NumberFormat[] = ["position", "position", "bearing", "time", "channel"];
+  const extras: readonly NumberFormat[] = ["position", "bearing", "time", "channel"];
+
+  const picks: NumberFormat[] = base.slice(0, count);
+  while (picks.length < count) {
+    picks.push(extras[randomInt(extras.length)]!);
+  }
+
+  for (let i = picks.length - 1; i > 0; i--) {
     const j = randomInt(i + 1);
-    [generators[i], generators[j]] = [generators[j]!, generators[i]!];
+    [picks[i], picks[j]] = [picks[j]!, picks[i]!];
   }
 
-  return generators.map((entry, i) => {
-    const data = entry.gen();
-    return {
-      id: `number-${i}`,
-      type: "number-pronunciation",
-      format: entry.format,
-      prompt: `Read using maritime pronunciation:\n${data.prompt}`,
-      expectedAnswer: data.expected,
-      hint: data.expected,
-    };
-  });
+  return picks.map((format, i) => buildNumberChallenge(format, i));
 }
 
 /**

@@ -7,6 +7,7 @@ import {
   type LearningEvent,
 } from "../learning-events.ts";
 import {
+  KNOWN_DIMENSIONS,
   SCENARIO_STATS_KEY,
   type DimensionId,
   type GradeEvent,
@@ -34,14 +35,6 @@ export interface StatsAggregate {
   readonly correct: number;
   readonly pctCorrect: number;
 }
-
-const KNOWN_DIMENSIONS: readonly DimensionId[] = [
-  "priority",
-  "vessel",
-  "body",
-  "ending",
-  "procedure",
-];
 
 /**
  * Synthetic dimension key used when an attempt has no dimensionPasses to fan

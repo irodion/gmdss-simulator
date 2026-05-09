@@ -38,12 +38,73 @@ afterEach(() => {
 });
 
 describe("App", () => {
-  test("renders config screen with mode tabs and start button", () => {
+  test("renders config screen with mode tabs, adaptive toggle, and start button", () => {
+    window.localStorage.clear();
     render(<App />);
     expect(screen.getByRole("tab", { name: "Callsigns" })).toBeTruthy();
     expect(screen.getByRole("tab", { name: "Numbers" })).toBeTruthy();
     expect(screen.getByRole("tab", { name: "Listen" })).toBeTruthy();
     expect(screen.getByRole("button", { name: /^begin/i })).toBeTruthy();
+    const toggle = screen.getByRole("switch", { name: /toggle adaptive practice/i });
+    expect(toggle.getAttribute("aria-checked")).toBe("true");
+    expect(document.querySelector(".queue-preview")).not.toBeNull();
+  });
+
+  test("flipping the adaptive toggle to Free Practice hides the preview and persists", () => {
+    window.localStorage.clear();
+    const { unmount } = render(<App />);
+    const toggle = screen.getByRole("switch", { name: /toggle adaptive practice/i });
+    fireEvent.click(toggle);
+    expect(toggle.getAttribute("aria-checked")).toBe("false");
+    expect(document.querySelector(".queue-preview")).toBeNull();
+    expect(window.localStorage.getItem("roc-trainer:adaptive-enabled")).toBe("false");
+
+    unmount();
+    render(<App />);
+    expect(
+      screen
+        .getByRole("switch", { name: /toggle adaptive practice/i })
+        .getAttribute("aria-checked"),
+    ).toBe("false");
+  });
+
+  test("queue preview reflects seeded weak events on first render", () => {
+    window.localStorage.clear();
+    // Pre-seed five wrongs each on letters A, B, C → 3 weak atoms in box 1.
+    const baseTs = Date.now();
+    const evs = ["A", "B", "C"].flatMap((L, i) =>
+      Array.from({ length: 5 }, (_, j) => ({
+        v: 1 as const,
+        atomId: `phon:${L}`,
+        mode: "phonetic" as const,
+        correct: false,
+        ts: baseTs + i * 10 + j,
+      })),
+    );
+    window.localStorage.setItem("roc-trainer:learning-events", JSON.stringify(evs));
+
+    render(<App />);
+    fireEvent.click(screen.getByRole("button", { name: "10" }));
+
+    // Preview shows the bucket allocation, which now has weak > 0 thanks to seed.
+    // The text is split across <strong> tags, so use textContent on the host node.
+    const previewNode = document.querySelector(".queue-preview");
+    expect(previewNode).not.toBeNull();
+    const text = previewNode?.textContent ?? "";
+    const weakMatch = /(\d+)\s*weak/.exec(text);
+    expect(weakMatch).toBeTruthy();
+    expect(Number(weakMatch![1])).toBeGreaterThan(0);
+  });
+
+  test("Free Practice mode still runs sessions when adaptive returns nothing meaningful", () => {
+    // With the toggle off, generateChallenges (random) is used — verify a
+    // session still completes end-to-end.
+    window.localStorage.clear();
+    window.localStorage.setItem("roc-trainer:adaptive-enabled", "false");
+    render(<App />);
+    fireEvent.click(screen.getByRole("button", { name: "5" }));
+    fireEvent.click(screen.getByRole("button", { name: /^begin/i }));
+    expect(screen.getByText(/transmission 1 of 5/i)).toBeTruthy();
   });
 
   test("switches modes when a tab is clicked", () => {
