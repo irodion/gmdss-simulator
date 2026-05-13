@@ -154,5 +154,31 @@ describe("ScriptBuilder", () => {
     fireEvent.click(genBtn);
 
     expect(container.textContent).toContain("TRADER");
+    expect(container.textContent).toContain("ALL STATIONS ALL STATIONS ALL STATIONS");
+  });
+
+  test("MEDICO addressee field is honoured when filled in", () => {
+    const { container } = render(<ScriptBuilder config={{ scriptType: "medico" }} />);
+    fireEvent.change(getInputAfterLabel(container, "Vessel name"), {
+      target: { value: "Grey Whale" },
+    });
+    fireEvent.change(getInputAfterLabel(container, "Position"), {
+      target: { value: "31°45'N 034°20'E" },
+    });
+    fireEvent.change(getInputAfterLabel(container, "Addressee (e.g. All Stations or RCC Haifa)"), {
+      target: { value: "RCC Haifa" },
+    });
+    fireEvent.change(getInputAfterLabel(container, "Patient details"), {
+      target: { value: "Chest pain" },
+    });
+    fireEvent.change(getInputAfterLabel(container, "Assistance required"), {
+      target: { value: "Medical advice" },
+    });
+
+    const genBtn = screen.getAllByRole("button").find((b) => b.textContent === "Generate Script")!;
+    fireEvent.click(genBtn);
+
+    expect(container.textContent).toContain("RCC HAIFA RCC HAIFA RCC HAIFA");
+    expect(container.textContent).not.toContain("ALL STATIONS");
   });
 });

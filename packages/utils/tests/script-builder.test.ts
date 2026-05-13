@@ -159,6 +159,42 @@ describe("Script Builder", () => {
       expect(script).toContain("chest pain");
       expect(script).toContain("OVER");
     });
+
+    it("defaults addressee to ALL STATIONS when not provided", () => {
+      const script = buildMedicoScript({
+        vesselName: "Test",
+        position: "50°N 1°W",
+        patientDetails: "Patient",
+        assistanceRequired: "advice",
+      });
+
+      expect(script).toContain("ALL STATIONS ALL STATIONS ALL STATIONS");
+    });
+
+    it("uses a custom addressee when provided and uppercases it", () => {
+      const script = buildMedicoScript({
+        vesselName: "Grey Whale",
+        position: "31°45'N 034°20'E",
+        patientDetails: "Cardiac patient",
+        assistanceRequired: "advice",
+        addressee: "RCC Haifa",
+      });
+
+      expect(script).toContain("RCC HAIFA RCC HAIFA RCC HAIFA");
+      expect(script).not.toContain("ALL STATIONS");
+    });
+
+    it("falls back to ALL STATIONS when addressee is whitespace", () => {
+      const script = buildMedicoScript({
+        vesselName: "Test",
+        position: "50°N 1°W",
+        patientDetails: "Patient",
+        assistanceRequired: "advice",
+        addressee: "   ",
+      });
+
+      expect(script).toContain("ALL STATIONS ALL STATIONS ALL STATIONS");
+    });
   });
 
   describe("formatting", () => {

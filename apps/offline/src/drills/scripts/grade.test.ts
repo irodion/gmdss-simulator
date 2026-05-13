@@ -247,7 +247,7 @@ describe("gradeScenario", () => {
 
   test("MEDICO scenario: procedure=6, priority=6, vessel=8, body=15, ending=2 on perfect run", () => {
     // Part 1 voice tally: 3 priority + 3 addressee + 1 this_is + 3 vessel + 1 callsign + 1 position + 1 medico + 1 OVER
-    // Part 2 voice tally: 1 working_channel + 3 priority + 3 addressee + 1 this_is + 3 vessel + 1 callsign + 1 position + 3 medical + 1 medico_ends
+    // Part 2 voice tally: 1 working_channel + 3 priority + 3 addressee + 1 this_is + 3 vessel + 1 callsign + 1 position + 3 medical + 1 OVER
     const items: readonly SequenceItem[] = [
       { id: "dsc_channel70", label: "DSC: Channel 70" },
       { id: "dsc_urgency_category", label: "DSC: category Urgency" },
@@ -285,7 +285,7 @@ describe("gradeScenario", () => {
       { id: "patient_vitals", label: "Male, 52" },
       { id: "patient_status", label: "Chest pain" },
       { id: "actions_taken", label: "Aspirin given" },
-      { id: "medico_ends", label: "Medico message ends, Over" },
+      { id: "over", label: "OVER" },
     ];
     const tpl: SequenceTemplate = {
       rubricId: "v1/urgency-medico",
@@ -315,12 +315,12 @@ describe("gradeScenario", () => {
     expect(ending.total).toBe(2);
   });
 
-  test("MEDICO: medico_ends folds into ending; patient_* fold into body", () => {
+  test("MEDICO: closing OVER folds into ending; patient_* fold into body", () => {
     const items: readonly SequenceItem[] = [
       { id: "patient_vitals", label: "v" },
       { id: "patient_status", label: "s" },
       { id: "actions_taken", label: "a" },
-      { id: "medico_ends", label: "Medico message ends, Over" },
+      { id: "over", label: "OVER" },
     ];
     const tpl: SequenceTemplate = {
       rubricId: "v1/urgency-medico",

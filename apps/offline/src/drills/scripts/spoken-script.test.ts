@@ -98,7 +98,7 @@ describe("buildSpokenTransmission", () => {
           { id: "patient_vitals", label: "Male, age 52, BP 160/100" },
           { id: "patient_status", label: "Severe chest pain" },
           { id: "actions_taken", label: "Aspirin administered" },
-          { id: "medico_ends", label: "Medico message ends, Over" },
+          { id: "over", label: "OVER" },
         ],
       },
     ]);

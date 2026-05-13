@@ -69,6 +69,7 @@
     "natureOfSafety": "Nature of safety message",
     "details": "Details",
     "patientDetails": "Patient details",
+    "addressee": "Addressee (e.g. All Stations or RCC Haifa)",
     "generate": "Generate Script",
     "output": "Radio Script",
     "copyHint": "Read this script on the radio"
