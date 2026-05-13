@@ -35,6 +35,7 @@ export function ScriptBuilder({ config }: ScriptBuilderProps) {
   const [natureOfSafety, setNatureOfSafety] = useState("");
   const [details, setDetails] = useState("");
   const [patientDetails, setPatientDetails] = useState("");
+  const [addressee, setAddressee] = useState("");
   const [output, setOutput] = useState("");
 
   function handleGenerate() {
@@ -80,6 +81,7 @@ export function ScriptBuilder({ config }: ScriptBuilderProps) {
           position,
           patientDetails,
           assistanceRequired,
+          addressee: addressee || undefined,
         });
         break;
     }
@@ -114,6 +116,7 @@ export function ScriptBuilder({ config }: ScriptBuilderProps) {
               setNatureOfSafety("");
               setDetails("");
               setPatientDetails("");
+              setAddressee("");
             }}
           >
             {t(`scriptBuilder.${st === "pan-pan" ? "panpan" : st}`)}
@@ -270,6 +273,15 @@ export function ScriptBuilder({ config }: ScriptBuilderProps) {
 
         {scriptType === "medico" && (
           <>
+            <div className="form-group">
+              <label className="form-label">{t("scriptBuilder.addressee")}</label>
+              <input
+                className="form-input"
+                placeholder="ALL STATIONS"
+                value={addressee}
+                onChange={(e) => setAddressee(e.target.value)}
+              />
+            </div>
             <div className="form-group">
               <label className="form-label">{t("scriptBuilder.patientDetails")}</label>
               <input

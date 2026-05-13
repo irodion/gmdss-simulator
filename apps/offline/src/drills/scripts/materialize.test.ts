@@ -217,7 +217,7 @@ const URGENCY_MEDICO: RubricDefinition = {
         { id: "patient_vitals", label: "Patient vitals (gender, age, temp, BP)" },
         { id: "patient_status", label: "Patient status / problem" },
         { id: "actions_taken", label: "Actions taken / treatment given" },
-        { id: "medico_ends", label: "Medico message ends, Over" },
+        { id: "over", label: "OVER" },
       ],
     },
   ],
@@ -596,12 +596,12 @@ describe("materializeScenario", () => {
     expect(part2.find((i) => i.id === "actions_taken")!.label).toBe(
       "Aspirin administered, oxygen rigged",
     );
-    // working_channel_switch and medico_ends are not in ITEM_TO_FACT_KEY,
+    // working_channel_switch and the closing OVER are not in ITEM_TO_FACT_KEY,
     // so they fall back to their rubric-supplied labels.
     expect(part2.find((i) => i.id === "working_channel_switch")!.label).toBe(
       "Switch to working channel (e.g., Ch 24)",
     );
-    expect(part2.find((i) => i.id === "medico_ends")!.label).toBe("Medico message ends, Over");
+    expect(part2.find((i) => i.id === "over")!.label).toBe("OVER");
   });
 
   test("MEDICO pool contains all correct items plus wrong-priority decoys", () => {

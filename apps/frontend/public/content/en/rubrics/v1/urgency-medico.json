@@ -102,7 +102,7 @@
         { "id": "patient_vitals", "label": "Patient vitals (gender, age, temp, BP)" },
         { "id": "patient_status", "label": "Patient status / problem" },
         { "id": "actions_taken", "label": "Actions taken / treatment given" },
-        { "id": "medico_ends", "label": "Medico message ends, Over" }
+        { "id": "over", "label": "OVER" }
       ]
     }
   ],

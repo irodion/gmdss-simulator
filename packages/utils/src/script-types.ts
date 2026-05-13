@@ -34,6 +34,7 @@ export interface MedicoParams {
   position: string;
   patientDetails: string;
   assistanceRequired: string;
+  addressee?: string;
 }
 
 export type ScriptType = "mayday" | "pan-pan" | "securite" | "medico";

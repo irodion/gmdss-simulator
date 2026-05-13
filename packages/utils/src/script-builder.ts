@@ -84,9 +84,10 @@ export function buildSecuriteScript(params: SecuriteParams): string {
 }
 
 export function buildMedicoScript(params: MedicoParams): string {
+  const addressee = (params.addressee?.trim() || "ALL STATIONS").toUpperCase();
   const lines: string[] = [
     "PAN PAN PAN PAN PAN PAN",
-    "ALL STATIONS ALL STATIONS ALL STATIONS",
+    `${addressee} ${addressee} ${addressee}`,
     "THIS IS",
     `${params.vesselName.toUpperCase()} ${params.vesselName.toUpperCase()} ${params.vesselName.toUpperCase()}`,
   ];
