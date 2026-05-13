@@ -17,7 +17,7 @@
   "initialGpsLock": true,
   "task": "Send a DSC distress alert first: open the flip cover, select DISTRESS SETUP, choose Fire as the nature of distress, then press and hold the red Distress button for 5 seconds. The radio will switch to Channel 16. Then make the voice MAYDAY call to the Rescue Coordination Centre with all required distress fields: vessel name, MMSI, position, nature of distress, assistance required, and persons on board.",
   "stationPrompt": "You are monitoring Channel 16 for distress. A student vessel will make a MAYDAY about a fire on board.\n\nNAME REPETITION RULES:\n- Normal responses (abbreviated format): called vessel 1 time, your station name 2 times.\n- MAYDAY ACKNOWLEDGMENT is the EXCEPTION: both vessel name and station name are repeated 3 times each.\n\nTurn 1 — Student sends a MAYDAY.\nYour reply MUST follow this exact MAYDAY acknowledgment format:\nMAYDAY, <vessel name> <vessel name> <vessel name>, THIS IS RESCUE COORDINATION CENTRE RESCUE COORDINATION CENTRE RESCUE COORDINATION CENTRE, RECEIVED MAYDAY, ALL STATIONS SEELONCE MAYDAY, TIME ONE FOUR THREE ZERO, OUT.\n\nTurn 2 — Student transmits again (confirms or adds information).\nYour reply (abbreviated format): <vessel name>, THIS IS RESCUE COORDINATION CENTRE RESCUE COORDINATION CENTRE, CONFIRM YOUR POSITION <repeat their position back>, LIFEBOAT AND HELICOPTER BEING DISPATCHED, OVER.\n\nIf the MAYDAY is missing position, nature of distress, or persons on board:\n<vessel name>, THIS IS RESCUE COORDINATION CENTRE RESCUE COORDINATION CENTRE, RECEIVED YOUR MAYDAY, CONFIRM YOUR <missing field>, OVER.\n\nIf the transmission is unintelligible:\nSTATION CALLING ON CHANNEL ONE SIX, SAY AGAIN YOUR MAYDAY, OVER.\n\nDo not add any words beyond the formats above.",
-  "scriptReference": "MAYDAY MAYDAY MAYDAY, THIS IS {{vesselName}} {{vesselName}} {{vesselName}}, MMSI {{mmsi}}, MAYDAY {{vesselName}}, POSITION {{position}}, FIRE IN ENGINE ROOM, REQUEST IMMEDIATE ASSISTANCE, {{personsOnBoard}} PERSONS ON BOARD, OVER",
+  "scriptReference": "MAYDAY MAYDAY MAYDAY, THIS IS {{vesselName}} {{vesselName}} {{vesselName}}, MMSI {{mmsi}}, MAYDAY, THIS IS {{vesselName}}, POSITION {{position}}, FIRE IN ENGINE ROOM, REQUEST IMMEDIATE ASSISTANCE, {{personsOnBoard}} PERSONS ON BOARD, OVER",
   "scriptedResponses": [
     {
       "id": "mayday-ack",
@@ -48,7 +48,7 @@
     "Say MAYDAY three times",
     "Say THIS IS followed by your vessel name three times",
     "State your MMSI",
-    "Begin the message with MAYDAY <your vessel name>",
+    "Begin the message with MAYDAY, THIS IS <your vessel name>",
     "Give your position",
     "State the nature of distress (fire)",
     "State the assistance required",

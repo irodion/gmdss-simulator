@@ -13,6 +13,7 @@
       "items": [
         { "id": "mayday", "label": "MAYDAY" },
         { "id": "addressee_rcc", "label": "RCC station name" },
+        { "id": "this_is", "label": "THIS IS" },
         { "id": "vessel", "label": "Responding vessel" },
         { "id": "vessel", "label": "Responding vessel" },
         { "id": "action_request", "label": "Action request" },
