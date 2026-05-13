@@ -25,11 +25,13 @@ const DISTRESS: RubricDefinition = {
         { id: "mayday", label: "MAYDAY" },
         { id: "mayday", label: "MAYDAY" },
         { id: "mayday", label: "MAYDAY" },
+        { id: "this_is", label: "THIS IS" },
         { id: "vessel", label: "Vessel name" },
         { id: "vessel", label: "Vessel name" },
         { id: "vessel", label: "Vessel name" },
         { id: "callsign", label: "Callsign / MMSI" },
         { id: "mayday", label: "MAYDAY" },
+        { id: "this_is", label: "THIS IS" },
         { id: "vessel", label: "Vessel name" },
         { id: "position", label: "Position" },
         { id: "nature", label: "Nature of distress" },
@@ -57,6 +59,7 @@ const URGENCY: RubricDefinition = {
         { id: "pan_pan", label: "PAN-PAN" },
         { id: "pan_pan", label: "PAN-PAN" },
         { id: "pan_pan", label: "PAN-PAN" },
+        { id: "this_is", label: "THIS IS" },
         { id: "vessel", label: "Vessel name" },
         { id: "callsign", label: "Callsign / MMSI" },
         { id: "position", label: "Position" },
@@ -83,6 +86,7 @@ const SAFETY: RubricDefinition = {
         { id: "securite", label: "SECURITE" },
         { id: "securite", label: "SECURITE" },
         { id: "securite", label: "SECURITE" },
+        { id: "this_is", label: "THIS IS" },
         { id: "vessel", label: "Vessel name" },
         { id: "nature", label: "Nature of safety message" },
         { id: "position", label: "Position / area" },
@@ -118,6 +122,7 @@ const DISTRESS_SART = distressRubric("v1/distress-sart", "MAYDAY procedure (Rada
   { id: "sart_addressee", label: "Ship who received my Radar SART" },
   { id: "sart_addressee", label: "Ship who received my Radar SART" },
   { id: "sart_addressee", label: "Ship who received my Radar SART" },
+  { id: "this_is", label: "THIS IS" },
   { id: "vessel", label: "Vessel name" },
   { id: "vessel", label: "Vessel name" },
   { id: "vessel", label: "Vessel name" },
@@ -136,6 +141,7 @@ const DISTRESS_RELATIVE = distressRubric(
     { id: "ship_description", label: "Ship description" },
     { id: "ship_description", label: "Ship description" },
     { id: "ship_description", label: "Ship description" },
+    { id: "this_is", label: "THIS IS" },
     { id: "vessel", label: "Vessel name" },
     { id: "vessel", label: "Vessel name" },
     { id: "vessel", label: "Vessel name" },
@@ -149,6 +155,7 @@ const DISTRESS_RELATIVE = distressRubric(
 const DISTRESS_RCC_RESPONSE = distressRubric("v1/distress-rcc-response", "MAYDAY response to RCC", [
   { id: "mayday", label: "MAYDAY" },
   { id: "addressee_rcc", label: "RCC station name" },
+  { id: "this_is", label: "THIS IS" },
   { id: "vessel", label: "Responding vessel" },
   { id: "vessel", label: "Responding vessel" },
   { id: "action_request", label: "Action request" },
@@ -288,10 +295,10 @@ describe("materializeScenario", () => {
     expect(template.pool.length).toBe(correctCount + 6 + 4);
   });
 
-  test("ship-side distress scenario produces 20 slots ending with OVER, procedural items first", () => {
+  test("ship-side distress scenario produces 22 slots ending with OVER, procedural items first", () => {
     const template = materializeScenario(DISTRESS_SCENARIO, RUBRICS);
     const items = template.parts[0]!.items;
-    expect(items).toHaveLength(20);
+    expect(items).toHaveLength(22);
     expect(items.slice(0, 6).map((i) => i.id)).toEqual([
       "epirb_on",
       "dsc_channel70",
@@ -300,7 +307,7 @@ describe("materializeScenario", () => {
       "dsc_button",
       "dsc_channel16",
     ]);
-    expect(items[19]!.id).toBe("over");
+    expect(items[21]!.id).toBe("over");
   });
 
   test("dsc_nature slot is materialized with the scenario nature code id and label", () => {
@@ -319,9 +326,9 @@ describe("materializeScenario", () => {
     };
     const template = materializeScenario(abandon, RUBRICS);
     const items = template.parts[0]!.items;
-    expect(items).toHaveLength(21);
-    expect(items[20]!.id).toBe("in_raft");
-    expect(items[20]!.label).toBe("In raft: EPIRB, SART, portable VHF");
+    expect(items).toHaveLength(23);
+    expect(items[22]!.id).toBe("in_raft");
+    expect(items[22]!.label).toBe("In raft: EPIRB, SART, portable VHF");
     expect(template.pool.filter((i) => i.id === "in_raft").length).toBe(1);
   });
 
@@ -486,7 +493,7 @@ describe("materializeScenario", () => {
       },
     };
     const template = materializeScenario(sartScenario, RUBRICS);
-    expect(template.parts[0]!.items).toHaveLength(12);
+    expect(template.parts[0]!.items).toHaveLength(13);
     const items = template.parts[0]!.items;
     expect(
       items.filter((i) => i.id === "vessel").every((i) => i.label === "Albatross life raft"),
@@ -496,7 +503,7 @@ describe("materializeScenario", () => {
     expect(items.find((i) => i.id === "persons")!.label).toBe("4 persons on board");
     expect(template.pool.filter((i) => i.id === "pan_pan").length).toBe(3);
     expect(template.pool.filter((i) => i.id === "securite").length).toBe(3);
-    expect(template.pool.length).toBe(12 + 6);
+    expect(template.pool.length).toBe(13 + 6);
   });
 
   test("relative-bearing scenario injects ship description and side as position", () => {
@@ -514,7 +521,7 @@ describe("materializeScenario", () => {
       },
     };
     const template = materializeScenario(horizonScenario, RUBRICS);
-    expect(template.parts[0]!.items).toHaveLength(13);
+    expect(template.parts[0]!.items).toHaveLength(14);
     const items = template.parts[0]!.items;
     expect(
       items
@@ -537,7 +544,7 @@ describe("materializeScenario", () => {
       },
     };
     const template = materializeScenario(rccScenario, RUBRICS);
-    expect(template.parts[0]!.items).toHaveLength(6);
+    expect(template.parts[0]!.items).toHaveLength(7);
     const items = template.parts[0]!.items;
     expect(items.filter((i) => i.id === "mayday")).toHaveLength(1);
     expect(items.find((i) => i.id === "addressee_rcc")!.label).toBe("RCC Haifa");
@@ -623,7 +630,7 @@ describe("materializeStructural (legacy)", () => {
   test("preserves rubric.sequenceParts in the template", () => {
     const template = materializeStructural(DISTRESS);
     expect(template.rubricId).toBe("v1/distress");
-    expect(template.parts[0]!.items).toHaveLength(20);
+    expect(template.parts[0]!.items).toHaveLength(22);
     expect(template.priorityId).toBe("mayday");
   });
 

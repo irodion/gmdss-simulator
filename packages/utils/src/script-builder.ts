@@ -17,6 +17,7 @@ export function buildMaydayScript(params: MaydayParams): string {
   lines.push(
     "",
     "MAYDAY",
+    "THIS IS",
     `${params.vesselName.toUpperCase()}`,
     `My position is ${params.position}`,
     `I am ${params.natureOfDistress}`,

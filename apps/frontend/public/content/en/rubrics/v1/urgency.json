@@ -75,6 +75,7 @@
         { "id": "pan_pan", "label": "PAN-PAN" },
         { "id": "pan_pan", "label": "PAN-PAN" },
         { "id": "pan_pan", "label": "PAN-PAN" },
+        { "id": "this_is", "label": "THIS IS" },
         { "id": "vessel", "label": "Vessel name" },
         { "id": "vessel", "label": "Vessel name" },
         { "id": "vessel", "label": "Vessel name" },
