@@ -2,8 +2,10 @@ import type { ChannelPowerDecoy, RubricDefinition } from "@gmdss-simulator/utils
 import { shuffle } from "../drill-types.ts";
 import {
   ANTENNA_SPARE_ID,
+  DECOY_ID_PREFIX,
   DSC_NATURE_PLACEHOLDER_ID,
   EPIRB_ON_ID,
+  isDecoyId,
   NATURE_CODES,
   NATURE_LABELS,
   type NatureCode,
@@ -134,6 +136,18 @@ function pickChannelPowerDecoys(
   decoys: readonly ChannelPowerDecoy[],
   count: number,
 ): readonly SequenceItem[] {
+  const seen = new Set<string>();
+  for (const decoy of decoys) {
+    if (!isDecoyId(decoy.id)) {
+      throw new Error(
+        `pickChannelPowerDecoys: decoy id ${JSON.stringify(decoy.id)} must start with "${DECOY_ID_PREFIX}"`,
+      );
+    }
+    if (seen.has(decoy.id)) {
+      throw new Error(`pickChannelPowerDecoys: duplicate decoy id ${JSON.stringify(decoy.id)}`);
+    }
+    seen.add(decoy.id);
+  }
   return shuffle(decoys).slice(0, count);
 }
 

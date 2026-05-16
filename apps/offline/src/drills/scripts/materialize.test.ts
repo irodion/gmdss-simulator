@@ -685,6 +685,38 @@ describe("materializeScenario", () => {
     expect(template.pool.filter((i) => isDecoyId(i.id))).toHaveLength(0);
   });
 
+  test("throws when a channel-power decoy id is missing the decoy_ prefix", () => {
+    const badRubric: RubricDefinition = {
+      ...DISTRESS,
+      id: "v1/distress-bad-prefix",
+      channelPowerDecoys: [
+        { id: "decoy_dsc_ch72_25w", label: "DSC: Channel 72, High 25W" },
+        { id: "dsc_ch77_25w", label: "DSC: Channel 77, High 25W" },
+      ],
+    };
+    const rubrics: RubricsById = { ...RUBRICS, "v1/distress-bad-prefix": badRubric };
+    const scenario: Scenario = { ...DISTRESS_SCENARIO, rubricId: "v1/distress-bad-prefix" };
+    expect(() => materializeScenario(scenario, rubrics)).toThrow(
+      /pickChannelPowerDecoys.*dsc_ch77_25w.*decoy_/,
+    );
+  });
+
+  test("throws on duplicate channel-power decoy ids", () => {
+    const badRubric: RubricDefinition = {
+      ...DISTRESS,
+      id: "v1/distress-dup-decoy",
+      channelPowerDecoys: [
+        { id: "decoy_dsc_ch72_25w", label: "X" },
+        { id: "decoy_dsc_ch72_25w", label: "Y" },
+      ],
+    };
+    const rubrics: RubricsById = { ...RUBRICS, "v1/distress-dup-decoy": badRubric };
+    const scenario: Scenario = { ...DISTRESS_SCENARIO, rubricId: "v1/distress-dup-decoy" };
+    expect(() => materializeScenario(scenario, rubrics)).toThrow(
+      /pickChannelPowerDecoys.*duplicate.*decoy_dsc_ch72_25w/,
+    );
+  });
+
   test("throws when scenario references a rubric id that is not loaded", () => {
     const orphan: Scenario = {
       id: "orphan",
