@@ -181,6 +181,25 @@ describe("gradeScenario", () => {
     expect(grade.dimensions.find((d) => d.id === "ending")!.total).toBe(1);
   });
 
+  test("fallen-mast scenario scores procedure dimension 7/7 with antenna_spare after epirb_on", () => {
+    const items: readonly SequenceItem[] = [
+      { id: "epirb_on", label: "Turn on EPIRB" },
+      { id: "antenna_spare", label: "Rig spare antenna (coax cable)" },
+      { id: "dsc_channel70", label: "DSC: Channel 70, High 25W" },
+      { id: "dsc_time_location", label: "DSC: confirm time and location" },
+      { id: "nature_disabled", label: "DSC: Disabled & Adrift" },
+      { id: "dsc_button", label: "DSC: press distress button 5 sec" },
+      { id: "dsc_channel16", label: "Radio: Channel 16, High" },
+      ...DISTRESS_ITEMS,
+    ];
+    const tpl = template(items);
+    const grade = gradeScenario(tpl, placementsMap(items));
+    const procedure = grade.dimensions.find((d) => d.id === "procedure")!;
+    expect(procedure.total).toBe(7);
+    expect(procedure.correct).toBe(7);
+    expect(procedure.status).toBe("pass");
+  });
+
   test("abandoning scenario scores procedure dimension 7/7 with in_raft", () => {
     const items: readonly SequenceItem[] = [
       { id: "epirb_on", label: "Turn on EPIRB" },

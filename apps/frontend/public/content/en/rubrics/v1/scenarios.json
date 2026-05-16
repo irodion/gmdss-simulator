@@ -82,6 +82,23 @@
       }
     },
     {
+      "id": "distress-fallen-mast-wandering-albatross",
+      "priority": "mayday",
+      "rubricId": "v1/distress",
+      "requiresSpareAntenna": true,
+      "brief": "You are SY Wandering Albatross. Mast came down in heavy weather and is lying over the side with rigging in the water. Vessel disabled and drifting. 4 persons on board, position 32°35'N 034°15'E.",
+      "facts": {
+        "vessel": "Wandering Albatross",
+        "callsign": "MMSI 211 888 030",
+        "position": "32°35'N 034°15'E",
+        "nature": "Dismasted, vessel disabled and drifting",
+        "assistance": "I require immediate assistance",
+        "persons": "4 persons on board",
+        "natureCode": "nature_disabled",
+        "acceptableNatureCodes": ["nature_undesignated"]
+      }
+    },
+    {
       "id": "urgency-engine-failure-red-fox",
       "priority": "pan_pan",
       "rubricId": "v1/urgency",

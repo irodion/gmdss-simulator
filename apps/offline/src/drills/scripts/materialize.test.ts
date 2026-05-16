@@ -337,6 +337,28 @@ describe("materializeScenario", () => {
     expect(template.pool.filter((i) => i.id === "in_raft").length).toBe(0);
   });
 
+  test("requiresSpareAntenna scenario splices antenna_spare right after epirb_on", () => {
+    const fallenMast: Scenario = {
+      ...DISTRESS_SCENARIO,
+      id: "distress-fallen-mast-test",
+      requiresSpareAntenna: true,
+      facts: { ...DISTRESS_SCENARIO.facts, natureCode: "nature_disabled" },
+    };
+    const template = materializeScenario(fallenMast, RUBRICS);
+    const items = template.parts[0]!.items;
+    expect(items).toHaveLength(23);
+    expect(items[0]!.id).toBe("epirb_on");
+    expect(items[1]!.id).toBe("antenna_spare");
+    expect(items[1]!.label).toBe("Rig spare antenna (coax cable)");
+    expect(items[2]!.id).toBe("dsc_channel70");
+    expect(template.pool.filter((i) => i.id === "antenna_spare").length).toBe(1);
+  });
+
+  test("non-spare scenario has no antenna_spare chip in pool", () => {
+    const template = materializeScenario(DISTRESS_SCENARIO, RUBRICS);
+    expect(template.pool.filter((i) => i.id === "antenna_spare").length).toBe(0);
+  });
+
   test("pool contains exactly the correct nature chip plus 4 nature decoys", () => {
     const template = materializeScenario(DISTRESS_SCENARIO, RUBRICS);
     const natureChips = template.pool.filter((i) => isNatureItem(i.id));

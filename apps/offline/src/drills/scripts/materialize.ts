@@ -1,7 +1,9 @@
 import type { RubricDefinition } from "@gmdss-simulator/utils";
 import { shuffle } from "../drill-types.ts";
 import {
+  ANTENNA_SPARE_ID,
   DSC_NATURE_PLACEHOLDER_ID,
+  EPIRB_ON_ID,
   NATURE_CODES,
   NATURE_LABELS,
   type NatureCode,
@@ -19,6 +21,10 @@ const NATURE_DECOY_COUNT = 4;
 const IN_RAFT_ITEM: SequenceItem = {
   id: "in_raft",
   label: "In raft: EPIRB, SART, portable VHF",
+};
+const ANTENNA_SPARE_ITEM: SequenceItem = {
+  id: ANTENNA_SPARE_ID,
+  label: "Rig spare antenna (coax cable)",
 };
 
 const PRIORITY_LABELS: Readonly<Record<PriorityId, string>> = {
@@ -145,12 +151,13 @@ export function materializeScenario(
   const acceptableNatureIds = hasNatureSlot ? buildAcceptableNatureSet(scenario.facts) : [];
 
   const parts: SequenceTemplatePart[] = rubric.sequenceParts.map((part, partIndex) => {
-    const items = injectScenarioLabels(
-      part.items,
-      scenario.facts,
-      scenario.id,
-      acceptableNatureIds,
-    );
+    let items = injectScenarioLabels(part.items, scenario.facts, scenario.id, acceptableNatureIds);
+    if (scenario.requiresSpareAntenna) {
+      const epirbIdx = items.findIndex((item) => item.id === EPIRB_ON_ID);
+      if (epirbIdx !== -1) {
+        items = [...items.slice(0, epirbIdx + 1), ANTENNA_SPARE_ITEM, ...items.slice(epirbIdx + 1)];
+      }
+    }
     const isLast = partIndex === (rubric.sequenceParts?.length ?? 0) - 1;
     if (isLast && scenario.requiresAbandon) {
       return { id: part.id, label: part.label, items: [...items, IN_RAFT_ITEM] };

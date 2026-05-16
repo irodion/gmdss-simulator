@@ -53,9 +53,12 @@ export function isNatureItem(id: string): id is NatureCode {
 }
 
 export const DSC_NATURE_PLACEHOLDER_ID = "dsc_nature";
+export const EPIRB_ON_ID = "epirb_on";
+export const ANTENNA_SPARE_ID = "antenna_spare";
 
 const PROCEDURE_STEP_IDS = [
-  "epirb_on",
+  EPIRB_ON_ID,
+  ANTENNA_SPARE_ID,
   "dsc_channel70",
   "dsc_time_location",
   DSC_NATURE_PLACEHOLDER_ID,
@@ -193,6 +196,8 @@ export interface Scenario {
   readonly brief: string;
   readonly facts: ScenarioFacts;
   readonly requiresAbandon?: boolean;
+  /** Splices the spare-antenna chip after `epirb_on` (e.g. dismasted vessels). */
+  readonly requiresSpareAntenna?: boolean;
 }
 
 export interface ScenarioBank {
