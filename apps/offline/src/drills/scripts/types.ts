@@ -194,6 +194,17 @@ export interface ScenarioFacts {
   readonly patientStatus?: string;
   /** Actions taken by the crew, treatment given, medication administered. */
   readonly actionsTaken?: string;
+  /**
+   * Relay-only facts: when this vessel re-broadcasts another vessel's
+   * distress (MAYDAY RELAY), these fields carry the quoted original
+   * vessel's identification and distress details.
+   */
+  readonly relayedVessel?: string;
+  readonly relayedMmsi?: string;
+  readonly relayedPosition?: string;
+  readonly relayedNature?: string;
+  readonly relayedAssistance?: string;
+  readonly relayedPersons?: string;
 }
 
 export interface Scenario {
