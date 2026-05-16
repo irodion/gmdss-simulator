@@ -82,8 +82,8 @@ function buildDirectionMix(count: number): ChannelDirection[] {
 export function generateChannelChallenges(count: number): DrillChallenge[] {
   if (count <= 0) return [];
   const seeded: ChannelEntry[] = shuffle(CHANNELS).slice(0, count);
-  // Fill pass: when count exceeds the 9-channel pool, repeat random entries so
-  // a 20-question Free Practice session actually delivers 20 challenges.
+  // Fill pass: when count exceeds the channel pool, repeat random entries so
+  // a long Free Practice session actually delivers the requested challenge count.
   while (seeded.length < count) {
     seeded.push(CHANNELS[randomInt(CHANNELS.length)]!);
   }
