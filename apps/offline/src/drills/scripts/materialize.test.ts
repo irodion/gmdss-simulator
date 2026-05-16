@@ -359,6 +359,19 @@ describe("materializeScenario", () => {
     expect(template.pool.filter((i) => i.id === "antenna_spare").length).toBe(0);
   });
 
+  test("requiresSpareAntenna against a rubric with no epirb_on slot throws", () => {
+    const misconfigured: Scenario = {
+      ...DISTRESS_SCENARIO,
+      id: "misconfigured-spare-antenna",
+      rubricId: "v1/urgency",
+      priority: "pan_pan",
+      requiresSpareAntenna: true,
+    };
+    expect(() => materializeScenario(misconfigured, RUBRICS)).toThrow(
+      /requiresSpareAntenna.*v1\/urgency.*epirb_on/,
+    );
+  });
+
   test("pool contains exactly the correct nature chip plus 4 nature decoys", () => {
     const template = materializeScenario(DISTRESS_SCENARIO, RUBRICS);
     const natureChips = template.pool.filter((i) => isNatureItem(i.id));
