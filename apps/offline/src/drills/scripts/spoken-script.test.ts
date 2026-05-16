@@ -223,7 +223,7 @@ describe("buildSpokenTransmission", () => {
     expect(out).toContain("UNQUOTE");
     // Relayed vessel name appears twice (header + quoted block).
     expect(out.match(/Yacht Tami/g)).toHaveLength(2);
-    expect(out).toContain("OVER");
+    expect(out.endsWith(", OVER")).toBe(true);
   });
 
   test("position normalization: degrees / minutes / cardinal words", () => {
