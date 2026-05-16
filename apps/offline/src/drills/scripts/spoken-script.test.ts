@@ -127,6 +127,24 @@ describe("buildSpokenTransmission", () => {
     expect(out).not.toContain("raft");
   });
 
+  test("requiresSpareAntenna scenario: antenna_spare is filtered out", () => {
+    const t = template([
+      {
+        id: "procedure",
+        items: [
+          { id: "epirb_on", label: "Turn on EPIRB" },
+          { id: "antenna_spare", label: "Rig spare antenna (coax cable)" },
+          { id: "mayday", label: "MAYDAY" },
+          { id: "vessel", label: "Wandering Albatross" },
+        ],
+      },
+    ]);
+    const out = buildSpokenTransmission(t);
+    expect(out).toBe("MAYDAY, Wandering Albatross");
+    expect(out).not.toContain("antenna");
+    expect(out).not.toContain("EPIRB");
+  });
+
   test("position normalization: degrees / minutes / cardinal words", () => {
     const t = template([
       {
