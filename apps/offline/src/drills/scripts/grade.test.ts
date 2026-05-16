@@ -474,7 +474,8 @@ describe("gradeScenario", () => {
     const grade = gradeScenario(tpl, placementsMap(placed));
     expect(grade.correctCount).toBe(3);
     expect(grade.extraCount).toBe(1);
-    expect(grade.score).toBeLessThan(1);
+    // 3 / max(3, 4) = 0.75
+    expect(grade.score).toBeCloseTo(0.75, 5);
     const decoy = grade.parts[0]?.placements.find((p) => p.placed.id === "decoy_dsc_ch72_25w");
     expect(decoy?.correct).toBe(false);
     expect(decoy?.expected).toBeNull();
