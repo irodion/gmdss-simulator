@@ -1,7 +1,13 @@
 import type { RubricDefinition } from "@gmdss-simulator/utils";
 import { describe, expect, test } from "vite-plus/test";
 import { materializeScenario, materializeStructural } from "./materialize.ts";
-import { isNatureItem, type RubricsById, type Scenario } from "./types.ts";
+import {
+  isDecoyId,
+  isNatureItem,
+  isProcedureItem,
+  type RubricsById,
+  type Scenario,
+} from "./types.ts";
 
 const DISTRESS: RubricDefinition = {
   id: "v1/distress",
@@ -40,6 +46,13 @@ const DISTRESS: RubricDefinition = {
         { id: "over", label: "OVER" },
       ],
     },
+  ],
+  channelPowerDecoys: [
+    { id: "decoy_dsc_ch72_25w", label: "DSC: Channel 72, High 25W" },
+    { id: "decoy_dsc_ch77_25w", label: "DSC: Channel 77, High 25W" },
+    { id: "decoy_dsc_ch70_1w", label: "DSC: Channel 70, Low 1W" },
+    { id: "decoy_radio_ch16_low", label: "Radio: Channel 16, Low 1W" },
+    { id: "decoy_dsc_ch16_25w", label: "DSC: Channel 16, High 25W" },
   ],
 };
 
@@ -284,15 +297,15 @@ describe("materializeScenario", () => {
     expect(template.priorityId).toBe("mayday");
   });
 
-  test("pool contains all correct items plus 3x of each wrong-priority opening and 4 nature decoys", () => {
+  test("pool contains all correct items plus 3x of each wrong-priority opening, 4 nature decoys, and 3 channel-power decoys", () => {
     const template = materializeScenario(DISTRESS_SCENARIO, RUBRICS);
     const correctCount = template.parts.flatMap((p) => p.items).length;
     const panPanInPool = template.pool.filter((i) => i.id === "pan_pan").length;
     const securiteInPool = template.pool.filter((i) => i.id === "securite").length;
     expect(panPanInPool).toBe(3);
     expect(securiteInPool).toBe(3);
-    // 6 priority decoys + 4 nature decoys (the correct nature is counted in correctCount)
-    expect(template.pool.length).toBe(correctCount + 6 + 4);
+    // 6 priority decoys + 4 nature decoys (correct nature is in correctCount) + 3 channel-power decoys
+    expect(template.pool.length).toBe(correctCount + 6 + 4 + 3);
   });
 
   test("ship-side distress scenario produces 22 slots ending with OVER, procedural items first", () => {
@@ -649,6 +662,29 @@ describe("materializeScenario", () => {
     expect(template.pool.filter((i) => i.id === "securite").length).toBe(3);
   });
 
+  test("channel-power decoys are added to the pool when the rubric defines them", () => {
+    const template = materializeScenario(DISTRESS_SCENARIO, RUBRICS);
+    const decoys = template.pool.filter((i) => isDecoyId(i.id));
+    expect(decoys).toHaveLength(3);
+    const definedIds = new Set(DISTRESS.channelPowerDecoys!.map((d) => d.id));
+    for (const decoy of decoys) {
+      expect(definedIds.has(decoy.id)).toBe(true);
+    }
+    expect(new Set(decoys.map((d) => d.id)).size).toBe(decoys.length);
+  });
+
+  test("no channel-power decoys when the rubric omits the field", () => {
+    const urgencyScenario: Scenario = {
+      id: "engine-failure-no-decoy",
+      priority: "pan_pan",
+      rubricId: "v1/urgency",
+      brief: "x",
+      facts: { vessel: "X", callsign: "X", position: "X", nature: "X" },
+    };
+    const template = materializeScenario(urgencyScenario, RUBRICS);
+    expect(template.pool.filter((i) => isDecoyId(i.id))).toHaveLength(0);
+  });
+
   test("throws when scenario references a rubric id that is not loaded", () => {
     const orphan: Scenario = {
       id: "orphan",
@@ -658,6 +694,18 @@ describe("materializeScenario", () => {
       facts: { vessel: "X" },
     };
     expect(() => materializeScenario(orphan, RUBRICS)).toThrow(/v1\/does-not-exist/);
+  });
+});
+
+describe("isProcedureItem", () => {
+  test("recognizes channel-power decoy ids by the decoy_ prefix", () => {
+    expect(isProcedureItem("decoy_dsc_ch72_25w")).toBe(true);
+    expect(isProcedureItem("decoy_radio_ch70_high")).toBe(true);
+  });
+
+  test("returns false for unknown non-decoy ids", () => {
+    expect(isProcedureItem("foo_bar")).toBe(false);
+    expect(isProcedureItem("vessel")).toBe(false);
   });
 });
 

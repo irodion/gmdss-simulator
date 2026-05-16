@@ -117,5 +117,15 @@
   "dscRules": {
     "required": true,
     "beforeFirstVoiceTurn": true
-  }
+  },
+  "channelPowerDecoys": [
+    { "id": "decoy_dsc_ch72_25w", "label": "DSC: Channel 72, High 25W" },
+    { "id": "decoy_dsc_ch77_25w", "label": "DSC: Channel 77, High 25W" },
+    { "id": "decoy_dsc_ch70_1w", "label": "DSC: Channel 70, Low 1W" },
+    { "id": "decoy_radio_ch16_low", "label": "Radio: Channel 16, Low 1W" },
+    { "id": "decoy_dsc_ch16_25w", "label": "DSC: Channel 16, High 25W" },
+    { "id": "decoy_radio_ch70_high", "label": "Radio: Channel 70, High" },
+    { "id": "decoy_dsc_ch70_10w", "label": "DSC: Channel 70, High 10W" },
+    { "id": "decoy_dsc_ch72_1w", "label": "DSC: Channel 72, Low 1W" }
+  ]
 }

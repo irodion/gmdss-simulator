@@ -1,4 +1,4 @@
-import type { RubricDefinition } from "@gmdss-simulator/utils";
+import type { ChannelPowerDecoy, RubricDefinition } from "@gmdss-simulator/utils";
 import { shuffle } from "../drill-types.ts";
 import {
   ANTENNA_SPARE_ID,
@@ -18,6 +18,7 @@ import {
 } from "./types.ts";
 
 const NATURE_DECOY_COUNT = 4;
+const CHANNEL_DECOY_COUNT = 3;
 const IN_RAFT_ITEM: SequenceItem = {
   id: "in_raft",
   label: "In raft: EPIRB, SART, portable VHF",
@@ -129,6 +130,13 @@ function pickNatureDecoys(
   return shuffled.slice(0, count).map((code) => ({ id: code, label: NATURE_LABELS[code] }));
 }
 
+function pickChannelPowerDecoys(
+  decoys: readonly ChannelPowerDecoy[],
+  count: number,
+): readonly SequenceItem[] {
+  return shuffle(decoys).slice(0, count);
+}
+
 function natureChip(code: NatureCode): SequenceItem {
   return { id: code, label: NATURE_LABELS[code] };
 }
@@ -188,11 +196,15 @@ export function materializeScenario(
     .map(natureChip);
   const natureDecoys =
     acceptableNatureIds.length > 0 ? pickNatureDecoys(acceptableNatureIds, NATURE_DECOY_COUNT) : [];
+  const channelPowerDecoys = rubric.channelPowerDecoys
+    ? pickChannelPowerDecoys(rubric.channelPowerDecoys, CHANNEL_DECOY_COUNT)
+    : [];
   const pool = shuffle([
     ...correctItems,
     ...priorityDecoys,
     ...extraAcceptableChips,
     ...natureDecoys,
+    ...channelPowerDecoys,
   ]);
 
   const heading = parts[0]?.label ?? rubric.id;

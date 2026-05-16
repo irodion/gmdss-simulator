@@ -145,6 +145,23 @@ describe("buildSpokenTransmission", () => {
     expect(out).not.toContain("EPIRB");
   });
 
+  test("misplaced channel-power decoy chip is filtered out of the transcript", () => {
+    const t = template([
+      {
+        id: "procedure",
+        items: [
+          { id: "decoy_dsc_ch72_25w", label: "DSC: Channel 72, High 25W" },
+          { id: "mayday", label: "MAYDAY" },
+          { id: "vessel", label: "Blue Duck" },
+        ],
+      },
+    ]);
+    const out = buildSpokenTransmission(t);
+    expect(out).toBe("MAYDAY, Blue Duck");
+    expect(out).not.toContain("Channel");
+    expect(out).not.toContain("decoy");
+  });
+
   test("position normalization: degrees / minutes / cardinal words", () => {
     const t = template([
       {
