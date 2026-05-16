@@ -90,5 +90,12 @@
   "channelRules": {
     "requiredChannel": 16,
     "blockChannel70Voice": true
-  }
+  },
+  "callsignDecoys": [
+    { "id": "decoy_mmsi_coast_002411000", "label": "MMSI 002 411 000" },
+    { "id": "decoy_mmsi_coast_002111500", "label": "MMSI 002 111 500" },
+    { "id": "decoy_mmsi_sart_970110234", "label": "MMSI 970 110 234" },
+    { "id": "decoy_mmsi_group_023110001", "label": "MMSI 023 110 001" },
+    { "id": "decoy_mmsi_aircraft_111212345", "label": "MMSI 111 212 345" }
+  ]
 }

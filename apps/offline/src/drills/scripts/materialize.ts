@@ -1,4 +1,4 @@
-import type { ChannelPowerDecoy, RubricDefinition } from "@gmdss-simulator/utils";
+import type { PoolDecoy, RubricDefinition } from "@gmdss-simulator/utils";
 import { shuffle } from "../drill-types.ts";
 import {
   ANTENNA_SPARE_ID,
@@ -21,6 +21,7 @@ import {
 
 const NATURE_DECOY_COUNT = 4;
 const CHANNEL_DECOY_COUNT = 3;
+const CALLSIGN_DECOY_COUNT = 2;
 const IN_RAFT_ITEM: SequenceItem = {
   id: "in_raft",
   label: "In raft: EPIRB, SART, portable VHF",
@@ -132,19 +133,16 @@ function pickNatureDecoys(
   return shuffled.slice(0, count).map((code) => ({ id: code, label: NATURE_LABELS[code] }));
 }
 
-function pickChannelPowerDecoys(
-  decoys: readonly ChannelPowerDecoy[],
-  count: number,
-): readonly SequenceItem[] {
+function pickPoolDecoys(decoys: readonly PoolDecoy[], count: number): readonly SequenceItem[] {
   const seen = new Set<string>();
   for (const decoy of decoys) {
     if (!isDecoyId(decoy.id)) {
       throw new Error(
-        `pickChannelPowerDecoys: decoy id ${JSON.stringify(decoy.id)} must start with "${DECOY_ID_PREFIX}"`,
+        `pickPoolDecoys: decoy id ${JSON.stringify(decoy.id)} must start with "${DECOY_ID_PREFIX}"`,
       );
     }
     if (seen.has(decoy.id)) {
-      throw new Error(`pickChannelPowerDecoys: duplicate decoy id ${JSON.stringify(decoy.id)}`);
+      throw new Error(`pickPoolDecoys: duplicate decoy id ${JSON.stringify(decoy.id)}`);
     }
     seen.add(decoy.id);
   }
@@ -211,7 +209,10 @@ export function materializeScenario(
   const natureDecoys =
     acceptableNatureIds.length > 0 ? pickNatureDecoys(acceptableNatureIds, NATURE_DECOY_COUNT) : [];
   const channelPowerDecoys = rubric.channelPowerDecoys
-    ? pickChannelPowerDecoys(rubric.channelPowerDecoys, CHANNEL_DECOY_COUNT)
+    ? pickPoolDecoys(rubric.channelPowerDecoys, CHANNEL_DECOY_COUNT)
+    : [];
+  const callsignDecoys = rubric.callsignDecoys
+    ? pickPoolDecoys(rubric.callsignDecoys, CALLSIGN_DECOY_COUNT)
     : [];
   const pool = shuffle([
     ...correctItems,
@@ -219,6 +220,7 @@ export function materializeScenario(
     ...extraAcceptableChips,
     ...natureDecoys,
     ...channelPowerDecoys,
+    ...callsignDecoys,
   ]);
 
   const heading = parts[0]?.label ?? rubric.id;
