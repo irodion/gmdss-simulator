@@ -150,6 +150,17 @@ export function materializeScenario(
   );
   const acceptableNatureIds = hasNatureSlot ? buildAcceptableNatureSet(scenario.facts) : [];
 
+  if (scenario.requiresSpareAntenna) {
+    const hasEpirbSlot = rubric.sequenceParts.some((part) =>
+      part.items.some((item) => item.id === EPIRB_ON_ID),
+    );
+    if (!hasEpirbSlot) {
+      throw new Error(
+        `Scenario ${scenario.id} sets requiresSpareAntenna but rubric ${rubric.id} has no ${EPIRB_ON_ID} slot to anchor the spare-antenna chip`,
+      );
+    }
+  }
+
   const parts: SequenceTemplatePart[] = rubric.sequenceParts.map((part, partIndex) => {
     let items = injectScenarioLabels(part.items, scenario.facts, scenario.id, acceptableNatureIds);
     if (scenario.requiresSpareAntenna) {
