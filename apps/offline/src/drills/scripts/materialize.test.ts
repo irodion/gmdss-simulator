@@ -243,6 +243,53 @@ const URGENCY_MEDICO: RubricDefinition = {
   ],
 };
 
+const DISTRESS_RELAY: RubricDefinition = {
+  id: "v1/distress-relay",
+  version: "1.0.0",
+  category: "distress",
+  requiredFields: [],
+  prowordRules: [],
+  sequenceRules: { fieldOrder: [] },
+  channelRules: { requiredChannel: 16, blockChannel70Voice: true },
+  sequenceParts: [
+    {
+      id: "procedure",
+      label: "MAYDAY RELAY procedure",
+      items: [
+        { id: "dsc_channel16", label: "Radio: Channel 16, High" },
+        { id: "mayday_relay", label: "MAYDAY RELAY" },
+        { id: "mayday_relay", label: "MAYDAY RELAY" },
+        { id: "mayday_relay", label: "MAYDAY RELAY" },
+        { id: "addressee", label: "Addressee (All Stations / RCC)" },
+        { id: "addressee", label: "Addressee (All Stations / RCC)" },
+        { id: "addressee", label: "Addressee (All Stations / RCC)" },
+        { id: "this_is", label: "THIS IS" },
+        { id: "vessel", label: "Vessel name" },
+        { id: "vessel", label: "Vessel name" },
+        { id: "vessel", label: "Vessel name" },
+        { id: "callsign", label: "Callsign / MMSI" },
+        { id: "following_received", label: "FOLLOWING RECEIVED FROM" },
+        { id: "relayed_vessel", label: "Relayed vessel name" },
+        { id: "relayed_mmsi", label: "Relayed vessel MMSI" },
+        { id: "on_channel_16", label: "ON CHANNEL 16" },
+        { id: "quote_marker", label: "QUOTE" },
+        { id: "mayday", label: "MAYDAY" },
+        { id: "relayed_vessel", label: "Relayed vessel name" },
+        { id: "relayed_position", label: "Relayed position" },
+        { id: "relayed_nature", label: "Relayed nature of distress" },
+        { id: "relayed_assistance", label: "Relayed assistance request" },
+        { id: "relayed_persons", label: "Relayed persons on board" },
+        { id: "unquote_marker", label: "UNQUOTE" },
+        { id: "over", label: "OVER" },
+      ],
+    },
+  ],
+  callsignDecoys: [
+    { id: "decoy_mmsi_coast_002411000", label: "MMSI 002 411 000" },
+    { id: "decoy_mmsi_sart_970110234", label: "MMSI 970 110 234" },
+  ],
+};
+
 const RUBRICS: RubricsById = {
   "v1/distress": DISTRESS,
   "v1/urgency": URGENCY,
@@ -251,6 +298,7 @@ const RUBRICS: RubricsById = {
   "v1/distress-relative": DISTRESS_RELATIVE,
   "v1/distress-rcc-response": DISTRESS_RCC_RESPONSE,
   "v1/urgency-medico": URGENCY_MEDICO,
+  "v1/distress-relay": DISTRESS_RELAY,
 };
 
 const DISTRESS_SCENARIO: Scenario = {
@@ -282,6 +330,42 @@ const MEDICO_SCENARIO: Scenario = {
     patientVitals: "Male, age 52, temperature 37.2°C, BP 160/100",
     patientStatus: "Severe chest pain, conscious but very weak",
     actionsTaken: "Aspirin administered, oxygen rigged",
+  },
+};
+
+const RELAY_SCENARIO_ALLSTATIONS: Scenario = {
+  id: "relay-allstations-yacht-tami",
+  priority: "mayday",
+  rubricId: "v1/distress-relay",
+  brief: "Overheard MAYDAY from Yacht Tami, unanswered.",
+  facts: {
+    vessel: "Vered",
+    callsign: "MMSI 428 123 456",
+    addressee: "All Stations",
+    relayedVessel: "Yacht Tami",
+    relayedMmsi: "MMSI 428 555 222",
+    relayedPosition: "33°42'N 032°52'E",
+    relayedNature: "Fire on board in danger of sinking",
+    relayedAssistance: "Require immediate assistance",
+    relayedPersons: "6 persons on board",
+  },
+};
+
+const RELAY_SCENARIO_RCC: Scenario = {
+  id: "relay-rcc-haifa-coral-bay",
+  priority: "mayday",
+  rubricId: "v1/distress-relay",
+  brief: "RCC requested relay of MV Coral Bay's MAYDAY.",
+  facts: {
+    vessel: "Northern Falcon",
+    callsign: "MMSI 428 999 111",
+    addressee: "RCC Haifa",
+    relayedVessel: "MV Coral Bay",
+    relayedMmsi: "MMSI 428 777 888",
+    relayedPosition: "32°15'N 034°20'E",
+    relayedNature: "Collision with another vessel, taking water fast",
+    relayedAssistance: "Require immediate assistance",
+    relayedPersons: "12 persons on board",
   },
 };
 
@@ -757,6 +841,67 @@ describe("materializeScenario", () => {
       facts: { vessel: "X" },
     };
     expect(() => materializeScenario(orphan, RUBRICS)).toThrow(/v1\/does-not-exist/);
+  });
+
+  test("RELAY materializer injects own vessel, own MMSI, and addressee into chip labels", () => {
+    const template = materializeScenario(RELAY_SCENARIO_ALLSTATIONS, RUBRICS);
+    const items = template.parts[0]!.items;
+    expect(items.filter((i) => i.id === "vessel").every((i) => i.label === "Vered")).toBe(true);
+    expect(items.find((i) => i.id === "callsign")!.label).toBe("MMSI 428 123 456");
+    expect(items.filter((i) => i.id === "addressee").every((i) => i.label === "All Stations")).toBe(
+      true,
+    );
+  });
+
+  test("RELAY materializer injects relayed_* facts into the quoted-block chips", () => {
+    const template = materializeScenario(RELAY_SCENARIO_ALLSTATIONS, RUBRICS);
+    const items = template.parts[0]!.items;
+    const relayedVessels = items.filter((i) => i.id === "relayed_vessel");
+    expect(relayedVessels).toHaveLength(2);
+    expect(relayedVessels.every((i) => i.label === "Yacht Tami")).toBe(true);
+    expect(items.find((i) => i.id === "relayed_mmsi")!.label).toBe("MMSI 428 555 222");
+    expect(items.find((i) => i.id === "relayed_position")!.label).toBe("33°42'N 032°52'E");
+    expect(items.find((i) => i.id === "relayed_nature")!.label).toBe(
+      "Fire on board in danger of sinking",
+    );
+    expect(items.find((i) => i.id === "relayed_assistance")!.label).toBe(
+      "Require immediate assistance",
+    );
+    expect(items.find((i) => i.id === "relayed_persons")!.label).toBe("6 persons on board");
+  });
+
+  test("RELAY materializer produces 25 slots, opening with Ch 16 setup and closing with OVER", () => {
+    const template = materializeScenario(RELAY_SCENARIO_ALLSTATIONS, RUBRICS);
+    const items = template.parts[0]!.items;
+    expect(items).toHaveLength(25);
+    expect(items[0]!.id).toBe("dsc_channel16");
+    expect(items[24]!.id).toBe("over");
+    expect(items.filter((i) => i.id === "mayday_relay")).toHaveLength(3);
+    expect(items.filter((i) => i.id === "addressee")).toHaveLength(3);
+    expect(items.find((i) => i.id === "quote_marker")!.label).toBe("QUOTE");
+    expect(items.find((i) => i.id === "unquote_marker")!.label).toBe("UNQUOTE");
+    expect(items.find((i) => i.id === "following_received")!.label).toBe("FOLLOWING RECEIVED FROM");
+    expect(items.find((i) => i.id === "on_channel_16")!.label).toBe("ON CHANNEL 16");
+  });
+
+  test("RELAY scenario with RCC Haifa addressee renders 'RCC Haifa' on the addressee chips", () => {
+    const template = materializeScenario(RELAY_SCENARIO_RCC, RUBRICS);
+    const addressees = template.parts[0]!.items.filter((i) => i.id === "addressee");
+    expect(addressees).toHaveLength(3);
+    expect(addressees.every((i) => i.label === "RCC Haifa")).toBe(true);
+    expect(template.parts[0]!.items.find((i) => i.id === "relayed_vessel")!.label).toBe(
+      "MV Coral Bay",
+    );
+  });
+
+  test("RELAY pool contains both own MMSI and relayed MMSI as ship-format chips", () => {
+    const template = materializeScenario(RELAY_SCENARIO_ALLSTATIONS, RUBRICS);
+    const ownMmsi = template.pool.filter((i) => i.id === "callsign");
+    const relayedMmsi = template.pool.filter((i) => i.id === "relayed_mmsi");
+    expect(ownMmsi).toHaveLength(1);
+    expect(ownMmsi[0]!.label).toBe("MMSI 428 123 456");
+    expect(relayedMmsi).toHaveLength(1);
+    expect(relayedMmsi[0]!.label).toBe("MMSI 428 555 222");
   });
 });
 

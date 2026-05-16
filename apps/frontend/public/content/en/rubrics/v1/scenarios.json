@@ -237,6 +237,40 @@
         "addresseeRcc": "RCC Haifa",
         "actionRequest": "Send fast ships to the distress area to evacuate the crew"
       }
+    },
+    {
+      "id": "distress-relay-allstations-yacht-tami",
+      "priority": "mayday",
+      "rubricId": "v1/distress-relay",
+      "brief": "You are MV Vered (MMSI: *********). You overheard a MAYDAY distress call from Yacht Tami (MMSI 428 555 222) on Channel 16: position 33°42'N 032°52'E, fire on board in danger of sinking, 6 persons on board. The call has gone unacknowledged for over 5 minutes. Address the relay to All Stations.",
+      "facts": {
+        "vessel": "Vered",
+        "callsign": "MMSI 428 123 456",
+        "addressee": "All Stations",
+        "relayedVessel": "Yacht Tami",
+        "relayedMmsi": "MMSI 428 555 222",
+        "relayedPosition": "33°42'N 032°52'E",
+        "relayedNature": "Fire on board in danger of sinking",
+        "relayedAssistance": "Require immediate assistance",
+        "relayedPersons": "6 persons on board"
+      }
+    },
+    {
+      "id": "distress-relay-rcc-haifa-coral-bay",
+      "priority": "mayday",
+      "rubricId": "v1/distress-relay",
+      "brief": "You are MV Northern Falcon (MMSI: *********). You overheard a MAYDAY distress call from MV Coral Bay (MMSI 428 777 888) on Channel 16: position 32°15'N 034°20'E, collision with another vessel, taking water fast, 12 persons on board. RCC Haifa requested you relay the distress. Address the relay to RCC Haifa.",
+      "facts": {
+        "vessel": "Northern Falcon",
+        "callsign": "MMSI 428 999 111",
+        "addressee": "RCC Haifa",
+        "relayedVessel": "MV Coral Bay",
+        "relayedMmsi": "MMSI 428 777 888",
+        "relayedPosition": "32°15'N 034°20'E",
+        "relayedNature": "Collision with another vessel, taking water fast",
+        "relayedAssistance": "Require immediate assistance",
+        "relayedPersons": "12 persons on board"
+      }
     }
   ]
 }

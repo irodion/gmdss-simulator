@@ -506,6 +506,45 @@ describe("gradeScenario", () => {
     expect(decoy?.expected).toBeNull();
   });
 
+  test("RELAY: perfect placement of own + relayed MMSIs in correct slots scores full credit", () => {
+    const items: readonly SequenceItem[] = [
+      { id: "mayday_relay", label: "MAYDAY RELAY" },
+      { id: "callsign", label: "MMSI 428 123 456" },
+      { id: "relayed_vessel", label: "Yacht Tami" },
+      { id: "relayed_mmsi", label: "MMSI 428 555 222" },
+      { id: "over", label: "OVER" },
+    ];
+    const tpl = template(items);
+    const grade = gradeScenario(tpl, placementsMap(items));
+    expect(grade.correctCount).toBe(5);
+    expect(grade.extraCount).toBe(0);
+    expect(grade.score).toBeCloseTo(1, 5);
+  });
+
+  test("RELAY: swapping own MMSI with relayed MMSI drops score below passing", () => {
+    const items: readonly SequenceItem[] = [
+      { id: "mayday_relay", label: "MAYDAY RELAY" },
+      { id: "callsign", label: "MMSI 428 123 456" },
+      { id: "relayed_mmsi", label: "MMSI 428 555 222" },
+      { id: "over", label: "OVER" },
+    ];
+    const tpl = template(items);
+    // Student placed callsign in the relayed_mmsi slot and vice versa.
+    const placed: readonly SequenceItem[] = [
+      { id: "mayday_relay", label: "MAYDAY RELAY" },
+      { id: "relayed_mmsi", label: "MMSI 428 555 222" },
+      { id: "callsign", label: "MMSI 428 123 456" },
+      { id: "over", label: "OVER" },
+    ];
+    const grade = gradeScenario(tpl, placementsMap(placed));
+    // LCS aligns mayday_relay + over + one of the two MMSIs (3 correct);
+    // the other MMSI chip becomes an extra. 3 / max(4, 4) = 0.75 < 0.80.
+    expect(grade.correctCount).toBe(3);
+    expect(grade.extraCount).toBe(1);
+    expect(grade.score).toBeCloseTo(0.75, 5);
+    expect(grade.passed).toBe(false);
+  });
+
   test("score boundary: just below 80% does not pass", () => {
     const items: readonly SequenceItem[] = [
       { id: "mayday", label: "MAYDAY" },

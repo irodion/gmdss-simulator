@@ -1,0 +1,62 @@
+{
+  "id": "v1/distress-relay",
+  "version": "1.0.0",
+  "category": "distress",
+  "requiredFields": [],
+  "prowordRules": [],
+  "sequenceRules": { "fieldOrder": [] },
+  "sequenceParts": [
+    {
+      "id": "procedure",
+      "label": "MAYDAY RELAY procedure",
+      "items": [
+        { "id": "dsc_channel16", "label": "Radio: Channel 16, High" },
+        { "id": "mayday_relay", "label": "MAYDAY RELAY" },
+        { "id": "mayday_relay", "label": "MAYDAY RELAY" },
+        { "id": "mayday_relay", "label": "MAYDAY RELAY" },
+        { "id": "addressee", "label": "Addressee (All Stations / RCC)" },
+        { "id": "addressee", "label": "Addressee (All Stations / RCC)" },
+        { "id": "addressee", "label": "Addressee (All Stations / RCC)" },
+        { "id": "this_is", "label": "THIS IS" },
+        { "id": "vessel", "label": "Vessel name" },
+        { "id": "vessel", "label": "Vessel name" },
+        { "id": "vessel", "label": "Vessel name" },
+        { "id": "callsign", "label": "Callsign / MMSI" },
+        { "id": "following_received", "label": "FOLLOWING RECEIVED FROM" },
+        { "id": "relayed_vessel", "label": "Relayed vessel name" },
+        { "id": "relayed_mmsi", "label": "Relayed vessel MMSI" },
+        { "id": "on_channel_16", "label": "ON CHANNEL 16" },
+        { "id": "quote_marker", "label": "QUOTE" },
+        { "id": "mayday", "label": "MAYDAY" },
+        { "id": "relayed_vessel", "label": "Relayed vessel name" },
+        { "id": "relayed_position", "label": "Relayed position" },
+        { "id": "relayed_nature", "label": "Relayed nature of distress" },
+        { "id": "relayed_assistance", "label": "Relayed assistance request" },
+        { "id": "relayed_persons", "label": "Relayed persons on board" },
+        { "id": "unquote_marker", "label": "UNQUOTE" },
+        { "id": "over", "label": "OVER" }
+      ]
+    }
+  ],
+  "channelRules": {
+    "requiredChannel": 16,
+    "blockChannel70Voice": true
+  },
+  "channelPowerDecoys": [
+    { "id": "decoy_dsc_ch72_25w", "label": "DSC: Channel 72, High 25W" },
+    { "id": "decoy_dsc_ch77_25w", "label": "DSC: Channel 77, High 25W" },
+    { "id": "decoy_dsc_ch70_1w", "label": "DSC: Channel 70, Low 1W" },
+    { "id": "decoy_radio_ch16_low", "label": "Radio: Channel 16, Low 1W" },
+    { "id": "decoy_dsc_ch16_25w", "label": "DSC: Channel 16, High 25W" },
+    { "id": "decoy_radio_ch70_high", "label": "Radio: Channel 70, High" },
+    { "id": "decoy_dsc_ch70_10w", "label": "DSC: Channel 70, High 10W" },
+    { "id": "decoy_dsc_ch72_1w", "label": "DSC: Channel 72, Low 1W" }
+  ],
+  "callsignDecoys": [
+    { "id": "decoy_mmsi_coast_002411000", "label": "MMSI 002 411 000" },
+    { "id": "decoy_mmsi_coast_002111500", "label": "MMSI 002 111 500" },
+    { "id": "decoy_mmsi_sart_970110234", "label": "MMSI 970 110 234" },
+    { "id": "decoy_mmsi_group_023110001", "label": "MMSI 023 110 001" },
+    { "id": "decoy_mmsi_aircraft_111212345", "label": "MMSI 111 212 345" }
+  ]
+}

@@ -52,6 +52,12 @@ const FALLBACK_LABELS: Readonly<Record<string, string>> = {
   patient_vitals: "Patient vitals (gender, age, temp, BP)",
   patient_status: "Patient status / problem",
   actions_taken: "Actions taken / treatment given",
+  relayed_vessel: "Relayed vessel name",
+  relayed_mmsi: "Relayed vessel MMSI",
+  relayed_position: "Relayed position",
+  relayed_nature: "Relayed nature of distress",
+  relayed_assistance: "Relayed assistance request",
+  relayed_persons: "Relayed persons on board",
   over: "OVER",
   out: "OUT",
 };
@@ -71,6 +77,12 @@ const ITEM_TO_FACT_KEY = {
   patient_vitals: "patientVitals",
   patient_status: "patientStatus",
   actions_taken: "actionsTaken",
+  relayed_vessel: "relayedVessel",
+  relayed_mmsi: "relayedMmsi",
+  relayed_position: "relayedPosition",
+  relayed_nature: "relayedNature",
+  relayed_assistance: "relayedAssistance",
+  relayed_persons: "relayedPersons",
 } as const satisfies Readonly<Record<string, keyof ScenarioFacts>>;
 
 type StringFactKey = (typeof ITEM_TO_FACT_KEY)[keyof typeof ITEM_TO_FACT_KEY];

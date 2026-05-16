@@ -179,6 +179,53 @@ describe("buildSpokenTransmission", () => {
     expect(out).not.toContain("decoy");
   });
 
+  test("MAYDAY RELAY transcript: Ch 16 setup filtered, QUOTE/UNQUOTE markers + relayed vessel appear", () => {
+    const t = template([
+      {
+        id: "procedure",
+        items: [
+          { id: "dsc_channel16", label: "Radio: Channel 16, High" },
+          { id: "mayday_relay", label: "MAYDAY RELAY" },
+          { id: "mayday_relay", label: "MAYDAY RELAY" },
+          { id: "mayday_relay", label: "MAYDAY RELAY" },
+          { id: "addressee", label: "All Stations" },
+          { id: "addressee", label: "All Stations" },
+          { id: "addressee", label: "All Stations" },
+          { id: "this_is", label: "THIS IS" },
+          { id: "vessel", label: "Vered" },
+          { id: "vessel", label: "Vered" },
+          { id: "vessel", label: "Vered" },
+          { id: "callsign", label: "MMSI 428 123 456" },
+          { id: "following_received", label: "FOLLOWING RECEIVED FROM" },
+          { id: "relayed_vessel", label: "Yacht Tami" },
+          { id: "relayed_mmsi", label: "MMSI 428 555 222" },
+          { id: "on_channel_16", label: "ON CHANNEL 16" },
+          { id: "quote_marker", label: "QUOTE" },
+          { id: "mayday", label: "MAYDAY" },
+          { id: "relayed_vessel", label: "Yacht Tami" },
+          { id: "relayed_position", label: "33°42'N 032°52'E" },
+          { id: "relayed_nature", label: "Fire on board in danger of sinking" },
+          { id: "relayed_assistance", label: "Require immediate assistance" },
+          { id: "relayed_persons", label: "6 persons on board" },
+          { id: "unquote_marker", label: "UNQUOTE" },
+          { id: "over", label: "OVER" },
+        ],
+      },
+    ]);
+    const out = buildSpokenTransmission(t);
+    // Setup chip is procedure-step → filtered.
+    expect(out).not.toContain("Radio: Channel 16");
+    // MAYDAY RELAY spoken three times, plus the standalone MAYDAY in the quoted block.
+    expect(out.match(/MAYDAY RELAY/g)).toHaveLength(3);
+    expect(out).toContain("All Stations");
+    expect(out).toContain("FOLLOWING RECEIVED FROM");
+    expect(out).toContain("QUOTE");
+    expect(out).toContain("UNQUOTE");
+    // Relayed vessel name appears twice (header + quoted block).
+    expect(out.match(/Yacht Tami/g)).toHaveLength(2);
+    expect(out).toContain("OVER");
+  });
+
   test("position normalization: degrees / minutes / cardinal words", () => {
     const t = template([
       {
