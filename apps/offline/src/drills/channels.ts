@@ -1,5 +1,5 @@
 export interface ChannelEntry {
-  /** Channel number as a stable string id ("06", "16", "70"). Always 2 chars for sorting. */
+  /** Channel number as a stable string id ("06", "16", "70", "87B"). 2-char numeric or 3-char "B"-suffix. */
   readonly channel: string;
   /** Short usage label shown as the multiple-choice option and in the cheatsheet. */
   readonly usage: string;
@@ -8,9 +8,10 @@ export interface ChannelEntry {
 }
 
 /**
- * Core ROC-relevant VHF channels. WRC-19 additions (AIS, ASM, VDES) are
- * intentionally omitted from v1 — they are not on a standard ROC exam and
- * including them muddies multiple-choice distractors.
+ * ROC-relevant VHF channels per ITU Appendix 18. Includes restricted/non-voice
+ * channels (AIS 87B/88B, guard bands 75/76, on-board 15/17) tagged with
+ * explicit restriction labels so trainees learn to recognise them — not just
+ * memorise positive assignments.
  */
 export const CHANNELS: readonly ChannelEntry[] = [
   {
@@ -34,14 +35,44 @@ export const CHANNELS: readonly ChannelEntry[] = [
     description: "port operations ship movement traffic",
   },
   {
+    channel: "12",
+    usage: "Port operations — pilots and VTS",
+    description: "port operations and vessel traffic services (pilot coordination)",
+  },
+  {
     channel: "13",
     usage: "Bridge-to-bridge navigation safety",
     description: "world-wide navigation safety communication between vessel bridges",
   },
   {
+    channel: "14",
+    usage: "Port operations — locks and bridges",
+    description: "port operations for locks, bridges, and harbour structures",
+  },
+  {
+    channel: "15",
+    usage: "On-board comms — lower (1W max)",
+    description: "on-board communications only on the lower 1-watt frequency",
+  },
+  {
     channel: "16",
     usage: "Distress, safety, and calling",
     description: "the international voice distress, safety, and calling channel",
+  },
+  {
+    channel: "17",
+    usage: "On-board comms — upper (1W max)",
+    description: "on-board communications only on the upper 1-watt frequency",
+  },
+  {
+    channel: "24",
+    usage: "Public correspondence — duplex pair 24",
+    description: "public correspondence on the lower duplex pair",
+  },
+  {
+    channel: "25",
+    usage: "Public correspondence — duplex pair 25",
+    description: "public correspondence on the upper duplex pair",
   },
   {
     channel: "70",
@@ -57,6 +88,33 @@ export const CHANNELS: readonly ChannelEntry[] = [
     channel: "73",
     usage: "Inter-ship / SAR coordination — third choice",
     description: "coordinated SAR in Europe and Canada; third-choice for inter-ship",
+  },
+  {
+    channel: "75",
+    usage: "Guard band below CH16 — do not transmit",
+    description:
+      "guard band immediately below the distress channel, restricted to navigation-related 1W comms",
+  },
+  {
+    channel: "76",
+    usage: "Guard band above CH16 — do not transmit",
+    description:
+      "guard band immediately above the distress channel, restricted to navigation-related 1W comms",
+  },
+  {
+    channel: "79",
+    usage: "Port operations — inter-ship alternate",
+    description: "port operations and inter-ship use as a regional alternate",
+  },
+  {
+    channel: "87B",
+    usage: "AIS 1 — data only, no voice",
+    description: "the lower AIS data channel, simplex, no voice transmission",
+  },
+  {
+    channel: "88B",
+    usage: "AIS 2 — data only, no voice",
+    description: "the upper AIS data channel, simplex, no voice transmission",
   },
 ];
 
