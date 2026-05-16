@@ -162,6 +162,23 @@ describe("buildSpokenTransmission", () => {
     expect(out).not.toContain("decoy");
   });
 
+  test("misplaced callsign (MMSI) decoy chip is filtered out of the transcript", () => {
+    const t = template([
+      {
+        id: "procedure",
+        items: [
+          { id: "decoy_mmsi_coast_002411000", label: "MMSI 002 411 000" },
+          { id: "mayday", label: "MAYDAY" },
+          { id: "vessel", label: "Blue Duck" },
+        ],
+      },
+    ]);
+    const out = buildSpokenTransmission(t);
+    expect(out).toBe("MAYDAY, Blue Duck");
+    expect(out).not.toContain("002");
+    expect(out).not.toContain("decoy");
+  });
+
   test("position normalization: degrees / minutes / cardinal words", () => {
     const t = template([
       {

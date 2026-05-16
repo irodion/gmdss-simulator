@@ -481,6 +481,31 @@ describe("gradeScenario", () => {
     expect(decoy?.expected).toBeNull();
   });
 
+  test("misplaced callsign (MMSI) decoy chip counts as an extra and lowers score", () => {
+    const items: readonly SequenceItem[] = [
+      { id: "mayday", label: "MAYDAY" },
+      { id: "callsign", label: "MMSI 211 239 680" },
+      { id: "over", label: "OVER" },
+    ];
+    const tpl = template(items);
+    const placed: readonly SequenceItem[] = [
+      { id: "mayday", label: "MAYDAY" },
+      { id: "decoy_mmsi_coast_002411000", label: "MMSI 002 411 000" },
+      { id: "callsign", label: "MMSI 211 239 680" },
+      { id: "over", label: "OVER" },
+    ];
+    const grade = gradeScenario(tpl, placementsMap(placed));
+    expect(grade.correctCount).toBe(3);
+    expect(grade.extraCount).toBe(1);
+    // 3 / max(3, 4) = 0.75
+    expect(grade.score).toBeCloseTo(0.75, 5);
+    const decoy = grade.parts[0]?.placements.find(
+      (p) => p.placed.id === "decoy_mmsi_coast_002411000",
+    );
+    expect(decoy?.correct).toBe(false);
+    expect(decoy?.expected).toBeNull();
+  });
+
   test("score boundary: just below 80% does not pass", () => {
     const items: readonly SequenceItem[] = [
       { id: "mayday", label: "MAYDAY" },

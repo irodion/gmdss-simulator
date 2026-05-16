@@ -4,7 +4,7 @@
       "id": "distress-fire-blue-duck",
       "priority": "mayday",
       "rubricId": "v1/distress",
-      "brief": "You are MV Blue Duck. Engine room fire is out of control. 6 persons on board, position 32°05'N 034°45'E. Ship is in immediate danger.",
+      "brief": "You are MV Blue Duck (MMSI: *********). Engine room fire is out of control. 6 persons on board, position 32°05'N 034°45'E. Ship is in immediate danger.",
       "facts": {
         "vessel": "Blue Duck",
         "callsign": "MMSI 211 239 680",
@@ -19,7 +19,7 @@
       "id": "distress-sinking-sea-otter",
       "priority": "mayday",
       "rubricId": "v1/distress",
-      "brief": "You are SY Sea Otter. Hit a submerged object, hull breached, taking water fast. 4 persons on board, position 31°50'N 034°30'E. Vessel will sink within minutes.",
+      "brief": "You are SY Sea Otter (MMSI: *********). Hit a submerged object, hull breached, taking water fast. 4 persons on board, position 31°50'N 034°30'E. Vessel will sink within minutes.",
       "facts": {
         "vessel": "Sea Otter",
         "callsign": "MMSI 211 555 010",
@@ -35,7 +35,7 @@
       "id": "distress-collision-northern-star",
       "priority": "mayday",
       "rubricId": "v1/distress",
-      "brief": "You are MV Northern Star. Collided with another vessel, severe damage to bow, taking water. 12 persons on board, position 33°10'N 035°02'E.",
+      "brief": "You are MV Northern Star (MMSI: *********). Collided with another vessel, severe damage to bow, taking water. 12 persons on board, position 33°10'N 035°02'E.",
       "facts": {
         "vessel": "Northern Star",
         "callsign": "MMSI 211 333 222",
@@ -52,7 +52,7 @@
       "priority": "mayday",
       "rubricId": "v1/distress",
       "requiresAbandon": true,
-      "brief": "You are MV River Hawk. Engine-room fire has spread to the bridge and is uncontrollable. 7 persons on board, position 32°25'N 034°48'E. Make the MAYDAY call — you must abandon ship to the liferaft immediately after.",
+      "brief": "You are MV River Hawk (MMSI: *********). Engine-room fire has spread to the bridge and is uncontrollable. 7 persons on board, position 32°25'N 034°48'E. Make the MAYDAY call — you must abandon ship to the liferaft immediately after.",
       "facts": {
         "vessel": "River Hawk",
         "callsign": "MMSI 211 222 110",
@@ -69,7 +69,7 @@
       "priority": "mayday",
       "rubricId": "v1/distress",
       "requiresAbandon": true,
-      "brief": "You are MV Aurora. Catastrophic hull breach after grounding, vessel listing heavily and capsizing. 9 persons on board, position 31°40'N 034°25'E. Make the MAYDAY call — you must abandon ship to the liferaft immediately after.",
+      "brief": "You are MV Aurora (MMSI: *********). Catastrophic hull breach after grounding, vessel listing heavily and capsizing. 9 persons on board, position 31°40'N 034°25'E. Make the MAYDAY call — you must abandon ship to the liferaft immediately after.",
       "facts": {
         "vessel": "Aurora",
         "callsign": "MMSI 211 444 555",
@@ -86,7 +86,7 @@
       "priority": "mayday",
       "rubricId": "v1/distress",
       "requiresSpareAntenna": true,
-      "brief": "You are SY Wandering Albatross. Mast came down in heavy weather and is lying over the side with rigging in the water. Vessel disabled and drifting. 4 persons on board, position 32°35'N 034°15'E.",
+      "brief": "You are SY Wandering Albatross (MMSI: *********). Mast came down in heavy weather and is lying over the side with rigging in the water. Vessel disabled and drifting. 4 persons on board, position 32°35'N 034°15'E.",
       "facts": {
         "vessel": "Wandering Albatross",
         "callsign": "MMSI 211 888 030",
@@ -102,7 +102,7 @@
       "id": "urgency-engine-failure-red-fox",
       "priority": "pan_pan",
       "rubricId": "v1/urgency",
-      "brief": "You are SY Red Fox. Engine has failed, drifting toward a traffic separation scheme. Not in immediate danger, but need a tow. 3 persons on board, position 32°15'N 034°40'E.",
+      "brief": "You are SY Red Fox (MMSI: *********). Engine has failed, drifting toward a traffic separation scheme. Not in immediate danger, but need a tow. 3 persons on board, position 32°15'N 034°40'E.",
       "facts": {
         "vessel": "Red Fox",
         "callsign": "MMSI 211 888 040",
@@ -115,7 +115,7 @@
       "id": "urgency-medical-grey-whale",
       "priority": "pan_pan",
       "rubricId": "v1/urgency-medico",
-      "brief": "You are MV Grey Whale (MMSI 211 555 200). Crew member with severe chest pain — suspected cardiac event. Address RCC Haifa. 8 persons on board, position 31°45'N 034°20'E. Patient: male, 52, temp 37.2°C, BP 160/100, conscious but very weak. Crew has given aspirin and rigged oxygen. Make the MEDICO call (DSC + Ch 16), then continue on the working channel.",
+      "brief": "You are MV Grey Whale (MMSI: *********). Crew member with severe chest pain — suspected cardiac event. Address RCC Haifa. 8 persons on board, position 31°45'N 034°20'E. Patient: male, 52, temp 37.2°C, BP 160/100, conscious but very weak. Crew has given aspirin and rigged oxygen. Make the MEDICO call (DSC + Ch 16), then continue on the working channel.",
       "facts": {
         "vessel": "Grey Whale",
         "callsign": "MMSI 211 555 200",
@@ -130,7 +130,7 @@
       "id": "urgency-medico-allstations-cargo-ranger",
       "priority": "pan_pan",
       "rubricId": "v1/urgency-medico",
-      "brief": "You are MV Cargo Ranger (MMSI 211 666 410). A crew member fell from the upper deck and is unconscious. No nearby coast station designated — broadcast to All Stations. 14 persons on board, position 32°50'N 035°10'E. Patient: male, 28, temp 36.0°C, BP 90/60, unresponsive with suspected head injury. Crew immobilised the head/neck and is monitoring breathing. Make the MEDICO call (DSC + Ch 16), then continue on the working channel.",
+      "brief": "You are MV Cargo Ranger (MMSI: *********). A crew member fell from the upper deck and is unconscious. No nearby coast station designated — broadcast to All Stations. 14 persons on board, position 32°50'N 035°10'E. Patient: male, 28, temp 36.0°C, BP 90/60, unresponsive with suspected head injury. Crew immobilised the head/neck and is monitoring breathing. Make the MEDICO call (DSC + Ch 16), then continue on the working channel.",
       "facts": {
         "vessel": "Cargo Ranger",
         "callsign": "MMSI 211 666 410",
@@ -145,7 +145,7 @@
       "id": "urgency-medico-rcc-haifa-blue-marlin",
       "priority": "pan_pan",
       "rubricId": "v1/urgency-medico",
-      "brief": "You are SY Blue Marlin (MMSI 211 777 030). A crew member has uncontrolled bleeding from a deep galley laceration. Address RCC Haifa. 5 persons on board, position 32°10'N 034°35'E. Patient: female, 41, temp 36.8°C, BP 100/65, conscious and pale. Direct pressure applied, tourniquet rigged on upper arm. Make the MEDICO call (DSC + Ch 16), then continue on the working channel.",
+      "brief": "You are SY Blue Marlin (MMSI: *********). A crew member has uncontrolled bleeding from a deep galley laceration. Address RCC Haifa. 5 persons on board, position 32°10'N 034°35'E. Patient: female, 41, temp 36.8°C, BP 100/65, conscious and pale. Direct pressure applied, tourniquet rigged on upper arm. Make the MEDICO call (DSC + Ch 16), then continue on the working channel.",
       "facts": {
         "vessel": "Blue Marlin",
         "callsign": "MMSI 211 777 030",
@@ -160,7 +160,7 @@
       "id": "urgency-steering-silver-arrow",
       "priority": "pan_pan",
       "rubricId": "v1/urgency",
-      "brief": "You are MV Silver Arrow. Lost steering, vessel manoeuvring with difficulty in busy shipping lane. Position 32°30'N 034°55'E.",
+      "brief": "You are MV Silver Arrow (MMSI: *********). Lost steering, vessel manoeuvring with difficulty in busy shipping lane. Position 32°30'N 034°55'E.",
       "facts": {
         "vessel": "Silver Arrow",
         "callsign": "MMSI 211 999 050",

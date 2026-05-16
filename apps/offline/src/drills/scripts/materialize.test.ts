@@ -54,6 +54,13 @@ const DISTRESS: RubricDefinition = {
     { id: "decoy_radio_ch16_low", label: "Radio: Channel 16, Low 1W" },
     { id: "decoy_dsc_ch16_25w", label: "DSC: Channel 16, High 25W" },
   ],
+  callsignDecoys: [
+    { id: "decoy_mmsi_coast_002411000", label: "MMSI 002 411 000" },
+    { id: "decoy_mmsi_coast_002111500", label: "MMSI 002 111 500" },
+    { id: "decoy_mmsi_sart_970110234", label: "MMSI 970 110 234" },
+    { id: "decoy_mmsi_group_023110001", label: "MMSI 023 110 001" },
+    { id: "decoy_mmsi_aircraft_111212345", label: "MMSI 111 212 345" },
+  ],
 };
 
 const URGENCY: RubricDefinition = {
@@ -297,15 +304,15 @@ describe("materializeScenario", () => {
     expect(template.priorityId).toBe("mayday");
   });
 
-  test("pool contains all correct items plus 3x of each wrong-priority opening, 4 nature decoys, and 3 channel-power decoys", () => {
+  test("pool contains all correct items plus 3x of each wrong-priority opening, 4 nature decoys, 3 channel-power decoys, and 2 callsign decoys", () => {
     const template = materializeScenario(DISTRESS_SCENARIO, RUBRICS);
     const correctCount = template.parts.flatMap((p) => p.items).length;
     const panPanInPool = template.pool.filter((i) => i.id === "pan_pan").length;
     const securiteInPool = template.pool.filter((i) => i.id === "securite").length;
     expect(panPanInPool).toBe(3);
     expect(securiteInPool).toBe(3);
-    // 6 priority decoys + 4 nature decoys (correct nature is in correctCount) + 3 channel-power decoys
-    expect(template.pool.length).toBe(correctCount + 6 + 4 + 3);
+    // 6 priority + 4 nature (correct nature is in correctCount) + 3 channel-power + 2 callsign decoys
+    expect(template.pool.length).toBe(correctCount + 6 + 4 + 3 + 2);
   });
 
   test("ship-side distress scenario produces 22 slots ending with OVER, procedural items first", () => {
@@ -664,16 +671,21 @@ describe("materializeScenario", () => {
 
   test("channel-power decoys are added to the pool when the rubric defines them", () => {
     const template = materializeScenario(DISTRESS_SCENARIO, RUBRICS);
-    const decoys = template.pool.filter((i) => isDecoyId(i.id));
-    expect(decoys).toHaveLength(3);
     const definedIds = new Set(DISTRESS.channelPowerDecoys!.map((d) => d.id));
-    for (const decoy of decoys) {
-      expect(definedIds.has(decoy.id)).toBe(true);
-    }
+    const decoys = template.pool.filter((i) => definedIds.has(i.id));
+    expect(decoys).toHaveLength(3);
     expect(new Set(decoys.map((d) => d.id)).size).toBe(decoys.length);
   });
 
-  test("no channel-power decoys when the rubric omits the field", () => {
+  test("callsign decoys are added to the pool when the rubric defines them", () => {
+    const template = materializeScenario(DISTRESS_SCENARIO, RUBRICS);
+    const definedIds = new Set(DISTRESS.callsignDecoys!.map((d) => d.id));
+    const decoys = template.pool.filter((i) => definedIds.has(i.id));
+    expect(decoys).toHaveLength(2);
+    expect(new Set(decoys.map((d) => d.id)).size).toBe(decoys.length);
+  });
+
+  test("no pool decoys when the rubric omits all decoy fields", () => {
     const urgencyScenario: Scenario = {
       id: "engine-failure-no-decoy",
       priority: "pan_pan",
@@ -697,7 +709,7 @@ describe("materializeScenario", () => {
     const rubrics: RubricsById = { ...RUBRICS, "v1/distress-bad-prefix": badRubric };
     const scenario: Scenario = { ...DISTRESS_SCENARIO, rubricId: "v1/distress-bad-prefix" };
     expect(() => materializeScenario(scenario, rubrics)).toThrow(
-      /pickChannelPowerDecoys.*dsc_ch77_25w.*decoy_/,
+      /pickPoolDecoys.*dsc_ch77_25w.*decoy_/,
     );
   });
 
@@ -713,7 +725,26 @@ describe("materializeScenario", () => {
     const rubrics: RubricsById = { ...RUBRICS, "v1/distress-dup-decoy": badRubric };
     const scenario: Scenario = { ...DISTRESS_SCENARIO, rubricId: "v1/distress-dup-decoy" };
     expect(() => materializeScenario(scenario, rubrics)).toThrow(
-      /pickChannelPowerDecoys.*duplicate.*decoy_dsc_ch72_25w/,
+      /pickPoolDecoys.*duplicate.*decoy_dsc_ch72_25w/,
+    );
+  });
+
+  test("throws when a callsign decoy id is missing the decoy_ prefix", () => {
+    const badRubric: RubricDefinition = {
+      ...DISTRESS,
+      id: "v1/distress-bad-callsign-prefix",
+      callsignDecoys: [
+        { id: "decoy_mmsi_coast_002411000", label: "MMSI 002 411 000" },
+        { id: "mmsi_coast_002111500", label: "MMSI 002 111 500" },
+      ],
+    };
+    const rubrics: RubricsById = { ...RUBRICS, "v1/distress-bad-callsign-prefix": badRubric };
+    const scenario: Scenario = {
+      ...DISTRESS_SCENARIO,
+      rubricId: "v1/distress-bad-callsign-prefix",
+    };
+    expect(() => materializeScenario(scenario, rubrics)).toThrow(
+      /pickPoolDecoys.*mmsi_coast_002111500.*decoy_/,
     );
   });
 
@@ -733,6 +764,12 @@ describe("isProcedureItem", () => {
   test("recognizes channel-power decoy ids by the decoy_ prefix", () => {
     expect(isProcedureItem("decoy_dsc_ch72_25w")).toBe(true);
     expect(isProcedureItem("decoy_radio_ch70_high")).toBe(true);
+  });
+
+  test("recognizes callsign (MMSI) decoy ids by the decoy_ prefix", () => {
+    expect(isProcedureItem("decoy_mmsi_coast_002411000")).toBe(true);
+    expect(isProcedureItem("decoy_mmsi_sart_970110234")).toBe(true);
+    expect(isProcedureItem("decoy_mmsi_aircraft_111212345")).toBe(true);
   });
 
   test("returns false for unknown non-decoy ids", () => {

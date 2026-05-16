@@ -155,7 +155,7 @@ export type {
   ChannelRules,
   DscRules,
   RubricDefinition,
-  ChannelPowerDecoy,
+  PoolDecoy,
 } from "./rubric-types.ts";
 export type { DscScoringContext } from "./rubric-engine.ts";
 export { scoreTranscript, resolveRubricTemplates } from "./rubric-engine.ts";
