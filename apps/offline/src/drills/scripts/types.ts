@@ -55,6 +55,11 @@ export function isNatureItem(id: string): id is NatureCode {
 export const DSC_NATURE_PLACEHOLDER_ID = "dsc_nature";
 export const EPIRB_ON_ID = "epirb_on";
 export const ANTENNA_SPARE_ID = "antenna_spare";
+export const DECOY_ID_PREFIX = "decoy_";
+
+export function isDecoyId(id: string): boolean {
+  return id.startsWith(DECOY_ID_PREFIX);
+}
 
 const PROCEDURE_STEP_IDS = [
   EPIRB_ON_ID,
@@ -72,7 +77,9 @@ const PROCEDURE_STEP_IDS = [
 ] as const;
 
 export function isProcedureItem(id: string): boolean {
-  return (PROCEDURE_STEP_IDS as readonly string[]).includes(id) || isNatureItem(id);
+  return (
+    (PROCEDURE_STEP_IDS as readonly string[]).includes(id) || isNatureItem(id) || isDecoyId(id)
+  );
 }
 
 export interface SequenceItem {

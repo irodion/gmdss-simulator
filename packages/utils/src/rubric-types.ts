@@ -60,6 +60,8 @@ export interface DscRules {
   readonly expectedNature?: NatureOfDistress;
 }
 
+export type ChannelPowerDecoy = SequencePartItem;
+
 export interface RubricDefinition {
   readonly id: string;
   readonly version: string;
@@ -77,4 +79,5 @@ export interface RubricDefinition {
    * MAYDAY Message) with its own labels and ids, intended for UI use.
    */
   readonly sequenceParts?: readonly SequencePart[];
+  readonly channelPowerDecoys?: readonly ChannelPowerDecoy[];
 }

@@ -458,6 +458,28 @@ describe("gradeScenario", () => {
     expect(noise.every((p) => p.expected === null)).toBe(true);
   });
 
+  test("misplaced channel-power decoy chip counts as an extra and lowers score", () => {
+    const items: readonly SequenceItem[] = [
+      { id: "mayday", label: "MAYDAY" },
+      { id: "vessel", label: "Blue Duck" },
+      { id: "over", label: "OVER" },
+    ];
+    const tpl = template(items);
+    const placed: readonly SequenceItem[] = [
+      { id: "mayday", label: "MAYDAY" },
+      { id: "decoy_dsc_ch72_25w", label: "DSC: Channel 72, High 25W" },
+      { id: "vessel", label: "Blue Duck" },
+      { id: "over", label: "OVER" },
+    ];
+    const grade = gradeScenario(tpl, placementsMap(placed));
+    expect(grade.correctCount).toBe(3);
+    expect(grade.extraCount).toBe(1);
+    expect(grade.score).toBeLessThan(1);
+    const decoy = grade.parts[0]?.placements.find((p) => p.placed.id === "decoy_dsc_ch72_25w");
+    expect(decoy?.correct).toBe(false);
+    expect(decoy?.expected).toBeNull();
+  });
+
   test("score boundary: just below 80% does not pass", () => {
     const items: readonly SequenceItem[] = [
       { id: "mayday", label: "MAYDAY" },
