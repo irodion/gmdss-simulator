@@ -48,6 +48,12 @@
       "content": "Position is given immediately after identifying the vessel because it is the single most critical piece of information for SAR coordination. If the transmission is cut short, rescuers at least know where to search."
     },
     {
+      "type": "callout",
+      "variant": "tip",
+      "title": "\"THIS IS\" — One or Two?",
+      "content": "ITU Radio Regulations (Appendix 13) place THIS IS only once — in the call, before the vessel name ×3. The message after the fourth MAYDAY goes straight to the vessel name. Many schools (RYA, MCA, USCG) teach the MAYDAY, THIS IS [vessel], POSITION… variant for clarity. Either form scores here."
+    },
+    {
       "type": "text",
       "content": "If you must abandon the vessel, activate all distress equipment before leaving. Place the SART (Search and Rescue Transponder) as high as possible on the life raft -- its radar response is strongest when elevated. Deploy the EPIRB in the water but keep it tethered to the raft so it remains upright with its antenna clear; the EPIRB transmits on 406 MHz to Cospas-Sarsat satellites and on 121.5 MHz as a homing signal. Take a portable VHF radio set to Channel 16 on high power, along with a spare battery, into the raft. Continue to transmit MAYDAY calls at intervals."
     },

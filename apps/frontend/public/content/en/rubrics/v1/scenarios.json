@@ -271,6 +271,17 @@
         "relayedAssistance": "Require immediate assistance",
         "relayedPersons": "12 persons on board"
       }
+    },
+    {
+      "id": "distress-ack-yacht-tami-vered",
+      "priority": "mayday",
+      "rubricId": "v1/distress-ack",
+      "brief": "You are MV Vered (MMSI: *********), in the vicinity of a position about 8 NM south of you. Five minutes ago you heard a MAYDAY on Channel 16 from Yacht Tami (MMSI 428 555 222) — fire on board, 6 persons aboard. No coast station has come back. You can still hear Tami calling.",
+      "facts": {
+        "vessel": "Vered",
+        "callsign": "MMSI 428 123 456",
+        "distressVessel": "Tami"
+      }
     }
   ]
 }

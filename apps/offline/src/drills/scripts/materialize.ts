@@ -83,6 +83,7 @@ const ITEM_TO_FACT_KEY = {
   relayed_nature: "relayedNature",
   relayed_assistance: "relayedAssistance",
   relayed_persons: "relayedPersons",
+  distress_vessel: "distressVessel",
 } as const satisfies Readonly<Record<string, keyof ScenarioFacts>>;
 
 type StringFactKey = (typeof ITEM_TO_FACT_KEY)[keyof typeof ITEM_TO_FACT_KEY];
