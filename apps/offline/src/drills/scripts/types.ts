@@ -205,6 +205,7 @@ export interface ScenarioFacts {
   readonly relayedNature?: string;
   readonly relayedAssistance?: string;
   readonly relayedPersons?: string;
+  /** Distress-ack only: name or MMSI of the vessel being acknowledged. */
   readonly distressVessel?: string;
 }
 
