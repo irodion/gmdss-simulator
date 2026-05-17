@@ -205,6 +205,7 @@ export interface ScenarioFacts {
   readonly relayedNature?: string;
   readonly relayedAssistance?: string;
   readonly relayedPersons?: string;
+  readonly distressVessel?: string;
 }
 
 export interface Scenario {
