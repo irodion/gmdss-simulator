@@ -390,6 +390,61 @@ describe("scoreDrill — STT corrections", () => {
   });
 });
 
+describe("scoreDrill — hyphen as word separator", () => {
+  test("PAPA-JULIET-SEVEN-TREE scores 100% for callsign PJ73", () => {
+    const challenge = createPhoneticChallenge("PJ73", "hyphen-1");
+    const result = scoreDrill(challenge, "PAPA-JULIET-SEVEN-TREE");
+    expect(result.score).toBe(100);
+  });
+
+  test("FOW-ER-JULIET-SEVEN-TREE scores 100% for callsign 4J73 (mixed intra/inter-word hyphens)", () => {
+    const challenge = createPhoneticChallenge("4J73", "hyphen-2");
+    const result = scoreDrill(challenge, "FOW-ER-JULIET-SEVEN-TREE");
+    expect(result.score).toBe(100);
+  });
+
+  test("FOW-ER-NIN-ER scores 100% for callsign 49 (back-to-back hyphenated tokens)", () => {
+    const challenge = createPhoneticChallenge("49", "hyphen-3");
+    const result = scoreDrill(challenge, "FOW-ER-NIN-ER");
+    expect(result.score).toBe(100);
+  });
+
+  test("mixed hyphen and space separators score 100%", () => {
+    const challenge = createPhoneticChallenge("ABC", "hyphen-4");
+    const result = scoreDrill(challenge, "ALFA-BRAVO CHARLIE");
+    expect(result.score).toBe(100);
+  });
+
+  test("leading and trailing hyphens are tolerated", () => {
+    const challenge = createPhoneticChallenge("AB", "hyphen-5");
+    const result = scoreDrill(challenge, "-ALFA-BRAVO-");
+    expect(result.score).toBe(100);
+  });
+
+  test("intra-word FOW-ER still matches when typed with the hyphen (regression guard)", () => {
+    const challenge: DrillChallenge = {
+      id: "hyphen-6",
+      type: "number-pronunciation",
+      prompt: "test",
+      expectedAnswer: "FOW-ER FIFE",
+    };
+    const result = scoreDrill(challenge, "FOW-ER FIFE");
+    expect(result.score).toBe(100);
+  });
+
+  test("NIN-ER expected accepts NINER, NIN-ER, and -NINER- separator forms", () => {
+    const challenge: DrillChallenge = {
+      id: "hyphen-7",
+      type: "number-pronunciation",
+      prompt: "test",
+      expectedAnswer: "ZERO NIN-ER",
+    };
+    expect(scoreDrill(challenge, "ZERO NINER").score).toBe(100);
+    expect(scoreDrill(challenge, "ZERO NIN-ER").score).toBe(100);
+    expect(scoreDrill(challenge, "ZERO-NINER").score).toBe(100);
+  });
+});
+
 describe("bestDrillScore", () => {
   function makeChallenge(expected: string): DrillChallenge {
     return { id: "best-test", type: "phonetic", prompt: "test", expectedAnswer: expected };

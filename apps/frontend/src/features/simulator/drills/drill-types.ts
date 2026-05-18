@@ -365,13 +365,15 @@ const NUMBER_WORDS: Record<string, string> = {
 
 /** Normalize answer tokens: convert symbols to words, expand digits per-digit. */
 function normalizeAnswer(raw: string): string[] {
-  return raw
-    .toUpperCase()
-    .replace(/°/g, " DEGREES ")
-    .replace(/['′]/g, " MINUTES ")
-    .replace(/[",.]/g, " ")
-    .split(/\s+/)
-    .filter(Boolean)
+  return rejoinHyphenated(
+    raw
+      .toUpperCase()
+      .replace(/°/g, " DEGREES ")
+      .replace(/['′]/g, " MINUTES ")
+      .replace(/[",.-]/g, " ")
+      .split(/\s+/)
+      .filter(Boolean),
+  )
     .map((token) => STT_CORRECTIONS[token] ?? token)
     .flatMap((token) => {
       // Digits → expand each digit to its word form (maritime pronunciation)
@@ -402,6 +404,31 @@ const MARITIME_EQUIVALENTS: Record<string, string> = {
   NINE: "NIN-ER",
   "NIN-ER": "NINE",
 };
+
+/** Tokens that legitimately contain an intra-word hyphen (FOW-ER, SEV-EN, NIN-ER, TWENTY-FIVE, FORTY-EIGHT). */
+const HYPHENATED_TOKENS: ReadonlySet<string> = new Set(
+  [
+    ...Object.values(PHONETIC_ALPHABET),
+    ...Object.values(NUMBER_WORDS),
+    ...Object.keys(MARITIME_EQUIVALENTS),
+  ].filter((v) => v.includes("-")),
+);
+
+/** After splitting on hyphens, merge adjacent token pairs that form a known hyphenated word. */
+function rejoinHyphenated(tokens: readonly string[]): string[] {
+  const out: string[] = [];
+  for (let i = 0; i < tokens.length; i++) {
+    const cur = tokens[i]!;
+    const next = tokens[i + 1];
+    if (next != null && HYPHENATED_TOKENS.has(`${cur}-${next}`)) {
+      out.push(`${cur}-${next}`);
+      i++;
+    } else {
+      out.push(cur);
+    }
+  }
+  return out;
+}
 
 /** Check if an answer token matches an expected token, accounting for number word↔digit and maritime equivalence. */
 function tokensMatch(answer: string, expected: string): boolean {
