@@ -221,7 +221,9 @@ function randomPosition(): { prompt: string; expected: string } {
   const nsWord = ns === "N" ? "NORTH" : "SOUTH";
   const ewWord = ew === "E" ? "EAST" : "WEST";
 
-  const prompt = `${pad(latDeg, 2)}°${pad(latMin, 2)}'${ns} ${pad(lonDeg, 3)}°${pad(lonMin, 2)}'${ew}`;
+  // Longitude is shown without leading zeros (88° not 088°); the student must
+  // still vocalize all three digits, so `expected` keeps the padded form.
+  const prompt = `${pad(latDeg, 2)}°${pad(latMin, 2)}'${ns} ${lonDeg}°${pad(lonMin, 2)}'${ew}`;
   const expected =
     `${pronounceDigits(pad(latDeg, 2))} DEGREES ${pronounceDigits(pad(latMin, 2))} MINUTES ${nsWord} ` +
     `${pronounceDigits(pad(lonDeg, 3))} DEGREES ${pronounceDigits(pad(lonMin, 2))} MINUTES ${ewWord}`;
@@ -231,7 +233,9 @@ function randomPosition(): { prompt: string; expected: string } {
 
 function randomBearing(): { prompt: string; expected: string } {
   const deg = randomInt(360);
-  const prompt = `Bearing: ${pad(deg, 3)}°`;
+  // Bearing is shown without leading zeros (45° not 045°); the student must
+  // still vocalize all three digits, so `expected` keeps the padded form.
+  const prompt = `Bearing: ${deg}°`;
   const expected = `${pronounceDigits(pad(deg, 3))} DEGREES`;
   return { prompt, expected };
 }
