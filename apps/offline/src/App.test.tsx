@@ -13,6 +13,7 @@ beforeEach(() => {
       queueMicrotask(() => u.onend?.(new Event("end") as SpeechSynthesisEvent));
     },
     addEventListener: vi.fn(),
+    removeEventListener: vi.fn(),
   };
   Object.defineProperty(window, "speechSynthesis", {
     value: fakeSynth,

@@ -6,9 +6,12 @@ import { SequenceCard } from "./SequenceCard.tsx";
 const speakMock = vi.fn<(text: string, rate?: number, signal?: AbortSignal) => Promise<void>>();
 const cancelMock = vi.fn<() => void>();
 const isSupportedMock = vi.fn<() => boolean>();
+const detectSupportMock = vi.fn<() => Promise<boolean>>();
 
 vi.mock("../lib/tts.ts", () => ({
   isSupported: () => isSupportedMock(),
+  detectSpeechSupport: () => detectSupportMock(),
+  onVoicesChanged: () => () => {},
   speak: (text: string, rate?: number, signal?: AbortSignal) => speakMock(text, rate, signal),
   cancel: () => cancelMock(),
 }));
@@ -68,6 +71,9 @@ beforeEach(() => {
   cancelMock.mockReset();
   isSupportedMock.mockReset();
   isSupportedMock.mockReturnValue(true);
+  detectSupportMock.mockReset();
+  // By default the async voice probe agrees with the synchronous API check.
+  detectSupportMock.mockImplementation(() => Promise.resolve(isSupportedMock()));
 });
 
 afterEach(() => {
@@ -85,6 +91,18 @@ describe("SequenceCard TTS toggle", () => {
   test("does not render the toggle when speech is unsupported", () => {
     isSupportedMock.mockReturnValue(false);
     renderCard();
+    expect(screen.queryByLabelText(/read correct transmission aloud/i)).toBeNull();
+  });
+
+  test("withdraws the toggle when the API exists but no voices are installed", async () => {
+    detectSupportMock.mockResolvedValue(false);
+    renderCard();
+    // Optimistically rendered from the synchronous API check…
+    expect(screen.getByLabelText(/read correct transmission aloud/i)).toBeTruthy();
+    // …then withdrawn once the async voice probe reports no usable voices.
+    await act(async () => {
+      await Promise.resolve();
+    });
     expect(screen.queryByLabelText(/read correct transmission aloud/i)).toBeNull();
   });
 
