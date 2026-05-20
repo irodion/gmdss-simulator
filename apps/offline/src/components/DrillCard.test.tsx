@@ -24,6 +24,7 @@ interface FakeSynth {
   getVoices: () => SpeechSynthesisVoice[];
   speak: ReturnType<typeof vi.fn>;
   addEventListener: ReturnType<typeof vi.fn>;
+  removeEventListener: ReturnType<typeof vi.fn>;
 }
 
 interface FakeRecognition {
@@ -92,6 +93,7 @@ beforeEach(() => {
       queueMicrotask(() => u.onend?.(new Event("end") as SpeechSynthesisEvent));
     }),
     addEventListener: vi.fn(),
+    removeEventListener: vi.fn(),
   };
   vi.stubGlobal("speechSynthesis", fakeSynth);
   vi.stubGlobal(

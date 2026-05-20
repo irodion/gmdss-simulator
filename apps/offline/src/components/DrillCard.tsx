@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { DrillChallenge, DrillResult } from "../drills/drill-types.ts";
-import { isSupported, speak, speakSequence } from "../lib/tts.ts";
+import { speak, speakSequence } from "../lib/tts.ts";
+import { useTtsSupported } from "../lib/use-tts-supported.ts";
 import { MicButton } from "./MicButton.tsx";
 import { ResultBadge } from "./ResultBadge.tsx";
 
@@ -31,7 +32,7 @@ export function DrillCard({
   const answerRef = useRef("");
   answerRef.current = answer;
   const dictationAnchorRef = useRef<string | null>(null);
-  const ttsAvailable = isSupported();
+  const ttsAvailable = useTtsSupported();
 
   useEffect(() => {
     setAnswer("");

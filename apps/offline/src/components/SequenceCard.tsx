@@ -1,4 +1,4 @@
-import { type ReactNode, useEffect, useMemo, useRef, useState } from "react";
+import { type ReactNode, useEffect, useRef, useState } from "react";
 import { gradeScenario } from "../drills/scripts/grade.ts";
 import { buildSpokenTransmission } from "../drills/scripts/spoken-script.ts";
 import {
@@ -12,8 +12,9 @@ import {
   type SequenceTemplate,
   type SequenceTemplatePart,
 } from "../drills/scripts/types.ts";
-import { cancel as cancelTts, isSupported as isTtsSupported, speak } from "../lib/tts.ts";
+import { cancel as cancelTts, speak } from "../lib/tts.ts";
 import { useTtsEnabled } from "../lib/use-tts-enabled.ts";
+import { useTtsSupported } from "../lib/use-tts-supported.ts";
 
 interface SequenceCardProps {
   readonly template: SequenceTemplate;
@@ -58,7 +59,7 @@ export function SequenceCard({
 
   const [ttsEnabled, setTtsEnabledRaw] = useTtsEnabled();
   const [isSpeaking, setIsSpeaking] = useState(false);
-  const ttsSupported = useMemo(() => isTtsSupported(), []);
+  const ttsSupported = useTtsSupported();
   const playGenRef = useRef(0);
   const playAbortRef = useRef<AbortController | null>(null);
 

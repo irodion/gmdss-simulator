@@ -1,5 +1,12 @@
 import { afterEach, beforeEach, describe, expect, test, vi } from "vite-plus/test";
-import { cancel, isSupported, speak, speakSequence } from "./tts.ts";
+import {
+  cancel,
+  detectSpeechSupport,
+  isSupported,
+  onVoicesChanged,
+  speak,
+  speakSequence,
+} from "./tts.ts";
 
 class FakeUtterance {
   text: string;
@@ -17,10 +24,12 @@ interface FakeSynth {
   spoken: string[];
   cancelled: number;
   voices: SpeechSynthesisVoice[];
+  voiceListeners: Set<() => void>;
   speak(u: FakeUtterance): void;
   cancel(): void;
   getVoices(): SpeechSynthesisVoice[];
-  addEventListener(): void;
+  addEventListener(type: string, cb: () => void): void;
+  removeEventListener(type: string, cb: () => void): void;
 }
 
 let fakeSynth: FakeSynth;
@@ -31,6 +40,7 @@ beforeEach(() => {
     spoken: [],
     cancelled: 0,
     voices: [voice],
+    voiceListeners: new Set(),
     speak(u: FakeUtterance) {
       this.spoken.push(u.text);
       // Simulate async end
@@ -42,8 +52,11 @@ beforeEach(() => {
     getVoices() {
       return this.voices;
     },
-    addEventListener() {
-      // voices already populated → never fires
+    addEventListener(type: string, cb: () => void) {
+      if (type === "voiceschanged") this.voiceListeners.add(cb);
+    },
+    removeEventListener(type: string, cb: () => void) {
+      if (type === "voiceschanged") this.voiceListeners.delete(cb);
     },
   };
   vi.stubGlobal("speechSynthesis", fakeSynth);
@@ -67,6 +80,59 @@ afterEach(() => {
 describe("isSupported", () => {
   test("returns true when speechSynthesis is on window", () => {
     expect(isSupported()).toBe(true);
+  });
+
+  test("returns false when SpeechSynthesisUtterance is unavailable", () => {
+    vi.stubGlobal("SpeechSynthesisUtterance", undefined);
+    expect(isSupported()).toBe(false);
+  });
+});
+
+describe("detectSpeechSupport", () => {
+  test("resolves true when speech synthesis has at least one voice", async () => {
+    await expect(detectSpeechSupport()).resolves.toBe(true);
+  });
+
+  test("resolves false when speechSynthesis is unavailable", async () => {
+    Object.defineProperty(window, "speechSynthesis", {
+      value: undefined,
+      configurable: true,
+      writable: true,
+    });
+    await expect(detectSpeechSupport()).resolves.toBe(false);
+  });
+
+  test("resolves false when no voices are installed", async () => {
+    vi.useFakeTimers();
+    fakeSynth.voices = [];
+    const promise = detectSpeechSupport();
+    // ensureVoiceReady() waits up to 1s for a voiceschanged event that never
+    // fires here; fast-forward past it instead of stalling the test.
+    await vi.advanceTimersByTimeAsync(1100);
+    vi.useRealTimers();
+    await expect(promise).resolves.toBe(false);
+  });
+});
+
+describe("onVoicesChanged", () => {
+  test("invokes the listener on voiceschanged until unsubscribed", () => {
+    const listener = vi.fn();
+    const unsubscribe = onVoicesChanged(listener);
+    fakeSynth.voiceListeners.forEach((cb) => cb());
+    expect(listener).toHaveBeenCalledTimes(1);
+    unsubscribe();
+    fakeSynth.voiceListeners.forEach((cb) => cb());
+    expect(listener).toHaveBeenCalledTimes(1);
+  });
+
+  test("returns a no-op unsubscribe when speech synthesis is unavailable", () => {
+    Object.defineProperty(window, "speechSynthesis", {
+      value: undefined,
+      configurable: true,
+      writable: true,
+    });
+    const unsubscribe = onVoicesChanged(vi.fn());
+    expect(() => unsubscribe()).not.toThrow();
   });
 });
 

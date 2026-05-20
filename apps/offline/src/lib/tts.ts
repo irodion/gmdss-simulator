@@ -3,7 +3,11 @@
  */
 
 export function isSupported(): boolean {
-  return typeof window !== "undefined" && Boolean(window.speechSynthesis);
+  return (
+    typeof window !== "undefined" &&
+    Boolean(window.speechSynthesis) &&
+    typeof window.SpeechSynthesisUtterance === "function"
+  );
 }
 
 let cachedVoice: SpeechSynthesisVoice | null = null;
@@ -48,6 +52,32 @@ function ensureVoiceReady(): Promise<void> {
     );
   });
   return voicesReadyPromise;
+}
+
+/**
+ * Resolves true only when speech synthesis is present AND at least one voice is
+ * installed. Some browsers expose speechSynthesis yet ship no usable voices
+ * (privacy-hardened builds, minimal Linux installs), where speak() produces no
+ * audible output. Voices load asynchronously, so callers must await this before
+ * deciding whether to surface a "play" control.
+ */
+export async function detectSpeechSupport(): Promise<boolean> {
+  if (!isSupported()) return false;
+  await ensureVoiceReady();
+  return window.speechSynthesis.getVoices().length > 0;
+}
+
+/**
+ * Subscribe to voice-list changes. Browsers populate getVoices() asynchronously
+ * and fire `voiceschanged` as voices load — sometimes after a fixed support
+ * probe has already settled — so callers re-evaluate on each change. Returns an
+ * unsubscribe function.
+ */
+export function onVoicesChanged(listener: () => void): () => void {
+  if (!isSupported()) return () => {};
+  const synth = window.speechSynthesis;
+  synth.addEventListener("voiceschanged", listener);
+  return () => synth.removeEventListener("voiceschanged", listener);
 }
 
 /**
