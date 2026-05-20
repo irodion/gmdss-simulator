@@ -167,6 +167,43 @@ describe("generateNumberChallenges", () => {
     const b = generateNumberChallenges(6).map((c) => c.expectedAnswer);
     expect(a).not.toEqual(b);
   });
+
+  test("displayed longitude has no leading zeros", () => {
+    for (let run = 0; run < 150; run++) {
+      for (const c of generateNumberChallenges(6)) {
+        const m = /\n\d+°\d+'[NS] (\d+)°/.exec(c.prompt);
+        if (m) {
+          expect(m[1]).toMatch(/^(0|[1-9]\d*)$/);
+        }
+      }
+    }
+  });
+
+  test("displayed bearing has no leading zeros", () => {
+    for (let run = 0; run < 150; run++) {
+      for (const c of generateNumberChallenges(6)) {
+        const m = /Bearing: (\d+)°/.exec(c.prompt);
+        if (m) {
+          expect(m[1]).toMatch(/^(0|[1-9]\d*)$/);
+        }
+      }
+    }
+  });
+
+  test("expected answer still uses three spoken digits despite trimmed display", () => {
+    for (let run = 0; run < 150; run++) {
+      for (const c of generateNumberChallenges(6)) {
+        if (/\n\d+°\d+'[NS] \d+°\d+'[EW]$/.test(c.prompt)) {
+          // 2 lat-deg + DEGREES + 2 lat-min + MINUTES + N/S
+          // + 3 lon-deg + DEGREES + 2 lon-min + MINUTES + E/W
+          expect(c.expectedAnswer.split(" ")).toHaveLength(15);
+        } else if (c.prompt.includes("Bearing:")) {
+          // 3 deg + DEGREES
+          expect(c.expectedAnswer.split(" ")).toHaveLength(4);
+        }
+      }
+    }
+  });
 });
 
 describe("scoreDrill", () => {

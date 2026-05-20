@@ -83,6 +83,43 @@ describe("generateNumberChallenges", () => {
       expect(allowed.has(c.format!)).toBe(true);
     }
   });
+
+  test("displayed longitude has no leading zeros", () => {
+    for (let run = 0; run < 150; run++) {
+      for (const c of generateNumberChallenges(8)) {
+        if (c.format !== "position") continue;
+        const m = /\n\d+°\d+'[NS] (\d+)°/.exec(c.prompt);
+        expect(m).not.toBeNull();
+        expect(m![1]).toMatch(/^(0|[1-9]\d*)$/);
+      }
+    }
+  });
+
+  test("displayed bearing has no leading zeros", () => {
+    for (let run = 0; run < 150; run++) {
+      for (const c of generateNumberChallenges(8)) {
+        if (c.format !== "bearing") continue;
+        const m = /Bearing: (\d+)°/.exec(c.prompt);
+        expect(m).not.toBeNull();
+        expect(m![1]).toMatch(/^(0|[1-9]\d*)$/);
+      }
+    }
+  });
+
+  test("expected answer still uses three spoken digits despite trimmed display", () => {
+    for (let run = 0; run < 150; run++) {
+      for (const c of generateNumberChallenges(8)) {
+        if (c.format === "position") {
+          // 2 lat-deg + DEGREES + 2 lat-min + MINUTES + N/S
+          // + 3 lon-deg + DEGREES + 2 lon-min + MINUTES + E/W
+          expect(c.expectedAnswer.split(" ")).toHaveLength(15);
+        } else if (c.format === "bearing") {
+          // 3 deg + DEGREES
+          expect(c.expectedAnswer.split(" ")).toHaveLength(4);
+        }
+      }
+    }
+  });
 });
 
 describe("PHONETIC_REVERSE", () => {
