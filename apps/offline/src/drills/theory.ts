@@ -96,6 +96,21 @@ export const THEORY_QUESTIONS: readonly TheoryQuestion[] = [
       "A Category 1 EPIRB sits in a bracket with a hydrostatic release unit (HRU). Water pressure frees it so it floats clear and transmits automatically. A Category 2 EPIRB must be activated by hand.",
   },
 
+  // REVIEW: seeded — verify before exam use
+  {
+    id: "theory-cospas-5",
+    topic: "COSPAS-SARSAT",
+    prompt: "Which of these is NOT a feature you would find on a 406 MHz satellite EPIRB?",
+    correctAnswer: "An acoustic homing transmitter",
+    distractors: [
+      "A 121.5 MHz homing transmitter",
+      "An AIS locating transmitter",
+      "A high-intensity flashing light",
+    ],
+    explanation:
+      "A 406 MHz EPIRB locates by radio and light: the 406 MHz signal reaches the Cospas-Sarsat satellites, a low-power 121.5 MHz transmitter homes in rescue craft, newer beacons add an AIS locating signal, and a high-intensity light aids the visual search. An EPIRB carries no acoustic homing — there is no sonar-style signal to home on.",
+  },
+
   // ── NAVTEX ── seeded from modules/6/lesson-1.json (NAVTEX) ────────────────
   // REVIEW: seeded — verify before exam use
   {
