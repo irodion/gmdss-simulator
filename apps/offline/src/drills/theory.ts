@@ -229,6 +229,17 @@ export const THEORY_QUESTIONS: readonly TheoryQuestion[] = [
       "Channel 06 is the primary inter-ship and ship-to-aircraft channel for search and rescue. Channel 16 is for distress and calling; Channel 13 is for bridge-to-bridge navigation safety.",
   },
 
+  // REVIEW: seeded — verify before exam use
+  {
+    id: "theory-channels-5",
+    topic: "Channels",
+    prompt: "Which of these VHF channels is NOT a simplex channel?",
+    correctAnswer: "Channel 25",
+    distractors: ["Channel 16", "Channel 06", "Channel 13"],
+    explanation:
+      "Channels 24 and 25 are public-correspondence channels — duplex, using separate ship and coast-station frequencies so both can speak at once, like a telephone call. Channels 16, 06 and 13 are simplex: one frequency, press-to-talk, one station at a time.",
+  },
+
   // ── SART ── seeded from modules/6/lesson-4.json (SART and AIS-SART) ───────
   // REVIEW: seeded — verify before exam use
   {
