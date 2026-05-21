@@ -198,6 +198,21 @@ export const THEORY_QUESTIONS: readonly TheoryQuestion[] = [
       "The B2 character codes the message type: A = navigational warnings, B = meteorological warnings, C = ice reports, D = SAR information, E = meteorological forecasts, L = additional navigational warnings. Codes A, B, D and L cannot be rejected by the receiver.",
   },
 
+  // REVIEW: seeded — verify before exam use
+  {
+    id: "theory-navtex-8",
+    topic: "NAVTEX",
+    prompt: "Which of these would NOT be broadcast on a NAVTEX service?",
+    correctAnswer: "A ship's routine position report to its company office",
+    distractors: [
+      "A navigational warning about a damaged buoy",
+      "A coastal gale warning",
+      "A search-and-rescue information broadcast",
+    ],
+    explanation:
+      "NAVTEX carries Maritime Safety Information only — navigational warnings, meteorological warnings and forecasts, and SAR information — broadcast one-way to all ships. It never carries a vessel's own routine or private traffic, such as a position report to its company.",
+  },
+
   // ── Channels ── seeded from drills/channels.ts ───────────────────────────
   // REVIEW: seeded — verify before exam use
   {
@@ -435,6 +450,21 @@ export const THEORY_QUESTIONS: readonly TheoryQuestion[] = [
     ],
     explanation:
       "Urgency (PAN PAN) covers a vessel or person in a serious situation that is not yet grave and imminent danger — lost steering, engine failure, or a crew member needing urgent medical advice. A drifting navigational hazard endangers no vessel directly; warning other ships about it is a Safety (SÉCURITÉ) message.",
+  },
+
+  // REVIEW: seeded — verify before exam use
+  {
+    id: "theory-vhf-8",
+    topic: "VHF",
+    prompt: "Which of these is NOT part of a spoken MAYDAY distress message?",
+    correctAnswer: "The vessel's destination and estimated time of arrival",
+    distractors: [
+      "The vessel's position",
+      "The nature of the distress",
+      "The number of persons on board",
+    ],
+    explanation:
+      "A voice MAYDAY message follows a precise format: identity (name, call sign, MMSI), position, nature of the distress, assistance required, number of persons on board, and any other useful information. The vessel's destination and ETA are no part of it — a distress message reports the emergency now, not the voyage plan.",
   },
 
   // ── MMSI ── seeded from modules/4/lesson-1.json (MMSI and Call Signs) ─────
