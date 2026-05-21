@@ -391,13 +391,9 @@ export const THEORY_QUESTIONS: readonly TheoryQuestion[] = [
     prompt:
       "Which of the following is NOT required to be carried by a vessel operating only in GMDSS Sea Area A1?",
     correctAnswer: "An MF radio installation with DSC",
-    distractors: [
-      "A VHF radio with DSC",
-      "A 406 MHz satellite EPIRB",
-      "A means of receiving maritime safety information",
-    ],
+    distractors: ["A VHF radio with DSC", "A 406 MHz satellite EPIRB", "A NAVTEX receiver"],
     explanation:
-      "Sea Area A1 lies within VHF range of a coast station that keeps a continuous DSC watch, so a vessel operating only there carries a VHF radio with DSC, a means of receiving maritime safety information, and a 406 MHz EPIRB. An MF radio with DSC is the defining requirement of Sea Area A2, not A1.",
+      "Sea Area A1 lies within VHF range of a coast station that keeps a continuous DSC watch, so a vessel operating only there carries a VHF radio with DSC, a NAVTEX receiver for maritime safety information, and a 406 MHz EPIRB. An MF radio with DSC is the defining requirement of Sea Area A2, not A1.",
   },
 
   // ── MMSI ── seeded from modules/4/lesson-1.json (MMSI and Call Signs) ─────
