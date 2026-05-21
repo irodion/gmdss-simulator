@@ -1,12 +1,14 @@
 import { expect, test } from "@playwright/test";
 
-test("config screen renders the five drill modes", async ({ page }) => {
+test("config screen renders the drill mode tabs", async ({ page }) => {
   await page.goto("/");
   await expect(page.getByRole("tab", { name: "Callsigns" })).toBeVisible();
   await expect(page.getByRole("tab", { name: "Numbers" })).toBeVisible();
   await expect(page.getByRole("tab", { name: "Listen" })).toBeVisible();
   await expect(page.getByRole("tab", { name: "Procedures" })).toBeVisible();
   await expect(page.getByRole("tab", { name: "Abbreviations" })).toBeVisible();
+  await expect(page.getByRole("tab", { name: "Channels" })).toBeVisible();
+  await expect(page.getByRole("tab", { name: "Theory" })).toBeVisible();
   await expect(page.getByRole("button", { name: /^begin/i })).toBeVisible();
 });
 
@@ -162,6 +164,29 @@ test("Channels tab runs a 5-question session through to the summary", async ({ p
   }
 
   await expect(page.getByText(/logbook entry/i)).toBeVisible();
+});
+
+test("Theory tab runs a 5-question session through to the summary", async ({ page }) => {
+  await page.goto("/");
+  await page.evaluate(() => window.localStorage.clear());
+
+  await page.getByRole("tab", { name: "Theory" }).click();
+  // Theory records free practice only — the adaptive daily indicator must not show.
+  await expect(page.locator(".daily-indicator")).toHaveCount(0);
+
+  await page.getByRole("button", { name: "5" }).click();
+  await page.getByRole("button", { name: /^begin/i }).click();
+
+  for (let i = 1; i <= 5; i++) {
+    await expect(page.getByText(new RegExp(`question ${i} of 5`, "i"))).toBeVisible();
+    // Theory mode is always MC; pick the first choice (right or wrong, flow proceeds).
+    await page.locator(".mc-choice").first().click();
+    const next = page.getByRole("button", { name: i === 5 ? /see results/i : /next →/i });
+    await next.click();
+  }
+
+  await expect(page.getByText(/theory review/i)).toBeVisible();
+  await expect(page.getByRole("button", { name: /begin a new watch/i })).toBeVisible();
 });
 
 test("adaptive toggle and queue preview render on the Callsigns tab", async ({ page }) => {
