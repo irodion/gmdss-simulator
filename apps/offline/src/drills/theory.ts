@@ -143,6 +143,46 @@ export const THEORY_QUESTIONS: readonly TheoryQuestion[] = [
       "In the preamble B1B2B3B4, the B1 character (A-Z) identifies the transmitting station. B2 is the message type and B3B4 are the two-digit serial number.",
   },
 
+  // REVIEW: seeded — verify before exam use
+  {
+    id: "theory-navtex-5",
+    topic: "NAVTEX",
+    prompt: "What are the three priority levels a NAVTEX message can carry?",
+    correctAnswer: "Vital, Important, and Routine",
+    distractors: [
+      "Distress, Urgency, and Safety",
+      "Emergency, Priority, and Normal",
+      "Critical, Standard, and Optional",
+    ],
+    explanation:
+      "NAVTEX messages carry one of three priority levels. VITAL messages demand immediate broadcast and use serial number 00 — they are always printed. IMPORTANT messages go out at the next scheduled transmission. ROUTINE messages travel in the normal broadcast cycle. Distress, Urgency, and Safety are the priorities of radiotelephony traffic, not NAVTEX.",
+  },
+
+  // REVIEW: seeded — verify before exam use
+  {
+    id: "theory-navtex-6",
+    topic: "NAVTEX",
+    prompt: "NAVTEX delivers MSI to ships. What does the abbreviation MSI stand for?",
+    correctAnswer: "Maritime Safety Information",
+    distractors: [
+      "Maritime Situation Index",
+      "Marine Signal Identifier",
+      "Mandatory Safety Instructions",
+    ],
+    explanation:
+      "MSI is Maritime Safety Information — navigational warnings, meteorological warnings and forecasts, and SAR information. NAVTEX is one of the GMDSS services that delivers MSI to ships automatically.",
+  },
+  // REVIEW: seeded — verify before exam use
+  {
+    id: "theory-navtex-7",
+    topic: "NAVTEX",
+    prompt: "In a NAVTEX preamble, what type of message does the B2 type-code 'D' identify?",
+    correctAnswer: "Search and rescue information",
+    distractors: ["Navigational warnings", "Ice reports", "Meteorological forecasts"],
+    explanation:
+      "The B2 character codes the message type: A = navigational warnings, B = meteorological warnings, C = ice reports, D = SAR information, E = meteorological forecasts, L = additional navigational warnings. Codes A, B, D and L cannot be rejected by the receiver.",
+  },
+
   // ── Channels ── seeded from drills/channels.ts ───────────────────────────
   // REVIEW: seeded — verify before exam use
   {
@@ -245,6 +285,39 @@ export const THEORY_QUESTIONS: readonly TheoryQuestion[] = [
       "The radar-SART self-test produces a single dot — distinct from the twelve dots of a live activation. Run the test briefly and only when no SAR operation is in progress.",
   },
 
+  // REVIEW: seeded — verify before exam use
+  {
+    id: "theory-sart-5",
+    topic: "SART",
+    prompt:
+      "How does an active AIS-SART appear on a radar or chart plotter that displays AIS targets?",
+    correctAnswer: "As a dedicated SART symbol — a circle with a cross — that raises an alarm",
+    distractors: [
+      "As twelve equally-spaced dots, exactly like a radar-SART trace",
+      "As an ordinary AIS vessel triangle, with no special marking",
+      "As a ring of expanding concentric circles centred on its position",
+    ],
+    explanation:
+      "An AIS-SART is reported as a distinct distress target: the plotter draws the standardised SART symbol — a circle with a cross — and raises an alarm. This differs from a radar-SART, which has no symbol; it paints a raw radar echo of twelve dots, then arcs, then concentric circles as the range closes.",
+  },
+
+  // REVIEW: seeded — verify before exam use
+  {
+    id: "theory-sart-6",
+    topic: "SART",
+    prompt:
+      "As a searching vessel closes the range on a radar-SART, how does its mark on the X-band radar change?",
+    correctAnswer:
+      "Twelve dots first, then arcs, then complete concentric circles centred on the SART",
+    distractors: [
+      "Complete circles first, then arcs, then twelve dots",
+      "A single dot that simply grows brighter as the range closes",
+      "Twelve dots that move closer together without changing shape",
+    ],
+    explanation:
+      "At long range a radar-SART paints twelve equally-spaced dots. As the vessel closes in, the dots stretch into arcs; within about 1 NM the arcs merge into complete concentric circles centred on the SART. This changing picture confirms the team is homing in. A single dot instead indicates the self-test mode.",
+  },
+
   // ── VHF ── seeded from modules/2/lesson-1.json (VHF Radio Basics) ─────────
   // REVIEW: seeded — verify before exam use
   {
@@ -296,6 +369,21 @@ export const THEORY_QUESTIONS: readonly TheoryQuestion[] = [
       "Maritime VHF operates between 156 and 174 MHz. 300 kHz to 3 MHz is the MF band; 3 to 30 MHz is the HF band.",
   },
 
+  // REVIEW: seeded — verify before exam use
+  {
+    id: "theory-vhf-5",
+    topic: "VHF",
+    prompt: "What does the abbreviation DSC stand for in GMDSS radio equipment?",
+    correctAnswer: "Digital Selective Calling",
+    distractors: [
+      "Duplex Selective Calling",
+      "Digital Selective Command",
+      "Distress Selective Calling",
+    ],
+    explanation:
+      "DSC stands for Digital Selective Calling — a technique that sends a short, coded digital message to alert a specific station, a group, or all stations. On VHF it uses Channel 70; a DSC distress alert carries the vessel's MMSI and, when the set is interfaced to a GPS, its position.",
+  },
+
   // ── MMSI ── seeded from modules/4/lesson-1.json (MMSI and Call Signs) ─────
   // REVIEW: seeded — verify before exam use
   {
@@ -341,5 +429,16 @@ export const THEORY_QUESTIONS: readonly TheoryQuestion[] = [
     distractors: ["Prefix 00", "Prefix 970", "Prefix 99"],
     explanation:
       "Prefix 111 identifies a SAR aircraft. Prefix 00 marks a coast station, 970 an AIS-SART, and 99 a navigational aid.",
+  },
+
+  // REVIEW: seeded — verify before exam use
+  {
+    id: "theory-mmsi-5",
+    topic: "MMSI",
+    prompt: "Which MMSI prefix identifies an AIS-equipped EPIRB (an EPIRB-AIS device)?",
+    correctAnswer: "Prefix 974",
+    distractors: ["Prefix 970", "Prefix 972", "Prefix 111"],
+    explanation:
+      "An AIS-EPIRB transmits an AIS identity beginning with 974. The neighbouring device prefixes are 970 for an AIS-SART and 972 for an AIS man-overboard (MOB) device; 111 identifies a SAR aircraft.",
   },
 ];
