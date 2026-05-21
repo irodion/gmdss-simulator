@@ -13,6 +13,7 @@ import { ModeTabs, type AppMode } from "./components/ModeTabs.tsx";
 import { ProceduresPanel } from "./components/ProceduresPanel.tsx";
 import { SessionConfig } from "./components/SessionConfig.tsx";
 import { SessionResults } from "./components/SessionResults.tsx";
+import { TheoryPanel } from "./components/TheoryPanel.tsx";
 import { generateAbbreviationChallenges, scoreAbbreviation } from "./drills/abbreviation-mode.ts";
 import { readAdaptivePreference, writeAdaptivePreference } from "./drills/adaptive-prefs.ts";
 import { previewQueue, selectAdaptiveChallenges } from "./drills/adaptive-selection.ts";
@@ -70,6 +71,8 @@ const HELP_BY_MODE: Partial<Record<AppMode, string>> = {
     "Answers are case-insensitive. Multiple-choice and free-text questions are mixed each session.",
   channel:
     "Each session mixes both directions: pick the usage for a given channel, or pick the channel for a given usage.",
+  theory:
+    "Multiple-choice questions across six GMDSS topics. Counts as free practice — it doesn't advance your daily streak.",
 };
 
 function renderExamMockCard(
@@ -121,7 +124,7 @@ export function App() {
   const [examMockResults, setExamMockResults] = useState<DrillResult[]>([]);
   const lastPersistedExamResultsRef = useRef<DrillResult[] | null>(null);
 
-  const drillMode: DrillType | null = mode === "procedures" ? null : mode;
+  const drillMode: DrillType | null = mode === "procedures" || mode === "theory" ? null : mode;
   const score = useMemo(() => (drillMode ? scorerFor(drillMode) : scoreDrill), [drillMode]);
 
   const preview = useMemo(() => {
@@ -303,7 +306,7 @@ export function App() {
                 }}
               />
 
-              {adaptiveEnabled && screen === "config" ? (
+              {adaptiveEnabled && screen === "config" && mode !== "theory" ? (
                 <DailyIndicator
                   streak={dailyProgress.streak.current}
                   itemsToday={todayCount(dailyProgress, Date.now()).adaptiveItems}
@@ -316,7 +319,11 @@ export function App() {
                   <ProceduresPanel onSessionRecorded={refreshDailyProgress} />
                 ) : null}
 
-                {mode !== "procedures" && screen === "config" ? (
+                {mode === "theory" ? (
+                  <TheoryPanel onSessionRecorded={refreshDailyProgress} />
+                ) : null}
+
+                {drillMode && screen === "config" ? (
                   <>
                     {mode === "abbreviation" ? (
                       <AbbreviationStats refreshToken={eventsToken} />
@@ -333,7 +340,7 @@ export function App() {
                   </>
                 ) : null}
 
-                {mode !== "procedures" && screen === "drill" && currentChallenge && CurrentCard ? (
+                {drillMode && screen === "drill" && currentChallenge && CurrentCard ? (
                   <CurrentCard
                     key={currentChallenge.id}
                     challenge={currentChallenge}
@@ -345,7 +352,7 @@ export function App() {
                   />
                 ) : null}
 
-                {mode !== "procedures" && screen === "summary" ? (
+                {drillMode && screen === "summary" ? (
                   <SessionResults results={results} onRestart={handleRestart} />
                 ) : null}
               </div>

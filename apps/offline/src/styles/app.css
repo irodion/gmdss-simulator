@@ -114,7 +114,7 @@
 /* ── Mode tabs (Roman numerals) ── */
 .mode-tabs {
   display: grid;
-  grid-template-columns: repeat(6, 1fr);
+  grid-template-columns: repeat(7, 1fr);
   gap: 0;
   border: 1px solid var(--ink-line);
 }
@@ -836,6 +836,18 @@
   background: var(--paper-dark);
   color: var(--ink-soft);
   text-decoration: line-through;
+}
+
+/* ── Theory mode: post-answer explanation ── */
+.theory-explanation {
+  font-family: var(--body);
+  font-size: 0.86rem;
+  line-height: 1.6;
+  color: var(--ink-soft);
+  margin-top: 12px;
+  padding: 12px 14px;
+  border-left: 2px solid var(--ink-line);
+  background: var(--paper-deep);
 }
 
 /* ── Abbreviation drill: per-item stats ── */
