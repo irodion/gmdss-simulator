@@ -407,6 +407,21 @@ export const THEORY_QUESTIONS: readonly TheoryQuestion[] = [
       "Sea Area A1 lies within VHF range of a coast station that keeps a continuous DSC watch, so a vessel operating only there carries a VHF radio with DSC, a NAVTEX receiver for maritime safety information, and a 406 MHz EPIRB. An MF radio with DSC is the defining requirement of Sea Area A2, not A1.",
   },
 
+  // REVIEW: seeded — verify before exam use
+  {
+    id: "theory-vhf-7",
+    topic: "VHF",
+    prompt: "Which of these situations would NOT call for an Urgency (PAN PAN) message?",
+    correctAnswer: "A large unlit object is drifting in a busy shipping lane",
+    distractors: [
+      "A crew member needs urgent medical advice",
+      "A vessel has lost steering but is not in immediate danger",
+      "A vessel has engine failure in a shipping lane, with no immediate danger to life",
+    ],
+    explanation:
+      "Urgency (PAN PAN) covers a vessel or person in a serious situation that is not yet grave and imminent danger — lost steering, engine failure, or a crew member needing urgent medical advice. A drifting navigational hazard endangers no vessel directly; warning other ships about it is a Safety (SÉCURITÉ) message.",
+  },
+
   // ── MMSI ── seeded from modules/4/lesson-1.json (MMSI and Call Signs) ─────
   // REVIEW: seeded — verify before exam use
   {
