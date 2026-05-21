@@ -384,6 +384,22 @@ export const THEORY_QUESTIONS: readonly TheoryQuestion[] = [
       "DSC stands for Digital Selective Calling — a technique that sends a short, coded digital message to alert a specific station, a group, or all stations. On VHF it uses Channel 70; a DSC distress alert carries the vessel's MMSI and, when the set is interfaced to a GPS, its position.",
   },
 
+  // REVIEW: seeded — verify before exam use
+  {
+    id: "theory-vhf-6",
+    topic: "VHF",
+    prompt:
+      "Which of the following is NOT required to be carried by a vessel operating only in GMDSS Sea Area A1?",
+    correctAnswer: "An MF radio installation with DSC",
+    distractors: [
+      "A VHF radio with DSC",
+      "A 406 MHz satellite EPIRB",
+      "A means of receiving maritime safety information",
+    ],
+    explanation:
+      "Sea Area A1 lies within VHF range of a coast station that keeps a continuous DSC watch, so a vessel operating only there carries a VHF radio with DSC, a means of receiving maritime safety information, and a 406 MHz EPIRB. An MF radio with DSC is the defining requirement of Sea Area A2, not A1.",
+  },
+
   // ── MMSI ── seeded from modules/4/lesson-1.json (MMSI and Call Signs) ─────
   // REVIEW: seeded — verify before exam use
   {
