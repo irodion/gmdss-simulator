@@ -113,15 +113,19 @@
 
 /* ── Mode tabs (Roman numerals) ── */
 .mode-tabs {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  gap: 0;
+  display: flex;
+  flex-wrap: wrap;
+  /* 1px gaps over the line-coloured background draw every divider — row and
+     column — so the tab count can wrap to two rows without border edge-casing. */
+  gap: 1px;
+  background: var(--ink-line);
   border: 1px solid var(--ink-line);
 }
 .mode-tab {
-  background: transparent;
+  /* basis 23% → exactly four per row; flex-grow fills each (short) row fully. */
+  flex: 1 1 23%;
+  background: var(--paper-deep);
   border: none;
-  border-right: 1px solid var(--ink-line);
   padding: 18px 12px 14px;
   text-align: center;
   cursor: pointer;
@@ -131,9 +135,6 @@
     background 200ms ease,
     color 200ms ease;
   position: relative;
-}
-.mode-tab:last-child {
-  border-right: none;
 }
 .mode-numeral {
   display: block;
@@ -159,7 +160,7 @@
   color: var(--brass);
 }
 .mode-tab:hover:not([aria-selected="true"]) {
-  background: rgba(21, 36, 61, 0.04);
+  background: var(--paper);
   color: var(--ink);
 }
 
@@ -1927,10 +1928,8 @@
     font-size: 0.66rem;
     letter-spacing: 0.14em;
   }
-  .mode-tabs {
-    grid-template-columns: repeat(3, 1fr);
-  }
   .mode-tab {
+    flex-basis: 31%;
     padding: 14px 8px 12px;
     min-height: 64px;
   }
