@@ -213,6 +213,18 @@ export const THEORY_QUESTIONS: readonly TheoryQuestion[] = [
       "NAVTEX carries Maritime Safety Information only — navigational warnings, meteorological warnings and forecasts, and SAR information — broadcast one-way to all ships. It never carries a vessel's own routine or private traffic, such as a position report to its company.",
   },
 
+  // REVIEW: seeded — verify before exam use
+  {
+    id: "theory-navtex-9",
+    topic: "NAVTEX",
+    prompt:
+      "The radio equipment carried into a life raft has one purpose: to get the survivors found. Which of these is NOT part of that survival-craft equipment?",
+    correctAnswer: "A NAVTEX receiver",
+    distractors: ["An EPIRB", "A portable (handheld) VHF radio", "A SART"],
+    explanation:
+      "The radio equipment carried into a survival craft has one job — to get you found. An EPIRB alerts rescue authorities through the Cospas-Sarsat satellites, a SART lets searching ships and aircraft home in on the craft, and a portable handheld VHF gives on-scene voice contact with rescuers. A NAVTEX receiver does the opposite: it only receives Maritime Safety Information — navigational and weather warnings broadcast to the ship. It cannot alert anyone to your distress or help anyone locate you, so it has no place in the life raft.",
+  },
+
   // ── Channels ── seeded from drills/channels.ts ───────────────────────────
   // REVIEW: seeded — verify before exam use
   {
