@@ -694,6 +694,53 @@ export const THEORY_QUESTIONS: readonly TheoryQuestion[] = [
     explanation:
       "Distress communications have absolute priority over all other traffic. The instant a MAYDAY is heard, every station whose transmission could interfere must stop at once and listen — you do not finish your message, reduce power, or relocate the call first. Finishing the message delays the casualty, low power still interferes, and moving channels risks missing the distress traffic. Only immediate silence guarantees the vessel in distress can be heard.",
   },
+  // REVIEW: seeded — verify before exam use
+  {
+    id: "theory-vhf-17",
+    topic: "VHF",
+    prompt:
+      'On Channel 16 you hear: "PAN PAN, PAN PAN, PAN PAN — ALL STATIONS x3 — THIS IS ...". What does this mean?',
+    correctAnswer: "A vessel or person has an urgent but not immediately life-threatening problem",
+    distractors: [
+      "A vessel is in grave and imminent danger and needs immediate assistance",
+      "A navigational or weather hazard is being broadcast for the safety of shipping",
+      "A station is relaying a distress message on behalf of another vessel",
+    ],
+    explanation:
+      'PAN PAN (from the French "panne", a breakdown) is the urgency signal — second in the priority order, below distress (MAYDAY) and above safety (SECURITE) and routine traffic. It announces a serious situation concerning a vessel or person that is not grave and imminent danger: loss of steering, engine failure in a shipping lane, a person overboard, or a serious but not immediately life-threatening injury. If the danger becomes immediate, the message is upgraded to MAYDAY.',
+  },
+  // REVIEW: seeded — verify before exam use
+  {
+    id: "theory-vhf-18",
+    topic: "VHF",
+    prompt:
+      'On Channel 16 you hear: "SECURITE, SECURITE, SECURITE — ALL STATIONS x3 — THIS IS ...". What does this mean?',
+    correctAnswer:
+      "A safety message follows — a navigational or meteorological warning for the awareness of shipping",
+    distractors: [
+      "A vessel is in grave and imminent danger and needs immediate assistance",
+      "A vessel has an urgent but not immediately life-threatening problem",
+      "A station is relaying a distress message on behalf of another vessel",
+    ],
+    explanation:
+      'SECURITE (pronounced "say-cure-ee-tay", French for safety) is the safety signal — third in the priority order, below distress and urgency and above routine traffic. Unlike MAYDAY and PAN PAN it does not concern a vessel in danger; it carries a navigational or meteorological warning — a floating hazard, an unlit buoy, a new wreck, approaching severe weather — for the awareness of all shipping. It is a one-way broadcast and ends with OUT, as no acknowledgment is expected.',
+  },
+  // REVIEW: seeded — verify before exam use
+  {
+    id: "theory-vhf-19",
+    topic: "VHF",
+    prompt:
+      'On Channel 16 you hear: "MAYDAY RELAY, MAYDAY RELAY, MAYDAY RELAY — THIS IS ...". What does this mean?',
+    correctAnswer:
+      "A station that is not itself in distress is passing on a distress message for another vessel",
+    distractors: [
+      "The vessel transmitting is itself in grave and imminent danger",
+      "A vessel has an urgent but not immediately life-threatening problem",
+      "A navigational or weather hazard is being broadcast for the safety of shipping",
+    ],
+    explanation:
+      "A MAYDAY RELAY is transmitted by a station that is not itself in distress, to pass on a distress message for another vessel — typically because that vessel cannot transmit, or its distress call has gone unanswered. Any vessel or coast station may relay. Note the word RELAY: an ordinary MAYDAY is the casualty's own call, whereas a MAYDAY RELAY carries someone else's distress. The relaying station quotes the original message exactly and tries to reach a coast station first.",
+  },
 
   // ── MMSI ── seeded from modules/4/lesson-1.json (MMSI and Call Signs) ─────
   // REVIEW: seeded — verify before exam use
