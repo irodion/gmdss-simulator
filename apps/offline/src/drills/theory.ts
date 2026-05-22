@@ -111,6 +111,22 @@ export const THEORY_QUESTIONS: readonly TheoryQuestion[] = [
       "A 406 MHz EPIRB locates by radio and light: the 406 MHz signal reaches the Cospas-Sarsat satellites, a low-power 121.5 MHz transmitter homes in rescue craft, newer beacons add an AIS locating signal, and a high-intensity light aids the visual search. An EPIRB carries no acoustic homing — there is no sonar-style signal to home on.",
   },
 
+  // REVIEW: seeded — verify before exam use
+  {
+    id: "theory-cospas-6",
+    topic: "COSPAS-SARSAT",
+    prompt: "An EPIRB has been activated by accident. What should you do?",
+    correctAnswer:
+      "Deactivate the EPIRB and notify the nearest Rescue Coordination Centre (RCC) on VHF Channel 16 to cancel the alert",
+    distractors: [
+      "Disconnect the EPIRB's battery and take no further action",
+      "Notify a Mission Control Centre (MCC) by DSC on Channel 70",
+      "Broadcast a distress-alert cancellation to all stations on Channel 16",
+    ],
+    explanation:
+      "If an EPIRB is set off by accident, the Cospas-Sarsat satellites have already relayed a distress alert to a Rescue Coordination Centre (RCC) — switching the beacon off does not undo that. The correct procedure is to deactivate the EPIRB to stop further transmission and immediately notify the nearest RCC on VHF Channel 16 to cancel the alert, giving the vessel name, MMSI, position, and the nature of the false activation. Do not confuse the RCC, which coordinates the SAR response, with a Mission Control Centre (MCC) — the Cospas-Sarsat ground station that routes the satellite alert. Broadcasting to all stations is how a false DSC alert is cancelled. Authorities normally impose no penalty for an accidental alert that is cancelled promptly and correctly.",
+  },
+
   // ── NAVTEX ── seeded from modules/6/lesson-1.json (NAVTEX) ────────────────
   // REVIEW: seeded — verify before exam use
   {
