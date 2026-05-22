@@ -499,6 +499,28 @@ export const THEORY_QUESTIONS: readonly TheoryQuestion[] = [
       'A Transit Report (TR, "Tango Romeo") is a routine report a vessel underway sends to coast stations along its route. It lists voyage details — vessel name and call sign, departure and destination ports, intermediate stops, ETA, and persons on board — so authorities can track the vessel and launch a search if it fails to arrive. Many coastal states make a TR mandatory in their waters. It is not a distress call, a navigational warning, or a public-correspondence (telephone) request.',
   },
 
+  // REVIEW: seeded — verify before exam use
+  {
+    id: "theory-vhf-10",
+    topic: "VHF",
+    prompt: "What is the low-power setting of a fixed (ship-installed) VHF marine radio?",
+    correctAnswer: "1 watt",
+    distractors: ["0.25 watt", "0.5 watt", "5 watts"],
+    explanation:
+      "A fixed VHF installation switches between 25 watts (high) and 1 watt (low). Regulations require using the minimum power necessary, so 1 watt is correct for nearby vessels and port working — it reduces interference. Note that 1 watt is the low setting for a fixed set but the high setting for a GMDSS handheld, whose low power is only 0.25 watt.",
+  },
+  // REVIEW: seeded — verify before exam use
+  {
+    id: "theory-vhf-11",
+    topic: "VHF",
+    prompt:
+      "What is the minimum low-power setting of a GMDSS-compliant portable (handheld) VHF radio?",
+    correctAnswer: "0.25 watt",
+    distractors: ["0.5 watt", "1 watt", "5 watts"],
+    explanation:
+      "A GMDSS-compliant handheld VHF has a minimum low power of 0.25 watt and a high power of 1 watt — far less than a fixed installation's 25 watts. The low 0.25-watt setting conserves the battery, which matters in a survival craft. Take care not to confuse the figures: 1 watt is the handheld's high power but a fixed set's low power.",
+  },
+
   // ── MMSI ── seeded from modules/4/lesson-1.json (MMSI and Call Signs) ─────
   // REVIEW: seeded — verify before exam use
   {
