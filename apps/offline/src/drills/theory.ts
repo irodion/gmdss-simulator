@@ -419,6 +419,22 @@ export const THEORY_QUESTIONS: readonly TheoryQuestion[] = [
       "A radar-SART works by line of sight, like radar itself, so detection range depends on height. Raising the SART — on a pole or held up — extends that line of sight: a ship's radar (15 m scanner) picks it up at about 8 NM, while an aircraft detects it up to 30 NM purely because of the greater height. A SART has no power control and radiates in all directions, so the only thing survivors can do to extend its range is get it as high as they can — at least 1 metre above sea level.",
   },
 
+  // REVIEW: seeded — verify before exam use
+  {
+    id: "theory-sart-8",
+    topic: "SART",
+    prompt: "A SART has been activated by mistake. How must the false alert be cancelled?",
+    correctAnswer:
+      "Switch the SART off and broadcast a formal distress cancellation to all stations on Channel 16",
+    distractors: [
+      "Switch the SART off — once it stops transmitting, no further action is needed",
+      "Notify only the nearest Rescue Coordination Centre (RCC), with no broadcast to other ships",
+      "Report it to a Mission Control Centre (MCC), which will route the cancellation to nearby ships",
+    ],
+    explanation:
+      "A SART is a locally visible distress signal: a radar-SART paints a twelve-dot trace on the X-band radar of any ship or aircraft within range, and an AIS-SART appears on every AIS-equipped display in range. A false activation may therefore already have been seen by vessels all around you — not by a single coordination centre. Cancelling it takes two steps: switch the SART off to stop the signal, then broadcast a formal distress cancellation to all stations on Channel 16 so every vessel that may have detected it knows the distress was false. This differs from a false EPIRB alert, which travels by satellite to one RCC and is cancelled by notifying that RCC.",
+  },
+
   // ── VHF ── seeded from modules/2/lesson-1.json (VHF Radio Basics) ─────────
   // REVIEW: seeded — verify before exam use
   {
