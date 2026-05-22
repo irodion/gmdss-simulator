@@ -814,6 +814,23 @@ export const THEORY_QUESTIONS: readonly TheoryQuestion[] = [
       'The DW button switches on Dual Watch. The receiver alternates rapidly between your selected working channel and Channel 16, pausing on whichever channel has an active signal. The purpose is to let you work or monitor another channel without losing the listening watch on the international distress and calling channel. If a signal appears on Channel 16, the radio stays there until the transmission ends. Dual Watch is a receive-only monitoring feature; it does not affect your transmissions. It differs from the general SCAN function, which cycles through all programmed memory channels, and from the dedicated "16" button, which simply jumps straight to Channel 16.',
   },
 
+  // REVIEW: seeded — verify before exam use
+  {
+    id: "theory-vhf-22",
+    topic: "VHF",
+    prompt:
+      "GMDSS requires a radiotelephone to be carried into the survival craft (life raft). Which equipment meets that requirement?",
+    correctAnswer:
+      "A portable two-way VHF radiotelephone working on Channel 16, plus at least one other channel, with analogue voice emission (class F3E/G3E)",
+    distractors: [
+      "A portable DSC controller working on Channel 70",
+      "A portable radiotelephone working on the 121.5 MHz aeronautical emergency frequency",
+      "Three separate radios — one for Channel 16 voice, one for DSC on Channel 70, and one for 121.5 MHz — are all required",
+    ],
+    explanation:
+      "The radiotelephone taken into a survival craft is a portable (handheld) two-way VHF set. It works on Channel 16 — the international voice distress and calling channel — and at least one other channel, carrying ordinary analogue speech (emission class F3E/G3E). Channel 70 is wrong: it carries DSC digital alerts only and voice transmission on it is forbidden, so a DSC controller is not a radiotelephone. 121.5 MHz is wrong too: it is the aeronautical emergency and homing frequency — the band an EPIRB uses so rescue craft can home in — not a marine voice channel; no survival-craft handheld carries speech there. And only one radio is required, not three: the single handheld VHF provides the voice link, while satellite alerting (EPIRB) and radar location (SART) are separate, non-radiotelephone devices.",
+  },
+
   // ── MMSI ── seeded from modules/4/lesson-1.json (MMSI and Call Signs) ─────
   // REVIEW: seeded — verify before exam use
   {
