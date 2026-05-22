@@ -783,6 +783,36 @@ export const THEORY_QUESTIONS: readonly TheoryQuestion[] = [
     explanation:
       "A MAYDAY RELAY is transmitted by a station that is not itself in distress, to pass on a distress message for another vessel — typically because that vessel cannot transmit, or its distress call has gone unanswered. Any vessel or coast station may relay. Note the word RELAY: an ordinary MAYDAY is the casualty's own call, whereas a MAYDAY RELAY carries someone else's distress. The relaying station quotes the original message exactly and tries to reach a coast station first.",
   },
+  // REVIEW: seeded — verify before exam use
+  {
+    id: "theory-vhf-20",
+    topic: "VHF",
+    prompt: "What is the purpose of the SQUELCH control on a VHF radio?",
+    correctAnswer:
+      "It mutes the receiver's background static when no signal is present, while still letting genuine incoming transmissions through",
+    distractors: [
+      "It adjusts the transmitter's output power between high (25 W) and low (1 W)",
+      "It filters out interference bleeding in from adjacent channels",
+      "It boosts weak incoming signals so distant stations can be heard more clearly",
+    ],
+    explanation:
+      "Squelch sets a signal-strength threshold on the receiver. Below the threshold the speaker stays silent — muting the constant background hiss — and signals above it come through. Its purpose is to spare the operator a continuous wash of static between transmissions while still passing real traffic. Squelch affects reception only: it has nothing to do with transmit power (that is the separate High/Low power control), it does not filter adjacent channels, and it does not boost weak signals — in fact, set too high it does the opposite, hiding weak signals from distant stations. The correct technique is to open squelch fully until static is heard, then advance it just until the static disappears.",
+  },
+  // REVIEW: seeded — verify before exam use
+  {
+    id: "theory-vhf-21",
+    topic: "VHF",
+    prompt: "What is the purpose of the DW (Dual Watch) button on a VHF radio?",
+    correctAnswer:
+      "It makes the radio monitor Channel 16 alongside your selected working channel, so you keep a watch on the distress and calling channel while still working another channel",
+    distractors: [
+      "It continuously cycles through every programmed memory channel, stopping on any channel with activity",
+      "It switches the radio straight to Channel 16 from whatever channel is currently in use",
+      "It alternates monitoring between two working channels of your choice, with Channel 16 not included",
+    ],
+    explanation:
+      'The DW button switches on Dual Watch. The receiver alternates rapidly between your selected working channel and Channel 16, pausing on whichever channel has an active signal. The purpose is to let you work or monitor another channel without losing the listening watch on the international distress and calling channel. If a signal appears on Channel 16, the radio stays there until the transmission ends. Dual Watch is a receive-only monitoring feature; it does not affect your transmissions. It differs from the general SCAN function, which cycles through all programmed memory channels, and from the dedicated "16" button, which simply jumps straight to Channel 16.',
+  },
 
   // ── MMSI ── seeded from modules/4/lesson-1.json (MMSI and Call Signs) ─────
   // REVIEW: seeded — verify before exam use
