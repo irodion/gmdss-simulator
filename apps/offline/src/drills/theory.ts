@@ -274,6 +274,38 @@ export const THEORY_QUESTIONS: readonly TheoryQuestion[] = [
       "The radio equipment carried into a survival craft has one job — to get you found. An EPIRB alerts rescue authorities through the Cospas-Sarsat satellites, a SART lets searching ships and aircraft home in on the craft, and a portable handheld VHF gives on-scene voice contact with rescuers. A NAVTEX receiver does the opposite: it only receives Maritime Safety Information — navigational and weather warnings broadcast to the ship. It cannot alert anyone to your distress or help anyone locate you, so it has no place in the life raft.",
   },
 
+  // REVIEW: seeded — verify before exam use
+  {
+    id: "theory-navtex-10",
+    topic: "NAVTEX",
+    prompt: "What is broadcast on the frequency 4209.5 kHz?",
+    correctAnswer:
+      "Tropical NAVTEX — the HF NAVTEX service that extends maritime safety information into tropical warning areas",
+    distractors: [
+      "National NAVTEX — maritime safety information in the local national language",
+      "International NAVTEX — the primary English-language service for all GMDSS vessels",
+      "HF DSC distress and safety alerting for vessels beyond MF range",
+    ],
+    explanation:
+      "NAVTEX operates on three frequencies: 518 kHz carries International NAVTEX in English; 490 kHz carries National NAVTEX in the local language; 4209.5 kHz is Tropical NAVTEX, an HF frequency extending coverage into tropical warning areas. All three deliver the same maritime safety information — only frequency, language, and coverage differ. 4209.5 kHz is easily confused with the HF DSC distress frequency 4207.5 kHz, but the two are separate services.",
+  },
+
+  // REVIEW: seeded — verify before exam use
+  {
+    id: "theory-navtex-11",
+    topic: "NAVTEX",
+    prompt:
+      "Consider these statements about NAVTEX. (1) A NAVTEX station's range always exceeds that of a coastal VHF station. (2) A NAVTEX station's range roughly doubles at night. (3) The world is divided into 21 areas called NAVAREAs. Which statements are correct?",
+    correctAnswer: "All three statements are correct",
+    distractors: [
+      "Only statements 1 and 3 are correct",
+      "Only statements 2 and 3 are correct",
+      "Only statement 3 is correct",
+    ],
+    explanation:
+      "All three are correct. (1) A NAVTEX station reaches roughly 400 NM, far beyond the 30-50 NM line-of-sight range of a coastal VHF station. (2) NAVTEX uses the MF band; at night, sky-wave propagation extends its range substantially — roughly double the daytime ground-wave coverage. This is why two stations sharing the same B1 identifier must lie about 800 NM apart and time-share their broadcasts. (3) The world is divided into 21 geographical areas called NAVAREAs, each with a NAVAREA coordinator who promulgates navigational warnings.",
+  },
+
   // ── Channels ── seeded from drills/channels.ts ───────────────────────────
   // REVIEW: seeded — verify before exam use
   {
