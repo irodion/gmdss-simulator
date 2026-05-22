@@ -467,6 +467,22 @@ export const THEORY_QUESTIONS: readonly TheoryQuestion[] = [
       "A voice MAYDAY message follows a precise format: identity (name, call sign, MMSI), position, nature of the distress, assistance required, number of persons on board, and any other useful information. The vessel's destination and ETA are no part of it — a distress message reports the emergency now, not the voyage plan.",
   },
 
+  // REVIEW: seeded — verify before exam use
+  {
+    id: "theory-vhf-9",
+    topic: "VHF",
+    prompt: 'When does a vessel transmit a Transit Report (TR, spoken "Tango Romeo")?',
+    correctAnswer:
+      "When it is underway, to give coast stations along its route its voyage details so authorities can track it",
+    distractors: [
+      "When the vessel is in distress and needs immediate rescue assistance",
+      "When the vessel sights a hazard it must warn other ships about",
+      "When the vessel wants the coast station to place a telephone call ashore",
+    ],
+    explanation:
+      'A Transit Report (TR, "Tango Romeo") is a routine report a vessel underway sends to coast stations along its route. It lists voyage details — vessel name and call sign, departure and destination ports, intermediate stops, ETA, and persons on board — so authorities can track the vessel and launch a search if it fails to arrive. Many coastal states make a TR mandatory in their waters. It is not a distress call, a navigational warning, or a public-correspondence (telephone) request.',
+  },
+
   // ── MMSI ── seeded from modules/4/lesson-1.json (MMSI and Call Signs) ─────
   // REVIEW: seeded — verify before exam use
   {
