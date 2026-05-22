@@ -359,6 +359,22 @@ export const THEORY_QUESTIONS: readonly TheoryQuestion[] = [
       "At long range a radar-SART paints twelve equally-spaced dots. As the vessel closes in, the dots stretch into arcs; within about 1 NM the arcs merge into complete concentric circles centred on the SART. This changing picture confirms the team is homing in. A single dot instead indicates the self-test mode.",
   },
 
+  // REVIEW: seeded — verify before exam use
+  {
+    id: "theory-sart-7",
+    topic: "SART",
+    prompt:
+      "A survival craft has activated a radar-SART. How can the survivors improve the range at which it is detected?",
+    correctAnswer: "Mount or hold the SART as high as possible above the water",
+    distractors: [
+      "Switch the SART to a higher transmit-power setting",
+      "Aim the SART's antenna toward the approaching vessel",
+      "Press the self-test button repeatedly so it sends more signals",
+    ],
+    explanation:
+      "A radar-SART works by line of sight, like radar itself, so detection range depends on height. Raising the SART — on a pole or held up — extends that line of sight: a ship's radar (15 m scanner) picks it up at about 8 NM, while an aircraft detects it up to 30 NM purely because of the greater height. A SART has no power control and radiates in all directions, so the only thing survivors can do to extend its range is get it as high as they can — at least 1 metre above sea level.",
+  },
+
   // ── VHF ── seeded from modules/2/lesson-1.json (VHF Radio Basics) ─────────
   // REVIEW: seeded — verify before exam use
   {
