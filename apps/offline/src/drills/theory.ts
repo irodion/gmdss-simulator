@@ -159,6 +159,16 @@ export const THEORY_QUESTIONS: readonly TheoryQuestion[] = [
     explanation:
       "A LUT (Local User Terminal) is the ground receiving station of the Cospas-Sarsat system. When a 406 MHz beacon is activated, a satellite picks up the signal — for the classic LEOSAR/GEOSAR generation it also measures the Doppler shift as it passes overhead — and relays the raw data down to a LUT. The LUT processes that data to compute the beacon's position and identity, then passes the result to a Mission Control Centre (MCC), which routes it to the Rescue Coordination Centre (RCC) that coordinates the rescue. The chain runs: beacon → satellite → LUT → MCC → RCC.",
   },
+  // REVIEW: seeded — verify before exam use
+  {
+    id: "theory-cospas-9",
+    topic: "COSPAS-SARSAT",
+    prompt: "Which of these devices can be activated either manually or automatically?",
+    correctAnswer: "A float-free (Category 1) 406 MHz EPIRB",
+    distractors: ["An AIS-SART", "A radar-SART (9 GHz transponder)", "A NAVTEX receiver"],
+    explanation:
+      'A float-free Category 1 EPIRB is the one device here with two activation modes. If the vessel sinks, water pressure trips its hydrostatic release unit (HRU); the beacon floats free and transmits automatically. It can also be switched on by hand at any time. A radar-SART and an AIS-SART are both switched on by hand only — neither has a float-free or water-activated mode. A NAVTEX receiver is not "activated" for distress at all: it is left running to receive maritime safety information automatically and has no manual distress function. A Category 2 EPIRB, by contrast, is manual-activation only — it is the float-free Category 1 housing that adds the automatic mode.',
+  },
 
   // ── NAVTEX ── seeded from modules/6/lesson-1.json (NAVTEX) ────────────────
   // REVIEW: seeded — verify before exam use
