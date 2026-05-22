@@ -127,6 +127,23 @@ export const THEORY_QUESTIONS: readonly TheoryQuestion[] = [
       "If an EPIRB is set off by accident, the Cospas-Sarsat satellites have already relayed a distress alert to a Rescue Coordination Centre (RCC) — switching the beacon off does not undo that. The correct procedure is to deactivate the EPIRB to stop further transmission and immediately notify the nearest RCC on VHF Channel 16 to cancel the alert, giving the vessel name, MMSI, position, and the nature of the false activation. Do not confuse the RCC, which coordinates the SAR response, with a Mission Control Centre (MCC) — the Cospas-Sarsat ground station that routes the satellite alert. Broadcasting to all stations is how a false DSC alert is cancelled. Authorities normally impose no penalty for an accidental alert that is cancelled promptly and correctly.",
   },
 
+  // REVIEW: seeded — verify before exam use
+  {
+    id: "theory-cospas-7",
+    topic: "COSPAS-SARSAT",
+    prompt:
+      "A MEOLUT (Medium Earth Orbit Local User Terminal) ground station receives beacon data from:",
+    correctAnswer:
+      "MEOSAR repeaters carried on navigation (GNSS) satellites in medium Earth orbit, about 19,000–24,000 km up",
+    distractors: [
+      "LEOSAR satellites in low Earth orbit, about 1,000 km up",
+      "Inmarsat satellites in geostationary orbit",
+      "A Mission Control Centre (MCC) on the ground",
+    ],
+    explanation:
+      "A MEOLUT is the ground station of the MEOSAR system. MEOSAR places SAR repeaters on the navigation (GNSS) satellites — GPS, Galileo, and GLONASS — in medium Earth orbit at roughly 19,000–24,000 km. A MEOLUT tracks several of these satellites at once and receives the 406 MHz beacon bursts they relay; working from multiple satellites simultaneously, rather than waiting for one low-orbit satellite to pass overhead and measuring its Doppler shift, gives near-instantaneous and highly accurate global detection. The MEOLUT then forwards the located data to a Mission Control Centre (MCC), which passes it to the RCC. It does not receive from the ~1,000 km LEOSAR satellites — that is a LEOLUT's job — or from Inmarsat, and the MCC sits downstream of the MEOLUT, not as its source.",
+  },
+
   // ── NAVTEX ── seeded from modules/6/lesson-1.json (NAVTEX) ────────────────
   // REVIEW: seeded — verify before exam use
   {
