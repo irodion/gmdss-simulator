@@ -144,6 +144,22 @@ export const THEORY_QUESTIONS: readonly TheoryQuestion[] = [
       "A MEOLUT is the ground station of the MEOSAR system. MEOSAR places SAR repeaters on the navigation (GNSS) satellites — GPS, Galileo, and GLONASS — in medium Earth orbit at roughly 19,000–24,000 km. A MEOLUT tracks several of these satellites at once and receives the 406 MHz beacon bursts they relay; working from multiple satellites simultaneously, rather than waiting for one low-orbit satellite to pass overhead and measuring its Doppler shift, gives near-instantaneous and highly accurate global detection. The MEOLUT then forwards the located data to a Mission Control Centre (MCC), which passes it to the RCC. It does not receive from the ~1,000 km LEOSAR satellites — that is a LEOLUT's job — or from Inmarsat, and the MCC sits downstream of the MEOLUT, not as its source.",
   },
 
+  // REVIEW: seeded — verify before exam use
+  {
+    id: "theory-cospas-8",
+    topic: "COSPAS-SARSAT",
+    prompt: "What is a LUT (Local User Terminal) in the Cospas-Sarsat system?",
+    correctAnswer:
+      "A ground receiving station that takes satellite-relayed beacon signals and computes the beacon's position",
+    distractors: [
+      "A satellite that detects a beacon and relays its signal down to the ground",
+      "The centre that forwards located beacon data to the responsible rescue authorities",
+      "The centre that tasks and coordinates the search-and-rescue units on scene",
+    ],
+    explanation:
+      "A LUT (Local User Terminal) is the ground receiving station of the Cospas-Sarsat system. When a 406 MHz beacon is activated, a satellite picks up the signal — for the classic LEOSAR/GEOSAR generation it also measures the Doppler shift as it passes overhead — and relays the raw data down to a LUT. The LUT processes that data to compute the beacon's position and identity, then passes the result to a Mission Control Centre (MCC), which routes it to the Rescue Coordination Centre (RCC) that coordinates the rescue. The chain runs: beacon → satellite → LUT → MCC → RCC.",
+  },
+
   // ── NAVTEX ── seeded from modules/6/lesson-1.json (NAVTEX) ────────────────
   // REVIEW: seeded — verify before exam use
   {
