@@ -282,6 +282,22 @@ export const THEORY_QUESTIONS: readonly TheoryQuestion[] = [
       "Channels 24 and 25 are public-correspondence channels — duplex, using separate ship and coast-station frequencies so both can speak at once, like a telephone call. Channels 16, 06 and 13 are simplex: one frequency, press-to-talk, one station at a time.",
   },
 
+  // REVIEW: seeded — verify before exam use
+  {
+    id: "theory-channels-6",
+    topic: "Channels",
+    prompt: "What is the purpose of bridge-to-bridge communication on VHF?",
+    correctAnswer:
+      "Coordinating navigation safety between vessels — agreeing passing, overtaking, and manoeuvring intentions",
+    distractors: [
+      "Coordinating search-and-rescue operations between ships and aircraft",
+      "Calling port authorities to arrange a berth and request a pilot",
+      "Exchanging routine operational and social messages between vessels' crews",
+    ],
+    explanation:
+      "Bridge-to-bridge communication is one of the GMDSS functional requirements. On VHF it uses Channel 13, and its purpose is navigation safety: the watch officers of two vessels speak directly, bridge to bridge, to agree how they will pass, overtake, or manoeuvre clear of one another. It matters most in congested waterways, near bridges, and in port approaches, where many states make monitoring Channel 13 mandatory. It is not a search-and-rescue channel (Ch 06), a port-operations channel (Ch 12/14), or a channel for routine chatter.",
+  },
+
   // ── SART ── seeded from modules/6/lesson-4.json (SART and AIS-SART) ───────
   // REVIEW: seeded — verify before exam use
   {
