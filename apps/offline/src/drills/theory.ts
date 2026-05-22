@@ -614,6 +614,87 @@ export const THEORY_QUESTIONS: readonly TheoryQuestion[] = [
       "A GMDSS-compliant handheld VHF has a minimum low power of 0.25 watt and a high power of 1 watt — far less than a fixed installation's 25 watts. The low 0.25-watt setting conserves the battery, which matters in a survival craft. Take care not to confuse the figures: 1 watt is the handheld's high power but a fixed set's low power.",
   },
 
+  // REVIEW: seeded — verify before exam use
+  {
+    id: "theory-vhf-12",
+    topic: "VHF",
+    prompt:
+      'On Channel 16 you hear a station transmit: "ALL STATIONS, ALL STATIONS, ALL STATIONS — THIS IS Marion — SEELONCE MAYDAY." What does this mean?',
+    correctAnswer:
+      "Marion is ordering radio silence — all stations must stop transmitting on the frequency while distress traffic continues",
+    distractors: [
+      "The distress is over; normal working on the channel may now resume",
+      "Marion is relaying another vessel's distress to the coast station as a MAYDAY RELAY",
+      "Radio silence is partly relaxed; the frequency may now be used with care for distress-related traffic",
+    ],
+    explanation:
+      'SEELONCE MAYDAY ("SEELONCE" is the phonetic French for "silence") is the primary radio-silence command. It is transmitted by the vessel in distress, or by the station controlling the distress traffic, to demand that every other station immediately stop transmitting on the distress frequency so the distress traffic is not blocked. "Marion" is simply the identity of the station imposing the silence. It does not mean the distress is over — that is SEELONCE FEENEE — nor that the frequency may be used cautiously again — that is PRUDONCE.',
+  },
+  // REVIEW: seeded — verify before exam use
+  {
+    id: "theory-vhf-13",
+    topic: "VHF",
+    prompt:
+      'On Channel 16 a coast station broadcasts: "ALL STATIONS x3 — THIS IS [coast station] — SEELONCE FEENEE." What does this mean?',
+    correctAnswer:
+      "The distress is over — radio silence is lifted and normal working on the channel may resume",
+    distractors: [
+      "All stations must stop transmitting at once — distress traffic is in progress",
+      "The frequency may be used cautiously, but only for traffic related to the distress",
+      "A new distress incident has begun and a fresh period of silence applies",
+    ],
+    explanation:
+      'SEELONCE FEENEE (from the French "silence finie" — silence ended) marks the formal end of a distress. It is broadcast by the station supervising the distress traffic, usually a coast station, to lift the radio silence and restore normal working on the frequency. Demanding silence is SEELONCE MAYDAY; a cautious partial relaxation is PRUDONCE. An individual vessel may not declare the distress over — only the supervising station can.',
+  },
+  // REVIEW: seeded — verify before exam use
+  {
+    id: "theory-vhf-14",
+    topic: "VHF",
+    prompt:
+      'On Channel 16 the station controlling a distress transmits: "PRUDONCE." What does this mean?',
+    correctAnswer:
+      "Radio silence is partly relaxed — the frequency may be used with care, but only for traffic related to the distress",
+    distractors: [
+      "The distress is over and full normal working may now resume",
+      "Complete radio silence is demanded from every station",
+      "The frequency is open for any urgent traffic, including unrelated PAN PAN messages",
+    ],
+    explanation:
+      'PRUDONCE (from the French "prudence") is a partial relaxation of radio silence, issued only by the station controlling the distress. The distress is still ongoing, so the frequency may be used cautiously for distress-related traffic only — normal traffic stays prohibited. The full lifting of silence is SEELONCE FEENEE; a total silence demand is SEELONCE MAYDAY.',
+  },
+  // REVIEW: seeded — verify before exam use
+  {
+    id: "theory-vhf-15",
+    topic: "VHF",
+    prompt:
+      'During a distress on Channel 16, a vessel that is not controlling the distress transmits: "SEELONCE DISTRESS." What does this mean?',
+    correctAnswer:
+      "That vessel has heard interference with the distress traffic and is demanding the interfering station stop",
+    distractors: [
+      "It is the silence command reserved for the vessel in distress or the controlling station",
+      "It announces that the distress traffic has finished and normal working may resume",
+      "It permits cautious use of the frequency for distress-related traffic",
+    ],
+    explanation:
+      "SEELONCE DISTRESS may be transmitted by any station — not just the one controlling the distress — that hears harmful interference with the distress traffic; it tells the offending station to stop. SEELONCE MAYDAY, by contrast, is the silence command reserved for the vessel in distress or the controlling station. SEELONCE FEENEE ends the distress; PRUDONCE relaxes the silence.",
+  },
+  // REVIEW: seeded — verify before exam use
+  {
+    id: "theory-vhf-16",
+    topic: "VHF",
+    prompt:
+      "You are part-way through a routine call on Channel 16 when a MAYDAY distress call breaks in. What must you do?",
+    correctAnswer:
+      "Immediately stop transmitting and listen — distress traffic has absolute priority",
+    distractors: [
+      "Quickly finish your current message, then release the channel",
+      "Switch to low power and continue your call",
+      "Move your routine call to a working channel and carry on",
+    ],
+    explanation:
+      "Distress communications have absolute priority over all other traffic. The instant a MAYDAY is heard, every station whose transmission could interfere must stop at once and listen — you do not finish your message, reduce power, or relocate the call first. Finishing the message delays the casualty, low power still interferes, and moving channels risks missing the distress traffic. Only immediate silence guarantees the vessel in distress can be heard.",
+  },
+
   // ── MMSI ── seeded from modules/4/lesson-1.json (MMSI and Call Signs) ─────
   // REVIEW: seeded — verify before exam use
   {
