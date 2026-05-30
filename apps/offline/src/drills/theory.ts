@@ -170,6 +170,22 @@ export const THEORY_QUESTIONS: readonly TheoryQuestion[] = [
       'A float-free Category 1 EPIRB is the one device here with two activation modes. If the vessel sinks, water pressure trips its hydrostatic release unit (HRU); the beacon floats free and transmits automatically. It can also be switched on by hand at any time. A radar-SART and an AIS-SART are both switched on by hand only — neither has a float-free or water-activated mode. A NAVTEX receiver is not "activated" for distress at all: it is left running to receive maritime safety information automatically and has no manual distress function. A Category 2 EPIRB, by contrast, is manual-activation only — it is the float-free Category 1 housing that adds the automatic mode.',
   },
 
+  // REVIEW: seeded — verify before exam use
+  {
+    id: "theory-cospas-10",
+    topic: "COSPAS-SARSAT",
+    prompt:
+      "Which satellite system does Cospas-Sarsat use for its MEOSAR (medium-Earth-orbit) search-and-rescue layer?",
+    correctAnswer: "The GNSS navigation satellites (GPS, Galileo, GLONASS)",
+    distractors: [
+      "Inmarsat geostationary satellites",
+      "The Iridium satellite-phone constellation",
+      "Digital Selective Calling (DSC) on Channel 70",
+    ],
+    explanation:
+      "MEOSAR launches no dedicated satellites — it places 406 MHz SAR repeaters as a payload on the GNSS navigation constellations (GPS, Galileo and GLONASS) at roughly 19,000–24,000 km. Several are always in view, so a beacon is located almost instantly without waiting for a low-orbit satellite to pass overhead. Inmarsat (geostationary) carried the older GEOSAR alerting but gives no position; Iridium is a commercial satellite-phone network, not part of Cospas-Sarsat; and DSC on Channel 70 is terrestrial VHF alerting, unrelated to the satellite layer.",
+  },
+
   // ── NAVTEX ── seeded from modules/6/lesson-1.json (NAVTEX) ────────────────
   // REVIEW: seeded — verify before exam use
   {
