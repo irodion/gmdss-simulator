@@ -923,6 +923,177 @@ export const THEORY_QUESTIONS: readonly TheoryQuestion[] = [
     explanation:
       "The radiotelephone taken into a survival craft is a portable (handheld) two-way VHF set. It works on Channel 16 — the international voice distress and calling channel — and at least one other channel, carrying ordinary analogue speech (emission class F3E/G3E). Channel 70 is wrong: it carries DSC digital alerts only and voice transmission on it is forbidden, so a DSC controller is not a radiotelephone. 121.5 MHz is wrong too: it is the aeronautical emergency and homing frequency — the band an EPIRB uses so rescue craft can home in — not a marine voice channel; no survival-craft handheld carries speech there. And only one radio is required, not three: the single handheld VHF provides the voice link, while satellite alerting (EPIRB) and radar location (SART) are separate, non-radiotelephone devices.",
   },
+  // REVIEW: seeded — verify before exam use
+  {
+    id: "theory-vhf-23",
+    topic: "VHF",
+    prompt: "Which of these will REDUCE the range at which your VHF receiver can pick up signals?",
+    correctAnswer: "Setting the SQUELCH control to maximum",
+    distractors: [
+      "Setting the SQUELCH control to minimum",
+      "Selecting high (25 W) transmit power",
+      "Extending the antenna to its full height",
+    ],
+    explanation:
+      "Squelch sets a signal-strength threshold below which the receiver stays muted. Turned to maximum, it raises that threshold so high that weak, distant signals fall below it and are silenced — you never hear them, which effectively shrinks your reception range. Set to minimum, squelch mutes nothing and you hear even the weakest signals (along with background static), so it does not cut range. Transmit power affects how far you are heard, not how far you can hear; and raising the antenna increases range, not reduces it. The correct technique is to open squelch until static appears, then back it off just until the static disappears.",
+  },
+  // REVIEW: seeded — verify before exam use
+  {
+    id: "theory-vhf-24",
+    topic: "VHF",
+    prompt:
+      'On Channel 16 you hear: "ALL STATIONS, ALL STATIONS, ALL STATIONS — THIS IS Rota Radio, Rota Radio, Rota Radio — gale warning, Channel 27." What does this mean?',
+    correctAnswer:
+      "Rota coast radio station is announcing that it has a gale warning and will broadcast it on Channel 27",
+    distractors: [
+      "A ship is asking Rota Radio whether it holds any gale warning for Channel 27",
+      "Rota Radio is asking all ships to report any gale-warning information to it",
+      "Rota Radio is ready to receive gale warnings from vessels on Channel 27",
+    ],
+    explanation:
+      "A coast station addresses ALL STATIONS on Channel 16 to announce maritime safety information, then names the working channel where the full message will follow — here Channel 27. The broadcast therefore tells every vessel: a gale warning is coming, switch to Channel 27 to hear it. The announcement flows from coast station to ships (a one-way broadcast of safety information); it is not a ship querying the coast station, nor a request for vessels to send in weather reports. Listening ships simply tune to Channel 27 for the warning.",
+  },
+  // REVIEW: seeded — verify before exam use
+  {
+    id: "theory-vhf-25",
+    topic: "VHF",
+    prompt:
+      'In radiotelephony, how is "DSC20" spelled out using the standard phonetic alphabet and figure-spelling?',
+    correctAnswer: "DELTA SIERRA CHARLIE BISSOTWO NADAZERO",
+    distractors: [
+      "DELTA SENSOR CHARLIE BISSOTWO NADAZERO",
+      "DIGITAL SIERRA CHARLIE BISSOTWO NADAZERO",
+      "DELTA SIERRA CHARLIE BISSOTWO ZERO",
+    ],
+    explanation:
+      'Each letter is given its NATO phonetic word — D = DELTA, S = SIERRA, C = CHARLIE — and each figure its ITU maritime figure-spelling, in which 2 is BISSOTWO and 0 is NADAZERO. So DSC20 becomes DELTA SIERRA CHARLIE BISSOTWO NADAZERO. The traps substitute non-standard words: there is no "SENSOR" or "DIGITAL" in the phonetic alphabet (S is always SIERRA, D always DELTA), and figures must consistently use the ITU forms — spelling the 2 as BISSOTWO but lapsing into a plain "ZERO" for the 0 is wrong, because 0 is NADAZERO.',
+  },
+  // REVIEW: seeded — verify before exam use
+  {
+    id: "theory-vhf-26",
+    topic: "VHF",
+    prompt:
+      "Which statement about a portable (handheld) VHF radiotelephone for a life raft is NOT correct?",
+    correctAnswer:
+      "It operates in simplex on 156.525 MHz (Channel 70), plus at least one other channel",
+    distractors: [
+      "It must be waterproof to a depth of 1 metre for at least 5 minutes",
+      "It has a minimum effective radiated power of 0.25 W",
+      "It must operate on Channel 16 and at least one additional channel",
+    ],
+    explanation:
+      "The incorrect statement is the frequency. A survival-craft handheld is a voice radiotelephone working on Channel 16 (156.800 MHz) and at least one other channel — not Channel 70. 156.525 MHz / Channel 70 is the DSC channel, on which voice is prohibited, so it can never be the handheld's working frequency. The other three are all genuine GMDSS requirements: waterproof to 1 m for 5 minutes, a minimum power of 0.25 W, and operation on Channel 16 plus at least one working channel.",
+  },
+  // REVIEW: seeded — verify before exam use
+  {
+    id: "theory-vhf-27",
+    topic: "VHF",
+    prompt:
+      "You have accidentally transmitted a false DSC distress alert on VHF. After stopping the repeat transmissions, what must you do?",
+    correctAnswer:
+      "Prepare a voice cancellation message and transmit it on Channel 16 to all stations",
+    distractors: [
+      "Send a second DSC distress-cancellation on Channel 70",
+      "Transmit a voice cancellation on Channel 13",
+      "Transmit a voice cancellation on Channel 24",
+    ],
+    explanation:
+      "After a false DSC distress alert, stop the automatic repeats (use the distress-cancel function, or switch the set off and back on), then broadcast a voice cancellation on Channel 16 — the distress and calling channel — addressed to all stations, giving your vessel name, MMSI, the time of the false alert, and a request to cancel it. The cancellation is made by voice on Channel 16, not by another DSC transmission on Channel 70, and not on a working channel such as 13 or 24, where the stations that heard the alert are not listening.",
+  },
+  // REVIEW: seeded — verify before exam use
+  {
+    id: "theory-vhf-28",
+    topic: "VHF",
+    prompt:
+      "Urgency (PAN PAN) traffic has the second-highest priority, below distress. Of the situations below, which would be sent with that second priority? (1) A vessel has lost steering and requires towing. (2) A crew member needs urgent medical advice. (3) A coast station is broadcasting a gale warning.",
+    correctAnswer: "Situations 1 and 2",
+    distractors: ["Situation 1 only", "Situations 1, 2 and 3", "Situation 3 only"],
+    explanation:
+      "Urgency (PAN PAN) covers a serious situation concerning a vessel or person that is not yet grave and imminent danger. A vessel disabled by loss of steering and needing a tow (1) and a crew member needing urgent medical advice — a PAN PAN MEDICO (2) — both qualify. A gale warning (3) is a safety message (SÉCURITÉ), the third priority, not urgency. The order is: distress first, urgency second, safety third, routine last.",
+  },
+  // REVIEW: seeded — verify before exam use
+  {
+    id: "theory-vhf-29",
+    topic: "VHF",
+    prompt:
+      "Which of these are Safety (SÉCURITÉ) messages? (1) A meteorological warning. (2) A navigational warning. (3) A man-overboard alert.",
+    correctAnswer: "Messages 1 and 2",
+    distractors: ["Message 1 only", "Messages 1, 2 and 3", "Message 3 only"],
+    explanation:
+      "Safety (SÉCURITÉ) traffic carries navigational and meteorological warnings for the awareness of shipping — so a meteorological warning (1) and a navigational warning (2) are both safety messages. A man-overboard (3) is a life-threatening emergency: it is distress (MAYDAY), or at least urgency (PAN PAN), never a mere safety broadcast. Safety is the third priority, below distress and urgency.",
+  },
+  // REVIEW: seeded — verify before exam use
+  {
+    id: "theory-vhf-30",
+    topic: "VHF",
+    prompt:
+      'Your vessel "Andrea" is calling Haifa Radio on Channel 16 to place two radiotelephone calls. Which is the correct initial call?',
+    correctAnswer:
+      '"Haifa Radio, Haifa Radio, Haifa Radio — this is Andrea, Andrea, Andrea — I have two R/T calls, please — Channel 26"',
+    distractors: [
+      '"Haifa Radio — this is Andrea, Andrea — I have two R/T calls, please — Channel 6"',
+      '"Haifa Radio, Haifa Radio, Haifa Radio — this is Andrea, Andrea, Andrea — I have two R/T calls, please — Channel 16"',
+      '"Haifa Radio, Haifa Radio — this is Andrea, Andrea, Andrea — I have two R/T calls, please — Channel 26"',
+    ],
+    explanation:
+      "An initial call uses the full format — the called station's name three times, THIS IS, then your own name three times — and nominates a working channel to move the traffic off Channel 16. Channel 26 is a public-correspondence working channel, so it is the correct nomination. The distractors each fail on one point: one uses the abbreviated format (names spoken too few times) for a first call; one nominates Channel 16 itself, which must be kept clear for distress and calling and never used for the R/T traffic; and one gives the called station's name only twice. Only the full three-times format with a proper working channel is correct.",
+  },
+  // REVIEW: seeded — verify before exam use
+  {
+    id: "theory-vhf-31",
+    topic: "VHF",
+    prompt:
+      "Once contact has been established with a station, what is the abbreviated (shortened) calling format?",
+    correctAnswer:
+      "The called station's name spoken once, then THIS IS and your own name spoken twice",
+    distractors: [
+      "The called station's name spoken twice, then THIS IS and your own name spoken once",
+      "Both station names spoken once, with no THIS IS",
+      "Both station names spoken three times, as in the initial call",
+    ],
+    explanation:
+      "After the first full exchange — when both stations have already identified each other — you switch to the abbreviated format to save air time: the called station's name once, THIS IS, then your own name twice. The full three-times-each format is reserved for the initial contact, before identities are established. The abbreviated form still keeps THIS IS and gives clear identification; it simply reduces the repetitions now that both stations know who is who.",
+  },
+  // REVIEW: seeded — verify before exam use
+  {
+    id: "theory-vhf-32",
+    topic: "VHF",
+    prompt:
+      "What is the correct order of communication priorities under the Radio Regulations, from highest to lowest?",
+    correctAnswer: "Distress, urgency, safety, routine",
+    distractors: [
+      "Vital, important, routine",
+      "Distress call, distress message, distress traffic",
+      "Activating DSC, activating EPIRB, activating SART",
+    ],
+    explanation:
+      'The Radio Regulations rank radiocommunications in four priority levels, highest first: distress (MAYDAY), urgency (PAN PAN), safety (SÉCURITÉ), then routine traffic. "Vital/important/routine" are the NAVTEX message-priority labels, a different scheme. "Distress call, message, traffic" are the three phases within a single distress, not the overall priority order. And listing distress equipment (DSC/EPIRB/SART) describes alerting devices, not communication priorities.',
+  },
+  // REVIEW: seeded — verify before exam use
+  {
+    id: "theory-vhf-33",
+    topic: "VHF",
+    prompt: "When are the details of a Transit Report (TR, voyage report) normally transmitted?",
+    correctAnswer: "Before entering and after leaving port",
+    distractors: [
+      "Every four hours throughout the voyage",
+      "Once a day at a fixed time",
+      "Only when directed by an RCC during a distress",
+    ],
+    explanation:
+      "A Transit Report gives coast stations a vessel's voyage details so authorities can track it and raise the alarm if it fails to arrive. It is sent at the key points of the passage — typically before entering and after leaving port (departure and arrival reporting) — not on a fixed four-hourly or daily clock, and not only during a distress. Many coastal states make such reporting mandatory in their waters.",
+  },
+  // REVIEW: seeded — verify before exam use
+  {
+    id: "theory-vhf-34",
+    topic: "VHF",
+    prompt:
+      "At the end of a transmission, which procedure word tells the other station that you expect a reply?",
+    correctAnswer: '"OVER"',
+    distractors: ['"OUT"', '"STAND BY"', '"RECEIVED"'],
+    explanation:
+      '"OVER" means: my transmission is finished and I expect a reply from you — it hands the exchange back to the other station. "OUT" is its opposite: the communication is finished and no reply is expected (and the two are never used together). "STAND BY" asks the other station to wait, and "RECEIVED" (or ROGER) merely acknowledges that a message was heard. Only OVER invites the other station to respond.',
+  },
 
   // ── MMSI ── seeded from modules/4/lesson-1.json (MMSI and Call Signs) ─────
   // REVIEW: seeded — verify before exam use
