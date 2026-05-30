@@ -888,4 +888,52 @@ export const THEORY_QUESTIONS: readonly TheoryQuestion[] = [
     explanation:
       "An AIS-EPIRB transmits an AIS identity beginning with 974. The neighbouring device prefixes are 970 for an AIS-SART and 972 for an AIS man-overboard (MOB) device; 111 identifies a SAR aircraft.",
   },
+
+  // REVIEW: seeded — verify before exam use
+  {
+    id: "theory-mmsi-6",
+    topic: "MMSI",
+    prompt: "What does the abbreviation AIS stand for?",
+    correctAnswer: "Automatic Identification System",
+    distractors: [
+      "Automatic Information System",
+      "Auto Insert Signal",
+      "Automated Inter-ship Service",
+    ],
+    explanation:
+      'AIS is the Automatic Identification System — each vessel automatically and continuously broadcasts its identity (MMSI and name), position, course, speed and voyage data, and receives the same from others. The classic trap is "Automatic Information System": close but wrong — it is identification, not information. AIS underlies the AIS-SART and EPIRB-AIS locating devices.',
+  },
+  // REVIEW: seeded — verify before exam use
+  {
+    id: "theory-mmsi-7",
+    topic: "MMSI",
+    prompt:
+      "Israel has the Maritime Identification Digit (MID) 428. Which of these is a valid MMSI for a group of Israeli vessels (a fleet call)?",
+    correctAnswer: "042811111",
+    distractors: ["004280111", "428011111", "041111428"],
+    explanation:
+      "A group (fleet) call MMSI has the form 0MIDxxxxx — a single leading zero, then the MID, then five more digits: 0-428-11111 = 042811111. The distractors each misplace something. 004280111 begins with 00, which marks a coast station, not a group. 428011111 starts with the MID itself (positions 1-3), so it is an individual ship station. 041111428 keeps the leading-zero group shape but puts the digits 428 at the end instead of straight after the zero — the MID must immediately follow any prefix zeros. Read the leading digits (00 = coast, single 0 = group, non-zero = ship), then the MID right after them, and only 042811111 fits.",
+  },
+  // REVIEW: seeded — verify before exam use
+  {
+    id: "theory-mmsi-8",
+    topic: "MMSI",
+    prompt:
+      "A ship station has the MMSI 234280482. What is its Maritime Identification Digit (MID)?",
+    correctAnswer: "234",
+    distractors: ["428", "482", "342"],
+    explanation:
+      "For a ship station the MID is simply the first three digits of the nine-digit MMSI — here 234. (A non-zero first digit confirms an ordinary ship station, with the MID in positions 1-3.) The distractors are digit-shuffles: 482 reuses the last three digits, 428 is the well-known Israel MID, and 342 rearranges the first three. Only the leading three, read in order, give the country code.",
+  },
+  // REVIEW: seeded — verify before exam use
+  {
+    id: "theory-mmsi-9",
+    topic: "MMSI",
+    prompt:
+      "Which shipboard installation lets you view the identification and voyage details (name, course, speed, destination) of other vessels around you?",
+    correctAnswer: "AIS (Automatic Identification System)",
+    distractors: ["NAVTEX", "EPIRB", "SART"],
+    explanation:
+      "AIS continuously exchanges identification and voyage data between vessels — each ship transmits its MMSI, name, position, course, speed, and often destination and ETA, shown on a display or chart plotter. NAVTEX only receives broadcast maritime safety information and tells you nothing about specific nearby ships; an EPIRB is a one-way distress beacon; a SART is a radar or AIS locating responder for survival craft. None of those three show other vessels' voyage details.",
+  },
 ];
