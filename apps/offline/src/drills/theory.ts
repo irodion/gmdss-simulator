@@ -316,6 +316,44 @@ export const THEORY_QUESTIONS: readonly TheoryQuestion[] = [
       "All three are correct. (1) A NAVTEX station reaches roughly 400 NM, far beyond the 30-50 NM line-of-sight range of a coastal VHF station. (2) NAVTEX uses the MF band; at night, sky-wave propagation extends its range substantially — roughly double the daytime ground-wave coverage. This is why two stations sharing the same B1 identifier must lie about 800 NM apart and time-share their broadcasts. (3) The world is divided into 21 geographical areas called NAVAREAs, each with a NAVAREA coordinator who promulgates navigational warnings.",
   },
 
+  // REVIEW: seeded — verify before exam use
+  {
+    id: "theory-navtex-12",
+    topic: "NAVTEX",
+    prompt:
+      "A NAVTEX receiver will reject (not print) an incoming message when: (1) the message has already been received before; (2) its message-type character (B2) has been programmed for rejection by the operator; (3) its transmitting-station character (B1) has been programmed for rejection by the operator. In which of these cases is the message rejected?",
+    correctAnswer: "In all three cases",
+    distractors: ["Only in cases 1 and 2", "Only in case 1", "Only in cases 2 and 3"],
+    explanation:
+      "Rejected in all three. (1) The receiver stores recently received messages and automatically discards duplicates. (2) The operator can program out whole message-type categories (the B2 character) that are not relevant — though the safety types A, B, D and L can never be rejected. (3) The operator can likewise deselect individual transmitting stations (the B1 character) outside the vessel's area. A message escapes rejection only when it is new, from a selected station, of a selected type — or carries serial number 00 (VITAL), which is always printed.",
+  },
+  // REVIEW: seeded — verify before exam use
+  {
+    id: "theory-navtex-13",
+    topic: "NAVTEX",
+    prompt: 'Under what conditions will messages from NAVTEX station "P" be received and printed?',
+    correctAnswer:
+      "If station P is selected in the receiver's programming, or if the message carries serial number 00",
+    distractors: [
+      "Only while a daily receiver self-test routine is running",
+      "Only if the message's identification code is already stored in memory",
+      'Only if the receiver is set to "Individual" rather than "All stations"',
+    ],
+    explanation:
+      'A NAVTEX receiver prints a station\'s messages when that station\'s B1 character — here "P" — is among those selected in its programming. In addition, any message numbered 00 (serial B3B4 = 00) is a VITAL message: it is always printed regardless of receiver settings, even from a station the operator has deselected. A message whose identification code is already stored is the opposite case — it would be rejected as a duplicate; and NAVTEX has no "Individual/All stations" selection (that is a DSC concept).',
+  },
+  // REVIEW: seeded — verify before exam use
+  {
+    id: "theory-navtex-14",
+    topic: "NAVTEX",
+    prompt:
+      "A NAVTEX receiver is programmed to receive four stations. How many reception cycles will it receive from those stations in one day?",
+    correctAnswer: "24",
+    distractors: ["4", "16", "21"],
+    explanation:
+      "Each NAVTEX station transmits on its fixed schedule once every four hours — six times in a 24-hour day. With four stations selected, the receiver therefore sees 4 × 6 = 24 broadcast cycles per day. The distractor 4 is merely the number of stations; 21 is the number of NAVAREAs (a different fact entirely); 16 corresponds to no NAVTEX figure.",
+  },
+
   // ── Channels ── seeded from drills/channels.ts ───────────────────────────
   // REVIEW: seeded — verify before exam use
   {
