@@ -273,6 +273,24 @@
       }
     },
     {
+      "id": "distress-relay-dsc-passenger-mediterranean-star",
+      "priority": "mayday",
+      "rubricId": "v1/distress-relay-dsc",
+      "brief": "You are MV Carmel Trader (MMSI: *********), a few miles from the passenger ship Mediterranean Star. A major fire on her bridge has destroyed her main radio installation — she cannot transmit her own distress alert. Survivors in her liferafts reach you on a portable VHF: 240 persons on board, position 32°48'N 034°58'E, and no station has answered. They ask you to relay their MAYDAY. Address the relay to All Stations.",
+      "facts": {
+        "vessel": "Carmel Trader",
+        "callsign": "MMSI 428 246 800",
+        "addressee": "All Stations",
+        "relayedVessel": "Mediterranean Star",
+        "relayedMmsi": "MMSI 428 612 345",
+        "relayedPosition": "32°48'N 034°58'E",
+        "relayedNature": "Major fire on the bridge, main radio destroyed",
+        "relayedAssistance": "Require immediate assistance",
+        "relayedPersons": "240 persons on board",
+        "natureCode": "nature_undesignated"
+      }
+    },
+    {
       "id": "distress-ack-yacht-tami-vered",
       "priority": "mayday",
       "rubricId": "v1/distress-ack",

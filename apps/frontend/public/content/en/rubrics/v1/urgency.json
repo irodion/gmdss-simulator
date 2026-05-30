@@ -70,8 +70,14 @@
   "sequenceParts": [
     {
       "id": "procedure",
-      "label": "PAN-PAN procedure",
+      "label": "PAN-PAN procedure (DSC + Ch 16 voice call)",
       "items": [
+        { "id": "dsc_channel70", "label": "DSC: Channel 70" },
+        { "id": "dsc_urgency_category", "label": "DSC: category Urgency" },
+        { "id": "dsc_addressee_all_stations", "label": "DSC: All Ships call" },
+        { "id": "dsc_time_position", "label": "DSC: confirm time and position" },
+        { "id": "dsc_send_urgency", "label": "DSC: send urgency alert" },
+        { "id": "dsc_channel16", "label": "Radio: Channel 16, High" },
         { "id": "pan_pan", "label": "PAN-PAN" },
         { "id": "pan_pan", "label": "PAN-PAN" },
         { "id": "pan_pan", "label": "PAN-PAN" },
@@ -91,6 +97,18 @@
     "requiredChannel": 16,
     "blockChannel70Voice": true
   },
+  "dscRules": {
+    "required": true,
+    "beforeFirstVoiceTurn": true
+  },
+  "channelPowerDecoys": [
+    { "id": "decoy_dsc_ch72_high", "label": "DSC: Channel 72, High" },
+    { "id": "decoy_dsc_ch77_high", "label": "DSC: Channel 77, High" },
+    { "id": "decoy_dsc_ch16_high", "label": "DSC: Channel 16, High" },
+    { "id": "decoy_radio_ch70_high", "label": "Radio: Channel 70, High" },
+    { "id": "decoy_radio_ch16_low", "label": "Radio: Channel 16, Low 1W" },
+    { "id": "decoy_dsc_ch70_10w", "label": "DSC: Channel 70, High 10W" }
+  ],
   "callsignDecoys": [
     { "id": "decoy_mmsi_coast_002411000", "label": "MMSI 002 411 000" },
     { "id": "decoy_mmsi_coast_002111500", "label": "MMSI 002 111 500" },
