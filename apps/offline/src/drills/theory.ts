@@ -369,6 +369,17 @@ export const THEORY_QUESTIONS: readonly TheoryQuestion[] = [
     explanation:
       "Each NAVTEX station transmits on its fixed schedule once every four hours — six times in a 24-hour day. With four stations selected, the receiver therefore sees 4 × 6 = 24 broadcast cycles per day. The distractor 4 is merely the number of stations; 21 is the number of NAVAREAs (a different fact entirely); 16 corresponds to no NAVTEX figure.",
   },
+  // REVIEW: seeded — verify before exam use
+  {
+    id: "theory-navtex-15",
+    topic: "NAVTEX",
+    prompt:
+      'A NAVTEX message is received from coast station "N", carrying a navigational warning with serial number 23. Which message identification code (B1B2B3B4) identifies it?',
+    correctAnswer: "NA23",
+    distractors: ["AN23", "NNNN", "NANA"],
+    explanation:
+      'Every NAVTEX message carries a four-character identifier B1B2B3B4. B1 is the transmitting station\'s letter (here N), B2 is the subject/message-type letter (A = navigational warning), and B3B4 are the two-digit serial number (23). Read in that order the code is NA23. AN23 reverses the station and subject letters; "NNNN" is the end-of-message signal that closes a NAVTEX/telex transmission, not an identifier; and NANA is not a valid code at all.',
+  },
 
   // ── Channels ── seeded from drills/channels.ts ───────────────────────────
   // REVIEW: seeded — verify before exam use
@@ -1093,6 +1104,37 @@ export const THEORY_QUESTIONS: readonly TheoryQuestion[] = [
     distractors: ['"OUT"', '"STAND BY"', '"RECEIVED"'],
     explanation:
       '"OVER" means: my transmission is finished and I expect a reply from you — it hands the exchange back to the other station. "OUT" is its opposite: the communication is finished and no reply is expected (and the two are never used together). "STAND BY" asks the other station to wait, and "RECEIVED" (or ROGER) merely acknowledges that a message was heard. Only OVER invites the other station to respond.',
+  },
+  // REVIEW: seeded — verify before exam use
+  {
+    id: "theory-vhf-35",
+    topic: "VHF",
+    prompt:
+      'In distress traffic, a station acknowledges a distress message by transmitting "RECEIVED MAYDAY". What does that acknowledgement mean?',
+    correctAnswer: "I have received your distress message and I am listening to you",
+    distractors: [
+      "I have received your distress message and I am proceeding immediately to assist you",
+      "I have received your distress message and I am about to summon additional help",
+      "I have received your distress message and I have taken over control of the distress traffic",
+    ],
+    explanation:
+      "RECEIVED MAYDAY — sent as MAYDAY, the distressed vessel's name three times, THIS IS, your own name three times, then RECEIVED MAYDAY — simply acknowledges that the distress message has been received and understood, and that the acknowledging station is now listening. It does not by itself state that the station is proceeding to assist, summoning further help, or controlling the traffic; those are separate actions and messages. Control of distress traffic is imposed with the proword SEELONCE MAYDAY by the station in distress or the station coordinating the rescue, not by the act of acknowledging.",
+  },
+  // REVIEW: seeded — verify before exam use
+  {
+    id: "theory-vhf-36",
+    topic: "VHF",
+    prompt:
+      "A survival craft's portable VHF radiotelephone has a limited battery. If no acknowledgement to the distress call has been received, when should it normally be switched on to transmit?",
+    correctAnswer:
+      "When the SART is triggered by a nearby radar, or a vessel or aircraft is sighted — when rescuers are within VHF range",
+    distractors: [
+      "Immediately on boarding the life raft, transmitting continuously to maximise the chance of being heard",
+      "Only once an EPIRB alert signal has been received",
+      "As soon as the raft is taken out of standby mode",
+    ],
+    explanation:
+      "The survival-craft handheld VHF has a small battery and only line-of-sight range, so transmitting before any rescuer is within range merely drains it for nothing. The correct practice is to keep it off and conserve power until help is near — when the SART begins to be interrogated by an approaching radar, or you actually sight a ship or aircraft — and only then make voice contact on Channel 16. Transmitting continuously from the moment you board, or in response to some unrelated EPIRB signal, wastes the limited battery you will need when rescuers finally arrive.",
   },
 
   // ── MMSI ── seeded from modules/4/lesson-1.json (MMSI and Call Signs) ─────
