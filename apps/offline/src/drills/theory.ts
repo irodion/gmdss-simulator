@@ -426,6 +426,45 @@ export const THEORY_QUESTIONS: readonly TheoryQuestion[] = [
     explanation:
       "Bridge-to-bridge communication is one of the GMDSS functional requirements. On VHF it uses Channel 13, and its purpose is navigation safety: the watch officers of two vessels speak directly, bridge to bridge, to agree how they will pass, overtake, or manoeuvre clear of one another. It matters most in congested waterways, near bridges, and in port approaches, where many states make monitoring Channel 13 mandatory. It is not a search-and-rescue channel (Ch 06), a port-operations channel (Ch 12/14), or a channel for routine chatter.",
   },
+  // REVIEW: seeded — verify before exam use
+  {
+    id: "theory-channels-7",
+    topic: "Channels",
+    prompt: "When must a radiotelephone-fitted vessel keep watch on VHF Channel 13 while at sea?",
+    correctAnswer: "Whenever possible — typically by keeping a Dual Watch with Channel 16",
+    distractors: [
+      "There is no need; a coast station's continuous watch is sufficient",
+      "Continuously, 24 hours a day, as a mandatory replacement for the Channel 16 watch",
+      "Only for 8 hours a day, during daylight",
+    ],
+    explanation:
+      "Channel 13 is the worldwide bridge-to-bridge navigation-safety channel, used to arrange safe passing and manoeuvring. A vessel should monitor it whenever possible so other ships can reach it for navigation safety — most conveniently by running a Dual Watch that listens to Channel 13 alongside the distress and calling watch on Channel 16. It does not replace the Channel 16 watch, a coast station's watch does not relieve the ship of it, and it is not a fixed 8-hour daylight duty.",
+  },
+  // REVIEW: seeded — verify before exam use
+  {
+    id: "theory-channels-8",
+    topic: "Channels",
+    prompt: "What is the purpose of VHF Channel 16?",
+    correctAnswer: "The distress, urgency, safety, and calling channel for radiotelephony (voice)",
+    distractors: [
+      "The DSC channel for distress, urgency, and safety alerts",
+      "A channel that replaces Channel 70 in the GMDSS system",
+      "A channel dedicated to NAVTEX and weather broadcasts",
+    ],
+    explanation:
+      "Channel 16 (156.800 MHz) is the international VHF voice channel for distress, urgency, safety and calling — where a spoken MAYDAY, PAN PAN or SÉCURITÉ is made and stations make initial contact before moving to a working channel. The trap is the DSC role: digital distress alerts go on Channel 70, not 16 — the two are complementary, not interchangeable, and neither replaces the other. NAVTEX is a separate MF service on 518 kHz, not a VHF channel.",
+  },
+  // REVIEW: seeded — verify before exam use
+  {
+    id: "theory-channels-9",
+    topic: "Channels",
+    prompt:
+      "Which equipment is used to send distress alerts and routine calls to a specific station, a group, or all stations?",
+    correctAnswer: "A DSC (Digital Selective Calling) controller",
+    distractors: ["A NAVTEX receiver", "A GPS receiver", "A scanning watch receiver"],
+    explanation:
+      "Digital Selective Calling (DSC) sends a short coded digital call addressed to one specific station (by its MMSI), to a group, or to all stations — for distress, urgency, safety or routine purposes. The DSC controller is the equipment that composes and sends those calls (on VHF Channel 70). A NAVTEX receiver only receives broadcast safety information and cannot call anyone; a GPS receiver only supplies position; and a scanning watch receiver merely listens across DSC channels for incoming alerts — it does not originate calls.",
+  },
 
   // ── SART ── seeded from modules/6/lesson-4.json (SART and AIS-SART) ───────
   // REVIEW: seeded — verify before exam use
