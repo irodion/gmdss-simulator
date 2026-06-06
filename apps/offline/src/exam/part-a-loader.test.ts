@@ -66,17 +66,18 @@ describe("scoreExam", () => {
 });
 
 describe("loadExamIndex / loadItemBank", () => {
-  test("fetches and returns parsed JSON", async () => {
+  test("fetches the exam index from the expected URL and returns parsed JSON", async () => {
     const payload = { version: 1, exams: [] };
-    vi.stubGlobal(
-      "fetch",
-      vi.fn().mockResolvedValue({ ok: true, json: () => Promise.resolve(payload) }),
-    );
+    const fetchMock = vi.fn().mockResolvedValue({ ok: true, json: () => Promise.resolve(payload) });
+    vi.stubGlobal("fetch", fetchMock);
     expect(await loadExamIndex()).toEqual(payload);
+    expect(fetchMock).toHaveBeenCalledWith("/content/en/exams/exams-index.json");
   });
 
-  test("throws on a non-ok response", async () => {
-    vi.stubGlobal("fetch", vi.fn().mockResolvedValue({ ok: false, status: 404 }));
+  test("throws on a non-ok response and requests the item-bank URL", async () => {
+    const fetchMock = vi.fn().mockResolvedValue({ ok: false, status: 404 });
+    vi.stubGlobal("fetch", fetchMock);
     await expect(loadItemBank()).rejects.toThrow("Failed to load");
+    expect(fetchMock).toHaveBeenCalledWith("/content/en/exams/item-bank.json");
   });
 });
