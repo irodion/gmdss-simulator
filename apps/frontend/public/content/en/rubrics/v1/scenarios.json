@@ -395,6 +395,20 @@
         "callsign": "MMSI 428 150 052",
         "distressVessel": "Pacific"
       }
+    },
+    {
+      "id": "routine-tr-sea-sprite-haifa-radio",
+      "priority": "routine",
+      "rubricId": "v1/routine-tr",
+      "brief": "You are SY Sea Sprite (MMSI 428 070 555), authorised for Area A1 and fitted to GMDSS requirements. You have just sailed from Haifa bound for Limassol with 8 persons on board, ETA 0600 UTC tomorrow. Haifa Radio asks departing vessels to report their voyage so they can be tracked and a search launched if they fail to arrive. Position 32°49'N 035°00'E. Make the call to Haifa Radio.",
+      "facts": {
+        "vessel": "Sea Sprite",
+        "callsign": "MMSI 428 070 555",
+        "addressee": "Haifa Radio",
+        "position": "32°49'N 035°00'E",
+        "voyage": "Bound Haifa to Limassol, ETA 0600 UTC tomorrow",
+        "persons": "8 persons on board"
+      }
     }
   ]
 }

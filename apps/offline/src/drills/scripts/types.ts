@@ -2,8 +2,15 @@ import type { RubricDefinition } from "@gmdss-simulator/utils";
 
 export type ScriptDrillMode = "scenario";
 
-export type PriorityId = "mayday" | "pan_pan" | "securite";
+export type PriorityId = "mayday" | "pan_pan" | "securite" | "routine";
 
+/**
+ * The three radiotelephony signal-word priorities. `routine` is a valid
+ * scenario priority (e.g. a Transit Report) but carries no spoken signal word,
+ * so it is deliberately excluded here: `PRIORITY_IDS` drives the priority-chip
+ * pool and the decoy openings, and a routine call must offer none of its own —
+ * picking any signal word is the mistake the drill tests for.
+ */
 export const PRIORITY_IDS: readonly PriorityId[] = ["mayday", "pan_pan", "securite"];
 
 export function isPriorityItem(id: string): id is PriorityId {
@@ -74,6 +81,10 @@ const PROCEDURE_STEP_IDS = [
   "dsc_addressee_all_stations",
   "dsc_time_position",
   "dsc_send_urgency",
+  "dsc_routine_category",
+  "dsc_individual_call",
+  "dsc_working_channel",
+  "dsc_send_routine",
 ] as const;
 
 export function isProcedureItem(id: string): boolean {
@@ -173,6 +184,8 @@ export interface ScenarioFacts {
   readonly persons?: string;
   readonly sartAddressee?: string;
   readonly shipDescription?: string;
+  /** Routine Transit Report (TR): voyage line — departure/destination and ETA. */
+  readonly voyage?: string;
   readonly addresseeRcc?: string;
   readonly actionRequest?: string;
   readonly natureCode?: NatureCode;
