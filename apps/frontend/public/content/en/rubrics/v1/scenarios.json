@@ -134,6 +134,22 @@
       }
     },
     {
+      "id": "distress-fire-abandon-aviva",
+      "priority": "mayday",
+      "rubricId": "v1/distress",
+      "requiresAbandon": true,
+      "brief": "You are the vessel Aviva (MMSI 428 555 044), authorised for Area A1 and fitted to GMDSS requirements. West of Ashdod a fire has broken out on board and the vessel and her 10 crew are in danger. The skipper has not ordered abandonment, but you must get help immediately and be ready to abandon to the liferaft if she has to be left. Position 31°48'N 034°33'E.",
+      "facts": {
+        "vessel": "Aviva",
+        "callsign": "MMSI 428 555 044",
+        "position": "31°48'N 034°33'E",
+        "nature": "Fire on board, in danger of sinking",
+        "assistance": "I require immediate assistance",
+        "persons": "10 persons on board",
+        "natureCode": "nature_fire"
+      }
+    },
+    {
       "id": "distress-mob-tabor",
       "priority": "mayday",
       "rubricId": "v1/distress-mob",

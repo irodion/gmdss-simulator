@@ -1197,6 +1197,37 @@ export const THEORY_QUESTIONS: readonly TheoryQuestion[] = [
     explanation:
       'To "spell" a word on the radio means to send it letter by letter using the standard phonetic alphabet (Alfa, Bravo, Charlie …), so a name or word that is hard to hear is received without error. It is not merely repeating the word, it is not Morse code, and it is not a request for the call sign or MMSI — those identify the station but do not spell out the name asked for.',
   },
+  // REVIEW: seeded — verify before exam use
+  {
+    id: "theory-vhf-39",
+    topic: "VHF",
+    prompt:
+      'On the radio, a station tells you to "STAND BY" on the channel. What are you being asked to do?',
+    correctAnswer:
+      "Wait and keep listening on the channel — do not transmit; I will call you again shortly",
+    distractors: [
+      "Switch off your radio until the agreed time of the next scheduled call",
+      "Repeat your last message, because it was not received",
+      "Change immediately to the working channel and call again there",
+    ],
+    explanation:
+      "STAND BY tells the other station to wait and remain listening on the channel: the calling station is busy or needs a moment and will resume shortly, so you neither transmit nor leave the frequency. It does not mean switch the set off, repeat your message (that request is SAY AGAIN), or change to another channel.",
+  },
+  // REVIEW: seeded — verify before exam use
+  {
+    id: "theory-vhf-40",
+    topic: "VHF",
+    prompt: "In a search-and-rescue operation, what is the On-Scene Coordinator (OSC)?",
+    correctAnswer:
+      "The unit designated to coordinate the rescue craft working in the distress area on scene",
+    distractors: [
+      "The shore Rescue Coordination Centre that first receives and directs the distress alert",
+      "The Cospas-Sarsat ground station that computes the distress beacon's position",
+      "The vessel originally in distress, which controls the distress radio traffic",
+    ],
+    explanation:
+      "The On-Scene Coordinator (OSC) is the unit — often a nearby ship or a SAR aircraft — designated to coordinate the search-and-rescue craft actually working in the distress area, acting for and under the Rescue Coordination Centre (RCC). It is not the shore RCC that runs the operation overall, not a Cospas-Sarsat LUT that fixes the beacon position, and not the distressed vessel itself — which may impose radio silence with SEELONCE MAYDAY but does not coordinate the on-scene units.",
+  },
 
   // ── MMSI ── seeded from modules/4/lesson-1.json (MMSI and Call Signs) ─────
   // REVIEW: seeded — verify before exam use
