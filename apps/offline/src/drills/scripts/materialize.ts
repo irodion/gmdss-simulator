@@ -285,6 +285,8 @@ function inferPriorityFromCategory(category: RubricDefinition["category"]): Prio
       return "pan_pan";
     case "safety":
       return "securite";
+    case "routine":
+      return "routine";
     default:
       return "mayday";
   }
