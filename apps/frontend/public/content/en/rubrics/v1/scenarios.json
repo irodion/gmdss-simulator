@@ -99,6 +99,24 @@
       }
     },
     {
+      "id": "distress-fallen-mast-jasmin",
+      "priority": "mayday",
+      "rubricId": "v1/distress",
+      "requiresSpareAntenna": true,
+      "requiresAbandon": true,
+      "brief": "You are SY Jasmin (MMSI 428 070 371), authorised for Area A1 and fitted to GMDSS requirements. In a heavy, rough sea the mast has come down and is over the side with rigging in the water; the yacht is uncontrollable and in danger of sinking. 11 persons on board, position 34°41'N 034°11'E. Make the distress call — be ready to abandon to the liferaft if she goes down.",
+      "facts": {
+        "vessel": "Jasmin",
+        "callsign": "MMSI 428 070 371",
+        "position": "34°41'N 034°11'E",
+        "nature": "Dismasted, disabled and drifting, in danger of sinking",
+        "assistance": "I require immediate assistance",
+        "persons": "11 persons on board",
+        "natureCode": "nature_disabled",
+        "acceptableNatureCodes": ["nature_undesignated"]
+      }
+    },
+    {
       "id": "urgency-engine-failure-red-fox",
       "priority": "pan_pan",
       "rubricId": "v1/urgency",
