@@ -117,6 +117,23 @@
       }
     },
     {
+      "id": "distress-grounding-amalia",
+      "priority": "mayday",
+      "rubricId": "v1/distress",
+      "requiresAbandon": true,
+      "brief": "You are the vessel Amalia (MMSI 234 555 044), authorised for Area A1 and fitted to GMDSS requirements. Leaving the Strait of Gibraltar westbound at 00:40 local time, she has struck a submerged rock; water is coming in and the vessel and her 6 crew are in danger. The skipper orders you to get help immediately — be ready to abandon to the liferaft if she goes down. Position 36°20'N 006°24'W.",
+      "facts": {
+        "vessel": "Amalia",
+        "callsign": "MMSI 234 555 044",
+        "position": "36°20'N 006°24'W",
+        "nature": "Grounded on a submerged reef, flooding and in danger of sinking",
+        "assistance": "I require immediate assistance",
+        "persons": "6 persons on board",
+        "natureCode": "nature_grounding",
+        "acceptableNatureCodes": ["nature_flooding"]
+      }
+    },
+    {
       "id": "distress-mob-tabor",
       "priority": "mayday",
       "rubricId": "v1/distress-mob",

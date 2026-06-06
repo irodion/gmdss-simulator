@@ -380,6 +380,36 @@ export const THEORY_QUESTIONS: readonly TheoryQuestion[] = [
     explanation:
       'Every NAVTEX message carries a four-character identifier B1B2B3B4. B1 is the transmitting station\'s letter (here N), B2 is the subject/message-type letter (A = navigational warning), and B3B4 are the two-digit serial number (23). Read in that order the code is NA23. AN23 reverses the station and subject letters; "NNNN" is the end-of-message signal that closes a NAVTEX/telex transmission, not an identifier; and NANA is not a valid code at all.',
   },
+  // REVIEW: seeded — verify before exam use
+  {
+    id: "theory-navtex-16",
+    topic: "NAVTEX",
+    prompt: 'A maritime safety broadcast carries a "gale warning". What does that warn of?',
+    correctAnswer:
+      "That winds of gale force — Beaufort force 8 (34 knots) or more — are expected or already blowing",
+    distractors: [
+      "That hurricane-force winds have already struck and the storm has passed its peak",
+      "A routine weather forecast issued on a fixed schedule regardless of wind strength",
+      "That dangerously high waves from a distant earthquake are approaching the coast",
+    ],
+    explanation:
+      'A gale warning is a meteorological warning that mean winds of Beaufort force 8 (34–40 knots) or stronger are expected or occurring — one of the standard maritime safety information (MSI) weather messages broadcast by NAVTEX and radio. Storm- and hurricane-force winds are covered by separate, higher-grade warnings; an ordinary scheduled forecast is not a "warning"; and seismic sea waves are the subject of tsunami warnings, not gale warnings.',
+  },
+  // REVIEW: seeded — verify before exam use
+  {
+    id: "theory-navtex-17",
+    topic: "NAVTEX",
+    prompt: 'A navigational warning reports a "floating mine". What hazard is being described?',
+    correctAnswer:
+      "An explosive sea mine drifting freely on or near the surface, a danger to passing vessels",
+    distractors: [
+      "A mooring buoy that has broken loose from its anchor and is adrift",
+      "A submerged rock or wreck charted as a danger to navigation",
+      "A patch of floating debris or lost fishing gear that could foul a propeller",
+    ],
+    explanation:
+      "A floating mine is a drifting explosive sea mine — a serious hazard broadcast as a navigational warning so that vessels keep well clear and report any sighting to the authorities. It is not a runaway mooring buoy, not a fixed underwater obstruction such as a rock or wreck, and not ordinary floating debris, even though those may also be reported as hazards to navigation.",
+  },
 
   // ── Channels ── seeded from drills/channels.ts ───────────────────────────
   // REVIEW: seeded — verify before exam use
@@ -1135,6 +1165,37 @@ export const THEORY_QUESTIONS: readonly TheoryQuestion[] = [
     ],
     explanation:
       "The survival-craft handheld VHF has a small battery and only line-of-sight range, so transmitting before any rescuer is within range merely drains it for nothing. The correct practice is to keep it off and conserve power until help is near — when the SART begins to be interrogated by an approaching radar, or you actually sight a ship or aircraft — and only then make voice contact on Channel 16. Transmitting continuously from the moment you board, or in response to some unrelated EPIRB signal, wastes the limited battery you will need when rescuers finally arrive.",
+  },
+  // REVIEW: seeded — verify before exam use
+  {
+    id: "theory-vhf-37",
+    topic: "VHF",
+    prompt: 'In maritime radio traffic, what does the term "medical evacuation" (MEDEVAC) mean?',
+    correctAnswer:
+      "The physical removal of an injured or sick person from a vessel for treatment elsewhere",
+    distractors: [
+      "Radio advice from a doctor ashore on how to treat a patient who stays on board",
+      "The evacuation of the whole crew into the liferafts when abandoning ship",
+      "A scheduled drill in which the crew practises first aid and casualty handling",
+    ],
+    explanation:
+      "A medical evacuation (MEDEVAC) is the actual transfer of a casualty off the ship — typically by helicopter or rescue craft — so they can reach proper medical care. It is distinct from MEDICO / medical advice, where a doctor advises by radio while the patient remains aboard; from abandoning ship into liferafts; and from a training drill. The defining feature is that the patient physically leaves the vessel.",
+  },
+  // REVIEW: seeded — verify before exam use
+  {
+    id: "theory-vhf-38",
+    topic: "VHF",
+    prompt:
+      'During a radio exchange the other station asks you to "spell your name". What are you being asked to do?',
+    correctAnswer:
+      "Give the letters of the name one by one using the phonetic alphabet (Alfa, Bravo, Charlie …)",
+    distractors: [
+      "Repeat the name three times slowly so it can be written down",
+      "Transmit the name in Morse code, letter by letter",
+      "Give your vessel's call sign or MMSI in place of the name",
+    ],
+    explanation:
+      'To "spell" a word on the radio means to send it letter by letter using the standard phonetic alphabet (Alfa, Bravo, Charlie …), so a name or word that is hard to hear is received without error. It is not merely repeating the word, it is not Morse code, and it is not a request for the call sign or MMSI — those identify the station but do not spell out the name asked for.',
   },
 
   // ── MMSI ── seeded from modules/4/lesson-1.json (MMSI and Call Signs) ─────
