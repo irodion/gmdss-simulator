@@ -357,6 +357,24 @@
       }
     },
     {
+      "id": "distress-relay-dsc-passenger-pacific-horizon",
+      "priority": "mayday",
+      "rubricId": "v1/distress-relay-dsc",
+      "brief": "You are SY Horizon (MMSI 428 150 052), at the scene of the passenger ship Pacific (MMSI 209 221 000), which is on fire. A fire on her bridge has destroyed her radio installation — she cannot transmit her own distress alert. Her MAYDAY heard on Channel 16 gave: position 13°30'N 050°15'W, on fire, 365 persons on board, requiring immediate assistance, EPIRB activated. No station has acknowledged. Relay her MAYDAY. Address the relay to All Stations.",
+      "facts": {
+        "vessel": "Horizon",
+        "callsign": "MMSI 428 150 052",
+        "addressee": "All Stations",
+        "relayedVessel": "Pacific",
+        "relayedMmsi": "MMSI 209 221 000",
+        "relayedPosition": "13°30'N 050°15'W",
+        "relayedNature": "On fire, unable to operate radio equipment",
+        "relayedAssistance": "Require immediate assistance",
+        "relayedPersons": "365 persons on board",
+        "natureCode": "nature_undesignated"
+      }
+    },
+    {
       "id": "distress-ack-yacht-tami-vered",
       "priority": "mayday",
       "rubricId": "v1/distress-ack",
@@ -365,6 +383,17 @@
         "vessel": "Vered",
         "callsign": "MMSI 428 123 456",
         "distressVessel": "Tami"
+      }
+    },
+    {
+      "id": "distress-ack-passenger-pacific-horizon",
+      "priority": "mayday",
+      "rubricId": "v1/distress-ack",
+      "brief": "You are SY Horizon (MMSI 428 150 052), at the scene. On Channel 16 you hear a MAYDAY from the passenger ship Pacific (MMSI 209 221 000): position 13°30'N 050°15'W, on fire, 365 persons on board, EPIRB activated and unable to use her radio station. No coast station has acknowledged. Respond to the distress call.",
+      "facts": {
+        "vessel": "Horizon",
+        "callsign": "MMSI 428 150 052",
+        "distressVessel": "Pacific"
       }
     }
   ]
