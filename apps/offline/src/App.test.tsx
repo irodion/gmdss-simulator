@@ -71,6 +71,18 @@ describe("App", () => {
     expect(document.querySelector(".daily-indicator")).toBeNull();
   });
 
+  test("daily indicator hides on Mock Exam mode (adaptive enabled)", () => {
+    window.localStorage.clear();
+    // The exam panel fetches its bank on mount; stub it so switching tabs is clean.
+    vi.stubGlobal("fetch", vi.fn().mockRejectedValue(new Error("no network in test")));
+    render(<App />);
+    // Visible on the default (adaptive drill) mode…
+    expect(document.querySelector(".daily-indicator")).not.toBeNull();
+    // …and gone once Mock Exam — a non-adaptive mode — is selected.
+    fireEvent.click(screen.getByRole("tab", { name: "Mock Exam" }));
+    expect(document.querySelector(".daily-indicator")).toBeNull();
+  });
+
   test("Logbook is reachable from masthead and Back returns to config", () => {
     window.localStorage.clear();
     render(<App />);

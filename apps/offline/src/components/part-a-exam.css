@@ -1,0 +1,74 @@
+.part-a-intro {
+  font-family: var(--body);
+  color: var(--ink-soft);
+  font-size: 0.9rem;
+  margin: 0 0 16px;
+}
+
+/* Paper list reuses .proc-tiles / .proc-tile from app.css; only the
+   random-mock card gets a brass accent on top of the shared tile. */
+.part-a-paper--random {
+  border-color: var(--brass-deep);
+  background: var(--brass-glow);
+}
+
+.part-a-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.part-a-back {
+  background: none;
+  border: none;
+  color: var(--ink-soft);
+  font-family: var(--body);
+  cursor: pointer;
+  padding: 0;
+}
+
+.part-a-title {
+  flex: 1;
+  font-family: var(--display);
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.part-a-timer {
+  font-family: var(--mono);
+  font-weight: 600;
+  color: var(--ink);
+  border: 1px solid var(--ink-line);
+  border-radius: var(--radius-pill);
+  padding: 3px 12px;
+}
+
+.part-a-timer--low {
+  color: var(--coral);
+  border-color: var(--coral);
+}
+
+.part-a-questions {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.part-a-q {
+  border-top: 1px solid var(--ink-hair);
+  padding-top: 14px;
+}
+
+/* Pre-submit selection highlight (before correct/wrong states apply). */
+.part-a-choice[aria-pressed="true"][data-state="neutral"] {
+  border-color: var(--sea);
+  background: var(--sea-soft);
+}
+
+.part-a-note {
+  color: var(--coral);
+}
