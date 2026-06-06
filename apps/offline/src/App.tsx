@@ -10,6 +10,7 @@ import { ExamMockResults } from "./components/ExamMockResults.tsx";
 import { InstallChip } from "./components/InstallChip.tsx";
 import { Logbook } from "./components/Logbook.tsx";
 import { ModeTabs, type AppMode } from "./components/ModeTabs.tsx";
+import { PartAExamPanel } from "./components/PartAExamPanel.tsx";
 import { ProceduresPanel } from "./components/ProceduresPanel.tsx";
 import { SessionConfig } from "./components/SessionConfig.tsx";
 import { SessionResults } from "./components/SessionResults.tsx";
@@ -124,7 +125,8 @@ export function App() {
   const [examMockResults, setExamMockResults] = useState<DrillResult[]>([]);
   const lastPersistedExamResultsRef = useRef<DrillResult[] | null>(null);
 
-  const drillMode: DrillType | null = mode === "procedures" || mode === "theory" ? null : mode;
+  const drillMode: DrillType | null =
+    mode === "procedures" || mode === "theory" || mode === "exam" ? null : mode;
   const score = useMemo(() => (drillMode ? scorerFor(drillMode) : scoreDrill), [drillMode]);
 
   const preview = useMemo(() => {
@@ -306,7 +308,7 @@ export function App() {
                 }}
               />
 
-              {adaptiveEnabled && screen === "config" && mode !== "theory" ? (
+              {adaptiveEnabled && screen === "config" && mode !== "theory" && mode !== "exam" ? (
                 <DailyIndicator
                   streak={dailyProgress.streak.current}
                   itemsToday={todayCount(dailyProgress, Date.now()).adaptiveItems}
@@ -322,6 +324,8 @@ export function App() {
                 {mode === "theory" ? (
                   <TheoryPanel onSessionRecorded={refreshDailyProgress} />
                 ) : null}
+
+                {mode === "exam" ? <PartAExamPanel /> : null}
 
                 {drillMode && screen === "config" ? (
                   <>

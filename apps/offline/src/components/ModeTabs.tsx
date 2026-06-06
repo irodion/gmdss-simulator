@@ -1,6 +1,6 @@
 import type { DrillType } from "../drills/drill-types.ts";
 
-export type AppMode = DrillType | "procedures" | "theory";
+export type AppMode = DrillType | "procedures" | "theory" | "exam";
 
 interface ModeTabsProps {
   readonly mode: AppMode;
@@ -16,6 +16,7 @@ export const MODE_LABELS: Readonly<Record<AppMode, string>> = {
   abbreviation: "Abbreviations",
   channel: "Channels",
   theory: "Theory",
+  exam: "Mock Exam",
 };
 
 const TABS: ReadonlyArray<{ value: AppMode; numeral: string }> = [
@@ -26,6 +27,7 @@ const TABS: ReadonlyArray<{ value: AppMode; numeral: string }> = [
   { value: "abbreviation", numeral: "V" },
   { value: "channel", numeral: "VI" },
   { value: "theory", numeral: "VII" },
+  { value: "exam", numeral: "VIII" },
 ];
 
 export function ModeTabs({ mode, onChange }: ModeTabsProps) {
