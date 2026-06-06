@@ -1,0 +1,124 @@
+{
+  "id": "v1/routine-tr",
+  "version": "1.0.0",
+  "category": "routine",
+  "requiredFields": [
+    {
+      "id": "station_name",
+      "label": "Coast station called",
+      "patterns": ["RADIO|COAST\\s*GUARDS?|\\bRCC\\b|PORT\\s*CONTROL"],
+      "required": true
+    },
+    {
+      "id": "this_is",
+      "label": "THIS IS",
+      "patterns": ["THIS\\s+IS"],
+      "required": true
+    },
+    {
+      "id": "vessel_name",
+      "label": "Own vessel name",
+      "patterns": ["SEA\\s*SPRITE"],
+      "required": true
+    },
+    {
+      "id": "callsign",
+      "label": "Callsign or MMSI",
+      "patterns": ["\\b\\d{3}[\\s-]*\\d{3}[\\s-]*\\d{3}\\b|MMSI"],
+      "required": true
+    },
+    {
+      "id": "tr_keyword",
+      "label": "Transit Report keyword (TR)",
+      "patterns": ["TRANSIT\\s*REPORT|\\bTR\\b|TANGO\\s*ROMEO"],
+      "required": true
+    },
+    {
+      "id": "voyage",
+      "label": "Voyage details (from/to, ETA)",
+      "patterns": ["BOUND|FROM|TO|ETA|DEPART|DESTINATION"],
+      "required": true
+    },
+    {
+      "id": "position",
+      "label": "Position",
+      "patterns": [
+        "\\d+.*(?:NORTH|SOUTH|EAST|WEST|[NS]).*\\d+|(?:POSITION|LATITUDE|LONGITUDE)\\b(?=.*\\d)"
+      ],
+      "required": true
+    },
+    {
+      "id": "persons",
+      "label": "Persons on board",
+      "patterns": ["PERSON|PERSONS|POB|CREW|SOULS|ON\\s*BOARD"],
+      "required": true
+    }
+  ],
+  "prowordRules": [
+    { "id": "this_is", "label": "THIS IS", "pattern": "THIS\\s+IS" },
+    { "id": "over", "label": "OVER", "pattern": "\\bOVER\\b" }
+  ],
+  "sequenceRules": {
+    "fieldOrder": [
+      "station_name",
+      "this_is",
+      "vessel_name",
+      "callsign",
+      "tr_keyword",
+      "position",
+      "voyage",
+      "persons",
+      "over"
+    ]
+  },
+  "sequenceParts": [
+    {
+      "id": "dsc_call",
+      "label": "DSC routine call (Channel 70)",
+      "items": [
+        { "id": "dsc_channel70", "label": "DSC: Channel 70, High" },
+        { "id": "dsc_routine_category", "label": "DSC: category Routine" },
+        { "id": "dsc_individual_call", "label": "DSC: individual call to coast station MMSI" },
+        { "id": "dsc_working_channel", "label": "DSC: propose a working channel" },
+        { "id": "dsc_send_routine", "label": "DSC: send routine call" }
+      ]
+    },
+    {
+      "id": "voice_report",
+      "label": "Voice Transit Report (working channel)",
+      "items": [
+        { "id": "working_channel_switch", "label": "Switch to the nominated working channel" },
+        { "id": "addressee", "label": "Coast station name" },
+        { "id": "this_is", "label": "THIS IS" },
+        { "id": "vessel", "label": "Vessel name" },
+        { "id": "callsign", "label": "Callsign / MMSI" },
+        { "id": "tr_keyword", "label": "Transit Report (TR)" },
+        { "id": "position", "label": "Position" },
+        { "id": "tr_voyage", "label": "Voyage details (from/to, ETA)" },
+        { "id": "persons", "label": "Persons on board" },
+        { "id": "over", "label": "OVER" }
+      ]
+    }
+  ],
+  "channelRules": {
+    "requiredChannel": 26,
+    "blockChannel70Voice": true
+  },
+  "dscRules": {
+    "required": true,
+    "beforeFirstVoiceTurn": true
+  },
+  "channelPowerDecoys": [
+    { "id": "decoy_dsc_ch16_high", "label": "DSC: Channel 16, High" },
+    { "id": "decoy_dsc_ch72_high", "label": "DSC: Channel 72, High" },
+    { "id": "decoy_dsc_routine_distress", "label": "DSC: category Distress" },
+    { "id": "decoy_radio_ch70_high", "label": "Radio: Channel 70, High" },
+    { "id": "decoy_radio_ch16_low", "label": "Radio: Channel 16, Low 1W" },
+    { "id": "decoy_dsc_allships_call", "label": "DSC: All Ships call" }
+  ],
+  "callsignDecoys": [
+    { "id": "decoy_mmsi_sart_970110234", "label": "MMSI 970 110 234" },
+    { "id": "decoy_mmsi_group_023110001", "label": "MMSI 023 110 001" },
+    { "id": "decoy_mmsi_aircraft_111212345", "label": "MMSI 111 212 345" }
+  ]
+}

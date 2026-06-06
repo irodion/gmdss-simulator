@@ -35,6 +35,8 @@ const PRIORITY_LABELS: Readonly<Record<PriorityId, string>> = {
   mayday: "MAYDAY",
   pan_pan: "PAN-PAN",
   securite: "SECURITE",
+  // Routine carries no signal word; the label is only used by the daily tile.
+  routine: "ROUTINE",
 };
 
 const FALLBACK_LABELS: Readonly<Record<string, string>> = {
@@ -58,6 +60,7 @@ const FALLBACK_LABELS: Readonly<Record<string, string>> = {
   relayed_nature: "Relayed nature of distress",
   relayed_assistance: "Relayed assistance request",
   relayed_persons: "Relayed persons on board",
+  tr_voyage: "Voyage details (from/to, ETA)",
   over: "OVER",
   out: "OUT",
 };
@@ -84,6 +87,7 @@ const ITEM_TO_FACT_KEY = {
   relayed_assistance: "relayedAssistance",
   relayed_persons: "relayedPersons",
   distress_vessel: "distressVessel",
+  tr_voyage: "voyage",
 } as const satisfies Readonly<Record<string, keyof ScenarioFacts>>;
 
 type StringFactKey = (typeof ITEM_TO_FACT_KEY)[keyof typeof ITEM_TO_FACT_KEY];

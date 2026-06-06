@@ -1414,6 +1414,10 @@
   border-color: var(--ink-line);
   color: var(--ink-soft);
 }
+.proc-tile-priority[data-priority="routine"] {
+  border-color: var(--ink-line);
+  color: var(--ink-soft);
+}
 
 /* PR 4 — Exam Mock results */
 .exam-results {

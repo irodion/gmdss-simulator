@@ -27,6 +27,7 @@ const PRIORITY_LABELS: Readonly<Record<PriorityId, string>> = {
   mayday: "MAYDAY",
   pan_pan: "PAN PAN",
   securite: "SECURITE",
+  routine: "ROUTINE",
 };
 
 function pct(agg: StatsAggregate | null): string {
