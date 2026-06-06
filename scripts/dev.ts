@@ -63,7 +63,10 @@ function waitForInitialBuild(child: ChildProcess, label: string, timeoutMs: numb
     const onData = (data: Buffer) => {
       if (settled) return;
       buffer += data.toString();
-      if (buffer.includes("Build complete")) {
+      // vp pack --watch signals a finished build with either "Build complete"
+      // (older) or "Rebuilt in <n>ms" (current). Accept both so the frontend
+      // starts as soon as dist/ is ready.
+      if (buffer.includes("Build complete") || /Rebuilt in/.test(buffer)) {
         cleanup();
         resolveWait();
         return;
@@ -79,7 +82,7 @@ function waitForInitialBuild(child: ChildProcess, label: string, timeoutMs: numb
     const timer = setTimeout(() => {
       if (settled) return;
       cleanup();
-      rejectWait(new Error(`${label} did not emit "Build complete" within ${timeoutMs}ms`));
+      rejectWait(new Error(`${label} did not signal a finished build within ${timeoutMs}ms`));
     }, timeoutMs);
 
     child.stdout?.on("data", onData);
