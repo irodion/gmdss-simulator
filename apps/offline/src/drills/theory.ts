@@ -1228,6 +1228,22 @@ export const THEORY_QUESTIONS: readonly TheoryQuestion[] = [
     explanation:
       "The On-Scene Coordinator (OSC) is the unit — often a nearby ship or a SAR aircraft — designated to coordinate the search-and-rescue craft actually working in the distress area, acting for and under the Rescue Coordination Centre (RCC). It is not the shore RCC that runs the operation overall, not a Cospas-Sarsat LUT that fixes the beacon position, and not the distressed vessel itself — which may impose radio silence with SEELONCE MAYDAY but does not coordinate the on-scene units.",
   },
+  // REVIEW: seeded — verify before exam use
+  {
+    id: "theory-vhf-41",
+    topic: "VHF",
+    prompt:
+      "You relay a MAYDAY for a vessel that cannot use her own radio, and no coast station or RCC has answered. Who then controls the distress traffic?",
+    correctAnswer:
+      "You do — the station that sent or relayed the distress controls the traffic until a coast station or RCC takes over",
+    distractors: [
+      "The vessel in distress keeps control of the traffic even though she cannot transmit",
+      "No station controls it until a coast station eventually responds",
+      "The nearest other vessel automatically takes control after five minutes",
+    ],
+    explanation:
+      "When a distress is being worked at sea with no coast station or RCC yet involved, control of the distress traffic rests with the station that sent — or relayed — the distress message: here your own vessel. You retain that control, and may impose radio silence with SEELONCE MAYDAY, until a coast station or RCC comes on and assumes it. A vessel that has lost the use of her radio plainly cannot control the traffic; control is never simply left vacant; and there is no automatic five-minute hand-over to another ship.",
+  },
 
   // ── MMSI ── seeded from modules/4/lesson-1.json (MMSI and Call Signs) ─────
   // REVIEW: seeded — verify before exam use
