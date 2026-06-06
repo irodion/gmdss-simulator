@@ -1,0 +1,138 @@
+{
+  "id": "v1/distress-mob",
+  "version": "1.0.0",
+  "category": "distress",
+  "requiredFields": [
+    {
+      "id": "mayday",
+      "label": "MAYDAY signal word",
+      "patterns": ["MAYDAY"],
+      "required": true
+    },
+    {
+      "id": "this_is",
+      "label": "THIS IS",
+      "patterns": ["THIS\\s+IS"],
+      "required": true
+    },
+    {
+      "id": "vessel_name",
+      "label": "Own vessel name",
+      "patterns": ["TABOR"],
+      "required": true
+    },
+    {
+      "id": "callsign",
+      "label": "Callsign or MMSI",
+      "patterns": [
+        "428\\s*000\\s*666|FOUR\\s*TWO\\s*EIGHT\\s*(ZERO|ZAYRO){3}\\s*SIX\\s*SIX\\s*SIX"
+      ],
+      "required": true
+    },
+    {
+      "id": "position",
+      "label": "Position",
+      "patterns": [
+        "\\d+.{0,80}?(?:NORTH|SOUTH|EAST|WEST|\\b[NSEW]\\b)",
+        "\\b(?:ZERO|ONE|TWO|THREE|FOUR|FIVE|SIX|SEVEN|EIGHT|NINE)\\b.{0,80}?(?:NORTH|SOUTH|EAST|WEST|\\b[NSEW]\\b)"
+      ],
+      "required": true
+    },
+    {
+      "id": "assistance",
+      "label": "Assistance required",
+      "patterns": ["REQUIRE|ASSISTANCE|IMMEDIATE|HELP|SEARCH"],
+      "required": true
+    },
+    {
+      "id": "nature",
+      "label": "Man overboard details",
+      "patterns": ["OVERBOARD|MAN\\s*OVERBOARD|MOB|LAST\\s*SEEN|MALE|FEMALE"],
+      "required": true
+    },
+    {
+      "id": "persons",
+      "label": "Persons on board",
+      "patterns": ["PERSON|PERSONS|POB|CREW|SOULS|ON\\s*BOARD"],
+      "required": true
+    }
+  ],
+  "prowordRules": [
+    {
+      "id": "mayday",
+      "label": "MAYDAY (call ×3 + message header ×1)",
+      "pattern": "MAYDAY",
+      "expectedCount": 4
+    },
+    { "id": "this_is", "label": "THIS IS", "pattern": "THIS\\s+IS" },
+    { "id": "over", "label": "OVER", "pattern": "\\bOVER\\b" }
+  ],
+  "sequenceRules": {
+    "fieldOrder": [
+      "mayday",
+      "this_is",
+      "vessel_name",
+      "callsign",
+      "position",
+      "assistance",
+      "nature",
+      "persons",
+      "over"
+    ]
+  },
+  "sequenceParts": [
+    {
+      "id": "procedure",
+      "label": "Man-overboard MAYDAY procedure",
+      "items": [
+        { "id": "dsc_channel70", "label": "DSC: Channel 70, High 25W" },
+        { "id": "dsc_time_location", "label": "DSC: confirm time and location" },
+        { "id": "dsc_nature", "label": "DSC:" },
+        { "id": "dsc_button", "label": "DSC: press distress button 5 sec" },
+        { "id": "dsc_channel16", "label": "Radio: Channel 16, High 25W" },
+        { "id": "mayday", "label": "MAYDAY" },
+        { "id": "mayday", "label": "MAYDAY" },
+        { "id": "mayday", "label": "MAYDAY" },
+        { "id": "this_is", "label": "THIS IS" },
+        { "id": "vessel", "label": "Vessel name" },
+        { "id": "vessel", "label": "Vessel name" },
+        { "id": "vessel", "label": "Vessel name" },
+        { "id": "callsign", "label": "Callsign / MMSI" },
+        { "id": "mayday", "label": "MAYDAY" },
+        { "id": "this_is", "label": "THIS IS" },
+        { "id": "vessel", "label": "Vessel name" },
+        { "id": "position", "label": "Position" },
+        { "id": "assistance", "label": "Request immediate assistance" },
+        { "id": "nature", "label": "Man overboard details" },
+        { "id": "persons", "label": "Persons on board" },
+        { "id": "over", "label": "OVER" }
+      ]
+    }
+  ],
+  "channelRules": {
+    "requiredChannel": 16,
+    "blockChannel70Voice": true
+  },
+  "dscRules": {
+    "required": true,
+    "beforeFirstVoiceTurn": true
+  },
+  "channelPowerDecoys": [
+    { "id": "decoy_dsc_ch72_25w", "label": "DSC: Channel 72, High 25W" },
+    { "id": "decoy_dsc_ch77_25w", "label": "DSC: Channel 77, High 25W" },
+    { "id": "decoy_dsc_ch70_1w", "label": "DSC: Channel 70, Low 1W" },
+    { "id": "decoy_radio_ch16_low", "label": "Radio: Channel 16, Low 1W" },
+    { "id": "decoy_dsc_ch16_25w", "label": "DSC: Channel 16, High 25W" },
+    { "id": "decoy_radio_ch70_high", "label": "Radio: Channel 70, High" },
+    { "id": "decoy_dsc_ch70_10w", "label": "DSC: Channel 70, High 10W" },
+    { "id": "decoy_dsc_ch72_1w", "label": "DSC: Channel 72, Low 1W" },
+    { "id": "decoy_radio_ch16_15w", "label": "Radio: Channel 16, High 15W" }
+  ],
+  "callsignDecoys": [
+    { "id": "decoy_mmsi_coast_002411000", "label": "MMSI 002 411 000" },
+    { "id": "decoy_mmsi_coast_002111500", "label": "MMSI 002 111 500" },
+    { "id": "decoy_mmsi_sart_970110234", "label": "MMSI 970 110 234" },
+    { "id": "decoy_mmsi_group_023110001", "label": "MMSI 023 110 001" },
+    { "id": "decoy_mmsi_aircraft_111212345", "label": "MMSI 111 212 345" }
+  ]
+}
