@@ -995,6 +995,44 @@ describe("materializeScenario — DSC panel path", () => {
     expect(items.filter((i) => i.id === "pan_pan")).toHaveLength(3);
     expect(items.at(-1)!.id).toBe("over");
   });
+
+  const MEDICO_PANEL_SCENARIO: Scenario = {
+    id: "panel-medico-allstations-cargo-ranger",
+    priority: "pan_pan",
+    rubricId: "v1/urgency-medico",
+    brief: "Crew member fell from the upper deck and is unconscious.",
+    facts: {
+      vessel: "Cargo Ranger",
+      callsign: "MMSI 211 666 410",
+      position: "32°50'N 035°10'E",
+      addressee: "All Stations",
+      patientVitals: "Male, age 28, temperature 36.0°C, BP 90/60",
+      patientStatus: "Unconscious after fall, suspected head injury",
+      actionsTaken: "Head and neck immobilised, breathing monitored",
+    },
+    dsc: {
+      state: "required",
+      callType: "all_ships",
+      priority: "urgency",
+      channel: 16,
+      power: "high",
+      epirb: false,
+    },
+  };
+
+  test("strips the working-channel-switch chip from the second MEDICO phase (panel owns the channel)", () => {
+    const template = materializeScenario(MEDICO_PANEL_SCENARIO, RUBRICS);
+    // Every part is purely spoken-message chips — no procedure/equipment steps.
+    expect(template.parts.every((p) => p.items.every((i) => !isProcedureItem(i.id)))).toBe(true);
+    expect(
+      template.parts.flatMap((p) => p.items).some((i) => i.id === "working_channel_switch"),
+    ).toBe(false);
+    expect(template.pool.some((i) => i.id === "working_channel_switch")).toBe(false);
+    // The second phase still carries its spoken medical message, ending with OVER.
+    const part2 = template.parts.find((p) => p.id === "medical_message")!;
+    expect(part2.items.some((i) => i.id === "patient_vitals")).toBe(true);
+    expect(part2.items.at(-1)!.id).toBe("over");
+  });
 });
 
 describe("isProcedureItem", () => {

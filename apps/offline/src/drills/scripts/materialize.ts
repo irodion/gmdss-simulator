@@ -18,6 +18,7 @@ import {
   type SequenceItem,
   type SequenceTemplate,
   type SequenceTemplatePart,
+  WORKING_CHANNEL_SWITCH_ID,
 } from "./types.ts";
 
 const NATURE_DECOY_COUNT = 4;
@@ -177,12 +178,20 @@ function natureChip(code: NatureCode): SequenceItem {
  * the correct voice chips plus the wrong-priority decoy openings. No nature,
  * channel-power, or callsign decoys — those belonged to the retired chip
  * mechanic; the panel supplies its own fixed option lists instead.
+ *
+ * `working_channel_switch` is stripped too: it is not a spoken-message chip
+ * (see WORKING_CHANNEL_SWITCH_ID) and the panel now owns channel selection, so
+ * leaving it would ask the trainee to "place" a step the panel already covers.
  */
+function isPanelVoiceItem(id: string): boolean {
+  return !isProcedureItem(id) && id !== WORKING_CHANNEL_SWITCH_ID;
+}
+
 function materializePanelScenario(scenario: Scenario, rubric: RubricDefinition): SequenceTemplate {
   const sequenceParts = rubric.sequenceParts ?? [];
   const parts: SequenceTemplatePart[] = sequenceParts
     .map((part) => {
-      const voiceItems = part.items.filter((item) => !isProcedureItem(item.id));
+      const voiceItems = part.items.filter((item) => isPanelVoiceItem(item.id));
       return {
         id: part.id,
         label: part.label,
