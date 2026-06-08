@@ -1,4 +1,9 @@
-import { isProcedureItem, type SequenceItem, type SequenceTemplate } from "./types.ts";
+import {
+  isProcedureItem,
+  type SequenceItem,
+  type SequenceTemplate,
+  WORKING_CHANNEL_SWITCH_ID,
+} from "./types.ts";
 
 function isVoiceCallItem(id: string): boolean {
   // The dsc_ prefix guard is a forward-compat catch for future DSC IDs that
@@ -8,7 +13,7 @@ function isVoiceCallItem(id: string): boolean {
   // rather than the dashed-italic procedure group.
   if (isProcedureItem(id)) return false;
   if (id.startsWith("dsc_")) return false;
-  if (id === "working_channel_switch") return false;
+  if (id === WORKING_CHANNEL_SWITCH_ID) return false;
   return true;
 }
 

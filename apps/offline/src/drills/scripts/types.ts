@@ -63,6 +63,13 @@ export const DSC_NATURE_PLACEHOLDER_ID = "dsc_nature";
 export const EPIRB_ON_ID = "epirb_on";
 export const ANTENNA_SPARE_ID = "antenna_spare";
 export const DECOY_ID_PREFIX = "decoy_";
+/**
+ * MEDICO-specific "switch to a working channel" action. It is deliberately NOT
+ * in `PROCEDURE_STEP_IDS` (so the chip path keeps it in the content-pool group,
+ * not the dashed procedure group), but it is not a spoken-message chip either:
+ * `spoken-script` drops it from playback and the DSC panel path strips it.
+ */
+export const WORKING_CHANNEL_SWITCH_ID = "working_channel_switch";
 
 export function isDecoyId(id: string): boolean {
   return id.startsWith(DECOY_ID_PREFIX);
