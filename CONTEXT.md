@@ -44,6 +44,30 @@ _Avoid_: quiz, exam
 The smallest trackable unit of knowledge for adaptive selection — e.g. one
 abbreviation in one direction. Weak Atoms resurface in later sessions.
 
+### DSC & radiotelephony procedure
+
+**DSC call type**:
+The kind of Digital Selective Calling alert a trainee composes in a Procedures
+Scenario. In ROC / Class-D VHF scope there are exactly three: a **Distress**
+alert, an **Individual** call (to one named station, typically a coast
+station), and an **All Ships** call. Group calls, area calls, and a dedicated
+distress-relay call type are out of ROC scope and deliberately not modelled.
+_Avoid_: "group call", "distress relay call" — neither exists in this scope.
+
+**Nature of distress**:
+The category attached to a DSC distress alert. The canonical ROC set is eleven:
+Undesignated, Sinking, Collision, Fire & explosion, Disabled & adrift,
+Listing & capsizing, Flooding, Grounding, Piracy, Abandoning ship, Man
+overboard. **Undesignated** is the catch-all and is the nature used when
+alerting on-scene on behalf of another vessel (see MAYDAY relay).
+
+**MAYDAY relay**:
+Re-broadcasting another vessel's distress. A Class-D VHF set has no
+distress-relay function, so the trainee relays **by voice** ("MAYDAY RELAY" on
+Ch16). Only when the brief explicitly places the trainee **on-scene** may they
+additionally send a DSC distress alert with nature **Undesignated** — never a
+dedicated relay call.
+
 ## Flagged ambiguities
 
 - **"Scenario"** — used loosely to mean "a part of the app." In this codebase a
