@@ -1,6 +1,6 @@
 import { describe, expect, test } from "vite-plus/test";
 import { gradeScenario } from "./grade.ts";
-import type { SequenceItem, SequenceTemplate } from "./types.ts";
+import type { DscPanelState, ScenarioDsc, SequenceItem, SequenceTemplate } from "./types.ts";
 
 function template(items: readonly SequenceItem[]): SequenceTemplate {
   return {
@@ -578,5 +578,93 @@ describe("gradeScenario", () => {
     expect(grade.correctCount).toBe(8);
     expect(grade.score).toBeCloseTo(0.8, 5);
     expect(grade.passed).toBe(true);
+  });
+
+  test("without panel options, grade.procedure is absent and behaviour is unchanged", () => {
+    const tpl = template(DISTRESS_ITEMS);
+    const grade = gradeScenario(tpl, placementsMap(DISTRESS_ITEMS));
+    expect(grade.procedure).toBeUndefined();
+    expect(grade.dimensions.some((d) => d.id === "procedure")).toBe(false);
+  });
+});
+
+describe("gradeScenario with DSC/equipment panel", () => {
+  const VOICE: readonly SequenceItem[] = [
+    { id: "mayday", label: "MAYDAY" },
+    { id: "vessel", label: "Blue Duck" },
+    { id: "over", label: "OVER" },
+  ];
+
+  const FIRE_DSC: ScenarioDsc = {
+    state: "required",
+    callType: "distress",
+    nature: "fire",
+    channel: 16,
+    power: "high",
+    epirb: true,
+  };
+
+  const PERFECT_PANEL: DscPanelState = {
+    epirb: true,
+    spareAntenna: false,
+    abandon: false,
+    power: "high",
+    channel: 16,
+    dscActivated: true,
+    callType: "distress",
+    nature: "fire",
+    priority: null,
+    addressee: null,
+  };
+
+  test("folds the panel into a 'DSC & equipment' dimension and the unified score", () => {
+    const tpl = template(VOICE);
+    const grade = gradeScenario(tpl, placementsMap(VOICE), { dsc: FIRE_DSC, panel: PERFECT_PANEL });
+    const procedure = grade.dimensions.find((d) => d.id === "procedure")!;
+    expect(procedure.label).toBe("DSC & equipment");
+    expect(procedure.total).toBe(5);
+    expect(procedure.correct).toBe(5);
+    expect(grade.procedure).toBeTruthy();
+    // 3 voice + 5 panel = 8/8.
+    expect(grade.correctCount).toBe(8);
+    expect(grade.total).toBe(8);
+    expect(grade.score).toBeCloseTo(1, 5);
+    expect(grade.passed).toBe(true);
+  });
+
+  test("a panel mistake lowers the unified score proportionally across voice + panel", () => {
+    const tpl = template(VOICE);
+    const grade = gradeScenario(tpl, placementsMap(VOICE), {
+      dsc: FIRE_DSC,
+      panel: { ...PERFECT_PANEL, power: "low" },
+    });
+    // 3 voice + 4 panel = 7 / 8 = 0.875.
+    expect(grade.correctCount).toBe(7);
+    expect(grade.score).toBeCloseTo(0.875, 5);
+    expect(grade.dimensions.find((d) => d.id === "procedure")!.status).toBe("partial");
+    expect(grade.procedure!.fields.find((f) => f.id === "power")!.correct).toBe(false);
+  });
+
+  test("panel facts can drag a perfect voice score below the pass threshold", () => {
+    const tpl = template(VOICE);
+    const grade = gradeScenario(tpl, placementsMap(VOICE), {
+      dsc: FIRE_DSC,
+      panel: {
+        ...PERFECT_PANEL,
+        dscActivated: false,
+        epirb: false,
+        power: "low",
+        channel: 6,
+      },
+    });
+    // Voice 3/3, panel 0/5 → 3/8 = 0.375.
+    expect(grade.score).toBeCloseTo(0.375, 5);
+    expect(grade.passed).toBe(false);
+  });
+
+  test("the dsc option without a panel is ignored (both are required to fold)", () => {
+    const tpl = template(VOICE);
+    const grade = gradeScenario(tpl, placementsMap(VOICE), { dsc: FIRE_DSC });
+    expect(grade.procedure).toBeUndefined();
   });
 });

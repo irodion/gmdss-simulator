@@ -14,6 +14,29 @@ export type NatureOfDistress =
   | "epirb"
   | "undesignated";
 
+/**
+ * The canonical ROC nature-of-distress codes shown in the trainer's DSC panel,
+ * in radio-menu order. This is the single source of truth for what natures a
+ * trainee can select when composing a DSC distress alert.
+ *
+ * It is the agreed 11-item ROC set (see CONTEXT.md): every {@link NatureOfDistress}
+ * value except `epirb` — an EPIRB emission is an automatic alert source, not a
+ * nature a Class-D VHF operator manually selects.
+ */
+export const ROC_NATURE_CODES: readonly NatureOfDistress[] = [
+  "undesignated",
+  "sinking",
+  "collision",
+  "fire",
+  "disabled",
+  "capsizing",
+  "flooding",
+  "grounding",
+  "piracy",
+  "abandoning",
+  "mob",
+];
+
 export const natureOfDistressLabels: Record<NatureOfDistress, string> = {
   fire: "Fire / Explosion",
   flooding: "Flooding",

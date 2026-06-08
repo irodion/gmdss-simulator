@@ -205,3 +205,80 @@ describe("SequenceCard TTS toggle", () => {
     expect(toggle.checked).toBe(true);
   });
 });
+
+const PANEL_TEMPLATE: SequenceTemplate = {
+  rubricId: "v1/distress",
+  callLabel: "MAYDAY procedure",
+  priorityId: "mayday",
+  parts: [
+    {
+      id: "procedure",
+      label: "MAYDAY procedure",
+      items: [
+        { id: "mayday", label: "MAYDAY" },
+        { id: "vessel", label: "Blue Duck" },
+        { id: "over", label: "OVER" },
+      ],
+    },
+  ],
+  pool: [],
+};
+
+const PANEL_SCENARIO: Scenario = {
+  id: "panel-fire-blue-duck",
+  priority: "mayday",
+  rubricId: "v1/distress",
+  brief: "Engine room fire on MV Blue Duck.",
+  facts: { vessel: "Blue Duck", callsign: "5BCD2" },
+  dsc: {
+    state: "required",
+    callType: "distress",
+    nature: "fire",
+    channel: 16,
+    power: "high",
+    epirb: true,
+  },
+};
+
+describe("SequenceCard with DSC panel", () => {
+  function renderPanelCard() {
+    return render(
+      <SequenceCard
+        template={PANEL_TEMPLATE}
+        scenario={PANEL_SCENARIO}
+        onComplete={() => {}}
+        onRetry={() => {}}
+        onNewScenario={() => {}}
+        onBack={() => {}}
+      />,
+    );
+  }
+
+  test("renders the DSC/equipment panel for a Scenario carrying a dsc block", () => {
+    renderPanelCard();
+    expect(screen.getByLabelText(/dsc and equipment controls/i)).toBeTruthy();
+    expect(screen.getByRole("switch", { name: "EPIRB" })).toBeTruthy();
+  });
+
+  test("a correct panel + voice configuration submits to a passing grade", () => {
+    renderPanelCard();
+    // Configure the panel correctly: EPIRB on, Distress → Fire, send, Ch 16, High.
+    fireEvent.click(screen.getByRole("switch", { name: "EPIRB" }));
+    fireEvent.click(screen.getByRole("button", { name: "Distress" }));
+    fireEvent.click(screen.getByRole("button", { name: "Fire / Explosion" }));
+    fireEvent.click(screen.getByRole("button", { name: /send dsc alert/i }));
+    fireEvent.click(screen.getByRole("button", { name: "Channel 16" }));
+    submit();
+
+    // Per-field panel feedback and the relabelled score dimension both render.
+    expect(screen.getByLabelText(/dsc and equipment feedback/i)).toBeTruthy();
+    expect(screen.getByText("DSC & equipment", { selector: ".seq-breakdown-label" })).toBeTruthy();
+  });
+
+  test("submitting an untouched panel surfaces the per-field DSC feedback", () => {
+    renderPanelCard();
+    submit();
+    const feedback = screen.getByLabelText(/dsc and equipment feedback/i);
+    expect(feedback.textContent).toMatch(/no DSC alert sent/i);
+  });
+});

@@ -1,9 +1,13 @@
+import { gradeProcedure } from "./grade-procedure.ts";
 import {
   type DimensionId,
   type DimensionStatus,
+  type DscPanelState,
   isPriorityItem,
   isProcedureItem,
   PASS_THRESHOLD,
+  type ProcedureGrade,
+  type ScenarioDsc,
   type SequenceGrade,
   type SequenceItem,
   type SequencePartGrade,
@@ -113,9 +117,17 @@ interface DimensionAccumulator {
   total: number;
 }
 
+export interface GradeOptions {
+  /** Expected DSC/equipment configuration; when present the panel is graded. */
+  readonly dsc?: ScenarioDsc;
+  /** The trainee's final panel state, required whenever `dsc` is supplied. */
+  readonly panel?: DscPanelState;
+}
+
 export function gradeScenario(
   template: SequenceTemplate,
   placementsByPart: ReadonlyMap<string, readonly SequenceItem[]>,
+  options: GradeOptions = {},
 ): SequenceGrade {
   const parts: SequencePartGrade[] = [];
   let correctCount = 0;
@@ -165,9 +177,29 @@ export function gradeScenario(
       status: status(a.correct, a.total),
     }));
 
-  const denominator = Math.max(totalExpected, totalStudent);
-  const score = denominator === 0 ? 1 : correctCount / denominator;
   const extraCount = totalStudent - correctCount;
+
+  // Fold in the DSC/equipment panel when the Scenario carries a `dsc` block.
+  // The panel contributes a "DSC & equipment" dimension (the retained
+  // `procedure` DimensionId) scored as a checklist, and its facts join the
+  // unified correct/total so the existing 80% threshold still governs.
+  let procedure: ProcedureGrade | undefined;
+  let voiceDenominator = Math.max(totalExpected, totalStudent);
+  if (options.dsc && options.panel) {
+    procedure = gradeProcedure(options.dsc, options.panel);
+    correctCount += procedure.correct;
+    totalExpected += procedure.total;
+    voiceDenominator += procedure.total;
+    dimensions.push({
+      id: "procedure",
+      label: "DSC & equipment",
+      correct: procedure.correct,
+      total: procedure.total,
+      status: procedure.status,
+    });
+  }
+
+  const score = voiceDenominator === 0 ? 1 : correctCount / voiceDenominator;
 
   return {
     parts,
@@ -177,6 +209,7 @@ export function gradeScenario(
     score,
     passed: score * 100 >= PASS_THRESHOLD,
     dimensions,
+    ...(procedure ? { procedure } : {}),
   };
 }
 
