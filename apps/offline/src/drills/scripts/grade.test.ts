@@ -667,4 +667,21 @@ describe("gradeScenario with DSC/equipment panel", () => {
     const grade = gradeScenario(tpl, placementsMap(VOICE), { dsc: FIRE_DSC });
     expect(grade.procedure).toBeUndefined();
   });
+
+  test("a critical DSC failure caps the result at fail even when the numeric score passes", () => {
+    // 18 correct voice chips + the 3 still-correct equipment facts score ~91%,
+    // but a wrong call type is a critical failure and must force an overall fail.
+    const longVoice: SequenceItem[] = Array.from({ length: 18 }, () => ({
+      id: "mayday",
+      label: "MAYDAY",
+    }));
+    const tpl = template(longVoice);
+    const grade = gradeScenario(tpl, placementsMap(longVoice), {
+      dsc: FIRE_DSC,
+      panel: { ...PERFECT_PANEL, callType: "individual" }, // wrong call type → criticalFailure
+    });
+    expect(grade.procedure!.criticalFailure).toBe(true);
+    expect(grade.score * 100).toBeGreaterThanOrEqual(80); // numeric score alone would pass
+    expect(grade.passed).toBe(false); // …but the critical failure caps it
+  });
 });
