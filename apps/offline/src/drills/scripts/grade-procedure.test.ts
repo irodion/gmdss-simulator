@@ -160,3 +160,71 @@ describe("gradeProcedure — conditional equipment", () => {
     expect(grade.correct).toBe(grade.total - 1);
   });
 });
+
+describe("gradeProcedure — All Ships precedence", () => {
+  const SECURITE: ScenarioDsc = {
+    state: "required",
+    callType: "all_ships",
+    priority: "safety",
+    channel: 16,
+    power: "high",
+    epirb: false,
+  };
+
+  const PERFECT_SECURITE: DscPanelState = {
+    epirb: false,
+    spareAntenna: false,
+    abandon: false,
+    power: "high",
+    channel: 16,
+    dscActivated: true,
+    callType: "all_ships",
+    nature: null,
+    priority: "safety",
+    addressee: null,
+  };
+
+  test("a correct All Ships safety call grades precedence and carries no nature field", () => {
+    const grade = gradeProcedure(SECURITE, PERFECT_SECURITE);
+    expect(field(grade, "priority")!.correct).toBe(true);
+    expect(field(grade, "priority")!.detail).toBe("Safety");
+    // Broadcast calls have no nature of distress.
+    expect(field(grade, "nature")).toBeUndefined();
+    expect(grade.total).toBe(5); // call_type, priority, epirb, channel, power
+    expect(grade.correct).toBe(5);
+    expect(grade.status).toBe("pass");
+    expect(grade.criticalFailure).toBe(false);
+  });
+
+  test("an urgency All Ships call grades its precedence", () => {
+    const urgency: ScenarioDsc = { ...SECURITE, priority: "urgency" };
+    const grade = gradeProcedure(urgency, { ...PERFECT_SECURITE, priority: "urgency" });
+    expect(field(grade, "priority")!.correct).toBe(true);
+    expect(field(grade, "priority")!.detail).toBe("Urgency");
+  });
+
+  test("the wrong precedence is reported sent-vs-expected and is not critical", () => {
+    const grade = gradeProcedure(SECURITE, { ...PERFECT_SECURITE, priority: "urgency" });
+    const priority = field(grade, "priority")!;
+    expect(priority.correct).toBe(false);
+    expect(priority.detail).toContain("Urgency");
+    expect(priority.detail).toContain("Safety");
+    // A wrong precedence is not critical — the call type was still correct.
+    expect(grade.criticalFailure).toBe(false);
+  });
+
+  test("a correct precedence riding on the wrong call type earns no credit and is critical", () => {
+    // Sending a Distress alert where an All Ships call was required is the
+    // critical error; the otherwise-correct precedence must not rescue it.
+    const grade = gradeProcedure(SECURITE, { ...PERFECT_SECURITE, callType: "distress" });
+    expect(field(grade, "priority")!.correct).toBe(false);
+    expect(grade.criticalFailure).toBe(true);
+  });
+
+  test("not sending any alert fails the precedence with a no-alert detail and is critical", () => {
+    const grade = gradeProcedure(SECURITE, { ...PERFECT_SECURITE, dscActivated: false });
+    expect(field(grade, "priority")!.correct).toBe(false);
+    expect(field(grade, "priority")!.detail).toMatch(/no alert sent/i);
+    expect(grade.criticalFailure).toBe(true);
+  });
+});

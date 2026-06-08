@@ -684,4 +684,32 @@ describe("gradeScenario with DSC/equipment panel", () => {
     expect(grade.score * 100).toBeGreaterThanOrEqual(80); // numeric score alone would pass
     expect(grade.passed).toBe(false); // …but the critical failure caps it
   });
+
+  test("folds an All Ships safety call (precedence, no nature) into the unified score", () => {
+    const SECURITE_DSC: ScenarioDsc = {
+      state: "required",
+      callType: "all_ships",
+      priority: "safety",
+      channel: 16,
+      power: "high",
+      epirb: false,
+    };
+    const tpl = template(VOICE);
+    const grade = gradeScenario(tpl, placementsMap(VOICE), {
+      dsc: SECURITE_DSC,
+      panel: {
+        ...PERFECT_PANEL,
+        epirb: false,
+        callType: "all_ships",
+        nature: null,
+        priority: "safety",
+      },
+    });
+    const procedure = grade.dimensions.find((d) => d.id === "procedure")!;
+    expect(procedure.total).toBe(5); // call_type, priority, epirb, channel, power
+    expect(procedure.correct).toBe(5);
+    expect(grade.procedure!.fields.find((f) => f.id === "priority")!.correct).toBe(true);
+    expect(grade.procedure!.fields.some((f) => f.id === "nature")).toBe(false);
+    expect(grade.passed).toBe(true);
+  });
 });
