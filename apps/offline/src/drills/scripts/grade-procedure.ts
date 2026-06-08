@@ -1,5 +1,6 @@
 import { natureOfDistressLabels, type NatureOfDistress } from "@gmdss-simulator/utils";
 import type {
+  CallPriority,
   DscPanelState,
   DscPower,
   DimensionStatus,
@@ -11,6 +12,12 @@ import type {
 const POWER_LABELS: Readonly<Record<DscPower, string>> = {
   high: "High (25 W)",
   low: "Low (1 W)",
+};
+
+const PRIORITY_LABELS: Readonly<Record<CallPriority, string>> = {
+  routine: "Routine",
+  safety: "Safety",
+  urgency: "Urgency",
 };
 
 const CALL_TYPE_LABELS = {
@@ -29,6 +36,10 @@ function natureLabel(nature: NatureOfDistress | null): string {
   return nature ? natureOfDistressLabels[nature] : "none";
 }
 
+function priorityLabel(priority: CallPriority | null): string {
+  return priority ? PRIORITY_LABELS[priority] : "none";
+}
+
 function onOff(value: boolean): string {
   return value ? "ON" : "OFF";
 }
@@ -38,9 +49,10 @@ function onOff(value: boolean): string {
  * expected configuration, as a checklist of facts (never an ordered sequence —
  * see ADR 0002). Pure: no I/O, no clock, deterministic.
  *
- * This slice implements the `required` state for Distress calls. The
- * `forbidden` and `permitted` states (voice-only / on-scene relay) are added by
- * a later slice; until then every `dsc` block in content is `required`.
+ * Implements the `required` state for the Distress family (nature) and the
+ * All Ships / Individual families (precedence). The `forbidden` and `permitted`
+ * states (voice-only / on-scene relay) are added by a later slice; until then
+ * every `dsc` block in content is `required`.
  */
 export function gradeProcedure(expected: ScenarioDsc, panel: DscPanelState): ProcedureGrade {
   const fields: ProcedureFieldResult[] = [];
@@ -79,6 +91,25 @@ export function gradeProcedure(expected: ScenarioDsc, panel: DscPanelState): Pro
         : !panel.dscActivated
           ? "no alert sent"
           : `sent ${natureLabel(panel.nature)}, expected ${natureLabel(expected.nature ?? null)}`,
+    });
+  }
+
+  // --- Precedence (All Ships / Individual calls only) ----------------------
+  // Broadcast and directed calls carry no nature; their distinguishing fact is
+  // the precedence (Routine / Safety / Urgency). Gated on callTypeCorrect for
+  // the same reason as nature: a precedence only counts when it rode on the
+  // right call type.
+  if (expectedCallType !== "distress" && expected.priority != null) {
+    const priorityCorrect = callTypeCorrect && panel.priority === expected.priority;
+    fields.push({
+      id: "priority",
+      label: "Precedence",
+      correct: priorityCorrect,
+      detail: priorityCorrect
+        ? priorityLabel(expected.priority)
+        : !panel.dscActivated
+          ? "no alert sent"
+          : `sent ${priorityLabel(panel.priority)}, expected ${priorityLabel(expected.priority)}`,
     });
   }
 

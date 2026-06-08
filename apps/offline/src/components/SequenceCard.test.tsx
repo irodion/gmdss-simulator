@@ -281,4 +281,46 @@ describe("SequenceCard with DSC panel", () => {
     const feedback = screen.getByLabelText(/dsc and equipment feedback/i);
     expect(feedback.textContent).toMatch(/no DSC alert sent/i);
   });
+
+  const ALL_SHIPS_SCENARIO: Scenario = {
+    id: "panel-securite-cape-runner",
+    priority: "securite",
+    rubricId: "v1/safety",
+    brief: "Floating container drifting in the shipping lane.",
+    facts: { vessel: "Cape Runner" },
+    dsc: {
+      state: "required",
+      callType: "all_ships",
+      priority: "safety",
+      channel: 16,
+      power: "high",
+      epirb: false,
+    },
+  };
+
+  test("an All Ships scenario reveals the precedence cascade and grades it correct", () => {
+    render(
+      <SequenceCard
+        template={PANEL_TEMPLATE}
+        scenario={ALL_SHIPS_SCENARIO}
+        onComplete={() => {}}
+        onRetry={() => {}}
+        onNewScenario={() => {}}
+        onBack={() => {}}
+      />,
+    );
+    // Configure a correct SECURITE broadcast: All Ships → Safety → send, Ch 16.
+    // (EPIRB stays off and power stays High by default — both already correct.)
+    fireEvent.click(screen.getByRole("button", { name: "All Ships" }));
+    fireEvent.click(screen.getByRole("button", { name: "Safety" }));
+    fireEvent.click(screen.getByRole("button", { name: /send dsc alert/i }));
+    fireEvent.click(screen.getByRole("button", { name: "Channel 16" }));
+    submit();
+
+    const feedback = screen.getByLabelText(/dsc and equipment feedback/i);
+    expect(feedback.textContent).toContain("Precedence");
+    expect(feedback.textContent).toContain("Safety");
+    expect(feedback.textContent).not.toMatch(/no DSC alert sent/i);
+    expect(feedback.textContent).not.toMatch(/should be/i);
+  });
 });

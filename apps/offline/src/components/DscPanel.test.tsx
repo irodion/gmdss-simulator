@@ -64,6 +64,20 @@ describe("DscPanel", () => {
     expect(button(/send dsc alert/i)).toBeTruthy();
   });
 
+  test("All Ships: Send is disabled until a precedence is chosen, then sends", () => {
+    render(<Harness />);
+    fireEvent.click(button("All Ships"));
+    // Precedence selector revealed; Send blocked until a precedence is picked.
+    expect(screen.getByRole("group", { name: /call priority/i })).toBeTruthy();
+    expect(button(/send dsc alert/i).disabled).toBe(true);
+
+    fireEvent.click(button("Safety"));
+    expect(button(/send dsc alert/i).disabled).toBe(false);
+
+    fireEvent.click(button(/send dsc alert/i));
+    expect(screen.getByRole("status").textContent).toMatch(/transmitted on Channel 70/i);
+  });
+
   test("transmit power can be switched between High and Low", () => {
     render(<Harness />);
     // High is the default selection.

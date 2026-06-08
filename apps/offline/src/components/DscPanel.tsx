@@ -66,7 +66,7 @@ export function DscPanel({ state, onChange, locked, result }: DscPanelProps) {
     !locked &&
     !state.dscActivated &&
     state.callType !== null &&
-    (state.callType !== "distress" || state.nature !== null);
+    (state.callType === "distress" ? state.nature !== null : state.priority !== null);
 
   return (
     <section className="dsc-panel" aria-label="DSC and equipment controls">

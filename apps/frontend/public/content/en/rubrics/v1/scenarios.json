@@ -245,6 +245,14 @@
         "position": "32°15'N 034°40'E",
         "nature": "Engine failure, drifting toward TSS",
         "assistance": "I require a tow"
+      },
+      "dsc": {
+        "state": "required",
+        "callType": "all_ships",
+        "priority": "urgency",
+        "channel": 16,
+        "power": "high",
+        "epirb": false
       }
     },
     {
@@ -275,6 +283,14 @@
         "patientVitals": "Male, age 28, temperature 36.0°C, BP 90/60",
         "patientStatus": "Unconscious after fall from upper deck, suspected head injury",
         "actionsTaken": "Head and neck immobilised, breathing monitored, no medication given"
+      },
+      "dsc": {
+        "state": "required",
+        "callType": "all_ships",
+        "priority": "urgency",
+        "channel": 16,
+        "power": "high",
+        "epirb": false
       }
     },
     {
@@ -303,6 +319,14 @@
         "position": "32°30'N 034°55'E",
         "nature": "Lost steering, manoeuvring with difficulty",
         "assistance": "Request other vessels to keep clear"
+      },
+      "dsc": {
+        "state": "required",
+        "callType": "all_ships",
+        "priority": "urgency",
+        "channel": 16,
+        "power": "high",
+        "epirb": false
       }
     },
     {
@@ -314,6 +338,14 @@
         "vessel": "Cape Runner",
         "position": "32°20'N 034°50'E, drifting south",
         "nature": "Floating container, hazard to navigation"
+      },
+      "dsc": {
+        "state": "required",
+        "callType": "all_ships",
+        "priority": "safety",
+        "channel": 16,
+        "power": "high",
+        "epirb": false
       }
     },
     {
@@ -325,6 +357,14 @@
         "vessel": "Osprey",
         "position": "31°55'N 034°35'E, harbour approach",
         "nature": "Unlit lateral buoy"
+      },
+      "dsc": {
+        "state": "required",
+        "callType": "all_ships",
+        "priority": "safety",
+        "channel": 16,
+        "power": "high",
+        "epirb": false
       }
     },
     {
@@ -336,6 +376,14 @@
         "vessel": "Storm Petrel",
         "position": "33°00'N 035°00'E and surrounding 10 NM",
         "nature": "Severe squalls observed, gale-force winds"
+      },
+      "dsc": {
+        "state": "required",
+        "callType": "all_ships",
+        "priority": "safety",
+        "channel": 16,
+        "power": "high",
+        "epirb": false
       }
     },
     {

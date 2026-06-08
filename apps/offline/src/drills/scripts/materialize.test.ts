@@ -961,6 +961,40 @@ describe("materializeScenario — DSC panel path", () => {
   test("a panel scenario does not require facts.natureCode", () => {
     expect(() => materializeScenario(PANEL_SCENARIO, RUBRICS)).not.toThrow();
   });
+
+  const ALL_SHIPS_SCENARIO: Scenario = {
+    id: "panel-securite-cape-runner",
+    priority: "pan_pan",
+    rubricId: "v1/urgency",
+    brief: "Engine failure, drifting toward a traffic separation scheme.",
+    facts: {
+      vessel: "Red Fox",
+      callsign: "MMSI 211 888 040",
+      position: "32°15'N 034°40'E",
+      nature: "Engine failure, drifting toward TSS",
+      assistance: "I require a tow",
+    },
+    dsc: {
+      state: "required",
+      callType: "all_ships",
+      priority: "urgency",
+      channel: 16,
+      power: "high",
+      epirb: false,
+    },
+  };
+
+  test("strips the urgency DSC chips from an All Ships scenario, leaving the spoken call", () => {
+    const template = materializeScenario(ALL_SHIPS_SCENARIO, RUBRICS);
+    const items = template.parts[0]!.items;
+    expect(items.every((i) => !isProcedureItem(i.id))).toBe(true);
+    expect(items.some((i) => i.id === "dsc_urgency_category")).toBe(false);
+    expect(items.some((i) => i.id === "dsc_addressee_all_stations")).toBe(false);
+    expect(items.some((i) => i.id === "dsc_send_urgency")).toBe(false);
+    // The spoken PAN-PAN call survives, ending with OVER.
+    expect(items.filter((i) => i.id === "pan_pan")).toHaveLength(3);
+    expect(items.at(-1)!.id).toBe("over");
+  });
 });
 
 describe("isProcedureItem", () => {
