@@ -1,4 +1,4 @@
-import type { RubricDefinition } from "@gmdss-simulator/utils";
+import type { NatureOfDistress, RubricDefinition } from "@gmdss-simulator/utils";
 
 export type ScriptDrillMode = "scenario";
 
@@ -163,6 +163,11 @@ export interface SequenceGrade {
   readonly score: number;
   readonly passed: boolean;
   readonly dimensions: readonly SequenceScoreDimension[];
+  /**
+   * Present when the Scenario was graded with the DSC/equipment panel: carries
+   * the per-field panel results for feedback. Absent for legacy chip Scenarios.
+   */
+  readonly procedure?: ProcedureGrade;
 }
 
 export interface GradeEvent {
@@ -222,6 +227,94 @@ export interface ScenarioFacts {
   readonly distressVessel?: string;
 }
 
+/**
+ * Whether — and how — a Scenario expects the trainee to touch the DSC controls.
+ * `required`: the configuration must match the expected `dsc` block.
+ * `forbidden`: any DSC activation is wrong (voice-only liferaft / ack / relay).
+ * `permitted`: an Undesignated distress alert may be sent, scored neutrally
+ * (gated by an explicit on-scene flag). Only `required` is exercised in the
+ * Distress-family walking skeleton; the other two arrive with later slices.
+ */
+export type DscState = "required" | "forbidden" | "permitted";
+
+/** The three DSC call types in ROC / Class-D VHF scope (no group/relay/area). */
+export type DscCallType = "distress" | "individual" | "all_ships";
+
+/** Precedence selected for an Individual or All Ships call. */
+export type CallPriority = "routine" | "safety" | "urgency";
+
+/** Transmit power. `low` (1 W) is the mistake in almost every Scenario. */
+export type DscPower = "high" | "low";
+
+/**
+ * The expected DSC/equipment configuration for a Scenario, authored in content.
+ * Replaces the old per-rubric procedure chips: the panel grades the trainee's
+ * final configuration against this block (see ADR 0002).
+ */
+export interface ScenarioDsc {
+  readonly state: DscState;
+  /** The expected DSC call type when `state` is `required`. */
+  readonly callType?: DscCallType;
+  /** Distress only: the canonical nature the alert must carry. */
+  readonly nature?: NatureOfDistress;
+  /** Other natures also accepted in this Scenario (the canonical one is implicit). */
+  readonly acceptableNatures?: readonly NatureOfDistress[];
+  /** Individual / All Ships only: the expected precedence (later slices). */
+  readonly priority?: CallPriority;
+  /** Individual only: the expected coast-station addressee (later slice). */
+  readonly addressee?: string;
+  /** The expected voice working channel (e.g. 16 for own-ship distress). */
+  readonly channel: number;
+  /** The expected transmit power. */
+  readonly power: DscPower;
+  /** Whether the EPIRB should be activated. */
+  readonly epirb: boolean;
+  /** Whether the spare antenna should be rigged (dismasted vessels). */
+  readonly spareAntenna?: boolean;
+  /** Whether the trainee should grab EPIRB/SART/portable VHF to the liferaft. */
+  readonly abandon?: boolean;
+  /** Marks an on-scene relay where a permitted Undesignated alert applies (later). */
+  readonly onScene?: boolean;
+}
+
+/** The trainee's final DSC/equipment panel state, handed to the grader on Submit. */
+export interface DscPanelState {
+  readonly epirb: boolean;
+  readonly spareAntenna: boolean;
+  readonly abandon: boolean;
+  readonly power: DscPower;
+  readonly channel: number | null;
+  /** Whether the trainee pressed Activate to "send" the configured DSC call. */
+  readonly dscActivated: boolean;
+  readonly callType: DscCallType | null;
+  readonly nature: NatureOfDistress | null;
+  readonly priority: CallPriority | null;
+  readonly addressee: string | null;
+}
+
+/** One graded panel fact, surfaced as per-field feedback after Submit. */
+export interface ProcedureFieldResult {
+  readonly id: string;
+  readonly label: string;
+  readonly correct: boolean;
+  /** Human-readable explanation, e.g. "sent Fire, expected Undesignated". */
+  readonly detail: string;
+}
+
+/** The result of grading the DSC/equipment panel as a checklist of facts. */
+export interface ProcedureGrade {
+  readonly fields: readonly ProcedureFieldResult[];
+  readonly correct: number;
+  readonly total: number;
+  readonly status: DimensionStatus;
+  /**
+   * Whether a critical DSC error occurred (false distress alert, or a
+   * wrong/missing required call type). The capping it implies is wired into
+   * `gradeScenario` by a later slice; here it is computed and surfaced only.
+   */
+  readonly criticalFailure: boolean;
+}
+
 export interface Scenario {
   readonly id: string;
   readonly priority: PriorityId;
@@ -231,6 +324,11 @@ export interface Scenario {
   readonly requiresAbandon?: boolean;
   /** Splices the spare-antenna chip after `epirb_on` (e.g. dismasted vessels). */
   readonly requiresSpareAntenna?: boolean;
+  /**
+   * When present, the Scenario is graded with the DSC/equipment panel (this
+   * block is the expected configuration) instead of the legacy procedure chips.
+   */
+  readonly dsc?: ScenarioDsc;
 }
 
 export interface ScenarioBank {

@@ -11,8 +11,15 @@
         "position": "32°05'N 034°45'E",
         "nature": "On fire, fire spreading",
         "assistance": "I require immediate assistance",
-        "persons": "6 persons on board",
-        "natureCode": "nature_fire"
+        "persons": "6 persons on board"
+      },
+      "dsc": {
+        "state": "required",
+        "callType": "distress",
+        "nature": "fire",
+        "channel": 16,
+        "power": "high",
+        "epirb": true
       }
     },
     {
@@ -26,9 +33,16 @@
         "position": "31°50'N 034°30'E",
         "nature": "Holed and sinking",
         "assistance": "I require immediate assistance",
-        "persons": "4 persons on board",
-        "natureCode": "nature_flooding",
-        "acceptableNatureCodes": ["nature_grounding"]
+        "persons": "4 persons on board"
+      },
+      "dsc": {
+        "state": "required",
+        "callType": "distress",
+        "nature": "sinking",
+        "acceptableNatures": ["flooding"],
+        "channel": 16,
+        "power": "high",
+        "epirb": true
       }
     },
     {
@@ -42,16 +56,22 @@
         "position": "33°10'N 035°02'E",
         "nature": "Collided with another vessel and taking water",
         "assistance": "I require immediate assistance",
-        "persons": "12 persons on board",
-        "natureCode": "nature_collision",
-        "acceptableNatureCodes": ["nature_flooding"]
+        "persons": "12 persons on board"
+      },
+      "dsc": {
+        "state": "required",
+        "callType": "distress",
+        "nature": "collision",
+        "acceptableNatures": ["flooding"],
+        "channel": 16,
+        "power": "high",
+        "epirb": true
       }
     },
     {
       "id": "distress-abandon-fire-river-hawk",
       "priority": "mayday",
       "rubricId": "v1/distress",
-      "requiresAbandon": true,
       "brief": "You are MV River Hawk (MMSI: *********). Engine-room fire has spread to the bridge and is uncontrollable. 7 persons on board, position 32°25'N 034°48'E. Make the MAYDAY call — you must abandon ship to the liferaft immediately after.",
       "facts": {
         "vessel": "River Hawk",
@@ -59,16 +79,23 @@
         "position": "32°25'N 034°48'E",
         "nature": "Fire out of control, abandoning ship",
         "assistance": "I require immediate assistance",
-        "persons": "7 persons on board",
-        "natureCode": "nature_abandoning",
-        "acceptableNatureCodes": ["nature_fire"]
+        "persons": "7 persons on board"
+      },
+      "dsc": {
+        "state": "required",
+        "callType": "distress",
+        "nature": "abandoning",
+        "acceptableNatures": ["fire"],
+        "channel": 16,
+        "power": "high",
+        "epirb": true,
+        "abandon": true
       }
     },
     {
       "id": "distress-abandon-flooding-aurora",
       "priority": "mayday",
       "rubricId": "v1/distress",
-      "requiresAbandon": true,
       "brief": "You are MV Aurora (MMSI: *********). Catastrophic hull breach after grounding, vessel listing heavily and capsizing. 9 persons on board, position 31°40'N 034°25'E. Make the MAYDAY call — you must abandon ship to the liferaft immediately after.",
       "facts": {
         "vessel": "Aurora",
@@ -76,16 +103,23 @@
         "position": "31°40'N 034°25'E",
         "nature": "Capsizing after grounding, abandoning ship",
         "assistance": "I require immediate assistance",
-        "persons": "9 persons on board",
-        "natureCode": "nature_abandoning",
-        "acceptableNatureCodes": ["nature_flooding", "nature_listing", "nature_grounding"]
+        "persons": "9 persons on board"
+      },
+      "dsc": {
+        "state": "required",
+        "callType": "distress",
+        "nature": "abandoning",
+        "acceptableNatures": ["flooding", "capsizing", "grounding"],
+        "channel": 16,
+        "power": "high",
+        "epirb": true,
+        "abandon": true
       }
     },
     {
       "id": "distress-fallen-mast-wandering-albatross",
       "priority": "mayday",
       "rubricId": "v1/distress",
-      "requiresSpareAntenna": true,
       "brief": "You are SY Wandering Albatross (MMSI: *********). Mast came down in heavy weather and is lying over the side with rigging in the water. Vessel disabled and drifting. 4 persons on board, position 32°35'N 034°15'E.",
       "facts": {
         "vessel": "Wandering Albatross",
@@ -93,17 +127,23 @@
         "position": "32°35'N 034°15'E",
         "nature": "Dismasted, vessel disabled and drifting",
         "assistance": "I require immediate assistance",
-        "persons": "4 persons on board",
-        "natureCode": "nature_disabled",
-        "acceptableNatureCodes": ["nature_undesignated"]
+        "persons": "4 persons on board"
+      },
+      "dsc": {
+        "state": "required",
+        "callType": "distress",
+        "nature": "disabled",
+        "acceptableNatures": ["undesignated"],
+        "channel": 16,
+        "power": "high",
+        "epirb": true,
+        "spareAntenna": true
       }
     },
     {
       "id": "distress-fallen-mast-jasmin",
       "priority": "mayday",
       "rubricId": "v1/distress",
-      "requiresSpareAntenna": true,
-      "requiresAbandon": true,
       "brief": "You are SY Jasmin (MMSI 428 070 371), authorised for Area A1 and fitted to GMDSS requirements. In a heavy, rough sea the mast has come down and is over the side with rigging in the water; the yacht is uncontrollable and in danger of sinking. 11 persons on board, position 34°41'N 034°11'E. Make the distress call — be ready to abandon to the liferaft if she goes down.",
       "facts": {
         "vessel": "Jasmin",
@@ -111,16 +151,24 @@
         "position": "34°41'N 034°11'E",
         "nature": "Dismasted, disabled and drifting, in danger of sinking",
         "assistance": "I require immediate assistance",
-        "persons": "11 persons on board",
-        "natureCode": "nature_disabled",
-        "acceptableNatureCodes": ["nature_undesignated"]
+        "persons": "11 persons on board"
+      },
+      "dsc": {
+        "state": "required",
+        "callType": "distress",
+        "nature": "disabled",
+        "acceptableNatures": ["undesignated"],
+        "channel": 16,
+        "power": "high",
+        "epirb": true,
+        "spareAntenna": true,
+        "abandon": true
       }
     },
     {
       "id": "distress-grounding-amalia",
       "priority": "mayday",
       "rubricId": "v1/distress",
-      "requiresAbandon": true,
       "brief": "You are the vessel Amalia (MMSI 234 555 044), authorised for Area A1 and fitted to GMDSS requirements. Leaving the Strait of Gibraltar westbound at 00:40 local time, she has struck a submerged rock; water is coming in and the vessel and her 6 crew are in danger. The skipper orders you to get help immediately — be ready to abandon to the liferaft if she goes down. Position 36°20'N 006°24'W.",
       "facts": {
         "vessel": "Amalia",
@@ -128,16 +176,23 @@
         "position": "36°20'N 006°24'W",
         "nature": "Grounded on a submerged reef, flooding and in danger of sinking",
         "assistance": "I require immediate assistance",
-        "persons": "6 persons on board",
-        "natureCode": "nature_grounding",
-        "acceptableNatureCodes": ["nature_flooding"]
+        "persons": "6 persons on board"
+      },
+      "dsc": {
+        "state": "required",
+        "callType": "distress",
+        "nature": "grounding",
+        "acceptableNatures": ["flooding"],
+        "channel": 16,
+        "power": "high",
+        "epirb": true,
+        "abandon": true
       }
     },
     {
       "id": "distress-fire-abandon-aviva",
       "priority": "mayday",
       "rubricId": "v1/distress",
-      "requiresAbandon": true,
       "brief": "You are the vessel Aviva (MMSI 428 555 044), authorised for Area A1 and fitted to GMDSS requirements. West of Ashdod a fire has broken out on board and the vessel and her 10 crew are in danger. The skipper has not ordered abandonment, but you must get help immediately and be ready to abandon to the liferaft if she has to be left. Position 31°48'N 034°33'E.",
       "facts": {
         "vessel": "Aviva",
@@ -145,8 +200,16 @@
         "position": "31°48'N 034°33'E",
         "nature": "Fire on board, in danger of sinking",
         "assistance": "I require immediate assistance",
-        "persons": "10 persons on board",
-        "natureCode": "nature_fire"
+        "persons": "10 persons on board"
+      },
+      "dsc": {
+        "state": "required",
+        "callType": "distress",
+        "nature": "fire",
+        "channel": 16,
+        "power": "high",
+        "epirb": true,
+        "abandon": true
       }
     },
     {
@@ -160,8 +223,15 @@
         "position": "36°24'N 025°28'E",
         "assistance": "I require immediate assistance",
         "nature": "Man overboard — male, age 35, last seen 01:30 UTC, course 043°, speed 6 knots",
-        "persons": "9 persons on board",
-        "natureCode": "nature_mob"
+        "persons": "9 persons on board"
+      },
+      "dsc": {
+        "state": "required",
+        "callType": "distress",
+        "nature": "mob",
+        "channel": 16,
+        "power": "high",
+        "epirb": false
       }
     },
     {

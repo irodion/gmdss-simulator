@@ -31,7 +31,7 @@ export type {
   DscMessage,
   DscMessageField,
 } from "./dsc-types.ts";
-export { natureOfDistressLabels } from "./dsc-types.ts";
+export { natureOfDistressLabels, ROC_NATURE_CODES } from "./dsc-types.ts";
 export {
   buildDistressDsc,
   buildUrgencyDsc,

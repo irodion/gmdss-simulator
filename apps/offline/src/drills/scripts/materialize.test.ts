@@ -905,6 +905,64 @@ describe("materializeScenario", () => {
   });
 });
 
+describe("materializeScenario — DSC panel path", () => {
+  const PANEL_SCENARIO: Scenario = {
+    id: "panel-fire-blue-duck",
+    priority: "mayday",
+    rubricId: "v1/distress",
+    brief: "Engine room fire on MV Blue Duck.",
+    facts: {
+      vessel: "Blue Duck",
+      callsign: "5BCD2",
+      position: "32°05'N 034°45'E",
+      nature: "Engine room fire",
+      assistance: "I require immediate assistance",
+      persons: "6 persons on board",
+    },
+    dsc: {
+      state: "required",
+      callType: "distress",
+      nature: "fire",
+      channel: 16,
+      power: "high",
+      epirb: true,
+    },
+  };
+
+  test("strips every procedure/equipment item, leaving only the spoken-message chips", () => {
+    const template = materializeScenario(PANEL_SCENARIO, RUBRICS);
+    const items = template.parts[0]!.items;
+    expect(items.every((i) => !isProcedureItem(i.id))).toBe(true);
+    expect(items.some((i) => i.id === "epirb_on")).toBe(false);
+    expect(items.some((i) => i.id === "dsc_channel70")).toBe(false);
+    expect(items.some((i) => isNatureItem(i.id))).toBe(false);
+    // The 16 spoken-message chips remain, ending with OVER.
+    expect(items).toHaveLength(16);
+    expect(items.at(-1)!.id).toBe("over");
+  });
+
+  test("injects scenario facts into the surviving voice chips", () => {
+    const template = materializeScenario(PANEL_SCENARIO, RUBRICS);
+    const items = template.parts[0]!.items;
+    expect(items.filter((i) => i.id === "vessel").every((i) => i.label === "Blue Duck")).toBe(true);
+    expect(items.find((i) => i.id === "nature")!.label).toBe("Engine room fire");
+  });
+
+  test("the pool carries the wrong-priority decoys but no nature/channel/callsign decoys", () => {
+    const template = materializeScenario(PANEL_SCENARIO, RUBRICS);
+    expect(template.pool.filter((i) => isDecoyId(i.id))).toHaveLength(0);
+    expect(template.pool.filter((i) => isNatureItem(i.id))).toHaveLength(0);
+    expect(template.pool.filter((i) => i.id === "pan_pan")).toHaveLength(3);
+    expect(template.pool.filter((i) => i.id === "securite")).toHaveLength(3);
+    // 16 voice chips + 6 wrong-priority decoys.
+    expect(template.pool).toHaveLength(22);
+  });
+
+  test("a panel scenario does not require facts.natureCode", () => {
+    expect(() => materializeScenario(PANEL_SCENARIO, RUBRICS)).not.toThrow();
+  });
+});
+
 describe("isProcedureItem", () => {
   test("recognizes channel-power decoy ids by the decoy_ prefix", () => {
     expect(isProcedureItem("decoy_dsc_ch72_25w")).toBe(true);

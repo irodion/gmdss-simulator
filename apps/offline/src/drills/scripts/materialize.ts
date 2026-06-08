@@ -6,6 +6,7 @@ import {
   DSC_NATURE_PLACEHOLDER_ID,
   EPIRB_ON_ID,
   isDecoyId,
+  isProcedureItem,
   NATURE_CODES,
   NATURE_LABELS,
   type NatureCode,
@@ -170,6 +171,42 @@ function natureChip(code: NatureCode): SequenceItem {
   return { id: code, label: NATURE_LABELS[code] };
 }
 
+/**
+ * Build the voice-only template for a panel Scenario: each part keeps just its
+ * spoken-message chips (procedure/equipment items stripped), and the pool gets
+ * the correct voice chips plus the wrong-priority decoy openings. No nature,
+ * channel-power, or callsign decoys — those belonged to the retired chip
+ * mechanic; the panel supplies its own fixed option lists instead.
+ */
+function materializePanelScenario(scenario: Scenario, rubric: RubricDefinition): SequenceTemplate {
+  const sequenceParts = rubric.sequenceParts ?? [];
+  const parts: SequenceTemplatePart[] = sequenceParts
+    .map((part) => {
+      const voiceItems = part.items.filter((item) => !isProcedureItem(item.id));
+      return {
+        id: part.id,
+        label: part.label,
+        items: injectScenarioLabels(voiceItems, scenario.facts, scenario.id, []),
+      };
+    })
+    .filter((part) => part.items.length > 0);
+
+  const correctItems = parts.flatMap((p) => p.items);
+  const priorityDecoys = PRIORITY_IDS.filter((p) => p !== scenario.priority).flatMap((p) =>
+    decoyOpening(p),
+  );
+  const pool = shuffle([...correctItems, ...priorityDecoys]);
+  const heading = parts[0]?.label ?? rubric.id;
+
+  return {
+    rubricId: rubric.id,
+    callLabel: heading,
+    priorityId: scenario.priority,
+    parts,
+    pool,
+  };
+}
+
 export function materializeScenario(
   scenario: Scenario,
   rubricsById: RubricsById,
@@ -180,6 +217,14 @@ export function materializeScenario(
   }
   if (!rubric.sequenceParts || rubric.sequenceParts.length === 0) {
     throw new Error(`Rubric ${rubric.id} has no sequenceParts`);
+  }
+
+  // Panel path: a Scenario with a `dsc` block grades its equipment phase through
+  // the DSC/equipment panel, so the procedure chips are stripped here and only
+  // the spoken-message chips remain (see ADR 0002). The expected configuration
+  // lives entirely in the `dsc` block, not in these chips.
+  if (scenario.dsc) {
+    return materializePanelScenario(scenario, rubric);
   }
 
   const hasNatureSlot = rubric.sequenceParts.some((part) =>
