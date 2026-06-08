@@ -146,9 +146,9 @@ export function gradeProcedure(expected: ScenarioDsc, panel: DscPanelState): Pro
   const correct = fields.filter((f) => f.correct).length;
   const total = fields.length;
 
-  // A wrong or missing required call type is the critical DSC error. The
-  // capping it implies is applied by gradeScenario in a later slice; here it is
-  // computed and surfaced so the UI and history can attribute it.
+  // A wrong or missing required call type is the critical DSC error; gradeScenario
+  // caps the overall result at fail when this is set, regardless of voice score
+  // (ADR 0002). A later slice extends this to the forbidden-state false-alert path.
   const criticalFailure = expected.state === "required" && !callTypeCorrect;
 
   return {
