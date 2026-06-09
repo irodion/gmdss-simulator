@@ -170,4 +170,19 @@ describe("materializeScenario", () => {
     const noParts: RubricsById = { "v1/distress": { ...DISTRESS, sequenceParts: [] } };
     expect(() => materializeScenario(DISTRESS_SCENARIO, noParts)).toThrow(/sequenceParts/);
   });
+
+  test("throws when every sequence part is empty after materialization", () => {
+    const allEmpty: RubricsById = {
+      "v1/distress": {
+        ...DISTRESS,
+        sequenceParts: [
+          { id: "dsc_phase_a", label: "A", items: [] },
+          { id: "dsc_phase_b", label: "B", items: [] },
+        ],
+      },
+    };
+    expect(() => materializeScenario(DISTRESS_SCENARIO, allEmpty)).toThrow(
+      /no spoken-message parts/,
+    );
+  });
 });

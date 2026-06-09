@@ -216,8 +216,9 @@ export function SequenceCard({
 
       <div className="prompt">
         <span className="prompt-eyebrow">{template.callLabel}</span>
-        Set the DSC &amp; equipment panel, then compose the spoken message: pick the priority and
-        order the phrases.
+        {scenario.priority === "routine"
+          ? "Set the DSC & equipment panel, then compose the spoken message in the correct order."
+          : "Set the DSC & equipment panel, then compose the spoken message: pick the priority and order the phrases."}
       </div>
 
       {parts.map((state) => {
