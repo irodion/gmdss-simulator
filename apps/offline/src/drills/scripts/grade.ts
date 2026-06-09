@@ -201,9 +201,9 @@ export function gradeScenario(
 
   const score = voiceDenominator === 0 ? 1 : correctCount / voiceDenominator;
 
-  // A critical DSC error (a wrong/missing required call type, or — from a later
-  // slice — a false distress alert) caps the result at fail regardless of the
-  // numeric score: tolerating either trains a dangerous habit (ADR 0002).
+  // A critical DSC error (a wrong/missing required call type, or a false
+  // distress alert in a forbidden Scenario) caps the result at fail regardless
+  // of the numeric score: tolerating either trains a dangerous habit (ADR 0002).
   const passed = score * 100 >= PASS_THRESHOLD && !(procedure?.criticalFailure ?? false);
 
   return {

@@ -189,7 +189,13 @@ export function SequenceCard({
     ({ item }) => !isPriorityItem(item.id) && !isProcedureItem(item.id),
   );
 
-  const summaryLabel = grade ? (grade.passed ? "passed" : "review the misplaced fields") : "";
+  const summaryLabel = grade
+    ? grade.passed
+      ? "passed"
+      : grade.procedure?.criticalFailure
+        ? "critical DSC error — see below"
+        : "review the misplaced fields"
+    : "";
 
   return (
     <div>
@@ -473,8 +479,13 @@ interface SequenceBreakdownProps {
 
 function SequenceBreakdown({ grade, label, ttsControl }: SequenceBreakdownProps) {
   const percent = Math.round(grade.score * 100);
+  const criticalReason = grade.procedure?.criticalFailure ? grade.procedure.criticalReason : null;
   return (
-    <div className="seq-summary" data-state={grade.passed ? "pass" : "partial"} aria-live="polite">
+    <div
+      className="seq-summary"
+      data-state={grade.passed ? "pass" : criticalReason ? "fail" : "partial"}
+      aria-live="polite"
+    >
       <div className="seq-summary-header">
         <span className="seq-summary-score">
           {percent}
@@ -482,6 +493,11 @@ function SequenceBreakdown({ grade, label, ttsControl }: SequenceBreakdownProps)
         </span>
         <span className="seq-summary-label">{label}</span>
       </div>
+      {criticalReason ? (
+        <p className="seq-critical" role="alert">
+          <strong>Auto-fail:</strong> {criticalReason}
+        </p>
+      ) : null}
       {ttsControl ?? null}
       <p className="seq-summary-detail">
         {grade.correctCount} of {grade.total} expected steps matched
