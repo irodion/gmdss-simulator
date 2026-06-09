@@ -24,6 +24,20 @@ const PERFECT_FIRE: DscPanelState = {
   addressee: null,
 };
 
+/** An untouched panel: nothing activated, no call configured. */
+const IDLE_PANEL: DscPanelState = {
+  epirb: false,
+  spareAntenna: false,
+  abandon: false,
+  power: "high",
+  channel: null,
+  dscActivated: false,
+  callType: null,
+  nature: null,
+  priority: null,
+  addressee: null,
+};
+
 function field(result: ReturnType<typeof gradeProcedure>, id: string) {
   return result.fields.find((f) => f.id === id);
 }
@@ -295,5 +309,99 @@ describe("gradeProcedure — Individual calls", () => {
     const grade = gradeProcedure(TR, { ...PERFECT_TR, dscActivated: false });
     expect(field(grade, "addressee")!.correct).toBe(false);
     expect(field(grade, "addressee")!.detail).toMatch(/no alert sent/i);
+  });
+});
+
+describe("gradeProcedure — forbidden (voice-only)", () => {
+  const VOICE_ONLY: ScenarioDsc = {
+    state: "forbidden",
+    channel: 16,
+    power: "high",
+    epirb: false,
+  };
+
+  test("sending no DSC alert is correct, and is the only graded fact", () => {
+    const grade = gradeProcedure(VOICE_ONLY, IDLE_PANEL);
+    expect(grade.fields).toHaveLength(1);
+    expect(field(grade, "dsc")!.correct).toBe(true);
+    expect(field(grade, "dsc")!.detail).toMatch(/voice-only/i);
+    expect(grade.total).toBe(1);
+    expect(grade.correct).toBe(1);
+    expect(grade.status).toBe("pass");
+    expect(grade.criticalFailure).toBe(false);
+  });
+
+  test("any DSC activation is wrong (none was required)", () => {
+    const grade = gradeProcedure(VOICE_ONLY, {
+      ...IDLE_PANEL,
+      dscActivated: true,
+      callType: "distress",
+      nature: "fire",
+    });
+    expect(field(grade, "dsc")!.correct).toBe(false);
+    expect(field(grade, "dsc")!.detail).toMatch(/none was required/i);
+    expect(grade.status).toBe("fail");
+    // The critical cap for a false distress alert lands in a later slice (#98).
+    expect(grade.criticalFailure).toBe(false);
+  });
+});
+
+describe("gradeProcedure — permitted (on-scene relay)", () => {
+  const ON_SCENE: ScenarioDsc = {
+    state: "permitted",
+    onScene: true,
+    channel: 16,
+    power: "high",
+    epirb: false,
+  };
+
+  test("sending nothing is neutral: marked correct but zero-weight", () => {
+    const grade = gradeProcedure(ON_SCENE, IDLE_PANEL);
+    expect(field(grade, "dsc")!.correct).toBe(true);
+    expect(grade.total).toBe(0);
+    expect(grade.correct).toBe(0);
+    expect(grade.status).toBe("pass");
+  });
+
+  test("an Undesignated distress alert is allowed and neutral (zero-weight)", () => {
+    const grade = gradeProcedure(ON_SCENE, {
+      ...IDLE_PANEL,
+      dscActivated: true,
+      callType: "distress",
+      nature: "undesignated",
+    });
+    expect(field(grade, "dsc")!.correct).toBe(true);
+    expect(field(grade, "dsc")!.detail).toMatch(/acceptable/i);
+    expect(grade.total).toBe(0);
+  });
+
+  test("a wrong DSC config is penalised", () => {
+    const grade = gradeProcedure(ON_SCENE, {
+      ...IDLE_PANEL,
+      dscActivated: true,
+      callType: "distress",
+      nature: "fire",
+    });
+    expect(field(grade, "dsc")!.correct).toBe(false);
+    expect(field(grade, "dsc")!.detail).toMatch(/Undesignated/i);
+    expect(grade.total).toBe(1);
+    expect(grade.correct).toBe(0);
+    expect(grade.status).toBe("fail");
+  });
+
+  test("without the on-scene flag the leniency is withdrawn — only voice-only is acceptable", () => {
+    const noFlag: ScenarioDsc = { ...ON_SCENE, onScene: false };
+    const sentUndesignated = gradeProcedure(noFlag, {
+      ...IDLE_PANEL,
+      dscActivated: true,
+      callType: "distress",
+      nature: "undesignated",
+    });
+    expect(field(sentUndesignated, "dsc")!.correct).toBe(false);
+    expect(sentUndesignated.total).toBe(1);
+    // Sending nothing remains fine.
+    const idle = gradeProcedure(noFlag, IDLE_PANEL);
+    expect(field(idle, "dsc")!.correct).toBe(true);
+    expect(idle.total).toBe(0);
   });
 });

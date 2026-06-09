@@ -685,6 +685,57 @@ describe("gradeScenario with DSC/equipment panel", () => {
     expect(grade.passed).toBe(false); // …but the critical failure caps it
   });
 
+  test("a forbidden Scenario folds a no-DSC fact: voice-only passes, a stray alert is penalised", () => {
+    const FORBIDDEN_DSC: ScenarioDsc = {
+      state: "forbidden",
+      channel: 16,
+      power: "high",
+      epirb: false,
+    };
+    const tpl = template(VOICE);
+    // No DSC sent → 3 voice + 1 dsc = 4/4.
+    const ok = gradeScenario(tpl, placementsMap(VOICE), {
+      dsc: FORBIDDEN_DSC,
+      panel: { ...PERFECT_PANEL, dscActivated: false, callType: null, nature: null },
+    });
+    expect(ok.correctCount).toBe(4);
+    expect(ok.total).toBe(4);
+    expect(ok.dimensions.find((d) => d.id === "procedure")!.total).toBe(1);
+    expect(ok.passed).toBe(true);
+
+    // A stray distress alert → 3 voice + 0 = 3/4 = 0.75 → fail.
+    const stray = gradeScenario(tpl, placementsMap(VOICE), {
+      dsc: FORBIDDEN_DSC,
+      panel: PERFECT_PANEL,
+    });
+    expect(stray.correctCount).toBe(3);
+    expect(stray.score).toBeCloseTo(0.75, 5);
+    expect(stray.passed).toBe(false);
+  });
+
+  test("a permitted on-scene relay is neutral: no dimension, no effect on the score", () => {
+    const PERMITTED_DSC: ScenarioDsc = {
+      state: "permitted",
+      onScene: true,
+      channel: 16,
+      power: "high",
+      epirb: false,
+    };
+    const tpl = template(VOICE);
+    const grade = gradeScenario(tpl, placementsMap(VOICE), {
+      dsc: PERMITTED_DSC,
+      panel: { ...PERFECT_PANEL, dscActivated: false, callType: null, nature: null },
+    });
+    // 3 voice / 3 — the panel contributes nothing to the score.
+    expect(grade.correctCount).toBe(3);
+    expect(grade.total).toBe(3);
+    expect(grade.score).toBeCloseTo(1, 5);
+    expect(grade.dimensions.find((d) => d.id === "procedure")).toBeUndefined();
+    // …but per-field feedback is still available on the panel.
+    expect(grade.procedure).toBeTruthy();
+    expect(grade.procedure!.fields[0]!.id).toBe("dsc");
+  });
+
   test("folds an Individual call (addressee + precedence + proposed channel) into the score", () => {
     const TR_DSC: ScenarioDsc = {
       state: "required",
