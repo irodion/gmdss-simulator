@@ -298,6 +298,53 @@ describe("SequenceCard with DSC panel", () => {
     },
   };
 
+  const INDIVIDUAL_SCENARIO: Scenario = {
+    id: "panel-tr-sea-sprite",
+    priority: "routine",
+    rubricId: "v1/routine-tr",
+    brief: "Transit report to Haifa Radio before departure.",
+    facts: { vessel: "Sea Sprite" },
+    dsc: {
+      state: "required",
+      callType: "individual",
+      priority: "routine",
+      addressee: "haifa_radio",
+      channel: 26,
+      power: "high",
+      epirb: false,
+    },
+  };
+
+  test("an Individual scenario reveals the addressee cascade, acks the channel, and grades it", () => {
+    render(
+      <SequenceCard
+        template={PANEL_TEMPLATE}
+        scenario={INDIVIDUAL_SCENARIO}
+        onComplete={() => {}}
+        onRetry={() => {}}
+        onNewScenario={() => {}}
+        onBack={() => {}}
+      />,
+    );
+    // Individual → Routine → Haifa Radio → Ch 26 (EPIRB off, power High by default).
+    fireEvent.click(screen.getByRole("button", { name: "Individual" }));
+    fireEvent.click(screen.getByRole("button", { name: "Routine" }));
+    fireEvent.click(screen.getByRole("button", { name: /Haifa Radio, MMSI/i }));
+    fireEvent.click(screen.getByRole("button", { name: "Channel 26" }));
+    fireEvent.click(screen.getByRole("button", { name: /send dsc alert/i }));
+
+    // The scripted acknowledgement accepts the proposed channel.
+    expect(screen.getByRole("status").textContent).toMatch(/Haifa Radio: affirmative, channel 26/i);
+
+    submit();
+    const feedback = screen.getByLabelText(/dsc and equipment feedback/i);
+    expect(feedback.textContent).toContain("Addressee");
+    expect(feedback.textContent).toContain("Haifa Radio");
+    expect(feedback.textContent).not.toMatch(/no DSC alert sent/i);
+    expect(feedback.textContent).not.toMatch(/should be/i);
+    expect(feedback.textContent).not.toMatch(/expected/i);
+  });
+
   test("an All Ships scenario reveals the precedence cascade and grades it correct", () => {
     render(
       <SequenceCard

@@ -1,4 +1,5 @@
 import { natureOfDistressLabels, type NatureOfDistress } from "@gmdss-simulator/utils";
+import { coastStationName } from "./coast-stations.ts";
 import type {
   CallPriority,
   DscPanelState,
@@ -49,10 +50,11 @@ function onOff(value: boolean): string {
  * expected configuration, as a checklist of facts (never an ordered sequence —
  * see ADR 0002). Pure: no I/O, no clock, deterministic.
  *
- * Implements the `required` state for the Distress family (nature) and the
- * All Ships / Individual families (precedence). The `forbidden` and `permitted`
- * states (voice-only / on-scene relay) are added by a later slice; until then
- * every `dsc` block in content is `required`.
+ * Implements the `required` state across all three call families: Distress
+ * (nature), All Ships (precedence), and Individual (precedence + addressee +
+ * the proposed working channel). The `forbidden` and `permitted` states
+ * (voice-only / on-scene relay) are added by a later slice; until then every
+ * `dsc` block in content is `required`.
  */
 export function gradeProcedure(expected: ScenarioDsc, panel: DscPanelState): ProcedureGrade {
   const fields: ProcedureFieldResult[] = [];
@@ -110,6 +112,23 @@ export function gradeProcedure(expected: ScenarioDsc, panel: DscPanelState): Pro
         : !panel.dscActivated
           ? "no alert sent"
           : `sent ${priorityLabel(panel.priority)}, expected ${priorityLabel(expected.priority)}`,
+    });
+  }
+
+  // --- Addressee (Individual calls only) -----------------------------------
+  // A directed call names a coast station; the broadcast families do not. Gated
+  // on callTypeCorrect like the other call-shape facts.
+  if (expectedCallType === "individual" && expected.addressee != null) {
+    const addresseeCorrect = callTypeCorrect && panel.addressee === expected.addressee;
+    fields.push({
+      id: "addressee",
+      label: "Addressee",
+      correct: addresseeCorrect,
+      detail: addresseeCorrect
+        ? coastStationName(expected.addressee)
+        : !panel.dscActivated
+          ? "no alert sent"
+          : `called ${coastStationName(panel.addressee)}, expected ${coastStationName(expected.addressee)}`,
     });
   }
 

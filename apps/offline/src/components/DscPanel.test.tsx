@@ -78,6 +78,26 @@ describe("DscPanel", () => {
     expect(screen.getByRole("status").textContent).toMatch(/transmitted on Channel 70/i);
   });
 
+  test("Individual: reveals addressee + priority, gates Send on all three, then acks the channel", () => {
+    render(<Harness />);
+    fireEvent.click(button("Individual"));
+    expect(screen.getByRole("group", { name: /addressee coast station/i })).toBeTruthy();
+    expect(screen.getByRole("group", { name: /call priority/i })).toBeTruthy();
+
+    // Send stays blocked until precedence + addressee + a proposed channel are all set.
+    expect(button(/send dsc alert/i).disabled).toBe(true);
+    fireEvent.click(button("Routine"));
+    expect(button(/send dsc alert/i).disabled).toBe(true);
+    fireEvent.click(button(/Haifa Radio, MMSI/i));
+    expect(button(/send dsc alert/i).disabled).toBe(true);
+    fireEvent.click(button("Channel 26"));
+    expect(button(/send dsc alert/i).disabled).toBe(false);
+
+    fireEvent.click(button(/send dsc alert/i));
+    // Model A: the station accepts the proposed channel in a scripted reply.
+    expect(screen.getByRole("status").textContent).toMatch(/Haifa Radio: affirmative, channel 26/i);
+  });
+
   test("transmit power can be switched between High and Low", () => {
     render(<Harness />);
     // High is the default selection.

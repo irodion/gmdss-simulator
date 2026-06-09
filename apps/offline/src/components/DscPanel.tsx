@@ -4,6 +4,8 @@ import {
   type NatureOfDistress,
 } from "@gmdss-simulator/utils";
 import type { ReactNode } from "react";
+import { buildChannelAck } from "../drills/scripts/channel-ack.ts";
+import { COAST_STATIONS } from "../drills/scripts/coast-stations.ts";
 import type {
   CallPriority,
   DscCallType,
@@ -14,10 +16,11 @@ import type {
 
 /**
  * The voice working channels the trainee can propose. A fixed list (Ch 16 plus
- * common ship-to-ship / port working channels) doubles as the distractor set,
- * replacing the old per-rubric channel-power decoy pools.
+ * common ship-to-ship / port working channels, incl. Ch 26 for coast-station
+ * traffic) doubles as the distractor set, replacing the old per-rubric
+ * channel-power decoy pools.
  */
-export const CHANNEL_OPTIONS: readonly number[] = [6, 8, 12, 13, 16, 72, 77];
+export const CHANNEL_OPTIONS: readonly number[] = [6, 8, 12, 13, 16, 26, 72, 77];
 
 const CALL_TYPES: readonly { id: DscCallType; label: string }[] = [
   { id: "distress", label: "Distress" },
@@ -62,11 +65,20 @@ export function DscPanel({ state, onChange, locked, result }: DscPanelProps) {
   // Editing the call configuration is locked once the alert is "sent"; Cancel
   // reverts it so the trainee can correct a mistake before Submit.
   const callLocked = locked || state.dscActivated;
+  // Send is enabled once the call is fully specified: a Distress needs a nature,
+  // an All Ships needs a precedence, an Individual needs precedence + addressee +
+  // a proposed working channel (the station echoes it in its acknowledgement).
   const canActivate =
     !locked &&
     !state.dscActivated &&
     state.callType !== null &&
-    (state.callType === "distress" ? state.nature !== null : state.priority !== null);
+    (state.callType === "distress"
+      ? state.nature !== null
+      : state.callType === "individual"
+        ? state.priority !== null && state.addressee !== null && state.channel !== null
+        : state.priority !== null);
+
+  const channelAck = buildChannelAck(state);
 
   return (
     <section className="dsc-panel" aria-label="DSC and equipment controls">
@@ -105,7 +117,9 @@ export function DscPanel({ state, onChange, locked, result }: DscPanelProps) {
               key={ct.id}
               pressed={state.callType === ct.id}
               disabled={callLocked}
-              onClick={() => set({ callType: ct.id, nature: null, priority: null })}
+              onClick={() =>
+                set({ callType: ct.id, nature: null, priority: null, addressee: null })
+              }
             >
               {ct.label}
             </Opt>
@@ -148,10 +162,42 @@ export function DscPanel({ state, onChange, locked, result }: DscPanelProps) {
           </div>
         ) : null}
 
+        {state.callType === "individual" ? (
+          <div className="dsc-sub">
+            <span className="dsc-sub-label">Addressee (coast station)</span>
+            <div
+              className="dsc-opts dsc-opts-wrap"
+              role="group"
+              aria-label="Addressee coast station"
+            >
+              {COAST_STATIONS.map((station) => (
+                <button
+                  key={station.id}
+                  type="button"
+                  className="dsc-opt dsc-opt-station"
+                  aria-pressed={state.addressee === station.id}
+                  aria-label={`${station.name}, MMSI ${station.mmsi}`}
+                  disabled={callLocked}
+                  onClick={() => set({ addressee: station.id })}
+                >
+                  <span className="dsc-station-name">{station.name}</span>
+                  <span className="dsc-station-mmsi">{station.mmsi}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+        ) : null}
+
         {state.dscActivated ? (
           <div className="dsc-ack" role="status">
             <span className="dsc-ack-mark" aria-hidden="true" />
-            <span className="dsc-ack-text">Distress alert transmitted on Channel 70.</span>
+            <span className="dsc-ack-text">
+              {state.callType === "individual"
+                ? (channelAck ?? "Call sent.")
+                : state.callType === "all_ships"
+                  ? "All Ships call transmitted on Channel 70."
+                  : "Distress alert transmitted on Channel 70."}
+            </span>
             {!locked ? (
               <button
                 type="button"
