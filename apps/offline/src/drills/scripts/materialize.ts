@@ -43,10 +43,8 @@ const ITEM_TO_FACT_KEY = {
   tr_voyage: "voyage",
 } as const satisfies Readonly<Record<string, keyof ScenarioFacts>>;
 
-type StringFactKey = (typeof ITEM_TO_FACT_KEY)[keyof typeof ITEM_TO_FACT_KEY];
-
 function factLabel(itemId: string, facts: ScenarioFacts, fallback: string): string {
-  const factKey = (ITEM_TO_FACT_KEY as Readonly<Record<string, StringFactKey>>)[itemId];
+  const factKey = (ITEM_TO_FACT_KEY as Record<string, keyof ScenarioFacts>)[itemId];
   if (!factKey) return fallback;
   return facts[factKey] ?? fallback;
 }
