@@ -59,6 +59,7 @@ describe("gradeProcedure — required distress", () => {
     expect(field(grade, "nature")!.correct).toBe(false);
     expect(field(grade, "nature")!.detail).toMatch(/no alert sent/i);
     expect(grade.criticalFailure).toBe(true);
+    expect(grade.criticalReason).toMatch(/no DSC alert sent/i);
   });
 
   test("sending the wrong call type fails the call type and is critical", () => {
@@ -66,6 +67,7 @@ describe("gradeProcedure — required distress", () => {
     expect(field(grade, "call_type")!.correct).toBe(false);
     expect(field(grade, "call_type")!.detail).toMatch(/expected Distress/i);
     expect(grade.criticalFailure).toBe(true);
+    expect(grade.criticalReason).toMatch(/Distress was required/i);
     // The nature field for a distress Scenario is still present.
     expect(field(grade, "nature")).toBeTruthy();
   });
@@ -341,7 +343,7 @@ describe("gradeProcedure — forbidden (voice-only)", () => {
     expect(field(grade, "power")!.correct).toBe(true);
   });
 
-  test("any DSC activation is wrong (none was required)", () => {
+  test("a false DSC distress alert is wrong and a critical failure", () => {
     const grade = gradeProcedure(VOICE_ONLY, {
       ...VOICE_ONLY_OK,
       dscActivated: true,
@@ -350,9 +352,24 @@ describe("gradeProcedure — forbidden (voice-only)", () => {
     });
     expect(field(grade, "dsc")!.correct).toBe(false);
     expect(field(grade, "dsc")!.detail).toMatch(/none was required/i);
-    // Channel/power were right, so it's partial here; the fail-cap is #98.
+    // Channel/power were right, so the raw score is only partial...
     expect(grade.status).toBe("partial");
+    // ...but a false distress alert caps the Scenario at fail (#98).
+    expect(grade.criticalFailure).toBe(true);
+    expect(grade.criticalReason).toMatch(/false distress alert/i);
+  });
+
+  test("a misdirected non-distress DSC call is wrong but NOT a critical failure", () => {
+    const grade = gradeProcedure(VOICE_ONLY, {
+      ...VOICE_ONLY_OK,
+      dscActivated: true,
+      callType: "all_ships",
+      priority: "safety",
+    });
+    expect(field(grade, "dsc")!.correct).toBe(false);
+    // Wrong, but it doesn't mobilise SAR — scores proportionally, no auto-fail.
     expect(grade.criticalFailure).toBe(false);
+    expect(grade.criticalReason).toBeNull();
   });
 });
 

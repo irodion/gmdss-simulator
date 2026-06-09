@@ -703,8 +703,8 @@ describe("gradeScenario with DSC/equipment panel", () => {
     expect(ok.dimensions.find((d) => d.id === "procedure")!.total).toBe(3);
     expect(ok.passed).toBe(true);
 
-    // A stray distress alert costs the no-DSC fact → 5/6 (penalised but, with
-    // channel/power still right, not yet capped — the fail-cap is #98).
+    // A stray distress alert costs the no-DSC fact → 5/6, and (a false distress
+    // alert) caps the result at fail even though 5/6 clears the threshold (#98).
     const stray = gradeScenario(tpl, placementsMap(VOICE), {
       dsc: FORBIDDEN_DSC,
       panel: PERFECT_PANEL,
@@ -712,6 +712,18 @@ describe("gradeScenario with DSC/equipment panel", () => {
     expect(stray.correctCount).toBe(5);
     expect(stray.score).toBeCloseTo(5 / 6, 5);
     expect(stray.procedure!.fields.find((f) => f.id === "dsc")!.correct).toBe(false);
+    expect(stray.procedure!.criticalFailure).toBe(true);
+    expect(stray.score * 100).toBeGreaterThanOrEqual(80); // score alone would pass
+    expect(stray.passed).toBe(false); // …but the false distress alert caps it
+
+    // A misdirected non-distress call is still penalised, but NOT a critical
+    // failure: 5/6, no auto-fail.
+    const allShips = gradeScenario(tpl, placementsMap(VOICE), {
+      dsc: FORBIDDEN_DSC,
+      panel: { ...PERFECT_PANEL, callType: "all_ships", nature: null, priority: "safety" },
+    });
+    expect(allShips.procedure!.criticalFailure).toBe(false);
+    expect(allShips.passed).toBe(true);
   });
 
   test("a permitted on-scene relay grades channel/power but scores the DSC alert neutrally", () => {

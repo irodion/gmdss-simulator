@@ -213,8 +213,13 @@ export function gradeProcedure(expected: ScenarioDsc, panel: DscPanelState): Pro
 
   // A wrong or missing required call type is the critical DSC error; gradeScenario
   // caps the overall result at fail when this is set, regardless of voice score
-  // (ADR 0002). A later slice extends this to the forbidden-state false-alert path.
+  // (ADR 0002). The forbidden-state false-alert path is the other critical case.
   const criticalFailure = expected.state === "required" && !callTypeCorrect;
+  const criticalReason = !criticalFailure
+    ? null
+    : !panel.dscActivated
+      ? `No DSC alert sent — a ${CALL_TYPE_LABELS[expectedCallType]} was required.`
+      : `Sent ${CALL_TYPE_LABELS[panel.callType ?? expectedCallType]} — a ${CALL_TYPE_LABELS[expectedCallType]} was required.`;
 
   return {
     fields,
@@ -222,6 +227,7 @@ export function gradeProcedure(expected: ScenarioDsc, panel: DscPanelState): Pro
     total,
     status: statusFor(correct, total),
     criticalFailure,
+    criticalReason,
   };
 }
 
@@ -232,11 +238,15 @@ export function gradeProcedure(expected: ScenarioDsc, panel: DscPanelState): Pro
  * the assessed judgment; any DSC activation is wrong. The voice working channel
  * and power are still graded — the spoken call goes out on Ch 16 at high power.
  *
- * `criticalFailure` stays false in this slice; capping a false distress alert at
- * fail is handled by the critical-failure slice (#98).
+ * A false *distress* alert (a DSC distress sent when none was required) is a
+ * critical failure: it mobilises SAR for a non-distress, so gradeScenario caps
+ * the result at fail regardless of the voice score (ADR 0002). A misdirected
+ * non-distress call (Individual / All Ships) is still wrong but scores
+ * proportionally rather than auto-failing.
  */
 function gradeForbidden(expected: ScenarioDsc, panel: DscPanelState): ProcedureGrade {
   const sentDsc = panel.dscActivated;
+  const sentFalseDistress = sentDsc && panel.callType === "distress";
   const fields: ProcedureFieldResult[] = [
     {
       id: "dsc",
@@ -255,7 +265,10 @@ function gradeForbidden(expected: ScenarioDsc, panel: DscPanelState): ProcedureG
     correct,
     total: fields.length,
     status: statusFor(correct, fields.length),
-    criticalFailure: false,
+    criticalFailure: sentFalseDistress,
+    criticalReason: sentFalseDistress
+      ? "False distress alert — no DSC alert was required here (voice only)."
+      : null,
   };
 }
 
@@ -304,5 +317,12 @@ function gradePermitted(expected: ScenarioDsc, panel: DscPanelState): ProcedureG
     total += 1;
   }
 
-  return { fields, correct, total, status: statusFor(correct, total), criticalFailure: false };
+  return {
+    fields,
+    correct,
+    total,
+    status: statusFor(correct, total),
+    criticalFailure: false,
+    criticalReason: null,
+  };
 }

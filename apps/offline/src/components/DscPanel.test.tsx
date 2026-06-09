@@ -138,6 +138,7 @@ describe("DscPanel", () => {
       total: 2,
       status: "partial",
       criticalFailure: false,
+      criticalReason: null,
     };
     render(<Harness locked result={result} />);
     expect(screen.getByRole("switch", { name: "EPIRB" })).toHaveProperty("disabled", true);

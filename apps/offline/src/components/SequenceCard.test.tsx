@@ -380,14 +380,21 @@ describe("SequenceCard with DSC panel", () => {
     expect(feedback.textContent).not.toMatch(/expected Channel/i);
   });
 
-  test("a forbidden scenario flags a stray DSC alert", () => {
+  test("a forbidden scenario flags a stray DSC alert and auto-fails it", () => {
     renderForbidden();
+    // Voice on Ch 16 is correct, so the numeric score would otherwise pass —
+    // but a false DSC distress alert is a critical failure (#98).
+    fireEvent.click(screen.getByRole("button", { name: "Channel 16" }));
     fireEvent.click(screen.getByRole("button", { name: "Distress" }));
     fireEvent.click(screen.getByRole("button", { name: "Fire / Explosion" }));
     fireEvent.click(screen.getByRole("button", { name: /send dsc alert/i }));
     submit();
     const feedback = screen.getByLabelText(/dsc and equipment feedback/i);
     expect(feedback.textContent).toMatch(/none was required/i);
+    // The auto-fail is attributed in the summary breakdown.
+    const banner = screen.getByRole("alert");
+    expect(banner.textContent).toMatch(/auto-fail/i);
+    expect(banner.textContent).toMatch(/false distress alert/i);
   });
 
   test("an All Ships scenario reveals the precedence cascade and grades it correct", () => {

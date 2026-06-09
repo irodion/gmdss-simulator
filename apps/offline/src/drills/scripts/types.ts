@@ -316,10 +316,15 @@ export interface ProcedureGrade {
   readonly status: DimensionStatus;
   /**
    * Whether a critical DSC error occurred (false distress alert, or a
-   * wrong/missing required call type). The capping it implies is wired into
-   * `gradeScenario` by a later slice; here it is computed and surfaced only.
+   * wrong/missing required call type). `gradeScenario` caps the overall result
+   * at fail when set, regardless of the spoken-message score (ADR 0002).
    */
   readonly criticalFailure: boolean;
+  /**
+   * When `criticalFailure` is set, a one-line attribution of the auto-fail for
+   * the breakdown (e.g. "False distress alert …"); `null` otherwise.
+   */
+  readonly criticalReason: string | null;
 }
 
 export interface Scenario {
