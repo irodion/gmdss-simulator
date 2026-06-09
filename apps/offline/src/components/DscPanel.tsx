@@ -80,6 +80,14 @@ export function DscPanel({ state, onChange, locked, result }: DscPanelProps) {
 
   const channelAck = buildChannelAck(state);
 
+  // For an Individual call the proposed channel rides in the DSC payload and the
+  // station acknowledges it, so it must freeze on Send like the rest of the call
+  // config — otherwise a trainee could send Ch 26, switch to Ch 16, and have the
+  // ack and grade silently follow the live field. For the broadcast/distress
+  // families the working channel is chosen for the post-alert voice turn (not
+  // carried in the Ch 70 alert), so it stays editable until Submit.
+  const channelLocked = state.callType === "individual" ? callLocked : locked;
+
   return (
     <section className="dsc-panel" aria-label="DSC and equipment controls">
       <div className="dsc-panel-head">
@@ -226,7 +234,7 @@ export function DscPanel({ state, onChange, locked, result }: DscPanelProps) {
             <Opt
               key={ch}
               pressed={state.channel === ch}
-              disabled={locked}
+              disabled={channelLocked}
               ariaLabel={`Channel ${ch}`}
               onClick={() => set({ channel: ch })}
             >
