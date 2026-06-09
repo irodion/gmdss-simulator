@@ -1775,9 +1775,7 @@
 .seq-summary[data-state="pass"] {
   color: var(--sea);
 }
-.seq-summary[data-state="partial"] {
-  color: var(--coral);
-}
+.seq-summary[data-state="partial"],
 .seq-summary[data-state="fail"] {
   color: var(--coral);
 }

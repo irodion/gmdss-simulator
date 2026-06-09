@@ -479,7 +479,9 @@ interface SequenceBreakdownProps {
 
 function SequenceBreakdown({ grade, label, ttsControl }: SequenceBreakdownProps) {
   const percent = Math.round(grade.score * 100);
-  const criticalReason = grade.procedure?.criticalFailure ? grade.procedure.criticalReason : null;
+  // criticalReason is non-null exactly when criticalFailure is set (grade-procedure.ts),
+  // so the bare field already expresses "show a banner only on a critical failure".
+  const criticalReason = grade.procedure?.criticalReason ?? null;
   return (
     <div
       className="seq-summary"
