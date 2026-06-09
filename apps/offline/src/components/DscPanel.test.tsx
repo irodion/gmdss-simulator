@@ -98,6 +98,27 @@ describe("DscPanel", () => {
     expect(screen.getByRole("status").textContent).toMatch(/Haifa Radio: affirmative, channel 26/i);
   });
 
+  test("Individual: the proposed channel freezes after Send, and Cancel reopens it", () => {
+    render(<Harness />);
+    fireEvent.click(button("Individual"));
+    fireEvent.click(button("Routine"));
+    fireEvent.click(button(/Haifa Radio, MMSI/i));
+    fireEvent.click(button("Channel 26"));
+    fireEvent.click(button(/send dsc alert/i));
+
+    // Channel buttons are locked once the Individual alert is "sent": the
+    // proposed channel was acknowledged and graded, so it can't drift to Ch 16.
+    expect(button("Channel 16").disabled).toBe(true);
+    expect(button("Channel 26").disabled).toBe(true);
+    fireEvent.click(button("Channel 16"));
+    expect(button("Channel 26").getAttribute("aria-pressed")).toBe("true");
+    expect(screen.getByRole("status").textContent).toMatch(/affirmative, channel 26/i);
+
+    // Cancel reopens the call config, including the channel, to fix a mistake.
+    fireEvent.click(button(/^cancel$/i));
+    expect(button("Channel 16").disabled).toBe(false);
+  });
+
   test("transmit power can be switched between High and Low", () => {
     render(<Harness />);
     // High is the default selection.
