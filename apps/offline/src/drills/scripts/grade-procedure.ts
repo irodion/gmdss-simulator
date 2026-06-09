@@ -46,6 +46,35 @@ function onOff(value: boolean): string {
 }
 
 /**
+ * The voice working channel and transmit power are graded in EVERY state — a
+ * voice-only ack/relay still goes out on the right channel at the right power,
+ * so the panel owns them whether or not a DSC alert is sent.
+ */
+function channelField(expected: ScenarioDsc, panel: DscPanelState): ProcedureFieldResult {
+  const correct = panel.channel === expected.channel;
+  return {
+    id: "channel",
+    label: "Working channel",
+    correct,
+    detail: correct
+      ? `Channel ${expected.channel}`
+      : `used ${panel.channel ?? "—"}, expected Channel ${expected.channel}`,
+  };
+}
+
+function powerField(expected: ScenarioDsc, panel: DscPanelState): ProcedureFieldResult {
+  const correct = panel.power === expected.power;
+  return {
+    id: "power",
+    label: "Transmit power",
+    correct,
+    detail: correct
+      ? POWER_LABELS[expected.power]
+      : `set ${POWER_LABELS[panel.power]}, expected ${POWER_LABELS[expected.power]}`,
+  };
+}
+
+/**
  * Grade the trainee's final DSC/equipment panel state against a Scenario's
  * expected configuration, as a checklist of facts (never an ordered sequence —
  * see ADR 0002). Pure: no I/O, no clock, deterministic.
@@ -58,7 +87,7 @@ function onOff(value: boolean): string {
  *   scored neutrally (right thing or nothing both fine; wrong config penalised).
  */
 export function gradeProcedure(expected: ScenarioDsc, panel: DscPanelState): ProcedureGrade {
-  if (expected.state === "forbidden") return gradeForbidden(panel);
+  if (expected.state === "forbidden") return gradeForbidden(expected, panel);
   if (expected.state === "permitted") return gradePermitted(expected, panel);
 
   const fields: ProcedureFieldResult[] = [];
@@ -175,27 +204,9 @@ export function gradeProcedure(expected: ScenarioDsc, panel: DscPanelState): Pro
     });
   }
 
-  // --- Working channel -----------------------------------------------------
-  const channelCorrect = panel.channel === expected.channel;
-  fields.push({
-    id: "channel",
-    label: "Working channel",
-    correct: channelCorrect,
-    detail: channelCorrect
-      ? `Channel ${expected.channel}`
-      : `used ${panel.channel ?? "—"}, expected Channel ${expected.channel}`,
-  });
-
-  // --- Transmit power ------------------------------------------------------
-  const powerCorrect = panel.power === expected.power;
-  fields.push({
-    id: "power",
-    label: "Transmit power",
-    correct: powerCorrect,
-    detail: powerCorrect
-      ? POWER_LABELS[expected.power]
-      : `set ${POWER_LABELS[panel.power]}, expected ${POWER_LABELS[expected.power]}`,
-  });
+  // --- Working channel & transmit power ------------------------------------
+  fields.push(channelField(expected, panel));
+  fields.push(powerField(expected, panel));
 
   const correct = fields.filter((f) => f.correct).length;
   const total = fields.length;
@@ -218,13 +229,13 @@ export function gradeProcedure(expected: ScenarioDsc, panel: DscPanelState): Pro
  * Forbidden state: the correct answer is voice-only (a liferaft MAYDAY on a
  * portable VHF, a distress acknowledgement, a voice MAYDAY RELAY, an RCC
  * response). The panel stays live because recognising *when not to* transmit is
- * the assessed judgment; any DSC activation is wrong. The equipment/channel
- * fields on the block are ignored here — only the no-DSC fact is graded.
+ * the assessed judgment; any DSC activation is wrong. The voice working channel
+ * and power are still graded — the spoken call goes out on Ch 16 at high power.
  *
  * `criticalFailure` stays false in this slice; capping a false distress alert at
  * fail is handled by the critical-failure slice (#98).
  */
-function gradeForbidden(panel: DscPanelState): ProcedureGrade {
+function gradeForbidden(expected: ScenarioDsc, panel: DscPanelState): ProcedureGrade {
   const sentDsc = panel.dscActivated;
   const fields: ProcedureFieldResult[] = [
     {
@@ -235,59 +246,63 @@ function gradeForbidden(panel: DscPanelState): ProcedureGrade {
         ? "you sent a DSC alert — none was required here (voice only)"
         : "correctly voice-only — no DSC alert sent",
     },
+    channelField(expected, panel),
+    powerField(expected, panel),
   ];
+  const correct = fields.filter((f) => f.correct).length;
   return {
     fields,
-    correct: sentDsc ? 0 : 1,
-    total: 1,
-    status: sentDsc ? "fail" : "pass",
+    correct,
+    total: fields.length,
+    status: statusFor(correct, fields.length),
     criticalFailure: false,
   };
 }
 
 /**
  * Permitted state: an on-scene MAYDAY relay (you are at the scene of the
- * casualty) MAY send a DSC distress alert with nature Undesignated. Scored
- * neutrally — sending that, or sending nothing, both contribute zero to the
- * score; only a *wrong* DSC config is penalised. The leniency is gated by the
- * explicit `onScene` flag, never inferred: without it, only voice-only is
- * acceptable (i.e. it behaves like `forbidden`).
+ * casualty) MAY send a DSC distress alert with nature Undesignated. Only the
+ * DSC alert is scored neutrally — sending that, or sending nothing, both
+ * contribute zero; a *wrong* DSC config is penalised. The leniency is gated by
+ * the explicit `onScene` flag, never inferred: without it, only voice-only is
+ * acceptable. The voice working channel and power are graded as usual (the
+ * spoken relay still goes out on Ch 16 at high power).
  */
 function gradePermitted(expected: ScenarioDsc, panel: DscPanelState): ProcedureGrade {
   const onSceneRelayAllowed = expected.onScene === true;
   const sentPermittedAlert =
     panel.dscActivated && panel.callType === "distress" && panel.nature === "undesignated";
-  const acceptable = !panel.dscActivated || (onSceneRelayAllowed && sentPermittedAlert);
+  const dscAcceptable = !panel.dscActivated || (onSceneRelayAllowed && sentPermittedAlert);
 
-  if (acceptable) {
-    // Neutral: a passing field is shown for feedback, but total 0 keeps it out
-    // of the unified score (gradeScenario only folds dimensions with total > 0).
-    const detail = !panel.dscActivated
-      ? "voice relay — no DSC alert needed (acceptable)"
-      : "on-scene relay — Undesignated distress alert (acceptable)";
-    return {
-      fields: [{ id: "dsc", label: "DSC alert", correct: true, detail }],
-      correct: 0,
-      total: 0,
-      status: "pass",
-      criticalFailure: false,
-    };
+  const fields: ProcedureFieldResult[] = [
+    channelField(expected, panel),
+    powerField(expected, panel),
+  ];
+  const correct = fields.filter((f) => f.correct).length;
+  let total = fields.length;
+
+  if (dscAcceptable) {
+    // Neutral: a passing field is shown for feedback, but it carries no weight
+    // (not added to correct/total), so it cannot lift or lower the score.
+    fields.push({
+      id: "dsc",
+      label: "DSC alert",
+      correct: true,
+      detail: !panel.dscActivated
+        ? "voice relay — no DSC alert needed (acceptable)"
+        : "on-scene relay — Undesignated distress alert (acceptable)",
+    });
+  } else {
+    fields.push({
+      id: "dsc",
+      label: "DSC alert",
+      correct: false,
+      detail: onSceneRelayAllowed
+        ? "if you relay by DSC on-scene, send a Distress alert with nature Undesignated"
+        : "no DSC alert was required here — relay by voice",
+    });
+    total += 1;
   }
 
-  return {
-    fields: [
-      {
-        id: "dsc",
-        label: "DSC alert",
-        correct: false,
-        detail: onSceneRelayAllowed
-          ? "if you relay by DSC on-scene, send a Distress alert with nature Undesignated"
-          : "no DSC alert was required here — relay by voice",
-      },
-    ],
-    correct: 0,
-    total: 1,
-    status: "fail",
-    criticalFailure: false,
-  };
+  return { fields, correct, total, status: statusFor(correct, total), criticalFailure: false };
 }

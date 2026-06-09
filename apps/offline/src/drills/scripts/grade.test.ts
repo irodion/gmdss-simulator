@@ -685,7 +685,7 @@ describe("gradeScenario with DSC/equipment panel", () => {
     expect(grade.passed).toBe(false); // …but the critical failure caps it
   });
 
-  test("a forbidden Scenario folds a no-DSC fact: voice-only passes, a stray alert is penalised", () => {
+  test("a forbidden Scenario folds no-DSC + channel + power; a stray alert is penalised", () => {
     const FORBIDDEN_DSC: ScenarioDsc = {
       state: "forbidden",
       channel: 16,
@@ -693,27 +693,28 @@ describe("gradeScenario with DSC/equipment panel", () => {
       epirb: false,
     };
     const tpl = template(VOICE);
-    // No DSC sent → 3 voice + 1 dsc = 4/4.
+    // No DSC, Ch 16, high power → 3 voice + 3 panel = 6/6.
     const ok = gradeScenario(tpl, placementsMap(VOICE), {
       dsc: FORBIDDEN_DSC,
       panel: { ...PERFECT_PANEL, dscActivated: false, callType: null, nature: null },
     });
-    expect(ok.correctCount).toBe(4);
-    expect(ok.total).toBe(4);
-    expect(ok.dimensions.find((d) => d.id === "procedure")!.total).toBe(1);
+    expect(ok.correctCount).toBe(6);
+    expect(ok.total).toBe(6);
+    expect(ok.dimensions.find((d) => d.id === "procedure")!.total).toBe(3);
     expect(ok.passed).toBe(true);
 
-    // A stray distress alert → 3 voice + 0 = 3/4 = 0.75 → fail.
+    // A stray distress alert costs the no-DSC fact → 5/6 (penalised but, with
+    // channel/power still right, not yet capped — the fail-cap is #98).
     const stray = gradeScenario(tpl, placementsMap(VOICE), {
       dsc: FORBIDDEN_DSC,
       panel: PERFECT_PANEL,
     });
-    expect(stray.correctCount).toBe(3);
-    expect(stray.score).toBeCloseTo(0.75, 5);
-    expect(stray.passed).toBe(false);
+    expect(stray.correctCount).toBe(5);
+    expect(stray.score).toBeCloseTo(5 / 6, 5);
+    expect(stray.procedure!.fields.find((f) => f.id === "dsc")!.correct).toBe(false);
   });
 
-  test("a permitted on-scene relay is neutral: no dimension, no effect on the score", () => {
+  test("a permitted on-scene relay grades channel/power but scores the DSC alert neutrally", () => {
     const PERMITTED_DSC: ScenarioDsc = {
       state: "permitted",
       onScene: true,
@@ -726,14 +727,12 @@ describe("gradeScenario with DSC/equipment panel", () => {
       dsc: PERMITTED_DSC,
       panel: { ...PERFECT_PANEL, dscActivated: false, callType: null, nature: null },
     });
-    // 3 voice / 3 — the panel contributes nothing to the score.
-    expect(grade.correctCount).toBe(3);
-    expect(grade.total).toBe(3);
+    // 3 voice + 2 panel (channel + power) = 5/5; the optional DSC alert is neutral.
+    expect(grade.correctCount).toBe(5);
+    expect(grade.total).toBe(5);
     expect(grade.score).toBeCloseTo(1, 5);
-    expect(grade.dimensions.find((d) => d.id === "procedure")).toBeUndefined();
-    // …but per-field feedback is still available on the panel.
-    expect(grade.procedure).toBeTruthy();
-    expect(grade.procedure!.fields[0]!.id).toBe("dsc");
+    expect(grade.dimensions.find((d) => d.id === "procedure")!.total).toBe(2);
+    expect(grade.procedure!.fields.find((f) => f.id === "dsc")!.correct).toBe(true);
   });
 
   test("folds an Individual call (addressee + precedence + proposed channel) into the score", () => {

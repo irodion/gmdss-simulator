@@ -367,15 +367,17 @@ describe("SequenceCard with DSC panel", () => {
     );
   }
 
-  test("a forbidden scenario keeps the panel active and rewards voice-only", () => {
+  test("a forbidden scenario keeps the panel active and rewards correct voice-only", () => {
     renderForbidden();
     // The panel stays visible and interactive (the judgment is when NOT to send).
     expect(screen.getByLabelText(/dsc and equipment controls/i)).toBeTruthy();
     expect(screen.getByRole("button", { name: "Distress" })).toBeTruthy();
-    // Submit without sending any DSC alert.
+    // Voice on Ch 16 at high power (default), no DSC alert.
+    fireEvent.click(screen.getByRole("button", { name: "Channel 16" }));
     submit();
     const feedback = screen.getByLabelText(/dsc and equipment feedback/i);
     expect(feedback.textContent).toMatch(/voice-only/i);
+    expect(feedback.textContent).not.toMatch(/expected Channel/i);
   });
 
   test("a forbidden scenario flags a stray DSC alert", () => {
