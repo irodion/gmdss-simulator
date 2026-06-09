@@ -345,6 +345,49 @@ describe("SequenceCard with DSC panel", () => {
     expect(feedback.textContent).not.toMatch(/expected/i);
   });
 
+  const FORBIDDEN_SCENARIO: Scenario = {
+    id: "panel-ack-vered",
+    priority: "mayday",
+    rubricId: "v1/distress-ack",
+    brief: "Acknowledge the MAYDAY by voice on Channel 16.",
+    facts: { vessel: "Vered" },
+    dsc: { state: "forbidden", channel: 16, power: "high", epirb: false },
+  };
+
+  function renderForbidden() {
+    return render(
+      <SequenceCard
+        template={PANEL_TEMPLATE}
+        scenario={FORBIDDEN_SCENARIO}
+        onComplete={() => {}}
+        onRetry={() => {}}
+        onNewScenario={() => {}}
+        onBack={() => {}}
+      />,
+    );
+  }
+
+  test("a forbidden scenario keeps the panel active and rewards voice-only", () => {
+    renderForbidden();
+    // The panel stays visible and interactive (the judgment is when NOT to send).
+    expect(screen.getByLabelText(/dsc and equipment controls/i)).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Distress" })).toBeTruthy();
+    // Submit without sending any DSC alert.
+    submit();
+    const feedback = screen.getByLabelText(/dsc and equipment feedback/i);
+    expect(feedback.textContent).toMatch(/voice-only/i);
+  });
+
+  test("a forbidden scenario flags a stray DSC alert", () => {
+    renderForbidden();
+    fireEvent.click(screen.getByRole("button", { name: "Distress" }));
+    fireEvent.click(screen.getByRole("button", { name: "Fire / Explosion" }));
+    fireEvent.click(screen.getByRole("button", { name: /send dsc alert/i }));
+    submit();
+    const feedback = screen.getByLabelText(/dsc and equipment feedback/i);
+    expect(feedback.textContent).toMatch(/none was required/i);
+  });
+
   test("an All Ships scenario reveals the precedence cascade and grades it correct", () => {
     render(
       <SequenceCard
