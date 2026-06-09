@@ -228,3 +228,72 @@ describe("gradeProcedure — All Ships precedence", () => {
     expect(grade.criticalFailure).toBe(true);
   });
 });
+
+describe("gradeProcedure — Individual calls", () => {
+  const TR: ScenarioDsc = {
+    state: "required",
+    callType: "individual",
+    priority: "routine",
+    addressee: "haifa_radio",
+    channel: 26,
+    power: "high",
+    epirb: false,
+  };
+
+  const PERFECT_TR: DscPanelState = {
+    epirb: false,
+    spareAntenna: false,
+    abandon: false,
+    power: "high",
+    channel: 26,
+    dscActivated: true,
+    callType: "individual",
+    nature: null,
+    priority: "routine",
+    addressee: "haifa_radio",
+  };
+
+  test("a correct Individual call grades addressee, precedence, and proposed channel; no nature", () => {
+    const grade = gradeProcedure(TR, PERFECT_TR);
+    expect(field(grade, "addressee")!.correct).toBe(true);
+    expect(field(grade, "addressee")!.detail).toBe("Haifa Radio");
+    expect(field(grade, "priority")!.correct).toBe(true);
+    expect(field(grade, "channel")!.correct).toBe(true);
+    expect(field(grade, "nature")).toBeUndefined();
+    // call_type, priority, addressee, epirb, channel, power
+    expect(grade.total).toBe(6);
+    expect(grade.correct).toBe(6);
+    expect(grade.status).toBe("pass");
+    expect(grade.criticalFailure).toBe(false);
+  });
+
+  test("the wrong addressee is reported called-vs-expected and is not critical", () => {
+    const grade = gradeProcedure(TR, { ...PERFECT_TR, addressee: "rcc_haifa" });
+    const addressee = field(grade, "addressee")!;
+    expect(addressee.correct).toBe(false);
+    expect(addressee.detail).toContain("RCC Haifa");
+    expect(addressee.detail).toContain("Haifa Radio");
+    // A wrong addressee is not critical — the call type was still correct.
+    expect(grade.criticalFailure).toBe(false);
+  });
+
+  test("a wrong proposed channel is reported used-vs-expected", () => {
+    const grade = gradeProcedure(TR, { ...PERFECT_TR, channel: 16 });
+    const channel = field(grade, "channel")!;
+    expect(channel.correct).toBe(false);
+    expect(channel.detail).toContain("used 16");
+    expect(channel.detail).toContain("Channel 26");
+  });
+
+  test("an addressee riding on the wrong call type earns no credit and is critical", () => {
+    const grade = gradeProcedure(TR, { ...PERFECT_TR, callType: "all_ships" });
+    expect(field(grade, "addressee")!.correct).toBe(false);
+    expect(grade.criticalFailure).toBe(true);
+  });
+
+  test("not sending any alert fails the addressee with a no-alert detail", () => {
+    const grade = gradeProcedure(TR, { ...PERFECT_TR, dscActivated: false });
+    expect(field(grade, "addressee")!.correct).toBe(false);
+    expect(field(grade, "addressee")!.detail).toMatch(/no alert sent/i);
+  });
+});

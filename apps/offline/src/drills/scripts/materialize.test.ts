@@ -290,6 +290,45 @@ const DISTRESS_RELAY: RubricDefinition = {
   ],
 };
 
+const ROUTINE_TR: RubricDefinition = {
+  id: "v1/routine-tr",
+  version: "1.0.0",
+  category: "routine",
+  requiredFields: [],
+  prowordRules: [],
+  sequenceRules: { fieldOrder: [] },
+  channelRules: { requiredChannel: 26, blockChannel70Voice: true },
+  sequenceParts: [
+    {
+      id: "dsc_call",
+      label: "DSC routine call (Channel 70)",
+      items: [
+        { id: "dsc_channel70", label: "DSC: Channel 70, High" },
+        { id: "dsc_routine_category", label: "DSC: category Routine" },
+        { id: "dsc_individual_call", label: "DSC: individual call to coast station MMSI" },
+        { id: "dsc_working_channel", label: "DSC: propose a working channel" },
+        { id: "dsc_send_routine", label: "DSC: send routine call" },
+      ],
+    },
+    {
+      id: "voice_report",
+      label: "Voice Transit Report (working channel)",
+      items: [
+        { id: "working_channel_switch", label: "Switch to the nominated working channel" },
+        { id: "addressee", label: "Coast station name" },
+        { id: "this_is", label: "THIS IS" },
+        { id: "vessel", label: "Vessel name" },
+        { id: "callsign", label: "Callsign / MMSI" },
+        { id: "tr_keyword", label: "Transit Report (TR)" },
+        { id: "position", label: "Position" },
+        { id: "tr_voyage", label: "Voyage details (from/to, ETA)" },
+        { id: "persons", label: "Persons on board" },
+        { id: "over", label: "OVER" },
+      ],
+    },
+  ],
+};
+
 const RUBRICS: RubricsById = {
   "v1/distress": DISTRESS,
   "v1/urgency": URGENCY,
@@ -298,6 +337,7 @@ const RUBRICS: RubricsById = {
   "v1/distress-relative": DISTRESS_RELATIVE,
   "v1/distress-rcc-response": DISTRESS_RCC_RESPONSE,
   "v1/urgency-medico": URGENCY_MEDICO,
+  "v1/routine-tr": ROUTINE_TR,
   "v1/distress-relay": DISTRESS_RELAY,
 };
 
@@ -1019,6 +1059,40 @@ describe("materializeScenario — DSC panel path", () => {
       epirb: false,
     },
   };
+
+  const TR_PANEL_SCENARIO: Scenario = {
+    id: "panel-tr-sea-sprite-haifa-radio",
+    priority: "routine",
+    rubricId: "v1/routine-tr",
+    brief: "Transit report to Haifa Radio before departure.",
+    facts: {
+      vessel: "Sea Sprite",
+      callsign: "MMSI 428 070 555",
+      position: "32°49'N 035°00'E",
+      voyage: "Bound Haifa to Limassol, ETA 0600 UTC tomorrow",
+      persons: "8 persons on board",
+    },
+    dsc: {
+      state: "required",
+      callType: "individual",
+      priority: "routine",
+      addressee: "haifa_radio",
+      channel: 26,
+      power: "high",
+      epirb: false,
+    },
+  };
+
+  test("collapses the all-procedure DSC-call phase and keeps the spoken transit report (TR)", () => {
+    const template = materializeScenario(TR_PANEL_SCENARIO, RUBRICS);
+    // The dsc_call part is entirely procedure chips → dropped; only voice_report remains.
+    expect(template.parts).toHaveLength(1);
+    expect(template.parts[0]!.id).toBe("voice_report");
+    const items = template.parts[0]!.items;
+    expect(items.every((i) => !isProcedureItem(i.id))).toBe(true);
+    expect(items.some((i) => i.id === "working_channel_switch")).toBe(false);
+    expect(items.at(-1)!.id).toBe("over");
+  });
 
   test("strips the working-channel-switch chip from the second MEDICO phase (panel owns the channel)", () => {
     const template = materializeScenario(MEDICO_PANEL_SCENARIO, RUBRICS);

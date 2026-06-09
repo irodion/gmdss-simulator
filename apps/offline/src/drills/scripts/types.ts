@@ -266,9 +266,9 @@ export interface ScenarioDsc {
   readonly nature?: NatureOfDistress;
   /** Other natures also accepted in this Scenario (the canonical one is implicit). */
   readonly acceptableNatures?: readonly NatureOfDistress[];
-  /** Individual / All Ships only: the expected precedence (later slices). */
+  /** Individual / All Ships only: the expected precedence. */
   readonly priority?: CallPriority;
-  /** Individual only: the expected coast-station addressee (later slice). */
+  /** Individual only: the expected coast-station addressee, by `COAST_STATIONS` id. */
   readonly addressee?: string;
   /** The expected voice working channel (e.g. 16 for own-ship distress). */
   readonly channel: number;

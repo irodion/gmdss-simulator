@@ -685,6 +685,36 @@ describe("gradeScenario with DSC/equipment panel", () => {
     expect(grade.passed).toBe(false); // …but the critical failure caps it
   });
 
+  test("folds an Individual call (addressee + precedence + proposed channel) into the score", () => {
+    const TR_DSC: ScenarioDsc = {
+      state: "required",
+      callType: "individual",
+      priority: "routine",
+      addressee: "haifa_radio",
+      channel: 26,
+      power: "high",
+      epirb: false,
+    };
+    const tpl = template(VOICE);
+    const grade = gradeScenario(tpl, placementsMap(VOICE), {
+      dsc: TR_DSC,
+      panel: {
+        ...PERFECT_PANEL,
+        epirb: false,
+        callType: "individual",
+        nature: null,
+        priority: "routine",
+        addressee: "haifa_radio",
+        channel: 26,
+      },
+    });
+    const procedure = grade.dimensions.find((d) => d.id === "procedure")!;
+    expect(procedure.total).toBe(6); // call_type, priority, addressee, epirb, channel, power
+    expect(procedure.correct).toBe(6);
+    expect(grade.procedure!.fields.find((f) => f.id === "addressee")!.correct).toBe(true);
+    expect(grade.passed).toBe(true);
+  });
+
   test("folds an All Ships safety call (precedence, no nature) into the unified score", () => {
     const SECURITE_DSC: ScenarioDsc = {
       state: "required",

@@ -2165,6 +2165,24 @@
   transform: translateX(-50%) rotate(45deg);
 }
 
+/* Coast-station addressee buttons stack a name over its MMSI subtext. */
+.dsc-opt-station {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  text-align: left;
+}
+.dsc-station-name {
+  font-size: 0.9rem;
+}
+.dsc-station-mmsi {
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.04em;
+  opacity: 0.7;
+}
+
 /* Send action reuses .btn-primary; just position it. */
 .dsc-send {
   align-self: flex-start;

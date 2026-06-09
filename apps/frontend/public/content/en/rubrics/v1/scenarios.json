@@ -268,6 +268,15 @@
         "patientVitals": "Male, age 52, temperature 37.2°C, BP 160/100",
         "patientStatus": "Severe chest pain, conscious but very weak, suspected cardiac event",
         "actionsTaken": "Aspirin administered, oxygen rigged, patient resting"
+      },
+      "dsc": {
+        "state": "required",
+        "callType": "individual",
+        "priority": "urgency",
+        "addressee": "rcc_haifa",
+        "channel": 16,
+        "power": "high",
+        "epirb": false
       }
     },
     {
@@ -306,6 +315,15 @@
         "patientVitals": "Female, age 41, temperature 36.8°C, BP 100/65",
         "patientStatus": "Uncontrolled bleeding from deep galley laceration, conscious and pale",
         "actionsTaken": "Direct pressure applied, tourniquet rigged on upper arm"
+      },
+      "dsc": {
+        "state": "required",
+        "callType": "individual",
+        "priority": "urgency",
+        "addressee": "rcc_haifa",
+        "channel": 16,
+        "power": "high",
+        "epirb": false
       }
     },
     {
@@ -526,6 +544,15 @@
         "position": "32°49'N 035°00'E",
         "voyage": "Bound Haifa to Limassol, ETA 0600 UTC tomorrow",
         "persons": "8 persons on board"
+      },
+      "dsc": {
+        "state": "required",
+        "callType": "individual",
+        "priority": "routine",
+        "addressee": "haifa_radio",
+        "channel": 26,
+        "power": "high",
+        "epirb": false
       }
     }
   ]
