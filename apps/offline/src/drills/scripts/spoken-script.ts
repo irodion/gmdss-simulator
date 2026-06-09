@@ -1,21 +1,4 @@
-import {
-  isProcedureItem,
-  type SequenceItem,
-  type SequenceTemplate,
-  WORKING_CHANNEL_SWITCH_ID,
-} from "./types.ts";
-
-function isVoiceCallItem(id: string): boolean {
-  // The dsc_ prefix guard is a forward-compat catch for future DSC IDs that
-  // get added to rubric data before being registered in types.ts's
-  // PROCEDURE_STEP_IDS. working_channel_switch is a MEDICO-specific procedural
-  // action kept out of PROCEDURE_STEP_IDS so it stays in the content pool group
-  // rather than the dashed-italic procedure group.
-  if (isProcedureItem(id)) return false;
-  if (id.startsWith("dsc_")) return false;
-  if (id === WORKING_CHANNEL_SWITCH_ID) return false;
-  return true;
-}
+import type { SequenceItem, SequenceTemplate } from "./types.ts";
 
 function normalizePositionLabel(label: string): string {
   return label
@@ -36,8 +19,9 @@ function spokenLabel(item: SequenceItem): string {
 
 /**
  * Build the canonical voice-call radio transmission for a materialized
- * scenario. Procedural setup items (DSC steps, EPIRB, channel switches,
- * abandon-to-raft) are filtered out so only the spoken-radio portion remains.
+ * scenario. A Scenario's template now carries only spoken-radio chips (the
+ * DSC/equipment phase is owned by the panel, see ADR 0002), so every item is
+ * spoken.
  *
  * Adjacent duplicates (e.g. MAYDAY ×4, vessel ×3) are kept as comma-separated
  * repeats — the resulting comma pauses match real radio cadence.
@@ -45,9 +29,8 @@ function spokenLabel(item: SequenceItem): string {
 export function buildSpokenTransmission(template: SequenceTemplate): string {
   const phaseStrings: string[] = [];
   for (const part of template.parts) {
-    const voiceLabels = part.items.filter((i) => isVoiceCallItem(i.id)).map(spokenLabel);
-    if (voiceLabels.length === 0) continue;
-    phaseStrings.push(voiceLabels.join(", "));
+    if (part.items.length === 0) continue;
+    phaseStrings.push(part.items.map(spokenLabel).join(", "));
   }
   return phaseStrings.join(". ");
 }

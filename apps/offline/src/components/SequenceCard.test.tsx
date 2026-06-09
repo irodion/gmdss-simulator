@@ -25,8 +25,6 @@ const TEMPLATE: SequenceTemplate = {
       id: "procedure",
       label: "MAYDAY procedure",
       items: [
-        { id: "epirb_on", label: "Turn on EPIRB" },
-        { id: "dsc_channel70", label: "DSC: Channel 70, High 25W" },
         { id: "mayday", label: "MAYDAY" },
         { id: "mayday", label: "MAYDAY" },
         { id: "vessel", label: "Blue Duck" },

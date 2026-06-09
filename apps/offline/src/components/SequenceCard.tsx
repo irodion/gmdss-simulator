@@ -5,7 +5,6 @@ import {
   type DimensionStatus,
   type DscPanelState,
   isPriorityItem,
-  isProcedureItem,
   type Scenario,
   type SequenceGrade,
   type SequenceItem,
@@ -57,7 +56,6 @@ export function SequenceCard({
   const [pool, setPool] = useState<readonly SequenceItem[]>(() => template.pool);
   const [grade, setGrade] = useState<SequenceGrade | null>(null);
   const [panel, setPanel] = useState<DscPanelState>(INITIAL_PANEL_STATE);
-  const usePanel = scenario.dsc != null;
   const [activePartId, setActivePartId] = useState<string>(() => template.parts[0]?.id ?? "");
   const scenarioRef = useRef<HTMLElement | null>(null);
 
@@ -174,7 +172,7 @@ export function SequenceCard({
     const result = gradeScenario(
       template,
       placementsByPart,
-      usePanel && scenario.dsc ? { dsc: scenario.dsc, panel } : {},
+      scenario.dsc ? { dsc: scenario.dsc, panel } : {},
     );
     setGrade(result);
     onComplete(result);
@@ -182,12 +180,7 @@ export function SequenceCard({
 
   const indexedPool = pool.map((item, idx) => ({ item, idx }));
   const priorityPool = indexedPool.filter(({ item }) => isPriorityItem(item.id));
-  const procedurePool = indexedPool.filter(
-    ({ item }) => !isPriorityItem(item.id) && isProcedureItem(item.id),
-  );
-  const contentPool = indexedPool.filter(
-    ({ item }) => !isPriorityItem(item.id) && !isProcedureItem(item.id),
-  );
+  const contentPool = indexedPool.filter(({ item }) => !isPriorityItem(item.id));
 
   const summaryLabel = grade
     ? grade.passed
@@ -214,20 +207,17 @@ export function SequenceCard({
         ) : null}
       </section>
 
-      {usePanel ? (
-        <DscPanel
-          state={panel}
-          onChange={setPanel}
-          locked={grade !== null}
-          result={grade?.procedure ?? null}
-        />
-      ) : null}
+      <DscPanel
+        state={panel}
+        onChange={setPanel}
+        locked={grade !== null}
+        result={grade?.procedure ?? null}
+      />
 
       <div className="prompt">
         <span className="prompt-eyebrow">{template.callLabel}</span>
-        {usePanel
-          ? "Compose the spoken message: pick the right priority and order the phrases"
-          : "Pick the right priority and order the phrases for this scenario"}
+        Set the DSC &amp; equipment panel, then compose the spoken message: pick the priority and
+        order the phrases.
       </div>
 
       {parts.map((state) => {
@@ -340,21 +330,6 @@ export function SequenceCard({
                 key={`p-${idx}`}
                 type="button"
                 className="seq-pool-item seq-pool-item-priority"
-                onClick={() => handlePoolPick(idx)}
-                disabled={grade !== null}
-              >
-                {item.label}
-              </button>
-            ))}
-          </div>
-        ) : null}
-        {procedurePool.length > 0 ? (
-          <div className="seq-pool seq-pool-procedure" aria-label="Procedure actions">
-            {procedurePool.map(({ item, idx }) => (
-              <button
-                key={`r-${idx}`}
-                type="button"
-                className="seq-pool-item seq-pool-item-procedure"
                 onClick={() => handlePoolPick(idx)}
                 disabled={grade !== null}
               >

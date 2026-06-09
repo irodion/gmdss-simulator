@@ -17,89 +17,6 @@ export function isPriorityItem(id: string): id is PriorityId {
   return (PRIORITY_IDS as readonly string[]).includes(id);
 }
 
-export type NatureCode =
-  | "nature_undesignated"
-  | "nature_collision"
-  | "nature_fire"
-  | "nature_disabled"
-  | "nature_listing"
-  | "nature_flooding"
-  | "nature_grounding"
-  | "nature_piracy"
-  | "nature_abandoning"
-  | "nature_mob";
-
-export const NATURE_CODES: readonly NatureCode[] = [
-  "nature_undesignated",
-  "nature_collision",
-  "nature_fire",
-  "nature_disabled",
-  "nature_listing",
-  "nature_flooding",
-  "nature_grounding",
-  "nature_piracy",
-  "nature_abandoning",
-  "nature_mob",
-];
-
-export const NATURE_LABELS: Readonly<Record<NatureCode, string>> = {
-  nature_undesignated: "DSC: Undesignated",
-  nature_collision: "DSC: Collision",
-  nature_fire: "DSC: Fire & Explosion",
-  nature_disabled: "DSC: Disabled & Adrift",
-  nature_listing: "DSC: Listing & Capsizing",
-  nature_flooding: "DSC: Flooding",
-  nature_grounding: "DSC: Grounding",
-  nature_piracy: "DSC: Piracy",
-  nature_abandoning: "DSC: Abandoning",
-  nature_mob: "DSC: Man overboard",
-};
-
-export function isNatureItem(id: string): id is NatureCode {
-  return (NATURE_CODES as readonly string[]).includes(id);
-}
-
-export const DSC_NATURE_PLACEHOLDER_ID = "dsc_nature";
-export const EPIRB_ON_ID = "epirb_on";
-export const ANTENNA_SPARE_ID = "antenna_spare";
-export const DECOY_ID_PREFIX = "decoy_";
-/**
- * MEDICO-specific "switch to a working channel" action. It is deliberately NOT
- * in `PROCEDURE_STEP_IDS` (so the chip path keeps it in the content-pool group,
- * not the dashed procedure group), but it is not a spoken-message chip either:
- * `spoken-script` drops it from playback and the DSC panel path strips it.
- */
-export const WORKING_CHANNEL_SWITCH_ID = "working_channel_switch";
-
-export function isDecoyId(id: string): boolean {
-  return id.startsWith(DECOY_ID_PREFIX);
-}
-
-const PROCEDURE_STEP_IDS = [
-  EPIRB_ON_ID,
-  ANTENNA_SPARE_ID,
-  "dsc_channel70",
-  "dsc_time_location",
-  DSC_NATURE_PLACEHOLDER_ID,
-  "dsc_button",
-  "dsc_channel16",
-  "in_raft",
-  "dsc_urgency_category",
-  "dsc_addressee_all_stations",
-  "dsc_time_position",
-  "dsc_send_urgency",
-  "dsc_routine_category",
-  "dsc_individual_call",
-  "dsc_working_channel",
-  "dsc_send_routine",
-] as const;
-
-export function isProcedureItem(id: string): boolean {
-  return (
-    (PROCEDURE_STEP_IDS as readonly string[]).includes(id) || isNatureItem(id) || isDecoyId(id)
-  );
-}
-
 export interface SequenceItem {
   readonly id: string;
   readonly label: string;
@@ -200,13 +117,6 @@ export interface ScenarioFacts {
   readonly voyage?: string;
   readonly addresseeRcc?: string;
   readonly actionRequest?: string;
-  readonly natureCode?: NatureCode;
-  /**
-   * Additional DSC nature codes that should also be accepted for this scenario.
-   * The canonical `natureCode` is always accepted; `acceptableNatureCodes` lists
-   * other defensible picks. Pool decoys exclude every acceptable code.
-   */
-  readonly acceptableNatureCodes?: readonly NatureCode[];
   /**
    * Voice-call addressee (e.g. "All Stations", "RCC Haifa"). Used by the
    * MEDICO drill to populate the addressee chips in both the initial Ch 16
@@ -333,12 +243,10 @@ export interface Scenario {
   readonly rubricId: string;
   readonly brief: string;
   readonly facts: ScenarioFacts;
-  readonly requiresAbandon?: boolean;
-  /** Splices the spare-antenna chip after `epirb_on` (e.g. dismasted vessels). */
-  readonly requiresSpareAntenna?: boolean;
   /**
-   * When present, the Scenario is graded with the DSC/equipment panel (this
-   * block is the expected configuration) instead of the legacy procedure chips.
+   * The expected DSC/equipment configuration. Every Scenario is graded with the
+   * always-on DSC/equipment panel against this block (ADR 0002); the spoken
+   * message is graded separately from the rubric's voice `sequenceParts`.
    */
   readonly dsc?: ScenarioDsc;
 }

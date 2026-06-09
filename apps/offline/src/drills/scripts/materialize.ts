@@ -1,15 +1,5 @@
-import type { PoolDecoy, RubricDefinition } from "@gmdss-simulator/utils";
 import { shuffle } from "../drill-types.ts";
 import {
-  ANTENNA_SPARE_ID,
-  DECOY_ID_PREFIX,
-  DSC_NATURE_PLACEHOLDER_ID,
-  EPIRB_ON_ID,
-  isDecoyId,
-  isProcedureItem,
-  NATURE_CODES,
-  NATURE_LABELS,
-  type NatureCode,
   PRIORITY_IDS,
   type PriorityId,
   type RubricsById,
@@ -18,20 +8,7 @@ import {
   type SequenceItem,
   type SequenceTemplate,
   type SequenceTemplatePart,
-  WORKING_CHANNEL_SWITCH_ID,
 } from "./types.ts";
-
-const NATURE_DECOY_COUNT = 4;
-const CHANNEL_DECOY_COUNT = 3;
-const CALLSIGN_DECOY_COUNT = 2;
-const IN_RAFT_ITEM: SequenceItem = {
-  id: "in_raft",
-  label: "In raft: EPIRB, SART, portable VHF",
-};
-const ANTENNA_SPARE_ITEM: SequenceItem = {
-  id: ANTENNA_SPARE_ID,
-  label: "Rig spare antenna (coax cable)",
-};
 
 const PRIORITY_LABELS: Readonly<Record<PriorityId, string>> = {
   mayday: "MAYDAY",
@@ -39,32 +16,6 @@ const PRIORITY_LABELS: Readonly<Record<PriorityId, string>> = {
   securite: "SECURITE",
   // Routine carries no signal word; the label is only used by the daily tile.
   routine: "ROUTINE",
-};
-
-const FALLBACK_LABELS: Readonly<Record<string, string>> = {
-  vessel: "Vessel name",
-  callsign: "Callsign / MMSI",
-  position: "Position",
-  nature: "Nature of message",
-  assistance: "Assistance / information needed",
-  persons: "Persons on board",
-  sart_addressee: "Ship who received my Radar SART",
-  ship_description: "Ship description",
-  addressee_rcc: "RCC station name",
-  action_request: "Action request",
-  addressee: "Addressee (All Stations / RCC)",
-  patient_vitals: "Patient vitals (gender, age, temp, BP)",
-  patient_status: "Patient status / problem",
-  actions_taken: "Actions taken / treatment given",
-  relayed_vessel: "Relayed vessel name",
-  relayed_mmsi: "Relayed vessel MMSI",
-  relayed_position: "Relayed position",
-  relayed_nature: "Relayed nature of distress",
-  relayed_assistance: "Relayed assistance request",
-  relayed_persons: "Relayed persons on board",
-  tr_voyage: "Voyage details (from/to, ETA)",
-  over: "OVER",
-  out: "OUT",
 };
 
 const ITEM_TO_FACT_KEY = {
@@ -100,37 +51,11 @@ function factLabel(itemId: string, facts: ScenarioFacts, fallback: string): stri
   return facts[factKey] ?? fallback;
 }
 
-function buildAcceptableNatureSet(facts: ScenarioFacts): readonly NatureCode[] {
-  if (!facts.natureCode) return [];
-  const extras = facts.acceptableNatureCodes ?? [];
-  const seen = new Set<NatureCode>([facts.natureCode, ...extras]);
-  return Array.from(seen);
-}
-
 function injectScenarioLabels(
   items: readonly { id: string; label: string }[],
   facts: ScenarioFacts,
-  scenarioId: string,
-  acceptableNatureIds: readonly NatureCode[],
 ): SequenceItem[] {
-  return items.map((item) => {
-    if (item.id === DSC_NATURE_PLACEHOLDER_ID) {
-      const code = facts.natureCode;
-      if (!code) {
-        throw new Error(`Scenario ${scenarioId} uses dsc_nature slot but has no facts.natureCode`);
-      }
-      const otherAcceptable = acceptableNatureIds.filter((c) => c !== code);
-      return {
-        id: code,
-        label: NATURE_LABELS[code],
-        ...(otherAcceptable.length > 0 ? { acceptableIds: otherAcceptable } : {}),
-      };
-    }
-    return {
-      id: item.id,
-      label: factLabel(item.id, facts, item.label),
-    };
-  });
+  return items.map((item) => ({ id: item.id, label: factLabel(item.id, facts, item.label) }));
 }
 
 function decoyOpening(priority: PriorityId): readonly SequenceItem[] {
@@ -142,62 +67,32 @@ function decoyOpening(priority: PriorityId): readonly SequenceItem[] {
   ];
 }
 
-function pickNatureDecoys(
-  acceptable: readonly NatureCode[],
-  count: number,
-): readonly SequenceItem[] {
-  const exclude = new Set<NatureCode>(acceptable);
-  const candidates = NATURE_CODES.filter((code) => !exclude.has(code));
-  const shuffled = shuffle(candidates);
-  return shuffled.slice(0, count).map((code) => ({ id: code, label: NATURE_LABELS[code] }));
-}
-
-function pickPoolDecoys(decoys: readonly PoolDecoy[], count: number): readonly SequenceItem[] {
-  const seen = new Set<string>();
-  for (const decoy of decoys) {
-    if (!isDecoyId(decoy.id)) {
-      throw new Error(
-        `pickPoolDecoys: decoy id ${JSON.stringify(decoy.id)} must start with "${DECOY_ID_PREFIX}"`,
-      );
-    }
-    if (seen.has(decoy.id)) {
-      throw new Error(`pickPoolDecoys: duplicate decoy id ${JSON.stringify(decoy.id)}`);
-    }
-    seen.add(decoy.id);
-  }
-  return shuffle(decoys).slice(0, count);
-}
-
-function natureChip(code: NatureCode): SequenceItem {
-  return { id: code, label: NATURE_LABELS[code] };
-}
-
 /**
- * Build the voice-only template for a panel Scenario: each part keeps just its
- * spoken-message chips (procedure/equipment items stripped), and the pool gets
- * the correct voice chips plus the wrong-priority decoy openings. No nature,
- * channel-power, or callsign decoys — those belonged to the retired chip
- * mechanic; the panel supplies its own fixed option lists instead.
- *
- * `working_channel_switch` is stripped too: it is not a spoken-message chip
- * (see WORKING_CHANNEL_SWITCH_ID) and the panel now owns channel selection, so
- * leaving it would ask the trainee to "place" a step the panel already covers.
+ * Build the spoken-message template for a Scenario. The DSC/equipment phase is
+ * graded entirely through the always-on panel (see ADR 0002), so a rubric's
+ * `sequenceParts` now carry only the spoken-radio chips; this materializer
+ * fills in the scenario-specific labels and adds the wrong-priority decoy
+ * openings. The fixed channel/power/nature option lists live in the panel, so
+ * there are no longer any nature, channel-power, or callsign decoy pools.
  */
-function isPanelVoiceItem(id: string): boolean {
-  return !isProcedureItem(id) && id !== WORKING_CHANNEL_SWITCH_ID;
-}
+export function materializeScenario(
+  scenario: Scenario,
+  rubricsById: RubricsById,
+): SequenceTemplate {
+  const rubric = rubricsById[scenario.rubricId];
+  if (!rubric) {
+    throw new Error(`No rubric available for id ${scenario.rubricId}`);
+  }
+  if (!rubric.sequenceParts || rubric.sequenceParts.length === 0) {
+    throw new Error(`Rubric ${rubric.id} has no sequenceParts`);
+  }
 
-function materializePanelScenario(scenario: Scenario, rubric: RubricDefinition): SequenceTemplate {
-  const sequenceParts = rubric.sequenceParts ?? [];
-  const parts: SequenceTemplatePart[] = sequenceParts
-    .map((part) => {
-      const voiceItems = part.items.filter((item) => isPanelVoiceItem(item.id));
-      return {
-        id: part.id,
-        label: part.label,
-        items: injectScenarioLabels(voiceItems, scenario.facts, scenario.id, []),
-      };
-    })
+  const parts: SequenceTemplatePart[] = rubric.sequenceParts
+    .map((part) => ({
+      id: part.id,
+      label: part.label,
+      items: injectScenarioLabels(part.items, scenario.facts),
+    }))
     .filter((part) => part.items.length > 0);
 
   const correctItems = parts.flatMap((p) => p.items);
@@ -214,134 +109,4 @@ function materializePanelScenario(scenario: Scenario, rubric: RubricDefinition):
     parts,
     pool,
   };
-}
-
-export function materializeScenario(
-  scenario: Scenario,
-  rubricsById: RubricsById,
-): SequenceTemplate {
-  const rubric = rubricsById[scenario.rubricId];
-  if (!rubric) {
-    throw new Error(`No rubric available for id ${scenario.rubricId}`);
-  }
-  if (!rubric.sequenceParts || rubric.sequenceParts.length === 0) {
-    throw new Error(`Rubric ${rubric.id} has no sequenceParts`);
-  }
-
-  // Panel path: a Scenario with a `dsc` block grades its equipment phase through
-  // the DSC/equipment panel, so the procedure chips are stripped here and only
-  // the spoken-message chips remain (see ADR 0002). The expected configuration
-  // lives entirely in the `dsc` block, not in these chips.
-  if (scenario.dsc) {
-    return materializePanelScenario(scenario, rubric);
-  }
-
-  const hasNatureSlot = rubric.sequenceParts.some((part) =>
-    part.items.some((item) => item.id === DSC_NATURE_PLACEHOLDER_ID),
-  );
-  const acceptableNatureIds = hasNatureSlot ? buildAcceptableNatureSet(scenario.facts) : [];
-
-  if (scenario.requiresSpareAntenna) {
-    const hasEpirbSlot = rubric.sequenceParts.some((part) =>
-      part.items.some((item) => item.id === EPIRB_ON_ID),
-    );
-    if (!hasEpirbSlot) {
-      throw new Error(
-        `Scenario ${scenario.id} sets requiresSpareAntenna but rubric ${rubric.id} has no ${EPIRB_ON_ID} slot to anchor the spare-antenna chip`,
-      );
-    }
-  }
-
-  const parts: SequenceTemplatePart[] = rubric.sequenceParts.map((part, partIndex) => {
-    let items = injectScenarioLabels(part.items, scenario.facts, scenario.id, acceptableNatureIds);
-    if (scenario.requiresSpareAntenna) {
-      const epirbIdx = items.findIndex((item) => item.id === EPIRB_ON_ID);
-      if (epirbIdx !== -1) {
-        items = [...items.slice(0, epirbIdx + 1), ANTENNA_SPARE_ITEM, ...items.slice(epirbIdx + 1)];
-      }
-    }
-    const isLast = partIndex === (rubric.sequenceParts?.length ?? 0) - 1;
-    if (isLast && scenario.requiresAbandon) {
-      return { id: part.id, label: part.label, items: [...items, IN_RAFT_ITEM] };
-    }
-    return { id: part.id, label: part.label, items };
-  });
-
-  const correctItems = parts.flatMap((p) => p.items);
-  const priorityDecoys = PRIORITY_IDS.filter((p) => p !== scenario.priority).flatMap((p) =>
-    decoyOpening(p),
-  );
-  // Pool gets every acceptable nature chip (canonical is already in correctItems via the
-  // dsc_nature slot; the rest are added here so the student can actually pick them) plus
-  // NATURE_DECOY_COUNT random distractors drawn from natures NOT in the acceptable set.
-  const extraAcceptableChips = acceptableNatureIds
-    .filter((code) => code !== scenario.facts.natureCode)
-    .map(natureChip);
-  const natureDecoys =
-    acceptableNatureIds.length > 0 ? pickNatureDecoys(acceptableNatureIds, NATURE_DECOY_COUNT) : [];
-  const channelPowerDecoys = rubric.channelPowerDecoys
-    ? pickPoolDecoys(rubric.channelPowerDecoys, CHANNEL_DECOY_COUNT)
-    : [];
-  const callsignDecoys = rubric.callsignDecoys
-    ? pickPoolDecoys(rubric.callsignDecoys, CALLSIGN_DECOY_COUNT)
-    : [];
-  const pool = shuffle([
-    ...correctItems,
-    ...priorityDecoys,
-    ...extraAcceptableChips,
-    ...natureDecoys,
-    ...channelPowerDecoys,
-    ...callsignDecoys,
-  ]);
-
-  const heading = parts[0]?.label ?? rubric.id;
-  return {
-    rubricId: rubric.id,
-    callLabel: heading,
-    priorityId: scenario.priority,
-    parts,
-    pool,
-  };
-}
-
-/**
- * Legacy structural materializer kept for tests / migration.
- * Builds a generic (non-scenario) template with placeholder labels and a pool
- * limited to the part's own items (no priority decoys).
- */
-export function materializeStructural(rubric: RubricDefinition): SequenceTemplate {
-  if (!rubric.sequenceParts || rubric.sequenceParts.length === 0) {
-    throw new Error(`Rubric ${rubric.id} has no sequenceParts`);
-  }
-  const parts: SequenceTemplatePart[] = rubric.sequenceParts.map((part) => ({
-    id: part.id,
-    label: part.label,
-    items: part.items.map((item) => ({
-      id: item.id,
-      label: item.label || (FALLBACK_LABELS[item.id] ?? item.id),
-    })),
-  }));
-  const heading = parts[0]?.label ?? rubric.id;
-  const priorityId = inferPriorityFromCategory(rubric.category);
-  const pool = shuffle(parts.flatMap((p) => p.items));
-  return {
-    rubricId: rubric.id,
-    callLabel: heading,
-    priorityId,
-    parts,
-    pool,
-  };
-}
-
-function inferPriorityFromCategory(category: RubricDefinition["category"]): PriorityId {
-  switch (category) {
-    case "urgency":
-      return "pan_pan";
-    case "safety":
-      return "securite";
-    case "routine":
-      return "routine";
-    default:
-      return "mayday";
-  }
 }

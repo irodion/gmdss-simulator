@@ -1,44 +1,30 @@
 import type { RubricDefinition } from "@gmdss-simulator/utils";
 import { describe, expect, test } from "vite-plus/test";
-import { materializeScenario, materializeStructural } from "./materialize.ts";
-import {
-  isDecoyId,
-  isNatureItem,
-  isProcedureItem,
-  type RubricsById,
-  type Scenario,
-} from "./types.ts";
+import { materializeScenario } from "./materialize.ts";
+import { isPriorityItem, type RubricsById, type Scenario } from "./types.ts";
 
+// A voice-only distress rubric: a single spoken-message part. The DSC/equipment
+// phase is owned by the panel, so the rubric carries no procedure chips, nature
+// pools, or channel/callsign decoys (those were retired in #99).
 const DISTRESS: RubricDefinition = {
   id: "v1/distress",
   version: "1.2.0",
   category: "distress",
   requiredFields: [],
   prowordRules: [],
-  sequenceRules: { fieldOrder: ["mayday", "vessel_name", "position", "nature", "over"] },
+  sequenceRules: { fieldOrder: [] },
   channelRules: { requiredChannel: 16, blockChannel70Voice: true },
   sequenceParts: [
     {
       id: "procedure",
       label: "MAYDAY procedure",
       items: [
-        { id: "epirb_on", label: "Turn on EPIRB" },
-        { id: "dsc_channel70", label: "DSC: Channel 70, High 25W" },
-        { id: "dsc_time_location", label: "DSC: confirm time and location" },
-        { id: "dsc_nature", label: "DSC:" },
-        { id: "dsc_button", label: "DSC: press distress button 5 sec" },
-        { id: "dsc_channel16", label: "Radio: Channel 16, High" },
         { id: "mayday", label: "MAYDAY" },
         { id: "mayday", label: "MAYDAY" },
         { id: "mayday", label: "MAYDAY" },
         { id: "this_is", label: "THIS IS" },
-        { id: "vessel", label: "Vessel name" },
-        { id: "vessel", label: "Vessel name" },
         { id: "vessel", label: "Vessel name" },
         { id: "callsign", label: "Callsign / MMSI" },
-        { id: "mayday", label: "MAYDAY" },
-        { id: "this_is", label: "THIS IS" },
-        { id: "vessel", label: "Vessel name" },
         { id: "position", label: "Position" },
         { id: "nature", label: "Nature of distress" },
         { id: "assistance", label: "Request immediate assistance" },
@@ -47,250 +33,11 @@ const DISTRESS: RubricDefinition = {
       ],
     },
   ],
-  channelPowerDecoys: [
-    { id: "decoy_dsc_ch72_25w", label: "DSC: Channel 72, High 25W" },
-    { id: "decoy_dsc_ch77_25w", label: "DSC: Channel 77, High 25W" },
-    { id: "decoy_dsc_ch70_1w", label: "DSC: Channel 70, Low 1W" },
-    { id: "decoy_radio_ch16_low", label: "Radio: Channel 16, Low 1W" },
-    { id: "decoy_dsc_ch16_25w", label: "DSC: Channel 16, High 25W" },
-  ],
-  callsignDecoys: [
-    { id: "decoy_mmsi_coast_002411000", label: "MMSI 002 411 000" },
-    { id: "decoy_mmsi_coast_002111500", label: "MMSI 002 111 500" },
-    { id: "decoy_mmsi_sart_970110234", label: "MMSI 970 110 234" },
-    { id: "decoy_mmsi_group_023110001", label: "MMSI 023 110 001" },
-    { id: "decoy_mmsi_aircraft_111212345", label: "MMSI 111 212 345" },
-  ],
 };
 
-const URGENCY: RubricDefinition = {
-  id: "v1/urgency",
-  version: "1.0.0",
-  category: "urgency",
-  requiredFields: [],
-  prowordRules: [],
-  sequenceRules: { fieldOrder: [] },
-  channelRules: { requiredChannel: 16, blockChannel70Voice: true },
-  sequenceParts: [
-    {
-      id: "procedure",
-      label: "PAN-PAN procedure",
-      items: [
-        { id: "pan_pan", label: "PAN-PAN" },
-        { id: "pan_pan", label: "PAN-PAN" },
-        { id: "pan_pan", label: "PAN-PAN" },
-        { id: "this_is", label: "THIS IS" },
-        { id: "vessel", label: "Vessel name" },
-        { id: "callsign", label: "Callsign / MMSI" },
-        { id: "position", label: "Position" },
-        { id: "nature", label: "Nature of urgency" },
-        { id: "over", label: "OVER" },
-      ],
-    },
-  ],
-};
-
-const SAFETY: RubricDefinition = {
-  id: "v1/safety",
-  version: "1.0.0",
-  category: "safety",
-  requiredFields: [],
-  prowordRules: [],
-  sequenceRules: { fieldOrder: [] },
-  channelRules: { requiredChannel: 16, blockChannel70Voice: true },
-  sequenceParts: [
-    {
-      id: "procedure",
-      label: "SECURITE procedure",
-      items: [
-        { id: "securite", label: "SECURITE" },
-        { id: "securite", label: "SECURITE" },
-        { id: "securite", label: "SECURITE" },
-        { id: "this_is", label: "THIS IS" },
-        { id: "vessel", label: "Vessel name" },
-        { id: "nature", label: "Nature of safety message" },
-        { id: "position", label: "Position / area" },
-        { id: "out", label: "OUT" },
-      ],
-    },
-  ],
-};
-
-type SequenceItemSpec = NonNullable<RubricDefinition["sequenceParts"]>[number]["items"][number];
-
-function distressRubric(
-  id: string,
-  partLabel: string,
-  items: readonly SequenceItemSpec[],
-): RubricDefinition {
-  return {
-    id,
-    version: "1.0.0",
-    category: "distress",
-    requiredFields: [],
-    prowordRules: [],
-    sequenceRules: { fieldOrder: [] },
-    channelRules: { requiredChannel: 16, blockChannel70Voice: true },
-    sequenceParts: [{ id: "procedure", label: partLabel, items }],
-  };
-}
-
-const DISTRESS_SART = distressRubric("v1/distress-sart", "MAYDAY procedure (Radar SART)", [
-  { id: "mayday", label: "MAYDAY" },
-  { id: "mayday", label: "MAYDAY" },
-  { id: "mayday", label: "MAYDAY" },
-  { id: "sart_addressee", label: "Ship who received my Radar SART" },
-  { id: "sart_addressee", label: "Ship who received my Radar SART" },
-  { id: "sart_addressee", label: "Ship who received my Radar SART" },
-  { id: "this_is", label: "THIS IS" },
-  { id: "vessel", label: "Vessel name" },
-  { id: "vessel", label: "Vessel name" },
-  { id: "vessel", label: "Vessel name" },
-  { id: "assistance", label: "Request immediate assistance" },
-  { id: "persons", label: "Persons on board" },
-  { id: "over", label: "OVER" },
-]);
-
-const DISTRESS_RELATIVE = distressRubric(
-  "v1/distress-relative",
-  "MAYDAY procedure (sighted ship)",
-  [
-    { id: "mayday", label: "MAYDAY" },
-    { id: "mayday", label: "MAYDAY" },
-    { id: "mayday", label: "MAYDAY" },
-    { id: "ship_description", label: "Ship description" },
-    { id: "ship_description", label: "Ship description" },
-    { id: "ship_description", label: "Ship description" },
-    { id: "this_is", label: "THIS IS" },
-    { id: "vessel", label: "Vessel name" },
-    { id: "vessel", label: "Vessel name" },
-    { id: "vessel", label: "Vessel name" },
-    { id: "position", label: "Relative bearing" },
-    { id: "assistance", label: "Request immediate assistance" },
-    { id: "persons", label: "Persons on board" },
-    { id: "over", label: "OVER" },
-  ],
-);
-
-const DISTRESS_RCC_RESPONSE = distressRubric("v1/distress-rcc-response", "MAYDAY response to RCC", [
-  { id: "mayday", label: "MAYDAY" },
-  { id: "addressee_rcc", label: "RCC station name" },
-  { id: "this_is", label: "THIS IS" },
-  { id: "vessel", label: "Responding vessel" },
-  { id: "vessel", label: "Responding vessel" },
-  { id: "action_request", label: "Action request" },
-  { id: "over", label: "OVER" },
-]);
-
-const URGENCY_MEDICO: RubricDefinition = {
-  id: "v1/urgency-medico",
-  version: "1.0.0",
-  category: "urgency",
-  requiredFields: [],
-  prowordRules: [],
-  sequenceRules: { fieldOrder: [] },
-  channelRules: { requiredChannel: 16, blockChannel70Voice: true },
-  sequenceParts: [
-    {
-      id: "procedure",
-      label: "MEDICO procedure (DSC + Ch 16 voice call)",
-      items: [
-        { id: "dsc_channel70", label: "DSC: Channel 70" },
-        { id: "dsc_urgency_category", label: "DSC: category Urgency" },
-        { id: "dsc_addressee_all_stations", label: "DSC: All Ships call" },
-        { id: "dsc_time_position", label: "DSC: confirm time and position" },
-        { id: "dsc_send_urgency", label: "DSC: send urgency alert" },
-        { id: "dsc_channel16", label: "Radio: Channel 16, High" },
-        { id: "pan_pan", label: "PAN-PAN" },
-        { id: "pan_pan", label: "PAN-PAN" },
-        { id: "pan_pan", label: "PAN-PAN" },
-        { id: "addressee", label: "Addressee (All Stations / RCC)" },
-        { id: "addressee", label: "Addressee (All Stations / RCC)" },
-        { id: "addressee", label: "Addressee (All Stations / RCC)" },
-        { id: "this_is", label: "THIS IS" },
-        { id: "vessel", label: "Vessel name" },
-        { id: "vessel", label: "Vessel name" },
-        { id: "vessel", label: "Vessel name" },
-        { id: "callsign", label: "Callsign / MMSI" },
-        { id: "position", label: "Position" },
-        { id: "medico", label: "MEDICO / Need medical advice" },
-        { id: "over", label: "OVER" },
-      ],
-    },
-    {
-      id: "medical_message",
-      label: "Detailed medical message (working channel)",
-      items: [
-        { id: "working_channel_switch", label: "Switch to working channel (e.g., Ch 24)" },
-        { id: "pan_pan", label: "PAN-PAN" },
-        { id: "pan_pan", label: "PAN-PAN" },
-        { id: "pan_pan", label: "PAN-PAN" },
-        { id: "addressee", label: "Addressee (All Stations / RCC)" },
-        { id: "addressee", label: "Addressee (All Stations / RCC)" },
-        { id: "addressee", label: "Addressee (All Stations / RCC)" },
-        { id: "this_is", label: "THIS IS" },
-        { id: "vessel", label: "Vessel name" },
-        { id: "vessel", label: "Vessel name" },
-        { id: "vessel", label: "Vessel name" },
-        { id: "callsign", label: "Callsign / MMSI" },
-        { id: "position", label: "Position" },
-        { id: "patient_vitals", label: "Patient vitals (gender, age, temp, BP)" },
-        { id: "patient_status", label: "Patient status / problem" },
-        { id: "actions_taken", label: "Actions taken / treatment given" },
-        { id: "over", label: "OVER" },
-      ],
-    },
-  ],
-};
-
-const DISTRESS_RELAY: RubricDefinition = {
-  id: "v1/distress-relay",
-  version: "1.0.0",
-  category: "distress",
-  requiredFields: [],
-  prowordRules: [],
-  sequenceRules: { fieldOrder: [] },
-  channelRules: { requiredChannel: 16, blockChannel70Voice: true },
-  sequenceParts: [
-    {
-      id: "procedure",
-      label: "MAYDAY RELAY procedure",
-      items: [
-        { id: "dsc_channel16", label: "Radio: Channel 16, High" },
-        { id: "mayday_relay", label: "MAYDAY RELAY" },
-        { id: "mayday_relay", label: "MAYDAY RELAY" },
-        { id: "mayday_relay", label: "MAYDAY RELAY" },
-        { id: "addressee", label: "Addressee (All Stations / RCC)" },
-        { id: "addressee", label: "Addressee (All Stations / RCC)" },
-        { id: "addressee", label: "Addressee (All Stations / RCC)" },
-        { id: "this_is", label: "THIS IS" },
-        { id: "vessel", label: "Vessel name" },
-        { id: "vessel", label: "Vessel name" },
-        { id: "vessel", label: "Vessel name" },
-        { id: "callsign", label: "Callsign / MMSI" },
-        { id: "following_received", label: "FOLLOWING RECEIVED FROM" },
-        { id: "relayed_vessel", label: "Relayed vessel name" },
-        { id: "relayed_mmsi", label: "Relayed vessel MMSI" },
-        { id: "on_channel_16", label: "ON CHANNEL 16" },
-        { id: "quote_marker", label: "QUOTE" },
-        { id: "mayday", label: "MAYDAY" },
-        { id: "relayed_vessel", label: "Relayed vessel name" },
-        { id: "relayed_position", label: "Relayed position" },
-        { id: "relayed_nature", label: "Relayed nature of distress" },
-        { id: "relayed_assistance", label: "Relayed assistance request" },
-        { id: "relayed_persons", label: "Relayed persons on board" },
-        { id: "unquote_marker", label: "UNQUOTE" },
-        { id: "over", label: "OVER" },
-      ],
-    },
-  ],
-  callsignDecoys: [
-    { id: "decoy_mmsi_coast_002411000", label: "MMSI 002 411 000" },
-    { id: "decoy_mmsi_sart_970110234", label: "MMSI 970 110 234" },
-  ],
-};
-
-const ROUTINE_TR: RubricDefinition = {
+// A two-phase voice rubric (DSC routine call + voice report). The first phase
+// now carries no spoken chips, so the materializer drops the empty part.
+const MULTIPART: RubricDefinition = {
   id: "v1/routine-tr",
   version: "1.0.0",
   category: "routine",
@@ -299,47 +46,21 @@ const ROUTINE_TR: RubricDefinition = {
   sequenceRules: { fieldOrder: [] },
   channelRules: { requiredChannel: 26, blockChannel70Voice: true },
   sequenceParts: [
-    {
-      id: "dsc_call",
-      label: "DSC routine call (Channel 70)",
-      items: [
-        { id: "dsc_channel70", label: "DSC: Channel 70, High" },
-        { id: "dsc_routine_category", label: "DSC: category Routine" },
-        { id: "dsc_individual_call", label: "DSC: individual call to coast station MMSI" },
-        { id: "dsc_working_channel", label: "DSC: propose a working channel" },
-        { id: "dsc_send_routine", label: "DSC: send routine call" },
-      ],
-    },
+    { id: "empty_dsc_phase", label: "DSC routine call", items: [] },
     {
       id: "voice_report",
       label: "Voice Transit Report (working channel)",
       items: [
-        { id: "working_channel_switch", label: "Switch to the nominated working channel" },
         { id: "addressee", label: "Coast station name" },
         { id: "this_is", label: "THIS IS" },
         { id: "vessel", label: "Vessel name" },
-        { id: "callsign", label: "Callsign / MMSI" },
-        { id: "tr_keyword", label: "Transit Report (TR)" },
-        { id: "position", label: "Position" },
-        { id: "tr_voyage", label: "Voyage details (from/to, ETA)" },
-        { id: "persons", label: "Persons on board" },
         { id: "over", label: "OVER" },
       ],
     },
   ],
 };
 
-const RUBRICS: RubricsById = {
-  "v1/distress": DISTRESS,
-  "v1/urgency": URGENCY,
-  "v1/safety": SAFETY,
-  "v1/distress-sart": DISTRESS_SART,
-  "v1/distress-relative": DISTRESS_RELATIVE,
-  "v1/distress-rcc-response": DISTRESS_RCC_RESPONSE,
-  "v1/urgency-medico": URGENCY_MEDICO,
-  "v1/routine-tr": ROUTINE_TR,
-  "v1/distress-relay": DISTRESS_RELAY,
-};
+const RUBRICS: RubricsById = { "v1/distress": DISTRESS, "v1/routine-tr": MULTIPART };
 
 const DISTRESS_SCENARIO: Scenario = {
   id: "fire-blue-duck",
@@ -353,790 +74,100 @@ const DISTRESS_SCENARIO: Scenario = {
     nature: "Engine room fire",
     assistance: "I require immediate assistance",
     persons: "6 persons on board",
-    natureCode: "nature_fire",
   },
-};
-
-const MEDICO_SCENARIO: Scenario = {
-  id: "medico-grey-whale",
-  priority: "pan_pan",
-  rubricId: "v1/urgency-medico",
-  brief: "Cardiac event onboard.",
-  facts: {
-    vessel: "Grey Whale",
-    callsign: "MMSI 211 555 200",
-    position: "31°45'N 034°20'E",
-    addressee: "RCC Haifa",
-    patientVitals: "Male, age 52, temperature 37.2°C, BP 160/100",
-    patientStatus: "Severe chest pain, conscious but very weak",
-    actionsTaken: "Aspirin administered, oxygen rigged",
-  },
-};
-
-const RELAY_SCENARIO_ALLSTATIONS: Scenario = {
-  id: "relay-allstations-yacht-tami",
-  priority: "mayday",
-  rubricId: "v1/distress-relay",
-  brief: "Overheard MAYDAY from Yacht Tami, unanswered.",
-  facts: {
-    vessel: "Vered",
-    callsign: "MMSI 428 123 456",
-    addressee: "All Stations",
-    relayedVessel: "Yacht Tami",
-    relayedMmsi: "MMSI 428 555 222",
-    relayedPosition: "33°42'N 032°52'E",
-    relayedNature: "Fire on board in danger of sinking",
-    relayedAssistance: "Require immediate assistance",
-    relayedPersons: "6 persons on board",
-  },
-};
-
-const RELAY_SCENARIO_RCC: Scenario = {
-  id: "relay-rcc-haifa-coral-bay",
-  priority: "mayday",
-  rubricId: "v1/distress-relay",
-  brief: "RCC requested relay of MV Coral Bay's MAYDAY.",
-  facts: {
-    vessel: "Northern Falcon",
-    callsign: "MMSI 428 999 111",
-    addressee: "RCC Haifa",
-    relayedVessel: "MV Coral Bay",
-    relayedMmsi: "MMSI 428 777 888",
-    relayedPosition: "32°15'N 034°20'E",
-    relayedNature: "Collision with another vessel, taking water fast",
-    relayedAssistance: "Require immediate assistance",
-    relayedPersons: "12 persons on board",
+  dsc: {
+    state: "required",
+    callType: "distress",
+    nature: "fire",
+    channel: 16,
+    power: "high",
+    epirb: true,
   },
 };
 
 describe("materializeScenario", () => {
-  test("substitutes scenario facts into the chip labels", () => {
+  test("carries the rubric id, priority, and first part label as the call heading", () => {
     const template = materializeScenario(DISTRESS_SCENARIO, RUBRICS);
-    const items = template.parts[0]!.items;
-    expect(items.find((i) => i.id === "vessel")!.label).toBe("Blue Duck");
-    expect(items.find((i) => i.id === "position")!.label).toBe("32°05'N 034°45'E");
-    expect(items.find((i) => i.id === "nature")!.label).toBe("Engine room fire");
-    expect(items.find((i) => i.id === "callsign")!.label).toBe("5BCD2");
-    expect(items.find((i) => i.id === "persons")!.label).toBe("6 persons on board");
-    // Fixed phrases retain their literal labels.
-    expect(items.find((i) => i.id === "mayday")!.label).toBe("MAYDAY");
-    expect(items.find((i) => i.id === "over")!.label).toBe("OVER");
-  });
-
-  test("sets priorityId from the scenario", () => {
-    const template = materializeScenario(DISTRESS_SCENARIO, RUBRICS);
+    expect(template.rubricId).toBe("v1/distress");
     expect(template.priorityId).toBe("mayday");
+    expect(template.callLabel).toBe("MAYDAY procedure");
   });
 
-  test("pool contains all correct items plus 3x of each wrong-priority opening, 4 nature decoys, 3 channel-power decoys, and 2 callsign decoys", () => {
+  test("injects scenario facts into the voice chips, falling back to the chip label", () => {
     const template = materializeScenario(DISTRESS_SCENARIO, RUBRICS);
-    const correctCount = template.parts.flatMap((p) => p.items).length;
-    const panPanInPool = template.pool.filter((i) => i.id === "pan_pan").length;
-    const securiteInPool = template.pool.filter((i) => i.id === "securite").length;
-    expect(panPanInPool).toBe(3);
-    expect(securiteInPool).toBe(3);
-    // 6 priority + 4 nature (correct nature is in correctCount) + 3 channel-power + 2 callsign decoys
-    expect(template.pool.length).toBe(correctCount + 6 + 4 + 3 + 2);
-  });
-
-  test("ship-side distress scenario produces 22 slots ending with OVER, procedural items first", () => {
-    const template = materializeScenario(DISTRESS_SCENARIO, RUBRICS);
-    const items = template.parts[0]!.items;
-    expect(items).toHaveLength(22);
-    expect(items.slice(0, 6).map((i) => i.id)).toEqual([
-      "epirb_on",
-      "dsc_channel70",
-      "dsc_time_location",
-      "nature_fire",
-      "dsc_button",
-      "dsc_channel16",
-    ]);
-    expect(items[21]!.id).toBe("over");
-  });
-
-  test("dsc_nature slot is materialized with the scenario nature code id and label", () => {
-    const template = materializeScenario(DISTRESS_SCENARIO, RUBRICS);
-    const natureSlot = template.parts[0]!.items[3]!;
-    expect(natureSlot.id).toBe("nature_fire");
-    expect(natureSlot.label).toBe("DSC: Fire & Explosion");
-  });
-
-  test("requiresAbandon scenario appends in_raft slot and chip", () => {
-    const abandon: Scenario = {
-      ...DISTRESS_SCENARIO,
-      id: "abandon-river-hawk",
-      requiresAbandon: true,
-      facts: { ...DISTRESS_SCENARIO.facts, natureCode: "nature_abandoning" },
-    };
-    const template = materializeScenario(abandon, RUBRICS);
-    const items = template.parts[0]!.items;
-    expect(items).toHaveLength(23);
-    expect(items[22]!.id).toBe("in_raft");
-    expect(items[22]!.label).toBe("In raft: EPIRB, SART, portable VHF");
-    expect(template.pool.filter((i) => i.id === "in_raft").length).toBe(1);
-  });
-
-  test("non-abandon scenario has no in_raft chip in pool", () => {
-    const template = materializeScenario(DISTRESS_SCENARIO, RUBRICS);
-    expect(template.pool.filter((i) => i.id === "in_raft").length).toBe(0);
-  });
-
-  test("requiresSpareAntenna scenario splices antenna_spare right after epirb_on", () => {
-    const fallenMast: Scenario = {
-      ...DISTRESS_SCENARIO,
-      id: "distress-fallen-mast-test",
-      requiresSpareAntenna: true,
-      facts: { ...DISTRESS_SCENARIO.facts, natureCode: "nature_disabled" },
-    };
-    const template = materializeScenario(fallenMast, RUBRICS);
-    const items = template.parts[0]!.items;
-    expect(items).toHaveLength(23);
-    expect(items[0]!.id).toBe("epirb_on");
-    expect(items[1]!.id).toBe("antenna_spare");
-    expect(items[1]!.label).toBe("Rig spare antenna (coax cable)");
-    expect(items[2]!.id).toBe("dsc_channel70");
-    expect(template.pool.filter((i) => i.id === "antenna_spare").length).toBe(1);
-  });
-
-  test("non-spare scenario has no antenna_spare chip in pool", () => {
-    const template = materializeScenario(DISTRESS_SCENARIO, RUBRICS);
-    expect(template.pool.filter((i) => i.id === "antenna_spare").length).toBe(0);
-  });
-
-  test("requiresSpareAntenna against a rubric with no epirb_on slot throws", () => {
-    const misconfigured: Scenario = {
-      ...DISTRESS_SCENARIO,
-      id: "misconfigured-spare-antenna",
-      rubricId: "v1/urgency",
-      priority: "pan_pan",
-      requiresSpareAntenna: true,
-    };
-    expect(() => materializeScenario(misconfigured, RUBRICS)).toThrow(
-      /requiresSpareAntenna.*v1\/urgency.*epirb_on/,
-    );
-  });
-
-  test("pool contains exactly the correct nature chip plus 4 nature decoys", () => {
-    const template = materializeScenario(DISTRESS_SCENARIO, RUBRICS);
-    const natureChips = template.pool.filter((i) => isNatureItem(i.id));
-    expect(natureChips).toHaveLength(5);
-    expect(natureChips.filter((i) => i.id === "nature_fire")).toHaveLength(1);
-    // Decoys must not duplicate the correct one.
-    const decoys = natureChips.filter((i) => i.id !== "nature_fire");
-    expect(decoys).toHaveLength(4);
-    expect(new Set(decoys.map((i) => i.id)).size).toBe(4);
-  });
-
-  test("acceptable nature codes are stamped on dsc_nature slot and added as pool chips", () => {
-    const aurora: Scenario = {
-      ...DISTRESS_SCENARIO,
-      id: "abandon-aurora",
-      requiresAbandon: true,
-      facts: {
-        ...DISTRESS_SCENARIO.facts,
-        natureCode: "nature_abandoning",
-        acceptableNatureCodes: ["nature_flooding", "nature_listing", "nature_grounding"],
-      },
-    };
-    const template = materializeScenario(aurora, RUBRICS);
-    const natureSlot = template.parts[0]!.items[3]!;
-    expect(natureSlot.id).toBe("nature_abandoning");
-    expect(natureSlot.acceptableIds).toEqual([
-      "nature_flooding",
-      "nature_listing",
-      "nature_grounding",
-    ]);
-    // All acceptable chips are pickable from the pool (canonical via correctItems,
-    // others as extras), so the student can land on any one.
-    for (const code of [
-      "nature_abandoning",
-      "nature_flooding",
-      "nature_listing",
-      "nature_grounding",
-    ]) {
-      expect(template.pool.filter((i) => i.id === code)).toHaveLength(1);
-    }
-  });
-
-  test("nature decoys exclude every acceptable code, not just the canonical one", () => {
-    const aurora: Scenario = {
-      ...DISTRESS_SCENARIO,
-      id: "abandon-aurora-decoy-check",
-      facts: {
-        ...DISTRESS_SCENARIO.facts,
-        natureCode: "nature_abandoning",
-        acceptableNatureCodes: ["nature_flooding", "nature_listing", "nature_grounding"],
-      },
-    };
-    const template = materializeScenario(aurora, RUBRICS);
-    const acceptable = new Set([
-      "nature_abandoning",
-      "nature_flooding",
-      "nature_listing",
-      "nature_grounding",
-    ]);
-    const natureChips = template.pool.filter((i) => isNatureItem(i.id));
-    // Total = 4 acceptable (1 canonical + 3 extras) + 4 distractors = 8.
-    expect(natureChips).toHaveLength(8);
-    const decoys = natureChips.filter((i) => !acceptable.has(i.id));
-    expect(decoys).toHaveLength(4);
-    expect(new Set(decoys.map((i) => i.id)).size).toBe(4);
-  });
-
-  test("does not add nature decoys when rubric has no dsc_nature slot, even if facts.natureCode is set", () => {
-    const sartScenario: Scenario = {
-      id: "sart-with-stray-nature-code",
-      priority: "mayday",
-      rubricId: "v1/distress-sart",
-      brief: "SART activated.",
-      facts: {
-        vessel: "Albatross life raft",
-        sartAddressee: "Ship who received my Radar SART",
-        assistance: "Require immediate assistance",
-        persons: "4 persons on board",
-        natureCode: "nature_fire",
-      },
-    };
-    const template = materializeScenario(sartScenario, RUBRICS);
-    expect(template.pool.filter((i) => isNatureItem(i.id))).toHaveLength(0);
-  });
-
-  test("throws when v1/distress scenario is missing facts.natureCode", () => {
-    const broken: Scenario = {
-      id: "broken",
-      priority: "mayday",
-      rubricId: "v1/distress",
-      brief: "x",
-      facts: {
-        vessel: "X",
-        callsign: "X",
-        position: "X",
-        nature: "X",
-        assistance: "X",
-        persons: "X",
-      },
-    };
-    expect(() => materializeScenario(broken, RUBRICS)).toThrow(/natureCode/);
-  });
-
-  test("uses the correct rubric for each priority", () => {
-    const urgencyScenario: Scenario = {
-      id: "engine-failure",
-      priority: "pan_pan",
-      rubricId: "v1/urgency",
-      brief: "Engine failure.",
-      facts: {
-        vessel: "Red Fox",
-        callsign: "5RFX1",
-        position: "32°15'N 034°40'E",
-        nature: "Engine failure",
-      },
-    };
-    const template = materializeScenario(urgencyScenario, RUBRICS);
-    expect(template.rubricId).toBe("v1/urgency");
-    expect(template.parts[0]!.items.length).toBe(URGENCY.sequenceParts![0]!.items.length);
-    // Wrong-priority decoys should be MAYDAY and SECURITE, not PAN-PAN.
-    expect(template.pool.filter((i) => i.id === "mayday").length).toBe(3);
-    expect(template.pool.filter((i) => i.id === "securite").length).toBe(3);
-  });
-
-  test("safety scenario falls back to fixed labels when optional facts are absent", () => {
-    const safetyScenario: Scenario = {
-      id: "container",
-      priority: "securite",
-      rubricId: "v1/safety",
-      brief: "Floating container.",
-      facts: {
-        vessel: "Cape Runner",
-        position: "32°20'N 034°50'E",
-        nature: "Floating container",
-      },
-    };
-    const template = materializeScenario(safetyScenario, RUBRICS);
-    const items = template.parts[0]!.items;
-    expect(items.find((i) => i.id === "out")!.label).toBe("OUT");
-    expect(items.find((i) => i.id === "vessel")!.label).toBe("Cape Runner");
-  });
-
-  test("SART life raft scenario injects vessel and addressee facts", () => {
-    const sartScenario: Scenario = {
-      id: "sart-albatross",
-      priority: "mayday",
-      rubricId: "v1/distress-sart",
-      brief: "SART activated.",
-      facts: {
-        vessel: "Albatross life raft",
-        sartAddressee: "Ship who received my Radar SART",
-        assistance: "Require immediate assistance",
-        persons: "4 persons on board",
-      },
-    };
-    const template = materializeScenario(sartScenario, RUBRICS);
-    expect(template.parts[0]!.items).toHaveLength(13);
-    const items = template.parts[0]!.items;
-    expect(
-      items.filter((i) => i.id === "vessel").every((i) => i.label === "Albatross life raft"),
-    ).toBe(true);
-    expect(items.filter((i) => i.id === "sart_addressee")).toHaveLength(3);
-    expect(items.find((i) => i.id === "assistance")!.label).toBe("Require immediate assistance");
-    expect(items.find((i) => i.id === "persons")!.label).toBe("4 persons on board");
-    expect(template.pool.filter((i) => i.id === "pan_pan").length).toBe(3);
-    expect(template.pool.filter((i) => i.id === "securite").length).toBe(3);
-    expect(template.pool.length).toBe(13 + 6);
-  });
-
-  test("relative-bearing scenario injects ship description and side as position", () => {
-    const horizonScenario: Scenario = {
-      id: "horizon-petrel",
-      priority: "mayday",
-      rubricId: "v1/distress-relative",
-      brief: "Sighted ship.",
-      facts: {
-        vessel: "Petrel life raft",
-        shipDescription: "Red-hulled cargo ship",
-        position: "I am on your starboard side",
-        assistance: "Require immediate assistance",
-        persons: "5 persons on board",
-      },
-    };
-    const template = materializeScenario(horizonScenario, RUBRICS);
-    expect(template.parts[0]!.items).toHaveLength(14);
-    const items = template.parts[0]!.items;
-    expect(
-      items
-        .filter((i) => i.id === "ship_description")
-        .every((i) => i.label === "Red-hulled cargo ship"),
-    ).toBe(true);
-    expect(items.find((i) => i.id === "position")!.label).toBe("I am on your starboard side");
-  });
-
-  test("RCC response scenario uses short non-standard sequence", () => {
-    const rccScenario: Scenario = {
-      id: "rcc-haifa",
-      priority: "mayday",
-      rubricId: "v1/distress-rcc-response",
-      brief: "Respond to RCC.",
-      facts: {
-        vessel: "Sea Otter",
-        addresseeRcc: "RCC Haifa",
-        actionRequest: "Send fast ships to the distress area to evacuate the crew",
-      },
-    };
-    const template = materializeScenario(rccScenario, RUBRICS);
-    expect(template.parts[0]!.items).toHaveLength(7);
-    const items = template.parts[0]!.items;
-    expect(items.filter((i) => i.id === "mayday")).toHaveLength(1);
-    expect(items.find((i) => i.id === "addressee_rcc")!.label).toBe("RCC Haifa");
-    expect(items.filter((i) => i.id === "vessel").every((i) => i.label === "Sea Otter")).toBe(true);
-    expect(items.find((i) => i.id === "action_request")!.label).toBe(
-      "Send fast ships to the distress area to evacuate the crew",
-    );
-    expect(items.find((i) => i.id === "over")!.label).toBe("OVER");
-  });
-
-  test("MEDICO scenario produces two parts with the canonical chip counts", () => {
-    const template = materializeScenario(MEDICO_SCENARIO, RUBRICS);
-    expect(template.parts).toHaveLength(2);
-    expect(template.parts[0]!.id).toBe("procedure");
-    expect(template.parts[1]!.id).toBe("medical_message");
-    expect(template.parts[0]!.items).toHaveLength(20);
-    expect(template.parts[1]!.items).toHaveLength(17);
-  });
-
-  test("MEDICO materializer injects addressee × 3 in both parts", () => {
-    const template = materializeScenario(MEDICO_SCENARIO, RUBRICS);
-    const part1Addressees = template.parts[0]!.items.filter((i) => i.id === "addressee");
-    const part2Addressees = template.parts[1]!.items.filter((i) => i.id === "addressee");
-    expect(part1Addressees).toHaveLength(3);
-    expect(part2Addressees).toHaveLength(3);
-    expect(part1Addressees.every((i) => i.label === "RCC Haifa")).toBe(true);
-    expect(part2Addressees.every((i) => i.label === "RCC Haifa")).toBe(true);
-  });
-
-  test("MEDICO materializer injects MMSI into the callsign chip", () => {
-    const template = materializeScenario(
-      { ...MEDICO_SCENARIO, facts: { ...MEDICO_SCENARIO.facts, addressee: "All Stations" } },
-      RUBRICS,
-    );
-    const callsigns = template.parts.flatMap((p) => p.items).filter((i) => i.id === "callsign");
-    expect(callsigns).toHaveLength(2);
-    expect(callsigns.every((i) => i.label === "MMSI 211 555 200")).toBe(true);
-  });
-
-  test("MEDICO Part 2 chips carry the injected medical fact text", () => {
-    const template = materializeScenario(MEDICO_SCENARIO, RUBRICS);
-    const part2 = template.parts[1]!.items;
-    expect(part2.find((i) => i.id === "patient_vitals")!.label).toBe(
-      "Male, age 52, temperature 37.2°C, BP 160/100",
-    );
-    expect(part2.find((i) => i.id === "patient_status")!.label).toBe(
-      "Severe chest pain, conscious but very weak",
-    );
-    expect(part2.find((i) => i.id === "actions_taken")!.label).toBe(
-      "Aspirin administered, oxygen rigged",
-    );
-    // working_channel_switch and the closing OVER are not in ITEM_TO_FACT_KEY,
-    // so they fall back to their rubric-supplied labels.
-    expect(part2.find((i) => i.id === "working_channel_switch")!.label).toBe(
-      "Switch to working channel (e.g., Ch 24)",
-    );
-    expect(part2.find((i) => i.id === "over")!.label).toBe("OVER");
-  });
-
-  test("MEDICO pool contains all correct items plus wrong-priority decoys", () => {
-    const template = materializeScenario(MEDICO_SCENARIO, RUBRICS);
-    const correctCount = template.parts.flatMap((p) => p.items).length;
-    // 6 wrong-priority decoys (3 mayday + 3 securite); MEDICO has no dsc_nature slot,
-    // so no nature decoys are added.
-    expect(template.pool.length).toBe(correctCount + 6);
-    expect(template.pool.filter((i) => i.id === "mayday").length).toBe(3);
-    expect(template.pool.filter((i) => i.id === "securite").length).toBe(3);
-  });
-
-  test("channel-power decoys are added to the pool when the rubric defines them", () => {
-    const template = materializeScenario(DISTRESS_SCENARIO, RUBRICS);
-    const definedIds = new Set(DISTRESS.channelPowerDecoys!.map((d) => d.id));
-    const decoys = template.pool.filter((i) => definedIds.has(i.id));
-    expect(decoys).toHaveLength(3);
-    expect(new Set(decoys.map((d) => d.id)).size).toBe(decoys.length);
-  });
-
-  test("callsign decoys are added to the pool when the rubric defines them", () => {
-    const template = materializeScenario(DISTRESS_SCENARIO, RUBRICS);
-    const definedIds = new Set(DISTRESS.callsignDecoys!.map((d) => d.id));
-    const decoys = template.pool.filter((i) => definedIds.has(i.id));
-    expect(decoys).toHaveLength(2);
-    expect(new Set(decoys.map((d) => d.id)).size).toBe(decoys.length);
-  });
-
-  test("no pool decoys when the rubric omits all decoy fields", () => {
-    const urgencyScenario: Scenario = {
-      id: "engine-failure-no-decoy",
-      priority: "pan_pan",
-      rubricId: "v1/urgency",
-      brief: "x",
-      facts: { vessel: "X", callsign: "X", position: "X", nature: "X" },
-    };
-    const template = materializeScenario(urgencyScenario, RUBRICS);
-    expect(template.pool.filter((i) => isDecoyId(i.id))).toHaveLength(0);
-  });
-
-  test("throws when a channel-power decoy id is missing the decoy_ prefix", () => {
-    const badRubric: RubricDefinition = {
-      ...DISTRESS,
-      id: "v1/distress-bad-prefix",
-      channelPowerDecoys: [
-        { id: "decoy_dsc_ch72_25w", label: "DSC: Channel 72, High 25W" },
-        { id: "dsc_ch77_25w", label: "DSC: Channel 77, High 25W" },
-      ],
-    };
-    const rubrics: RubricsById = { ...RUBRICS, "v1/distress-bad-prefix": badRubric };
-    const scenario: Scenario = { ...DISTRESS_SCENARIO, rubricId: "v1/distress-bad-prefix" };
-    expect(() => materializeScenario(scenario, rubrics)).toThrow(
-      /pickPoolDecoys.*dsc_ch77_25w.*decoy_/,
-    );
-  });
-
-  test("throws on duplicate channel-power decoy ids", () => {
-    const badRubric: RubricDefinition = {
-      ...DISTRESS,
-      id: "v1/distress-dup-decoy",
-      channelPowerDecoys: [
-        { id: "decoy_dsc_ch72_25w", label: "X" },
-        { id: "decoy_dsc_ch72_25w", label: "Y" },
-      ],
-    };
-    const rubrics: RubricsById = { ...RUBRICS, "v1/distress-dup-decoy": badRubric };
-    const scenario: Scenario = { ...DISTRESS_SCENARIO, rubricId: "v1/distress-dup-decoy" };
-    expect(() => materializeScenario(scenario, rubrics)).toThrow(
-      /pickPoolDecoys.*duplicate.*decoy_dsc_ch72_25w/,
-    );
-  });
-
-  test("throws when a callsign decoy id is missing the decoy_ prefix", () => {
-    const badRubric: RubricDefinition = {
-      ...DISTRESS,
-      id: "v1/distress-bad-callsign-prefix",
-      callsignDecoys: [
-        { id: "decoy_mmsi_coast_002411000", label: "MMSI 002 411 000" },
-        { id: "mmsi_coast_002111500", label: "MMSI 002 111 500" },
-      ],
-    };
-    const rubrics: RubricsById = { ...RUBRICS, "v1/distress-bad-callsign-prefix": badRubric };
-    const scenario: Scenario = {
-      ...DISTRESS_SCENARIO,
-      rubricId: "v1/distress-bad-callsign-prefix",
-    };
-    expect(() => materializeScenario(scenario, rubrics)).toThrow(
-      /pickPoolDecoys.*mmsi_coast_002111500.*decoy_/,
-    );
-  });
-
-  test("throws when scenario references a rubric id that is not loaded", () => {
-    const orphan: Scenario = {
-      id: "orphan",
-      priority: "mayday",
-      rubricId: "v1/does-not-exist",
-      brief: "x",
-      facts: { vessel: "X" },
-    };
-    expect(() => materializeScenario(orphan, RUBRICS)).toThrow(/v1\/does-not-exist/);
-  });
-
-  test("RELAY materializer injects own vessel, own MMSI, and addressee into chip labels", () => {
-    const template = materializeScenario(RELAY_SCENARIO_ALLSTATIONS, RUBRICS);
-    const items = template.parts[0]!.items;
-    expect(items.filter((i) => i.id === "vessel").every((i) => i.label === "Vered")).toBe(true);
-    expect(items.find((i) => i.id === "callsign")!.label).toBe("MMSI 428 123 456");
-    expect(items.filter((i) => i.id === "addressee").every((i) => i.label === "All Stations")).toBe(
-      true,
-    );
-  });
-
-  test("RELAY materializer injects relayed_* facts into the quoted-block chips", () => {
-    const template = materializeScenario(RELAY_SCENARIO_ALLSTATIONS, RUBRICS);
-    const items = template.parts[0]!.items;
-    const relayedVessels = items.filter((i) => i.id === "relayed_vessel");
-    expect(relayedVessels).toHaveLength(2);
-    expect(relayedVessels.every((i) => i.label === "Yacht Tami")).toBe(true);
-    expect(items.find((i) => i.id === "relayed_mmsi")!.label).toBe("MMSI 428 555 222");
-    expect(items.find((i) => i.id === "relayed_position")!.label).toBe("33°42'N 032°52'E");
-    expect(items.find((i) => i.id === "relayed_nature")!.label).toBe(
-      "Fire on board in danger of sinking",
-    );
-    expect(items.find((i) => i.id === "relayed_assistance")!.label).toBe(
-      "Require immediate assistance",
-    );
-    expect(items.find((i) => i.id === "relayed_persons")!.label).toBe("6 persons on board");
-  });
-
-  test("RELAY materializer produces 25 slots, opening with Ch 16 setup and closing with OVER", () => {
-    const template = materializeScenario(RELAY_SCENARIO_ALLSTATIONS, RUBRICS);
-    const items = template.parts[0]!.items;
-    expect(items).toHaveLength(25);
-    expect(items[0]!.id).toBe("dsc_channel16");
-    expect(items[24]!.id).toBe("over");
-    expect(items.filter((i) => i.id === "mayday_relay")).toHaveLength(3);
-    expect(items.filter((i) => i.id === "addressee")).toHaveLength(3);
-    expect(items.find((i) => i.id === "quote_marker")!.label).toBe("QUOTE");
-    expect(items.find((i) => i.id === "unquote_marker")!.label).toBe("UNQUOTE");
-    expect(items.find((i) => i.id === "following_received")!.label).toBe("FOLLOWING RECEIVED FROM");
-    expect(items.find((i) => i.id === "on_channel_16")!.label).toBe("ON CHANNEL 16");
-  });
-
-  test("RELAY scenario with RCC Haifa addressee renders 'RCC Haifa' on the addressee chips", () => {
-    const template = materializeScenario(RELAY_SCENARIO_RCC, RUBRICS);
-    const addressees = template.parts[0]!.items.filter((i) => i.id === "addressee");
-    expect(addressees).toHaveLength(3);
-    expect(addressees.every((i) => i.label === "RCC Haifa")).toBe(true);
-    expect(template.parts[0]!.items.find((i) => i.id === "relayed_vessel")!.label).toBe(
-      "MV Coral Bay",
-    );
-  });
-
-  test("RELAY pool contains both own MMSI and relayed MMSI as ship-format chips", () => {
-    const template = materializeScenario(RELAY_SCENARIO_ALLSTATIONS, RUBRICS);
-    const ownMmsi = template.pool.filter((i) => i.id === "callsign");
-    const relayedMmsi = template.pool.filter((i) => i.id === "relayed_mmsi");
-    expect(ownMmsi).toHaveLength(1);
-    expect(ownMmsi[0]!.label).toBe("MMSI 428 123 456");
-    expect(relayedMmsi).toHaveLength(1);
-    expect(relayedMmsi[0]!.label).toBe("MMSI 428 555 222");
-  });
-});
-
-describe("materializeScenario — DSC panel path", () => {
-  const PANEL_SCENARIO: Scenario = {
-    id: "panel-fire-blue-duck",
-    priority: "mayday",
-    rubricId: "v1/distress",
-    brief: "Engine room fire on MV Blue Duck.",
-    facts: {
-      vessel: "Blue Duck",
-      callsign: "5BCD2",
-      position: "32°05'N 034°45'E",
-      nature: "Engine room fire",
-      assistance: "I require immediate assistance",
-      persons: "6 persons on board",
-    },
-    dsc: {
-      state: "required",
-      callType: "distress",
-      nature: "fire",
-      channel: 16,
-      power: "high",
-      epirb: true,
-    },
-  };
-
-  test("strips every procedure/equipment item, leaving only the spoken-message chips", () => {
-    const template = materializeScenario(PANEL_SCENARIO, RUBRICS);
-    const items = template.parts[0]!.items;
-    expect(items.every((i) => !isProcedureItem(i.id))).toBe(true);
-    expect(items.some((i) => i.id === "epirb_on")).toBe(false);
-    expect(items.some((i) => i.id === "dsc_channel70")).toBe(false);
-    expect(items.some((i) => isNatureItem(i.id))).toBe(false);
-    // The 16 spoken-message chips remain, ending with OVER.
-    expect(items).toHaveLength(16);
-    expect(items.at(-1)!.id).toBe("over");
-  });
-
-  test("injects scenario facts into the surviving voice chips", () => {
-    const template = materializeScenario(PANEL_SCENARIO, RUBRICS);
     const items = template.parts[0]!.items;
     expect(items.filter((i) => i.id === "vessel").every((i) => i.label === "Blue Duck")).toBe(true);
     expect(items.find((i) => i.id === "nature")!.label).toBe("Engine room fire");
+    // No matching fact for the signal word → the chip's own label is kept.
+    expect(items.find((i) => i.id === "this_is")!.label).toBe("THIS IS");
+    expect(items.at(-1)!.id).toBe("over");
   });
 
-  test("the pool carries the wrong-priority decoys but no nature/channel/callsign decoys", () => {
-    const template = materializeScenario(PANEL_SCENARIO, RUBRICS);
-    expect(template.pool.filter((i) => isDecoyId(i.id))).toHaveLength(0);
-    expect(template.pool.filter((i) => isNatureItem(i.id))).toHaveLength(0);
+  test("the pool is the correct voice chips plus three openings for each wrong priority", () => {
+    const template = materializeScenario(DISTRESS_SCENARIO, RUBRICS);
+    // 11 voice chips + 3 PAN-PAN + 3 SECURITE wrong-priority decoys.
+    expect(template.pool).toHaveLength(17);
     expect(template.pool.filter((i) => i.id === "pan_pan")).toHaveLength(3);
     expect(template.pool.filter((i) => i.id === "securite")).toHaveLength(3);
-    // 16 voice chips + 6 wrong-priority decoys.
-    expect(template.pool).toHaveLength(22);
+    // The correct opening word is NOT added as a decoy.
+    expect(template.pool.filter((i) => i.id === "mayday")).toHaveLength(3); // only the correct chips
+    expect(template.pool.every((i) => i.id !== "routine")).toBe(true);
   });
 
-  test("a panel scenario does not require facts.natureCode", () => {
-    expect(() => materializeScenario(PANEL_SCENARIO, RUBRICS)).not.toThrow();
+  test("only priority openings and the scenario's own voice chips appear — no decoy pools", () => {
+    const template = materializeScenario(DISTRESS_SCENARIO, RUBRICS);
+    const knownIds = new Set([
+      "mayday",
+      "this_is",
+      "vessel",
+      "callsign",
+      "position",
+      "nature",
+      "assistance",
+      "persons",
+      "over",
+      "pan_pan",
+      "securite",
+    ]);
+    expect(template.pool.every((i) => knownIds.has(i.id))).toBe(true);
+    expect(template.pool.some((i) => i.id.startsWith("decoy_"))).toBe(false);
   });
 
-  const ALL_SHIPS_SCENARIO: Scenario = {
-    id: "panel-securite-cape-runner",
-    priority: "pan_pan",
-    rubricId: "v1/urgency",
-    brief: "Engine failure, drifting toward a traffic separation scheme.",
-    facts: {
-      vessel: "Red Fox",
-      callsign: "MMSI 211 888 040",
-      position: "32°15'N 034°40'E",
-      nature: "Engine failure, drifting toward TSS",
-      assistance: "I require a tow",
-    },
-    dsc: {
-      state: "required",
-      callType: "all_ships",
-      priority: "urgency",
-      channel: 16,
-      power: "high",
-      epirb: false,
-    },
-  };
-
-  test("strips the urgency DSC chips from an All Ships scenario, leaving the spoken call", () => {
-    const template = materializeScenario(ALL_SHIPS_SCENARIO, RUBRICS);
-    const items = template.parts[0]!.items;
-    expect(items.every((i) => !isProcedureItem(i.id))).toBe(true);
-    expect(items.some((i) => i.id === "dsc_urgency_category")).toBe(false);
-    expect(items.some((i) => i.id === "dsc_addressee_all_stations")).toBe(false);
-    expect(items.some((i) => i.id === "dsc_send_urgency")).toBe(false);
-    // The spoken PAN-PAN call survives, ending with OVER.
-    expect(items.filter((i) => i.id === "pan_pan")).toHaveLength(3);
-    expect(items.at(-1)!.id).toBe("over");
-  });
-
-  const MEDICO_PANEL_SCENARIO: Scenario = {
-    id: "panel-medico-allstations-cargo-ranger",
-    priority: "pan_pan",
-    rubricId: "v1/urgency-medico",
-    brief: "Crew member fell from the upper deck and is unconscious.",
-    facts: {
-      vessel: "Cargo Ranger",
-      callsign: "MMSI 211 666 410",
-      position: "32°50'N 035°10'E",
-      addressee: "All Stations",
-      patientVitals: "Male, age 28, temperature 36.0°C, BP 90/60",
-      patientStatus: "Unconscious after fall, suspected head injury",
-      actionsTaken: "Head and neck immobilised, breathing monitored",
-    },
-    dsc: {
-      state: "required",
-      callType: "all_ships",
-      priority: "urgency",
-      channel: 16,
-      power: "high",
-      epirb: false,
-    },
-  };
-
-  const TR_PANEL_SCENARIO: Scenario = {
-    id: "panel-tr-sea-sprite-haifa-radio",
-    priority: "routine",
-    rubricId: "v1/routine-tr",
-    brief: "Transit report to Haifa Radio before departure.",
-    facts: {
-      vessel: "Sea Sprite",
-      callsign: "MMSI 428 070 555",
-      position: "32°49'N 035°00'E",
-      voyage: "Bound Haifa to Limassol, ETA 0600 UTC tomorrow",
-      persons: "8 persons on board",
-    },
-    dsc: {
-      state: "required",
-      callType: "individual",
+  test("drops empty sequence parts and uses the surviving part's label as the heading", () => {
+    const tr: Scenario = {
+      id: "tr-sea-sprite",
       priority: "routine",
-      addressee: "haifa_radio",
-      channel: 26,
-      power: "high",
-      epirb: false,
-    },
-  };
-
-  test("collapses the all-procedure DSC-call phase and keeps the spoken transit report (TR)", () => {
-    const template = materializeScenario(TR_PANEL_SCENARIO, RUBRICS);
-    // The dsc_call part is entirely procedure chips → dropped; only voice_report remains.
+      rubricId: "v1/routine-tr",
+      brief: "Transit report to Haifa Radio.",
+      facts: { vessel: "Sea Sprite", addressee: "Haifa Radio" },
+      dsc: {
+        state: "required",
+        callType: "individual",
+        priority: "routine",
+        addressee: "haifa_radio",
+        channel: 26,
+        power: "high",
+        epirb: false,
+      },
+    };
+    const template = materializeScenario(tr, RUBRICS);
+    // The empty DSC phase is gone; only the voice report remains.
     expect(template.parts).toHaveLength(1);
     expect(template.parts[0]!.id).toBe("voice_report");
-    const items = template.parts[0]!.items;
-    expect(items.every((i) => !isProcedureItem(i.id))).toBe(true);
-    expect(items.some((i) => i.id === "working_channel_switch")).toBe(false);
-    expect(items.at(-1)!.id).toBe("over");
+    expect(template.callLabel).toBe("Voice Transit Report (working channel)");
+    expect(template.parts[0]!.items.find((i) => i.id === "addressee")!.label).toBe("Haifa Radio");
+    // Routine carries no signal word, so all three signal words are decoys.
+    const priorityDecoys = template.pool.filter((i) => isPriorityItem(i.id));
+    expect(priorityDecoys).toHaveLength(9);
   });
 
-  test("strips the working-channel-switch chip from the second MEDICO phase (panel owns the channel)", () => {
-    const template = materializeScenario(MEDICO_PANEL_SCENARIO, RUBRICS);
-    // Every part is purely spoken-message chips — no procedure/equipment steps.
-    expect(template.parts.every((p) => p.items.every((i) => !isProcedureItem(i.id)))).toBe(true);
-    expect(
-      template.parts.flatMap((p) => p.items).some((i) => i.id === "working_channel_switch"),
-    ).toBe(false);
-    expect(template.pool.some((i) => i.id === "working_channel_switch")).toBe(false);
-    // The second phase still carries its spoken medical message, ending with OVER.
-    const part2 = template.parts.find((p) => p.id === "medical_message")!;
-    expect(part2.items.some((i) => i.id === "patient_vitals")).toBe(true);
-    expect(part2.items.at(-1)!.id).toBe("over");
-  });
-});
-
-describe("isProcedureItem", () => {
-  test("recognizes channel-power decoy ids by the decoy_ prefix", () => {
-    expect(isProcedureItem("decoy_dsc_ch72_25w")).toBe(true);
-    expect(isProcedureItem("decoy_radio_ch70_high")).toBe(true);
+  test("throws when the scenario references an unknown rubric", () => {
+    const orphan: Scenario = { ...DISTRESS_SCENARIO, rubricId: "v1/does-not-exist" };
+    expect(() => materializeScenario(orphan, RUBRICS)).toThrow(/v1\/does-not-exist/);
   });
 
-  test("recognizes callsign (MMSI) decoy ids by the decoy_ prefix", () => {
-    expect(isProcedureItem("decoy_mmsi_coast_002411000")).toBe(true);
-    expect(isProcedureItem("decoy_mmsi_sart_970110234")).toBe(true);
-    expect(isProcedureItem("decoy_mmsi_aircraft_111212345")).toBe(true);
-  });
-
-  test("returns false for unknown non-decoy ids", () => {
-    expect(isProcedureItem("foo_bar")).toBe(false);
-    expect(isProcedureItem("vessel")).toBe(false);
-  });
-});
-
-describe("materializeStructural (legacy)", () => {
-  test("preserves rubric.sequenceParts in the template", () => {
-    const template = materializeStructural(DISTRESS);
-    expect(template.rubricId).toBe("v1/distress");
-    expect(template.parts[0]!.items).toHaveLength(22);
-    expect(template.priorityId).toBe("mayday");
-  });
-
-  test("throws when sequenceParts is missing", () => {
-    const noParts: RubricDefinition = { ...DISTRESS, sequenceParts: undefined };
-    expect(() => materializeStructural(noParts)).toThrow(/sequenceParts/);
+  test("throws when the rubric has no sequenceParts", () => {
+    const noParts: RubricsById = { "v1/distress": { ...DISTRESS, sequenceParts: [] } };
+    expect(() => materializeScenario(DISTRESS_SCENARIO, noParts)).toThrow(/sequenceParts/);
   });
 });

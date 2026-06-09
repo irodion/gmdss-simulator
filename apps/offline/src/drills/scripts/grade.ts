@@ -4,7 +4,6 @@ import {
   type DimensionStatus,
   type DscPanelState,
   isPriorityItem,
-  isProcedureItem,
   PASS_THRESHOLD,
   type ProcedureGrade,
   type ScenarioDsc,
@@ -134,12 +133,14 @@ export function gradeScenario(
   let totalExpected = 0;
   let totalStudent = 0;
 
-  const accs: Record<DimensionId, DimensionAccumulator> = {
+  // The spoken-message placements feed these four dimensions; the "procedure"
+  // dimension is owned entirely by the DSC/equipment panel (folded in below),
+  // never by a placed chip, so it is deliberately absent here.
+  const accs: Record<Exclude<DimensionId, "procedure">, DimensionAccumulator> = {
     priority: { id: "priority", label: "Priority", correct: 0, total: 0 },
     vessel: { id: "vessel", label: "Vessel identification", correct: 0, total: 0 },
     body: { id: "body", label: "Message body", correct: 0, total: 0 },
     ending: { id: "ending", label: "Ending", correct: 0, total: 0 },
-    procedure: { id: "procedure", label: "Procedure", correct: 0, total: 0 },
   };
 
   for (const part of template.parts) {
@@ -220,11 +221,10 @@ export function gradeScenario(
 
 function pickAccumulator(
   expectedId: string,
-  accs: Record<DimensionId, DimensionAccumulator>,
+  accs: Record<Exclude<DimensionId, "procedure">, DimensionAccumulator>,
 ): DimensionAccumulator {
   if (isPriorityItem(expectedId)) return accs.priority;
   if (isVesselIdentification(expectedId)) return accs.vessel;
   if (isEndingItem(expectedId)) return accs.ending;
-  if (isProcedureItem(expectedId)) return accs.procedure;
   return accs.body;
 }

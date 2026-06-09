@@ -158,91 +158,6 @@ describe("gradeScenario", () => {
     expect(ending.correct).toBe(1);
   });
 
-  test("ship-side distress with procedural items scores procedure dimension 6/6 on perfect run", () => {
-    const items: readonly SequenceItem[] = [
-      { id: "epirb_on", label: "Turn on EPIRB" },
-      { id: "dsc_channel70", label: "DSC: Channel 70, High 25W" },
-      { id: "dsc_time_location", label: "DSC: confirm time and location" },
-      { id: "nature_fire", label: "DSC: Fire & Explosion" },
-      { id: "dsc_button", label: "DSC: press distress button 5 sec" },
-      { id: "dsc_channel16", label: "Radio: Channel 16, High" },
-      ...DISTRESS_ITEMS,
-    ];
-    const tpl = template(items);
-    const grade = gradeScenario(tpl, placementsMap(items));
-    expect(grade.passed).toBe(true);
-    const procedure = grade.dimensions.find((d) => d.id === "procedure")!;
-    expect(procedure.total).toBe(6);
-    expect(procedure.correct).toBe(6);
-    expect(procedure.status).toBe("pass");
-    expect(grade.dimensions.find((d) => d.id === "priority")!.total).toBe(4);
-    expect(grade.dimensions.find((d) => d.id === "vessel")!.total).toBe(5);
-    expect(grade.dimensions.find((d) => d.id === "body")!.total).toBe(4);
-    expect(grade.dimensions.find((d) => d.id === "ending")!.total).toBe(1);
-  });
-
-  test("fallen-mast scenario scores procedure dimension 7/7 with antenna_spare after epirb_on", () => {
-    const items: readonly SequenceItem[] = [
-      { id: "epirb_on", label: "Turn on EPIRB" },
-      { id: "antenna_spare", label: "Rig spare antenna (coax cable)" },
-      { id: "dsc_channel70", label: "DSC: Channel 70, High 25W" },
-      { id: "dsc_time_location", label: "DSC: confirm time and location" },
-      { id: "nature_disabled", label: "DSC: Disabled & Adrift" },
-      { id: "dsc_button", label: "DSC: press distress button 5 sec" },
-      { id: "dsc_channel16", label: "Radio: Channel 16, High" },
-      ...DISTRESS_ITEMS,
-    ];
-    const tpl = template(items);
-    const grade = gradeScenario(tpl, placementsMap(items));
-    const procedure = grade.dimensions.find((d) => d.id === "procedure")!;
-    expect(procedure.total).toBe(7);
-    expect(procedure.correct).toBe(7);
-    expect(procedure.status).toBe("pass");
-  });
-
-  test("abandoning scenario scores procedure dimension 7/7 with in_raft", () => {
-    const items: readonly SequenceItem[] = [
-      { id: "epirb_on", label: "Turn on EPIRB" },
-      { id: "dsc_channel70", label: "DSC: Channel 70, High 25W" },
-      { id: "dsc_time_location", label: "DSC: confirm time and location" },
-      { id: "nature_abandoning", label: "DSC: Abandoning" },
-      { id: "dsc_button", label: "DSC: press distress button 5 sec" },
-      { id: "dsc_channel16", label: "Radio: Channel 16, High" },
-      ...DISTRESS_ITEMS,
-      { id: "in_raft", label: "In raft: EPIRB, SART, portable VHF" },
-    ];
-    const tpl = template(items);
-    const grade = gradeScenario(tpl, placementsMap(items));
-    const procedure = grade.dimensions.find((d) => d.id === "procedure")!;
-    expect(procedure.total).toBe(7);
-    expect(procedure.correct).toBe(7);
-    expect(procedure.status).toBe("pass");
-  });
-
-  test("misplacing only procedural items leaves other dimensions passing", () => {
-    const correct: readonly SequenceItem[] = [
-      { id: "epirb_on", label: "Turn on EPIRB" },
-      { id: "dsc_channel70", label: "DSC: Channel 70, High 25W" },
-      { id: "dsc_time_location", label: "DSC: confirm time and location" },
-      { id: "nature_fire", label: "DSC: Fire & Explosion" },
-      { id: "dsc_button", label: "DSC: press distress button 5 sec" },
-      { id: "dsc_channel16", label: "Radio: Channel 16, High" },
-      ...DISTRESS_ITEMS,
-    ];
-    const tpl = template(correct);
-    // Swap two procedural items (still procedural ids, just wrong order).
-    const placed = [...correct];
-    placed[0] = { id: "dsc_channel70", label: "DSC: Channel 70, High 25W" };
-    placed[1] = { id: "epirb_on", label: "Turn on EPIRB" };
-    const grade = gradeScenario(tpl, placementsMap(placed));
-    const procedure = grade.dimensions.find((d) => d.id === "procedure")!;
-    expect(procedure.status).toBe("partial");
-    expect(grade.dimensions.find((d) => d.id === "priority")!.status).toBe("pass");
-    expect(grade.dimensions.find((d) => d.id === "vessel")!.status).toBe("pass");
-    expect(grade.dimensions.find((d) => d.id === "body")!.status).toBe("pass");
-    expect(grade.dimensions.find((d) => d.id === "ending")!.status).toBe("pass");
-  });
-
   test("any acceptableIds value is graded as correct in that slot", () => {
     const items: readonly SequenceItem[] = [
       { id: "mayday", label: "MAYDAY" },
@@ -262,76 +177,6 @@ describe("gradeScenario", () => {
     const grade = gradeScenario(tpl, placementsMap(placed));
     expect(grade.passed).toBe(true);
     expect(grade.correctCount).toBe(3);
-  });
-
-  test("MEDICO scenario: procedure=6, priority=6, vessel=8, body=15, ending=2 on perfect run", () => {
-    // Part 1 voice tally: 3 priority + 3 addressee + 1 this_is + 3 vessel + 1 callsign + 1 position + 1 medico + 1 OVER
-    // Part 2 voice tally: 1 working_channel + 3 priority + 3 addressee + 1 this_is + 3 vessel + 1 callsign + 1 position + 3 medical + 1 OVER
-    const items: readonly SequenceItem[] = [
-      { id: "dsc_channel70", label: "DSC: Channel 70" },
-      { id: "dsc_urgency_category", label: "DSC: category Urgency" },
-      { id: "dsc_addressee_all_stations", label: "DSC: addressee All Stations" },
-      { id: "dsc_time_position", label: "DSC: confirm time and position" },
-      { id: "dsc_send_urgency", label: "DSC: send urgency alert" },
-      { id: "dsc_channel16", label: "Radio: Channel 16, High" },
-      { id: "pan_pan", label: "PAN-PAN" },
-      { id: "pan_pan", label: "PAN-PAN" },
-      { id: "pan_pan", label: "PAN-PAN" },
-      { id: "addressee", label: "RCC Haifa" },
-      { id: "addressee", label: "RCC Haifa" },
-      { id: "addressee", label: "RCC Haifa" },
-      { id: "this_is", label: "THIS IS" },
-      { id: "vessel", label: "Grey Whale" },
-      { id: "vessel", label: "Grey Whale" },
-      { id: "vessel", label: "Grey Whale" },
-      { id: "callsign", label: "MMSI 211 555 200" },
-      { id: "position", label: "31°45'N 034°20'E" },
-      { id: "medico", label: "MEDICO" },
-      { id: "over", label: "OVER" },
-      { id: "working_channel_switch", label: "Switch to Ch 24" },
-      { id: "pan_pan", label: "PAN-PAN" },
-      { id: "pan_pan", label: "PAN-PAN" },
-      { id: "pan_pan", label: "PAN-PAN" },
-      { id: "addressee", label: "RCC Haifa" },
-      { id: "addressee", label: "RCC Haifa" },
-      { id: "addressee", label: "RCC Haifa" },
-      { id: "this_is", label: "THIS IS" },
-      { id: "vessel", label: "Grey Whale" },
-      { id: "vessel", label: "Grey Whale" },
-      { id: "vessel", label: "Grey Whale" },
-      { id: "callsign", label: "MMSI 211 555 200" },
-      { id: "position", label: "31°45'N 034°20'E" },
-      { id: "patient_vitals", label: "Male, 52" },
-      { id: "patient_status", label: "Chest pain" },
-      { id: "actions_taken", label: "Aspirin given" },
-      { id: "over", label: "OVER" },
-    ];
-    const tpl: SequenceTemplate = {
-      rubricId: "v1/urgency-medico",
-      callLabel: "MEDICO procedure",
-      priorityId: "pan_pan",
-      parts: [
-        { id: "procedure", label: "MEDICO procedure", items: items.slice(0, 20) },
-        { id: "medical_message", label: "Detailed medical message", items: items.slice(20) },
-      ],
-      pool: [],
-    };
-    const placementsByPart = new Map([
-      ["procedure", items.slice(0, 20)],
-      ["medical_message", items.slice(20)],
-    ]);
-    const grade = gradeScenario(tpl, placementsByPart);
-    expect(grade.passed).toBe(true);
-    const procedure = grade.dimensions.find((d) => d.id === "procedure")!;
-    const priority = grade.dimensions.find((d) => d.id === "priority")!;
-    const vessel = grade.dimensions.find((d) => d.id === "vessel")!;
-    const body = grade.dimensions.find((d) => d.id === "body")!;
-    const ending = grade.dimensions.find((d) => d.id === "ending")!;
-    expect(procedure.total).toBe(6);
-    expect(priority.total).toBe(6);
-    expect(vessel.total).toBe(8);
-    expect(body.total).toBe(15);
-    expect(ending.total).toBe(2);
   });
 
   test("MEDICO: closing OVER folds into ending; patient_* fold into body", () => {
@@ -355,29 +200,6 @@ describe("gradeScenario", () => {
     expect(body.correct).toBe(3);
     expect(ending.total).toBe(1);
     expect(ending.correct).toBe(1);
-  });
-
-  test("MEDICO: DSC urgency procedural ids land in procedure dimension", () => {
-    const items: readonly SequenceItem[] = [
-      { id: "dsc_channel70", label: "x" },
-      { id: "dsc_urgency_category", label: "x" },
-      { id: "dsc_addressee_all_stations", label: "x" },
-      { id: "dsc_time_position", label: "x" },
-      { id: "dsc_send_urgency", label: "x" },
-      { id: "dsc_channel16", label: "x" },
-    ];
-    const tpl: SequenceTemplate = {
-      rubricId: "v1/urgency-medico",
-      callLabel: "DSC fixture",
-      priorityId: "pan_pan",
-      parts: [{ id: "procedure", label: "x", items }],
-      pool: [],
-    };
-    const grade = gradeScenario(tpl, new Map([["procedure", items]]));
-    const procedure = grade.dimensions.find((d) => d.id === "procedure")!;
-    expect(procedure.total).toBe(6);
-    expect(procedure.correct).toBe(6);
-    expect(procedure.status).toBe("pass");
   });
 
   test("non-acceptable nature code in an acceptable slot is graded wrong", () => {
