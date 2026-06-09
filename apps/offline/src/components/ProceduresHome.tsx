@@ -68,7 +68,7 @@ export function ProceduresHome({
           <span className="proc-tile-eyebrow">Scenario</span>
           <span className="proc-tile-title">Scenario reconstruction</span>
           <span className="proc-tile-detail">
-            Pick the priority and order the phrases · {scenarioCount} scenarios.
+            Set the DSC &amp; equipment panel and compose the call · {scenarioCount} scenarios.
           </span>
           <span className="proc-tile-stat">{pct(stats)}</span>
         </button>

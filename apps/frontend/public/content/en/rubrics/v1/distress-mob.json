@@ -85,11 +85,6 @@
       "id": "procedure",
       "label": "Man-overboard MAYDAY procedure",
       "items": [
-        { "id": "dsc_channel70", "label": "DSC: Channel 70, High 25W" },
-        { "id": "dsc_time_location", "label": "DSC: confirm time and location" },
-        { "id": "dsc_nature", "label": "DSC:" },
-        { "id": "dsc_button", "label": "DSC: press distress button 5 sec" },
-        { "id": "dsc_channel16", "label": "Radio: Channel 16, High 25W" },
         { "id": "mayday", "label": "MAYDAY" },
         { "id": "mayday", "label": "MAYDAY" },
         { "id": "mayday", "label": "MAYDAY" },
@@ -116,23 +111,5 @@
   "dscRules": {
     "required": true,
     "beforeFirstVoiceTurn": true
-  },
-  "channelPowerDecoys": [
-    { "id": "decoy_dsc_ch72_25w", "label": "DSC: Channel 72, High 25W" },
-    { "id": "decoy_dsc_ch77_25w", "label": "DSC: Channel 77, High 25W" },
-    { "id": "decoy_dsc_ch70_1w", "label": "DSC: Channel 70, Low 1W" },
-    { "id": "decoy_radio_ch16_low", "label": "Radio: Channel 16, Low 1W" },
-    { "id": "decoy_dsc_ch16_25w", "label": "DSC: Channel 16, High 25W" },
-    { "id": "decoy_radio_ch70_high", "label": "Radio: Channel 70, High" },
-    { "id": "decoy_dsc_ch70_10w", "label": "DSC: Channel 70, High 10W" },
-    { "id": "decoy_dsc_ch72_1w", "label": "DSC: Channel 72, Low 1W" },
-    { "id": "decoy_radio_ch16_15w", "label": "Radio: Channel 16, High 15W" }
-  ],
-  "callsignDecoys": [
-    { "id": "decoy_mmsi_coast_002411000", "label": "MMSI 002 411 000" },
-    { "id": "decoy_mmsi_coast_002111500", "label": "MMSI 002 111 500" },
-    { "id": "decoy_mmsi_sart_970110234", "label": "MMSI 970 110 234" },
-    { "id": "decoy_mmsi_group_023110001", "label": "MMSI 023 110 001" },
-    { "id": "decoy_mmsi_aircraft_111212345", "label": "MMSI 111 212 345" }
-  ]
+  }
 }

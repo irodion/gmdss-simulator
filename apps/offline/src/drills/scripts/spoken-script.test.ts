@@ -1,5 +1,9 @@
 // E2E coverage is intentionally skipped: headless browsers do not produce
 // reliable speechSynthesis voices. These unit tests cover the pure builder.
+//
+// A materialized template now carries only spoken-radio chips (the DSC/equipment
+// phase is owned by the panel, see ADR 0002), so every item is spoken — there is
+// no procedure/decoy filtering left to test.
 
 import { describe, expect, test } from "vite-plus/test";
 import { buildSpokenTransmission } from "./spoken-script.ts";
@@ -18,17 +22,11 @@ function template(
 }
 
 describe("buildSpokenTransmission", () => {
-  test("distress single-phase: voice items only, no DSC, MAYDAY ×4 kept", () => {
+  test("joins every voice chip with commas, keeping adjacent repeats (MAYDAY ×3, vessel ×3)", () => {
     const t = template([
       {
         id: "procedure",
         items: [
-          { id: "epirb_on", label: "Turn on EPIRB" },
-          { id: "dsc_channel70", label: "DSC: Channel 70, High 25W" },
-          { id: "dsc_time_location", label: "DSC: confirm time and location" },
-          { id: "nature_fire", label: "DSC: Fire & Explosion" },
-          { id: "dsc_button", label: "DSC: press distress button 5 sec" },
-          { id: "dsc_channel16", label: "Radio: Channel 16, High" },
           { id: "mayday", label: "MAYDAY" },
           { id: "mayday", label: "MAYDAY" },
           { id: "mayday", label: "MAYDAY" },
@@ -47,40 +45,21 @@ describe("buildSpokenTransmission", () => {
       },
     ]);
     const out = buildSpokenTransmission(t);
-    expect(out).not.toMatch(/DSC/);
-    expect(out).not.toMatch(/EPIRB/);
     expect(out).toContain("MAYDAY, MAYDAY, MAYDAY, Blue Duck, Blue Duck, Blue Duck, 5BCD2, MAYDAY");
     expect(out.endsWith(", OVER")).toBe(true);
   });
 
-  test("returns empty string when every item is procedural", () => {
+  test("two-phase call: phases joined with '. '", () => {
     const t = template([
       {
         id: "procedure",
         items: [
-          { id: "epirb_on", label: "Turn on EPIRB" },
-          { id: "dsc_channel70", label: "DSC: Channel 70" },
-          { id: "dsc_button", label: "DSC: press distress button" },
-        ],
-      },
-    ]);
-    expect(buildSpokenTransmission(t)).toBe("");
-  });
-
-  test("two-phase MEDICO: phases joined with '. ', working_channel_switch dropped", () => {
-    const t = template([
-      {
-        id: "procedure",
-        items: [
-          { id: "dsc_channel70", label: "DSC: Channel 70" },
-          { id: "dsc_send_urgency", label: "DSC: send urgency alert" },
           { id: "pan_pan", label: "PAN-PAN" },
           { id: "pan_pan", label: "PAN-PAN" },
           { id: "pan_pan", label: "PAN-PAN" },
           { id: "addressee", label: "RCC Haifa" },
           { id: "this_is", label: "THIS IS" },
           { id: "vessel", label: "Grey Whale" },
-          { id: "callsign", label: "MMSI 211 555 200" },
           { id: "medico", label: "MEDICO / Need medical advice" },
           { id: "over", label: "OVER" },
         ],
@@ -88,7 +67,6 @@ describe("buildSpokenTransmission", () => {
       {
         id: "medical_message",
         items: [
-          { id: "working_channel_switch", label: "Switch to working channel (e.g., Ch 24)" },
           { id: "pan_pan", label: "PAN-PAN" },
           { id: "pan_pan", label: "PAN-PAN" },
           { id: "pan_pan", label: "PAN-PAN" },
@@ -97,7 +75,6 @@ describe("buildSpokenTransmission", () => {
           { id: "vessel", label: "Grey Whale" },
           { id: "patient_vitals", label: "Male, age 52, BP 160/100" },
           { id: "patient_status", label: "Severe chest pain" },
-          { id: "actions_taken", label: "Aspirin administered" },
           { id: "over", label: "OVER" },
         ],
       },
@@ -105,117 +82,34 @@ describe("buildSpokenTransmission", () => {
     const out = buildSpokenTransmission(t);
     expect(out).toContain(". ");
     const [phase1, phase2] = out.split(". ");
-    expect(phase1).toContain("PAN-PAN, PAN-PAN, PAN-PAN");
-    expect(phase2).toContain("PAN-PAN, PAN-PAN, PAN-PAN");
-    expect(out).not.toContain("Switch to working channel");
-    expect(out).not.toContain("DSC");
+    expect(phase1!).toContain("PAN-PAN, PAN-PAN, PAN-PAN");
+    expect(phase2!).toContain("PAN-PAN, PAN-PAN, PAN-PAN");
+    expect(phase2!).toContain("Severe chest pain");
   });
 
-  test("requiresAbandon scenario: in_raft is filtered out", () => {
+  test("MAYDAY RELAY: relay structure is spoken in order with QUOTE/UNQUOTE markers", () => {
     const t = template([
       {
         id: "procedure",
         items: [
-          { id: "mayday", label: "MAYDAY" },
-          { id: "vessel", label: "River Hawk" },
-          { id: "in_raft", label: "In raft: EPIRB, SART, portable VHF" },
-        ],
-      },
-    ]);
-    const out = buildSpokenTransmission(t);
-    expect(out).toBe("MAYDAY, River Hawk");
-    expect(out).not.toContain("raft");
-  });
-
-  test("requiresSpareAntenna scenario: antenna_spare is filtered out", () => {
-    const t = template([
-      {
-        id: "procedure",
-        items: [
-          { id: "epirb_on", label: "Turn on EPIRB" },
-          { id: "antenna_spare", label: "Rig spare antenna (coax cable)" },
-          { id: "mayday", label: "MAYDAY" },
-          { id: "vessel", label: "Wandering Albatross" },
-        ],
-      },
-    ]);
-    const out = buildSpokenTransmission(t);
-    expect(out).toBe("MAYDAY, Wandering Albatross");
-    expect(out).not.toContain("antenna");
-    expect(out).not.toContain("EPIRB");
-  });
-
-  test("misplaced channel-power decoy chip is filtered out of the transcript", () => {
-    const t = template([
-      {
-        id: "procedure",
-        items: [
-          { id: "decoy_dsc_ch72_25w", label: "DSC: Channel 72, High 25W" },
-          { id: "mayday", label: "MAYDAY" },
-          { id: "vessel", label: "Blue Duck" },
-        ],
-      },
-    ]);
-    const out = buildSpokenTransmission(t);
-    expect(out).toBe("MAYDAY, Blue Duck");
-    expect(out).not.toContain("Channel");
-    expect(out).not.toContain("decoy");
-  });
-
-  test("misplaced callsign (MMSI) decoy chip is filtered out of the transcript", () => {
-    const t = template([
-      {
-        id: "procedure",
-        items: [
-          { id: "decoy_mmsi_coast_002411000", label: "MMSI 002 411 000" },
-          { id: "mayday", label: "MAYDAY" },
-          { id: "vessel", label: "Blue Duck" },
-        ],
-      },
-    ]);
-    const out = buildSpokenTransmission(t);
-    expect(out).toBe("MAYDAY, Blue Duck");
-    expect(out).not.toContain("002");
-    expect(out).not.toContain("decoy");
-  });
-
-  test("MAYDAY RELAY transcript: Ch 16 setup filtered, QUOTE/UNQUOTE markers + relayed vessel appear", () => {
-    const t = template([
-      {
-        id: "procedure",
-        items: [
-          { id: "dsc_channel16", label: "Radio: Channel 16, High" },
           { id: "mayday_relay", label: "MAYDAY RELAY" },
           { id: "mayday_relay", label: "MAYDAY RELAY" },
           { id: "mayday_relay", label: "MAYDAY RELAY" },
-          { id: "addressee", label: "All Stations" },
-          { id: "addressee", label: "All Stations" },
           { id: "addressee", label: "All Stations" },
           { id: "this_is", label: "THIS IS" },
           { id: "vessel", label: "Vered" },
-          { id: "vessel", label: "Vered" },
-          { id: "vessel", label: "Vered" },
-          { id: "callsign", label: "MMSI 428 123 456" },
           { id: "following_received", label: "FOLLOWING RECEIVED FROM" },
           { id: "relayed_vessel", label: "Yacht Tami" },
-          { id: "relayed_mmsi", label: "MMSI 428 555 222" },
-          { id: "on_channel_16", label: "ON CHANNEL 16" },
           { id: "quote_marker", label: "QUOTE" },
           { id: "mayday", label: "MAYDAY" },
           { id: "relayed_vessel", label: "Yacht Tami" },
-          { id: "relayed_position", label: "33°42'N 032°52'E" },
           { id: "relayed_nature", label: "Fire on board in danger of sinking" },
-          { id: "relayed_assistance", label: "Require immediate assistance" },
-          { id: "relayed_persons", label: "6 persons on board" },
           { id: "unquote_marker", label: "UNQUOTE" },
           { id: "over", label: "OVER" },
         ],
       },
     ]);
     const out = buildSpokenTransmission(t);
-    // Setup chip is procedure-step → filtered.
-    expect(out).not.toContain("Radio: Channel 16");
-    // MAYDAY RELAY spoken three times, plus the standalone MAYDAY in the quoted block.
     expect(out.match(/MAYDAY RELAY/g)).toHaveLength(3);
     expect(out).toContain("All Stations");
     expect(out).toContain("FOLLOWING RECEIVED FROM");
@@ -275,49 +169,14 @@ describe("buildSpokenTransmission", () => {
     );
   });
 
-  test("materialized dsc_nature → nature_<code> chip is filtered out", () => {
-    const t = template([
-      {
-        id: "procedure",
-        items: [
-          { id: "nature_fire", label: "DSC: Fire & Explosion" },
-          { id: "mayday", label: "MAYDAY" },
-        ],
-      },
-    ]);
-    expect(buildSpokenTransmission(t)).toBe("MAYDAY");
-  });
-
   test("empty parts array returns empty string", () => {
     expect(buildSpokenTransmission(template([]))).toBe("");
   });
 
-  test("unknown future dsc_xyz ids are filtered by the prefix rule", () => {
+  test("an empty part contributes nothing (no leading '. ' artefact)", () => {
     const t = template([
-      {
-        id: "procedure",
-        items: [
-          { id: "dsc_future_thing", label: "DSC: future" },
-          { id: "mayday", label: "MAYDAY" },
-        ],
-      },
-    ]);
-    expect(buildSpokenTransmission(t)).toBe("MAYDAY");
-  });
-
-  test("part with only procedural items is skipped (no leading '. ' artefact)", () => {
-    const t = template([
-      {
-        id: "procedure",
-        items: [
-          { id: "epirb_on", label: "Turn on EPIRB" },
-          { id: "dsc_channel70", label: "DSC" },
-        ],
-      },
-      {
-        id: "voice",
-        items: [{ id: "mayday", label: "MAYDAY" }],
-      },
+      { id: "empty_phase", items: [] },
+      { id: "voice", items: [{ id: "mayday", label: "MAYDAY" }] },
     ]);
     expect(buildSpokenTransmission(t)).toBe("MAYDAY");
   });

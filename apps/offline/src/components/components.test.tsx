@@ -551,48 +551,6 @@ describe("SequenceCard", () => {
     expect(onNewScenario).toHaveBeenCalled();
   });
 
-  test("renders a procedure pool group when the template includes procedural items", () => {
-    const procedureTemplate: SequenceTemplate = {
-      ...SAMPLE_TEMPLATE,
-      parts: [
-        {
-          id: "procedure",
-          label: "MAYDAY procedure",
-          items: [
-            { id: "epirb_on", label: "Turn on EPIRB" },
-            { id: "dsc_channel70", label: "DSC: Channel 70, High 25W" },
-            { id: "nature_fire", label: "DSC: Fire & Explosion" },
-            { id: "mayday", label: "MAYDAY" },
-            { id: "vessel", label: "Blue Duck" },
-            { id: "over", label: "OVER" },
-          ],
-        },
-      ],
-      pool: [
-        { id: "epirb_on", label: "Turn on EPIRB" },
-        { id: "dsc_channel70", label: "DSC: Channel 70, High 25W" },
-        { id: "nature_fire", label: "DSC: Fire & Explosion" },
-        { id: "nature_collision", label: "DSC: Collision" },
-        { id: "mayday", label: "MAYDAY" },
-        { id: "vessel", label: "Blue Duck" },
-        { id: "over", label: "OVER" },
-      ],
-    };
-    render(
-      <SequenceCard
-        template={procedureTemplate}
-        scenario={SAMPLE_SCENARIO}
-        onComplete={() => {}}
-        onRetry={() => {}}
-        onNewScenario={() => {}}
-        onBack={() => {}}
-      />,
-    );
-    const group = screen.getByLabelText("Procedure actions");
-    expect(group).toBeTruthy();
-    expect(group.querySelectorAll(".seq-pool-item-procedure").length).toBeGreaterThanOrEqual(4);
-  });
-
   test("multi-part: clicking a part header (keyboard-accessible) switches the active part", () => {
     const multiPartTemplate: SequenceTemplate = {
       ...SAMPLE_TEMPLATE,
@@ -636,43 +594,5 @@ describe("SequenceCard", () => {
     expect(partTwoEntries.querySelectorAll("li.seq-slot")).toHaveLength(1);
     const partOneEntries = screen.getByLabelText("Part one entries");
     expect(partOneEntries.querySelectorAll("li.seq-slot")).toHaveLength(0);
-  });
-
-  test("renders the in_raft chip in the procedure pool when the template includes it", () => {
-    const abandonTemplate: SequenceTemplate = {
-      ...SAMPLE_TEMPLATE,
-      parts: [
-        {
-          id: "procedure",
-          label: "MAYDAY procedure",
-          items: [
-            { id: "mayday", label: "MAYDAY" },
-            { id: "vessel", label: "Blue Duck" },
-            { id: "over", label: "OVER" },
-            { id: "in_raft", label: "In raft: EPIRB, SART, portable VHF" },
-          ],
-        },
-      ],
-      pool: [
-        { id: "mayday", label: "MAYDAY" },
-        { id: "vessel", label: "Blue Duck" },
-        { id: "over", label: "OVER" },
-        { id: "in_raft", label: "In raft: EPIRB, SART, portable VHF" },
-      ],
-    };
-    render(
-      <SequenceCard
-        template={abandonTemplate}
-        scenario={SAMPLE_SCENARIO}
-        onComplete={() => {}}
-        onRetry={() => {}}
-        onNewScenario={() => {}}
-        onBack={() => {}}
-      />,
-    );
-    const chip = screen
-      .getAllByRole("button", { name: /In raft: EPIRB, SART, portable VHF/ })
-      .find((el) => el.className.includes("seq-pool-item-procedure"));
-    expect(chip).toBeTruthy();
   });
 });
