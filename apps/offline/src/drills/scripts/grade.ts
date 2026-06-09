@@ -190,18 +190,13 @@ export function gradeScenario(
     correctCount += procedure.correct;
     totalExpected += procedure.total;
     voiceDenominator += procedure.total;
-    // A neutral result (e.g. an acceptable `permitted` relay) grades zero facts;
-    // it still surfaces per-field feedback via `grade.procedure` but adds no
-    // breakdown dimension and no weight to the score.
-    if (procedure.total > 0) {
-      dimensions.push({
-        id: "procedure",
-        label: "DSC & equipment",
-        correct: procedure.correct,
-        total: procedure.total,
-        status: procedure.status,
-      });
-    }
+    dimensions.push({
+      id: "procedure",
+      label: "DSC & equipment",
+      correct: procedure.correct,
+      total: procedure.total,
+      status: procedure.status,
+    });
   }
 
   const score = voiceDenominator === 0 ? 1 : correctCount / voiceDenominator;
