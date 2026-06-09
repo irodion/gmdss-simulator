@@ -93,12 +93,21 @@ export function materializeScenario(
     }))
     .filter((part) => part.items.length > 0);
 
+  // Every panel rubric must contribute at least one spoken-message part; a
+  // template with only empty (e.g. DSC-only) parts would grade nothing, so fail
+  // fast rather than render a voiceless drill.
+  if (parts.length === 0) {
+    throw new Error(
+      `Scenario ${scenario.id} (rubric ${rubric.id}) has no spoken-message parts after materialization`,
+    );
+  }
+
   const correctItems = parts.flatMap((p) => p.items);
   const priorityDecoys = PRIORITY_IDS.filter((p) => p !== scenario.priority).flatMap((p) =>
     decoyOpening(p),
   );
   const pool = shuffle([...correctItems, ...priorityDecoys]);
-  const heading = parts[0]?.label ?? rubric.id;
+  const heading = parts[0]!.label;
 
   return {
     rubricId: rubric.id,
