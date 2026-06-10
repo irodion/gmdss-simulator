@@ -68,6 +68,25 @@ Ch16). Only when the brief explicitly places the trainee **on-scene** may they
 additionally send a DSC distress alert with nature **Undesignated** — never a
 dedicated relay call.
 
+### Scenario roster & localization
+
+Procedures-Mode Scenarios (`rubrics/v1/scenarios.json`) deliberately use a
+**roster of distinct vessels** — one per Scenario — so drills feel varied; there
+is no single "own ship". Localization to the Israeli SRC syllabus (the source
+"book") is therefore a **per-identity rule**, not a single canonical cast:
+
+- **Home vessels carry MID 428** (Israel). Legacy Scenarios still using German
+  **MMSI 211…** (Blue Duck, Sea Otter, Northern Star, River Hawk, Aurora,
+  Wandering Albatross, Red Fox, Silver Arrow, Grey Whale, Cargo Ranger, Blue
+  Marlin) are being re-MID'd to 428.
+- **Foreign MMSIs are kept only when the brief is abroad** — e.g. Amalia (234,
+  Gibraltar), Pacific (209). These are intentional, not gaps.
+- Recurring shore stations: **RCC Haifa**, **Haifa Radio**, **Cyprus Radio**.
+
+Israel **MID 428**; national call-sign components **4X / 4Z**.
+_Avoid_: treating the roster as a single own-ship; treating an abroad-brief's
+foreign MMSI as an error to "fix".
+
 ## Flagged ambiguities
 
 - **"Scenario"** — used loosely to mean "a part of the app." In this codebase a
