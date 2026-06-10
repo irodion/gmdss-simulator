@@ -257,7 +257,9 @@ describe("MAYDAY header is book-faithful in the real distress rubrics (#108)", (
       expect(items.filter((i) => i.id === "this_is")).toHaveLength(1);
       // The header follows the callsign: MAYDAY, <vessel>, <position> — never a this_is.
       const ids = items.map((i) => i.id);
-      const headerStart = ids.indexOf("callsign") + 1;
+      const callsignIndex = ids.indexOf("callsign");
+      expect(callsignIndex).not.toBe(-1);
+      const headerStart = callsignIndex + 1;
       expect(ids.slice(headerStart, headerStart + 3)).toEqual(["mayday", "vessel", "position"]);
     });
 
