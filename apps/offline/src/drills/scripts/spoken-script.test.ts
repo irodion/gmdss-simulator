@@ -5,9 +5,27 @@
 // phase is owned by the panel, see ADR 0002), so every item is spoken — there is
 // no procedure/decoy filtering left to test.
 
+import type { RubricDefinition } from "@gmdss-simulator/utils";
 import { describe, expect, test } from "vite-plus/test";
+import { gradeScenario } from "./grade.ts";
+import { materializeScenario } from "./materialize.ts";
 import { buildSpokenTransmission } from "./spoken-script.ts";
-import type { SequenceItem, SequenceTemplate } from "./types.ts";
+import type { RubricsById, Scenario, SequenceItem, SequenceTemplate } from "./types.ts";
+
+// The single source of truth for content is apps/frontend (the offline copy is a
+// gitignored build mirror), so these regression cases read the authored rubric
+// directly — the same tree the offline vite build copies from. import.meta.glob
+// resolves the JSON at build time, so no node:fs (and no @types/node) is needed.
+const RUBRIC_MODULES = import.meta.glob<RubricDefinition>(
+  "../../../../frontend/public/content/en/rubrics/v1/{distress,distress-mob}.json",
+  { eager: true, import: "default" },
+);
+
+function loadRubric(file: string): RubricDefinition {
+  const entry = Object.entries(RUBRIC_MODULES).find(([path]) => path.endsWith(`/${file}`));
+  if (!entry) throw new Error(`rubric ${file} not found in content glob`);
+  return entry[1];
+}
 
 function template(
   parts: readonly { readonly id: string; readonly items: readonly SequenceItem[] }[],
@@ -180,4 +198,76 @@ describe("buildSpokenTransmission", () => {
     ]);
     expect(buildSpokenTransmission(t)).toBe("MAYDAY");
   });
+});
+
+// The book (and ITU) put a single THIS IS in the call; the message header reads
+// "MAYDAY <vessel>". A second THIS IS in the header would be marked down in the
+// SRC exam, so guard the real distress rubrics against drifting back to it
+// (#108, ADR-0003) by reading the authored content rather than a fixture.
+describe("MAYDAY header is book-faithful in the real distress rubrics (#108)", () => {
+  const cases = [
+    {
+      file: "distress.json",
+      scenario: {
+        id: "distress-fire-blue-duck",
+        priority: "mayday",
+        rubricId: "v1/distress",
+        brief: "Engine room fire on MV Blue Duck.",
+        facts: {
+          vessel: "Blue Duck",
+          callsign: "MMSI 211 239 680",
+          position: "32°05'N 034°45'E",
+          nature: "On fire, fire spreading",
+          assistance: "I require immediate assistance",
+          persons: "6 persons on board",
+        },
+      } satisfies Scenario,
+    },
+    {
+      file: "distress-mob.json",
+      scenario: {
+        id: "distress-mob-tabor",
+        priority: "mayday",
+        rubricId: "v1/distress-mob",
+        brief: "Man overboard from Tabor.",
+        facts: {
+          vessel: "Tabor",
+          callsign: "MMSI 428 000 666",
+          position: "36°24'N 025°28'E",
+          nature: "Man overboard — male, age 35",
+          assistance: "I require immediate assistance",
+          persons: "9 persons on board",
+        },
+      } satisfies Scenario,
+    },
+  ];
+
+  for (const { file, scenario } of cases) {
+    const rubricId = scenario.rubricId;
+
+    test(`${rubricId}: spoken call carries exactly one THIS IS`, () => {
+      const rubrics: RubricsById = { [rubricId]: loadRubric(file) };
+      const spoken = buildSpokenTransmission(materializeScenario(scenario, rubrics));
+      expect(spoken.match(/THIS IS/g)).toHaveLength(1);
+    });
+
+    test(`${rubricId}: message header runs "MAYDAY <vessel> <position>" with no second THIS IS`, () => {
+      const rubrics: RubricsById = { [rubricId]: loadRubric(file) };
+      const items = materializeScenario(scenario, rubrics).parts.flatMap((p) => p.items);
+      expect(items.filter((i) => i.id === "this_is")).toHaveLength(1);
+      // The header follows the callsign: MAYDAY, <vessel>, <position> — never a this_is.
+      const ids = items.map((i) => i.id);
+      const headerStart = ids.indexOf("callsign") + 1;
+      expect(ids.slice(headerStart, headerStart + 3)).toEqual(["mayday", "vessel", "position"]);
+    });
+
+    test(`${rubricId}: a correct ordering of the corrected sequence still passes`, () => {
+      const rubrics: RubricsById = { [rubricId]: loadRubric(file) };
+      const tpl = materializeScenario(scenario, rubrics);
+      const placements = new Map(tpl.parts.map((p) => [p.id, [...p.items]]));
+      const grade = gradeScenario(tpl, placements);
+      expect(grade.passed).toBe(true);
+      expect(grade.dimensions.every((d) => d.status === "pass")).toBe(true);
+    });
+  }
 });
