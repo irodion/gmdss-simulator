@@ -17,7 +17,7 @@ import type { RubricsById, Scenario, SequenceItem, SequenceTemplate } from "./ty
 // directly — the same tree the offline vite build copies from. import.meta.glob
 // resolves the JSON at build time, so no node:fs (and no @types/node) is needed.
 const RUBRIC_MODULES = import.meta.glob<RubricDefinition>(
-  "../../../../frontend/public/content/en/rubrics/v1/{distress,distress-mob}.json",
+  "../../../../frontend/public/content/en/rubrics/v1/{distress,distress-mob,urgency,safety}.json",
   { eager: true, import: "default" },
 );
 
@@ -270,6 +270,87 @@ describe("MAYDAY header is book-faithful in the real distress rubrics (#108)", (
       const grade = gradeScenario(tpl, placements);
       expect(grade.passed).toBe(true);
       expect(grade.dimensions.every((d) => d.status === "pass")).toBe(true);
+    });
+  }
+});
+
+// The book requires PAN PAN and SECURITE broadcasts to address ALL STATIONS ×3
+// right after the signal word, before THIS IS. Guard the real urgency/safety
+// rubrics + the five plain Scenarios (#109, ADR-0003) against dropping it again.
+describe("PAN PAN / SECURITE carry the ALL STATIONS addressee in the real rubrics (#109)", () => {
+  const cases = [
+    {
+      file: "urgency.json",
+      signal: "pan_pan",
+      scenario: {
+        id: "urgency-engine-failure-red-fox",
+        priority: "pan_pan",
+        rubricId: "v1/urgency",
+        brief: "Engine failure on Red Fox, drifting toward a TSS.",
+        facts: {
+          vessel: "Red Fox",
+          callsign: "MMSI 211 888 040",
+          position: "32°15'N 034°40'E",
+          nature: "Engine failure, drifting toward TSS",
+          assistance: "I require a tow",
+          addressee: "All Stations",
+        },
+      } satisfies Scenario,
+    },
+    {
+      file: "safety.json",
+      signal: "securite",
+      scenario: {
+        id: "safety-container-cape-runner",
+        priority: "securite",
+        rubricId: "v1/safety",
+        brief: "Floating container reported by Cape Runner.",
+        facts: {
+          vessel: "Cape Runner",
+          position: "32°20'N 034°50'E, drifting south",
+          nature: "Floating container, hazard to navigation",
+          addressee: "All Stations",
+        },
+      } satisfies Scenario,
+    },
+  ];
+
+  for (const { file, signal, scenario } of cases) {
+    const rubricId = scenario.rubricId;
+
+    test(`${rubricId}: addressee ×3 sits between the signal word and THIS IS`, () => {
+      const rubrics: RubricsById = { [rubricId]: loadRubric(file) };
+      const ids = materializeScenario(scenario, rubrics).parts.flatMap((p) =>
+        p.items.map((i) => i.id),
+      );
+      expect(ids.filter((id) => id === "addressee")).toHaveLength(3);
+      // The three addressee chips immediately follow the three signal words.
+      const signalEnd = ids.lastIndexOf(signal) + 1;
+      expect(ids.slice(signalEnd, signalEnd + 4)).toEqual([
+        "addressee",
+        "addressee",
+        "addressee",
+        "this_is",
+      ]);
+    });
+
+    test(`${rubricId}: the spoken call reads the addressee after the signal word`, () => {
+      const rubrics: RubricsById = { [rubricId]: loadRubric(file) };
+      const spoken = buildSpokenTransmission(materializeScenario(scenario, rubrics));
+      expect(spoken).toContain("All Stations, All Stations, All Stations");
+    });
+
+    test(`${rubricId}: a correct ordering passes and the addressee scores in the body dimension`, () => {
+      const rubrics: RubricsById = { [rubricId]: loadRubric(file) };
+      const tpl = materializeScenario(scenario, rubrics);
+      const placements = new Map(tpl.parts.map((p) => [p.id, [...p.items]]));
+      const grade = gradeScenario(tpl, placements);
+      expect(grade.passed).toBe(true);
+      expect(grade.dimensions.every((d) => d.status === "pass")).toBe(true);
+      // The addressee folds into "body" (not "priority"), so the three chips
+      // lift the body total — never the priority dimension.
+      const priority = grade.dimensions.find((d) => d.id === "priority")!;
+      expect(priority.total).toBe(3); // the signal word ×3 only — no addressee bleed
     });
   }
 });

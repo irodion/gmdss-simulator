@@ -241,6 +241,7 @@
       "brief": "You are SY Red Fox (MMSI: *********). Engine has failed, drifting toward a traffic separation scheme. Not in immediate danger, but need a tow. 3 persons on board, position 32°15'N 034°40'E.",
       "facts": {
         "vessel": "Red Fox",
+        "addressee": "All Stations",
         "callsign": "MMSI 211 888 040",
         "position": "32°15'N 034°40'E",
         "nature": "Engine failure, drifting toward TSS",
@@ -333,6 +334,7 @@
       "brief": "You are MV Silver Arrow (MMSI: *********). Lost steering, vessel manoeuvring with difficulty in busy shipping lane. Position 32°30'N 034°55'E.",
       "facts": {
         "vessel": "Silver Arrow",
+        "addressee": "All Stations",
         "callsign": "MMSI 211 999 050",
         "position": "32°30'N 034°55'E",
         "nature": "Lost steering, manoeuvring with difficulty",
@@ -354,6 +356,7 @@
       "brief": "You are MV Cape Runner. Sighted a partly submerged shipping container drifting in a busy shipping lane, hazard to navigation. Position 32°20'N 034°50'E.",
       "facts": {
         "vessel": "Cape Runner",
+        "addressee": "All Stations",
         "position": "32°20'N 034°50'E, drifting south",
         "nature": "Floating container, hazard to navigation"
       },
@@ -373,6 +376,7 @@
       "brief": "You are MV Osprey. Lateral buoy reported unlit at the harbour approach. Position 31°55'N 034°35'E.",
       "facts": {
         "vessel": "Osprey",
+        "addressee": "All Stations",
         "position": "31°55'N 034°35'E, harbour approach",
         "nature": "Unlit lateral buoy"
       },
@@ -392,6 +396,7 @@
       "brief": "You are MV Storm Petrel. Observed sudden gale-force squalls in the area, hazard to small craft. Position 33°00'N 035°00'E.",
       "facts": {
         "vessel": "Storm Petrel",
+        "addressee": "All Stations",
         "position": "33°00'N 035°00'E and surrounding 10 NM",
         "nature": "Severe squalls observed, gale-force winds"
       },
